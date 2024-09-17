@@ -49,3 +49,7 @@ example : MyEq' b a := MyEq'.refl _ _
 
 inductive MyPred : α → Prop where
   | pred (a : α) : MyPred a
+
+-- tacticについて
+
+-- ライブラリについて

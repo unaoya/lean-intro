@@ -87,6 +87,24 @@ theorem even_add_even_even (m n : Nat) (h1 : Even m) (h2 : Even n) : Even (m + n
 
 def Range (n : Nat) := { i : Nat // i < n }
 
+#check max
+#check (inferInstance : Max Nat)
+#check max 1 2
+
+def incl {n : Nat} : Range n → Range n.succ := fun k => ⟨k.val, Nat.lt_succ_of_lt k.property⟩
+
+def addone {n : Nat} : Range n → Range n.succ := fun k => ⟨k.val + 1, sorry⟩
+
+def fpred (n : Nat) (f : Range n → Nat) : Range (n - 1) → Nat :=
+  match n with
+  | Nat.zero => fun _ => 0
+  | Nat.succ n => fun k => f ⟨k.val, Nat.lt_of_lt_of_le k.property (Nat.le_succ n)⟩
+
+def fmax (n : Nat) (f : Range n → Nat) : Nat :=
+  match n with
+  | Nat.zero => 0
+  | Nat.succ n => max (f ⟨n, Nat.lt_succ_self n⟩) (fmax n (fpred n.succ f))
+
 #check Nat.lt_trans
 
 #check Nat.recOn

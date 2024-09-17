@@ -24,6 +24,12 @@ class Field (α : Type) extends CommRing α where
   inv_mul : ∀ a, a ≠ zero → inv a * a = one
   nontrivial : zero ≠ one
 
+variable {α : Type} [Field α]
+
+instance : Sub α := ⟨fun a b => a + -b⟩
+
+instance : Div α := ⟨fun a b => a * Field.inv b⟩
+
 class LinearOrderedField (α : Type) extends Field α, LE α where
   le_refl : ∀ a : α, a ≤ a
   le_asymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
@@ -38,19 +44,18 @@ class NonNeg (α : Type) where
 class Abs (α : Type) where
   abs : α → α
 
-variable {α : Type} [LinearOrderedField α]
+variable {α : Type} [LinearOrderedField α] [OfNat α 0]
 
-instance : NonNeg α := sorry
+instance : NonNeg α := ⟨fun a => 0 ≤ a⟩
 
 instance (a : α) : Decidable (NonNeg.nonneg a) := sorry
 
-instance : Sub α := sorry
+instance : LT α := ⟨fun a b => a ≤ b ∧ a ≠ b⟩
 
-instance : Div α := sorry
-
-instance : LT α := sorry
-
-instance (n : Nat) : OfNat α n := sorry
+-- instance (n : Nat) : OfNat α n :=
+--   match n with
+--   | Nat.zero => AddCommGroup.zero
+--   | Nat.succ n => ofNat n + 1
 
 instance : NatCast α := sorry
 

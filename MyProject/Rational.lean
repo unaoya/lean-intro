@@ -21,19 +21,49 @@ def neg : Rat → Rat := Quotient.lift (fun a => Quotient.mk _ (-a)) (fun a b h 
 
 instance : Neg Rat := ⟨neg⟩
 
--- def sub : Rat → Rat → Rat := fun x y => add x (neg y)
-
--- instance : Sub Rat := ⟨sub⟩
-
 def mul : Rat → Rat → Rat := Quotient.lift₂ (fun a b => Quotient.mk _ (a * b)) (fun a b c d h h' => Quotient.sound (PInt.mul_wd a c b d h h'))
 
 instance : Mul Rat := ⟨mul⟩
 
 def inv : Rat → Rat := Quotient.lift (fun a => Quotient.mk _ (PInt.inv a)) (fun a b h => Quotient.sound (PInt.inv_wd a b h))
 
--- def div : Rat → Rat → Rat := fun x y => mul x (inv y)
+instance : AddCommGroup Rat :=
+{
+  zero := 0,
+  add_assoc := sorry,
+  add_comm := sorry,
+  add_zero := sorry,
+  zero_add := sorry,
+  add_neg := sorry,
+  neg_add := sorry
+}
 
--- instance : Div Rat := ⟨div⟩
+instance : MulCommMonoid Rat :=
+{
+  one := 1,
+  mul_assoc := sorry,
+  mul_comm := sorry,
+  mul_one := sorry,
+  one_mul := sorry
+}
+
+instance : CommRing Rat :=
+{
+  left_distrib := sorry,
+  right_distrib := sorry
+}
+
+instance : Field Rat :=
+{
+  inv := inv,
+  mul_inv := sorry,
+  inv_mul := sorry,
+  nontrivial := by
+    have h₀ : (AddCommGroup.zero : Rat) = 0 := rfl
+    have h₁ : (MulCommMonoid.one : Rat) = 1 := rfl
+    rw [h₀, h₁]
+    sorry
+}
 
 def nonneg : Rat → Prop := Quotient.lift PInt.nonneg PInt.nonneg_wd
 
@@ -77,44 +107,6 @@ instance (n : Nat) : OfNat Rat n := ⟨Quotient.mk setoid_rat ⟨n, ⟨1, by sim
 -- -- 絶対値の定義
 -- -- absもクラスある？
 -- def abs (x : Rat) : Rat := min x (-x)
-
-instance : AddCommGroup Rat :=
-{
-  zero := 0,
-  add_assoc := sorry,
-  add_comm := sorry,
-  add_zero := sorry,
-  zero_add := sorry,
-  add_neg := sorry,
-  neg_add := sorry
-}
-
-instance : MulCommMonoid Rat :=
-{
-  one := 1,
-  mul_assoc := sorry,
-  mul_comm := sorry,
-  mul_one := sorry,
-  one_mul := sorry
-}
-
-instance : CommRing Rat :=
-{
-  left_distrib := sorry,
-  right_distrib := sorry
-}
-
-instance : Field Rat :=
-{
-  inv := inv,
-  mul_inv := sorry,
-  inv_mul := sorry,
-  nontrivial := by
-    have h₀ : (AddCommGroup.zero : Rat) = 0 := rfl
-    have h₁ : (MulCommMonoid.one : Rat) = 1 := rfl
-    rw [h₀, h₁]
-    sorry
-}
 
 instance : LinearOrderedField Rat :=
 {

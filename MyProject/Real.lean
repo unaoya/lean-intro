@@ -72,6 +72,10 @@ def Real : Type := Quotient CSsetoid
 
 namespace Real
 
+def mk (f : CauchySeq) : Real := Quotient.mk CSsetoid f
+
+instance : NatCast Real := ⟨fun n => mk n⟩
+
 def add : Real → Real → Real := sorry
 
 instance : Add Real := ⟨add⟩
@@ -88,9 +92,9 @@ def div : Real → Real → Real := sorry
 
 instance : Div Real := ⟨div⟩
 
--- instance (n : Nat) : OfNat Real n := Quotient.mk CSsetoid n
-
 instance : NatCast Real := ⟨fun n => Quotient.mk CSsetoid n⟩
+
+instance (n : Nat) : OfNat Real n := sorry
 
 def sub : Real → Real → Real := fun x y => add x (neg y)
 
@@ -110,7 +114,7 @@ instance : LT Real := sorry
 
 instance : AddCommGroup Real :=
 {
-  zero := sorry,
+  zero := 0,
   add_assoc := sorry,
   add_comm := sorry,
   add_zero := sorry,
