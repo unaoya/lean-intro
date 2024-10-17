@@ -41,7 +41,7 @@ inductive MyNat.le : MyNat → MyNat → Prop where
   | refl (n : MyNat) : MyNat.le n n
   | succ (n m : MyNat) : MyNat.le n m → MyNat.le n (MyNat.succ m)
 
-theorem le_refl (n : MyNat) : MyNat.le n n := MyNat.le.refl n
+theorem MyNat.le_refl (n : MyNat) : MyNat.le n n := MyNat.le.refl n
 
 -- 任意の自然数に対してそれより大きな自然数が存在することを示す（何を仮定する？）
 theorem exists_gt (n : Nat) : ∃ m, n < m :=
