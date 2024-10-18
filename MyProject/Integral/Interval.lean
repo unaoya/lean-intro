@@ -9,12 +9,12 @@ open Real Classical
 -- リーマン可積分なら有界であることを示し、それを用いる。
 
 theorem integrable_bounded (f : Real → Real) (a b : Real) (i : Real)
-  (h : HasIntegral f a b i) : ∃ M, ∀ x, a ≤ x → x ≤ b → abs (f x) ≤ M := by
+  (h : IsIntegral f a b i) : ∃ M, ∀ x, a ≤ x → x ≤ b → abs (f x) ≤ M := by
   sorry
 
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)
-  (hab : HasIntegral f a b i) (hbc : HasIntegral f b c j) :
-  HasIntegral f a c (i + j) := by sorry
+  (hab : IsIntegral f a b i) (hbc : IsIntegral f b c j) :
+  IsIntegral f a c (i + j) := by sorry
   -- intro ε hε
   -- rcases integrable_bounded f a b i hab with ⟨Mab, hab'⟩
   -- rcases integrable_bounded f b c j hbc with ⟨Mbc, hbc'⟩
@@ -38,9 +38,9 @@ theorem interval_add_integrable (f : Real → Real) (a b c : Real)
 theorem interval_add_integral (f : Real → Real) (a b c : Real) :
   Integral f a b + Integral f b c = Integral f a c := by
   symm
-  rw [← HasIntegral_iff]
-  have hab : HasIntegral f a b (Integral f a b) := by rw [HasIntegral_iff]
-  have hbc : HasIntegral f b c (Integral f b c) := by rw [HasIntegral_iff]
+  rw [← IsIntegral_iff]
+  have hab : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
+  have hbc : IsIntegral f b c (Integral f b c) := by rw [IsIntegral_iff]
   apply interval_add_integrable _ _ _ _ hab hbc
 
 theorem integral_sub_interval' (f : Real → Real) (a b c : Real) :

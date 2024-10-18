@@ -9,11 +9,12 @@ open Real Classical
 
 -- 極限の単調性を使いたい
 
-theorem integral_nonneg (f : Real → Real) (a b : Real) (h : a < b) (h' : ∀ x, a ≤ x → x ≤ b → 0 ≤ f x) (h'' : ∃ i, HasIntegral f a b i) :
-  0 ≤ Integral f a b := by
+theorem integral_nonneg (f : Real → Real) (a b : Real)
+    (h : a < b) (h' : ∀ x, a ≤ x → x ≤ b → 0 ≤ f x)
+    (h'' : ∃ i, IsIntegral f a b i) : 0 ≤ Integral f a b := by
   rcases h'' with ⟨i, h''⟩
   have h₀ : 0 ≤ i := by
-    rw [HasIntegral] at h''
+    rw [IsIntegral] at h''
     false_or_by_contra
     rename_i h₁
     have : i < 0 := by apply ne_le_lt; exact h₁
@@ -84,15 +85,15 @@ theorem integral_nonneg (f : Real → Real) (a b : Real) (h : a < b) (h' : ∀ x
     exact this rfl
   have h₁ : i = Integral f a b := by
     symm
-    rw [← HasIntegral_iff]
+    rw [← IsIntegral_iff]
     exact h''
   rw [← h₁]
   exact h₀
 
 theorem integral_monotone (f g : Real → Real) (a b : Real)
     (h : a < b) (h' : ∀ x, a ≤ x → x ≤ b → f x ≤ g x)
-    (hf : ∃ i, HasIntegral f a b i)
-    (hg : ∃ i, HasIntegral f a b i) :
+    (hf : ∃ i, IsIntegral f a b i)
+    (hg : ∃ i, IsIntegral f a b i) :
     Integral f a b ≤ Integral g a b := by
   rw [← le_sub]
   rw [← sub_integral]

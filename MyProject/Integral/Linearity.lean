@@ -10,9 +10,9 @@ open Real Classical
 
 theorem additive_integral (f g : Real → Real) (a b : Real) :
   Integral (fun t ↦ f t + g t) a b = Integral f a b + Integral g a b := by
-  rw [← HasIntegral_iff]
-  have hf : HasIntegral f a b (Integral f a b) := by rw [HasIntegral_iff]
-  have hg : HasIntegral g a b (Integral g a b) := by rw [HasIntegral_iff]
+  rw [← IsIntegral_iff]
+  have hf : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
+  have hg : IsIntegral g a b (Integral g a b) := by rw [IsIntegral_iff]
   intro ε hε
   have hε2 : ε / 2 > 0 := by apply pos_half; exact hε
   rcases hf (ε / 2) hε2 with ⟨δf, hδf⟩
@@ -34,8 +34,8 @@ theorem additive_integral (f g : Real → Real) (a b : Real) :
 
 theorem neg_integral (f : Real → Real) (a b : Real) :
   Integral (fun t ↦ -f t) a b = -Integral f a b := by
-  rw [← HasIntegral_iff]
-  have : HasIntegral f a b (Integral f a b) := by rw [HasIntegral_iff]
+  rw [← IsIntegral_iff]
+  have : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
   intro ε hε
   rcases this ε hε with ⟨δ, hδ⟩
   apply Exists.intro δ
@@ -56,7 +56,7 @@ theorem sub_integral (f g : Real → Real) (a b : Real) :
   rw [add_neg_sub]
 
 theorem integrable_sub (f g : Real → Real) (a b : Real)
-    (hf : ∃ i, HasIntegral f a b i)
-    (hg : ∃ i, HasIntegral f a b i) :
-    ∃ i, HasIntegral (fun x ↦ f x - g x) a b i := by
+    (hf : ∃ i, IsIntegral f a b i)
+    (hg : ∃ i, IsIntegral f a b i) :
+    ∃ i, IsIntegral (fun x ↦ f x - g x) a b i := by
   sorry

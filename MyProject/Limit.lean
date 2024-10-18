@@ -48,3 +48,8 @@ theorem limit_at0_iff_le (f : Real → Real) (l : Real)
 
 def Continuous (f : Real → Real) : Prop :=
   ∀ a, ∀ ε > 0, ∃ δ > 0, ∀ x, abs (x - a) < δ → abs (f x - f a) < ε
+
+theorem continuous_sub (f g : Real → Real) (hf : Continuous f) (hg : Continuous g) :
+  Continuous (fun t ↦ f t - g t) := by sorry
+
+theorem continuous_const (c : Real) : Continuous (fun t ↦ c) := by sorry

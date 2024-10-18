@@ -49,16 +49,20 @@ theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
   apply Partition.length_pos n a b Δ i
 
 -- 積分の定義
-def HasIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
+def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
   ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ n : Nat, ∀ Δ : Partition n a b, ∀ ξ : Range n → Real,
     Δ.IsRepr a b n ξ → (Partition.diam n a b Δ) < δ →
     abs (RiemannSum f a b n Δ ξ - i) < ε
 
-def Integral (f : Real → Real) (a b : Real) : Real :=
-  if h : ∃ i, HasIntegral f a b i then Classical.choose h else 0
+def IsIntegrable (f : Real → Real) (a b : Real) : Prop :=
+  ∃ i, IsIntegral f a b i
 
-theorem HasIntegral_iff (f : Real → Real) (a b : Real) (i : Real) :
-  HasIntegral f a b i ↔ Integral f a b = i := by
+-- 向きなし積分。本当はa ≤ bを仮定する必要あり
+def Integral (f : Real → Real) (a b : Real) : Real :=
+  if h : IsIntegrable f a b then Classical.choose h else 0
+
+theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real) :
+  IsIntegral f a b i ↔ Integral f a b = i := by
   sorry
 
 theorem integral_congr (f g : Real → Real) (a b : Real) (h : ∀ x, f x = g x) :

@@ -177,3 +177,28 @@ theorem sum_id (n : Nat) : Sumation n (fun k => k.val) = n * (n - 1) / 2 :=
 --   Iff.intro
 --     (fun h => by rw [h, Nat.mul_one])
 --     (fun h => by rw [← h, Nat.mul_one])
+
+theorem has_min (p : Nat → Prop) (hp : ∃ n, p n) :
+    ∃ a, p a ∧ ∀ x, p x → ¬(x < a) := by
+  rcases hp with ⟨a, ha⟩
+  let motive (y : Nat) := p y → ∃ b, p b ∧ ∀ x, p x → ¬(x < b)
+  let (ind : ∀ n, (∀ m, m < n → motive m) → motive n) :=
+    fun n IH => (fun h => ?h)
+  have h := @Nat.strongRecOn motive a ind
+  exact h ha
+  by_cases h' : ∃ m, m < n ∧ p m
+  · rcases h' with ⟨m, hm⟩
+    have := IH m hm.1 hm.2
+    exact this
+  · have : ∀ m, m < n → ¬p m := by
+      intro m hm hpm
+      apply h'
+      exact ⟨m, hm, hpm⟩
+    apply Exists.intro n
+    constructor
+    · exact h
+    · intro x hpx hxn
+      apply this x hxn hpx
+
+noncomputable def min (p : Nat → Prop) (hp : ∃ n, p n) : Nat :=
+  Classical.choose (has_min p hp)
