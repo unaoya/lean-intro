@@ -1,5 +1,5 @@
-import MyProject.Structure
-import MyProject.PInt
+import MyProject.Numbers.Structure
+import MyProject.Numbers.PInt
 
 def setoid_rat : Setoid PInt := ⟨PInt.fracEq, PInt.fracEq_Eq⟩
 

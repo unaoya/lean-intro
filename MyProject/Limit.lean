@@ -1,5 +1,3 @@
-import MyProject.Real
-import MyProject.NatNum
 import MyProject.Lemmas
 
 -- 古典論理、選択公理（無限直積が空でない、とは違う、型理論的な何か？）を使う
@@ -15,25 +13,38 @@ open Real Classical
 
 -- 関数の極限（HasLimAtの方がいい？）
 def IsLimAt (f : Real → Real) (l : Real) (a : Real) : Prop :=
-  ∀ ε > 0, ∃ δ > 0, ∀ x, 0 < abs (x - a) ∧ abs (x - a) < δ → abs (f x - l) < ε
+  ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ ∀ x, 0 < abs (x - a) ∧ abs (x - a) < δ → abs (f x - l) < ε
 
-def limit (f : Real → Real) (a : Real) : Real :=
-  if h : ∃ l, IsLimAt f l a then Classical.choose h else 0
+def HasLimAt (f : Real → Real) (a : Real) : Prop :=
+  ∃ l, IsLimAt f l a
 
-theorem limit_eq (f : Real → Real) (a : Real) (l : Real) (h : IsLimAt f l a) : limit f a = l := by
+def limit (f : Real → Real) (a : Real) (hf : HasLimAt f a) : Real :=
+  choose hf
+
+theorem limit_eq (f : Real → Real) (a : Real) (hf : HasLimAt f a) : IsLimAt f (limit f a hf) a :=
+  choose_spec hf
+
+def limit' (f : Real → Real) (a : Real) {l : Real} (hf : IsLimAt f l a) : Real := l
+
+theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real) (h₁ : IsLimAt f l₁ a) (h₂ : IsLimAt f l₂ a) : l₁ = l₂ := by
+  sorry
+
+theorem limit_eq' (f : Real → Real) (a : Real) (l : Real) (h : IsLimAt f l a) : limit f a ⟨l, h⟩ = l := by
   rw [limit]
-  rw [dif_pos]
   sorry
-  exact Exists.intro l h
 
-theorem limit_eq_iff (f : Real → Real) (a : Real) (l : Real) : IsLimAt f l a ↔ limit f a = l := by
+theorem limit_eq_iff (f : Real → Real) (a : Real) (l : Real) (hf : HasLimAt f a) : IsLimAt f l a ↔ limit f a hf = l := by
   rw [limit]
-  rw [dif_pos]
-  sorry
   sorry
 
-theorem limit_iff_le (f : Real → Real) (a : Real) (l : Real) : IsLimAt f l a ↔
-  ∀ ε > 0, ∃ δ > 0, ∀ x, 0 < abs (x - a) ∧ abs (x - a) < δ → abs (f x - l) ≤ ε := by sorry
+theorem limit_iff (f : Real → Real) (a : Real) (f' : Real) (hf : HasLimAt f a) : IsLimAt f f' a ↔ limit f a hf = f' := by
+  rw [limit_eq_iff]
+
+theorem limit_iff_le (f : Real → Real) (a : Real) (l : Real)
+    (h : ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ ∀ x, 0 < abs (x - a) ∧ abs (x - a) < δ → abs (f x - l) ≤ ε) : IsLimAt f l a := by sorry
+
+theorem limit_at0_iff_le (f : Real → Real) (l : Real)
+    (h : ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ ∀ x, 0 < abs (x) ∧ abs (x) < δ → abs (f x - l) ≤ ε) : IsLimAt f l 0 := by sorry
 
 def Continuous (f : Real → Real) : Prop :=
   ∀ a, ∀ ε > 0, ∃ δ > 0, ∀ x, abs (x - a) < δ → abs (f x - f a) < ε

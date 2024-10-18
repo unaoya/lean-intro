@@ -1,7 +1,3 @@
-import MyProject.Real
-import MyProject.NatNum
-import MyProject.Lemmas
-import MyProject.Limit
 import MyProject.Integral.Def
 
 noncomputable section

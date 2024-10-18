@@ -1,4 +1,4 @@
-import MyProject.NZInt
+import MyProject.Numbers.NZInt
 
 -- IntとNZIntのペアの型PIntを定義する
 

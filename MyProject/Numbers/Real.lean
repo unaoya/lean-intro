@@ -1,4 +1,4 @@
-import MyProject.Rational
+import MyProject.Numbers.Rational
 
 -- 実数の型を定義し、完備アルキメデス順序体であることを示す。
 -- まず有理数体を作る。有理数の型を定義し、順序体であることを示す。

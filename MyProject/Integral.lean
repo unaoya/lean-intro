@@ -1,26 +1,36 @@
-import MyProject.Real
-import MyProject.NatNum
-import MyProject.Lemmas
-import MyProject.Limit
-import MyProject.Integral.Def
 import MyProject.Integral.Constant
-import MyProject.Integral.Interval
-import MyProject.Integral.Linearity
 import MyProject.Integral.Monotone
 import MyProject.Integral.Triangle
 
-noncomputable section
 
-open Real Classical
+-- 向き付き積分を定義し、それらに対する基本定理を示す。
 
+theorem integral_sub_interval (f : Real → Real) (a b c : Real) :
+    Integral f a b - Integral f a c = Integral f c b := by
+  apply integral_sub_interval'
 
-theorem interval_sub_integral (f : Real → Real) (a b c : Real) : True := sorry
+theorem integral_triangle_ineq {f : Real → Real} {a b: Real} (h :∃ i, HasIntegral f a b i) :
+    (Integral f a b).abs ≤ (Integral (fun t ↦ (f t).abs) a b).abs := by
+  apply oint_triangle_ineq _ _ _ h
 
-@[simp]
-theorem sub_zero_abs (x : Real) : (x - 0).abs = x.abs := sorry
+theorem integral_const (a b c : Real) : Integral (fun t ↦ c) a b = c * (b - a) := by
+  apply const_integral
+  sorry
 
-instance : Trans (LE.le : Real → Real → Prop) LE.le LE.le := sorry
+theorem integral_sub (f g : Real → Real) (a b : Real) :
+    Integral (fun t ↦ f t - g t) a b = Integral f a b - Integral g a b := by
+  apply sub_integral
 
-instance : Trans (LT.lt : Real → Real → Prop) LE.le LT.lt := sorry
+theorem integral_monotone' (f g : Real → Real) (a b : Real)
+    (hf : ∀ x, 0 ≤ f x)
+    (hg : ∀ x, 0 ≤ g x)
+    (h : ∀ x, InInterval a b x → f x ≤ g x) :
+    (Integral f a b).abs ≤ (Integral g a b).abs := by sorry
 
-instance : Trans (LE.le : Real → Real → Prop) LT.lt LT.lt := sorry
+theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous f) :
+  ∃ i, HasIntegral f a x i := by sorry
+
+theorem continuous_sub (f g : Real → Real) (hf : Continuous f) (hg : Continuous g) :
+  Continuous (fun t ↦ f t - g t) := by sorry
+
+theorem continuous_const (c : Real) : Continuous (fun t ↦ c) := by sorry

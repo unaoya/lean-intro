@@ -1,7 +1,3 @@
-import MyProject.Real
-import MyProject.NatNum
-import MyProject.Lemmas
-import MyProject.Limit
 import MyProject.Integral.Def
 
 noncomputable section
@@ -29,7 +25,7 @@ theorem additive_integral (f g : Real → Real) (a b : Real) :
     rw [add_sub_add]
     have hf' := hδf.2 n Δ ξ h (lt_le_trans _ _ _ h' (min_left_le δf δg))
     have hg' := hδg.2 n Δ ξ h (lt_le_trans _ _ _ h' (min_right_le δf δg))
-    apply le_lt_trans _ ((RiemannSum f a b n Δ ξ - Integral f a b).abs + (RiemannSum g a b n Δ ξ - Integral g a b).abs) _
+    apply le_lt_trans
     apply abs_triangle
     rw [← half_add ε]
     apply lt_add_lt
@@ -58,3 +54,9 @@ theorem sub_integral (f g : Real → Real) (a b : Real) :
   apply integral_congr
   intro x
   rw [add_neg_sub]
+
+theorem integrable_sub (f g : Real → Real) (a b : Real)
+    (hf : ∃ i, HasIntegral f a b i)
+    (hg : ∃ i, HasIntegral f a b i) :
+    ∃ i, HasIntegral (fun x ↦ f x - g x) a b i := by
+  sorry

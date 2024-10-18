@@ -1,7 +1,3 @@
-import MyProject.Real
-import MyProject.NatNum
-import MyProject.Lemmas
-import MyProject.Limit
 import MyProject.Integral.Def
 
 noncomputable section
@@ -14,9 +10,6 @@ open Real Classical
 
 theorem integrable_bounded (f : Real → Real) (a b : Real) (i : Real)
   (h : HasIntegral f a b i) : ∃ M, ∀ x, a ≤ x → x ≤ b → abs (f x) ≤ M := by
-  sorry
-
-theorem pos_div_pos (a b : Real) : 0 < a → 0 < b → 0 < a / b := by
   sorry
 
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)
@@ -49,3 +42,6 @@ theorem interval_add_integral (f : Real → Real) (a b c : Real) :
   have hab : HasIntegral f a b (Integral f a b) := by rw [HasIntegral_iff]
   have hbc : HasIntegral f b c (Integral f b c) := by rw [HasIntegral_iff]
   apply interval_add_integrable _ _ _ _ hab hbc
+
+theorem integral_sub_interval' (f : Real → Real) (a b c : Real) :
+    Integral f a b - Integral f a c = Integral f c b := by sorry

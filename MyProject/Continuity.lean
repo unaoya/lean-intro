@@ -1,3 +1,4 @@
+import MyProject.Numbers.Real
 -- 実数の連続性公理の同値性
 
 -- 空でなく上に有界なら上限が存在する
