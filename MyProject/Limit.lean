@@ -26,7 +26,8 @@ theorem limit_eq (f : Real → Real) (a : Real) (hf : HasLimAt f a) : IsLimAt f 
 
 def limit' (f : Real → Real) (a : Real) {l : Real} (hf : IsLimAt f l a) : Real := l
 
-theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real) (h₁ : IsLimAt f l₁ a) (h₂ : IsLimAt f l₂ a) : l₁ = l₂ := by
+theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real)
+    (h₁ : IsLimAt f l₁ a) (h₂ : IsLimAt f l₂ a) : l₁ = l₂ := by
   sorry
 
 theorem limit_eq' (f : Real → Real) (a : Real) (l : Real) (h : IsLimAt f l a) : limit f a ⟨l, h⟩ = l := by

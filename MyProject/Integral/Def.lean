@@ -34,19 +34,18 @@ theorem neg_riemann_sum (f : Real → Real) (a b : Real) (n : Nat)
   rw [neg_mul]
 
 theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
-  (Δ : Partition n a b) (ξ : Range n → Real) (h' : ∀ x, a ≤ x → x ≤ b → 0 ≤ f x) (h : Δ.IsRepr a b n ξ) :
-  0 ≤ RiemannSum f a b n Δ ξ := by
+    (Δ : Partition n a b) (ξ : Range n → Real)
+    (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr a b n ξ) :
+    0 ≤ RiemannSum f a b n Δ ξ := by
   apply sumation_nonneg
   intro i
   apply mul_nonneg
-  apply h' (ξ i)
-  have := h i
-  have := Δ.increase
-  have := Δ.left
-  sorry
-  sorry
-  apply le_of_lt
-  apply Partition.length_pos n a b Δ i
+  · apply h' (ξ i)
+    have := h i
+    have := Δ.increase
+    have := Δ.left
+    sorry
+  · apply Partition.length_nonneg n a b Δ i
 
 -- 積分の定義
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=

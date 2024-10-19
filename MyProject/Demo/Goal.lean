@@ -69,3 +69,5 @@ example : HasStrictDerivAt (F f) (f b) b := by
 
 #check HasStrictDerivAt
 #print HasStrictDerivAt
+
+#print HasStrictFDerivAt

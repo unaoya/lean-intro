@@ -55,8 +55,22 @@ theorem sub_integral (f g : Real → Real) (a b : Real) :
   intro x
   rw [add_neg_sub]
 
+theorem add_integrable (f g : Real → Real) (a b : Real)
+    (hf : IsIntegrable f a b)
+    (hg : IsIntegrable g a b) :
+    IsIntegrable (fun x ↦ f x + g x) a b := by
+  sorry
+
+theorem neg_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
+    (h'' : IsIntegrable f a b) : IsIntegrable (fun x ↦ -(f x)) a b := by
+  sorry
+
 theorem integrable_sub (f g : Real → Real) (a b : Real)
-    (hf : ∃ i, IsIntegral f a b i)
-    (hg : ∃ i, IsIntegral f a b i) :
-    ∃ i, IsIntegral (fun x ↦ f x - g x) a b i := by
+    (hf : IsIntegrable f a b)
+    (hg : IsIntegrable g a b) :
+    IsIntegrable (fun x ↦ f x - g x) a b := by
+  sorry
+
+theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
+    (h'' : IsIntegrable f a b) : IsIntegrable (fun x ↦ abs (f x)) a b := by
   sorry

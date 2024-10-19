@@ -7,7 +7,7 @@ open Real Classical
 -- 分割を定義
 structure Partition (n : Nat) (a b : Real) where
   points : Range n.succ → Real
-  increase : ∀ i : Range n, points (incl i) < points (addone i)
+  increase : ∀ i : Range n, points (incl i) ≤ points (addone i)
   left : points ⟨0, by simp⟩ = a
   right : points ⟨n, by simp⟩ = b
 
@@ -21,10 +21,12 @@ def IsRepr (a b : Real) (n : Nat) (Δ : Partition n a b)
 def length (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range n) : Real :=
   Δ.points (addone i) - Δ.points (incl i)
 
-theorem length_pos (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range n) :
-  0 < Δ.length n a b i := by
+theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by sorry
+
+theorem length_nonneg (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range n) :
+  0 ≤ Δ.length n a b i := by
   simp [length]
-  rw [← pos_iff_lt]
+  rw [← nonneg_iff_le]
   exact Δ.increase i
 
 theorem zero (a b : Real) (Δ : Partition 0 a b) : a = b := by

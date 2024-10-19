@@ -1,6 +1,5 @@
 import MyProject.Continuity
 import MyProject.NatNum
-import MyProject.Min
 
 noncomputable section
 
@@ -156,23 +155,6 @@ def InInterval (a b : Real) (x : Real) : Prop :=
 
 def InInterval_abs {x h t : Real} : InInterval x (x + h) t → (t - x).abs ≤ h.abs := by
   sorry
-
-#check Nat.lt_wfRel
-#print Nat.lt_wfRel
-#check Nat.lt_wfRel.wf
-#check Nat.lt_wfRel.rel
-
-#check Acc.recOn
-#check Acc.ndrec
-
-#check Nat.lt_wfRel.wf.apply
-#check Nat.lt_wfRel.wf.apply 0
-
--- def has_min (p : Nat → Prop) (h : ∃ x, p x) : ∃ a, p a ∧ ∀ x, p x → ¬(x < a) := by
---   rcases h with ⟨a, pa⟩
---   have : Acc (· < · ) a := by
---     apply Nat.lt_wfRel.wf.apply
---   have := this.intro
 
 axiom archimedean (a : Real) : ∃ n : Nat, a < n
 

@@ -9,7 +9,7 @@ open Real Classical
 -- リーマン可積分なら有界であることを示し、それを用いる。
 
 theorem integrable_bounded (f : Real → Real) (a b : Real) (i : Real)
-  (h : IsIntegral f a b i) : ∃ M, ∀ x, a ≤ x → x ≤ b → abs (f x) ≤ M := by
+  (h : IsIntegral f a b i) : ∃ M, ∀ x, InInterval a b x → abs (f x) ≤ M := by
   sorry
 
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)

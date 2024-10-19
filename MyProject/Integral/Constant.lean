@@ -6,7 +6,7 @@ open Real Classical
 
 -- 定数関数の積分
 
-theorem const_has_integral (c a b : Real) (h : a ≤ b) : IsIntegral (fun _ ↦ c) a b (c * (b - a)) := by
+theorem const_has_integral (c a b : Real) (_ : a ≤ b) : IsIntegral (fun _ ↦ c) a b (c * (b - a)) := by
   intro ε hε
   apply Exists.intro 1
   constructor
