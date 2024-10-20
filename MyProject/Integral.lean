@@ -45,3 +45,17 @@ theorem integral_monotone' (f g : Real → Real) (a b : Real)
 
 theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous f) :
   ∃ i, IsIntegral f a x i := by sorry
+
+theorem constant_ingtegrable (a b c : Real) : IsIntegrable (fun _ ↦ c) a b := by
+  sorry
+
+theorem integrable_abs_integrable (f : Real → Real) (a b : Real)
+    (h : IsIntegrable f a b) :
+    IsIntegrable (fun x ↦ (f x).abs) a b := by
+  sorry
+
+theorem integrable_sub_integrable (f g : Real → Real) (a b : Real)
+    (hf : IsIntegrable f a b)
+    (hg : IsIntegrable g a b) :
+    IsIntegrable (fun x ↦ f x - g x) a b := by
+  sorry

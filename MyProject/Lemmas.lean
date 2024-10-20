@@ -1,5 +1,5 @@
-import MyProject.Continuity
-import MyProject.NatNum
+import MyProject.Numbers.Continuity
+import MyProject.Numbers.NatNum
 
 noncomputable section
 

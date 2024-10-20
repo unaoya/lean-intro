@@ -36,8 +36,11 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             (Integral (fun _ ↦ ε) x (x + h) / h).abs := by
           apply div_abs_le
           apply integral_monotone'
-          · sorry
-          · sorry
+          · apply integrable_abs_integrable
+            apply integrable_sub_integrable
+            · apply continuous_integrable _ _ _ hf
+            · apply constant_ingtegrable
+          · apply constant_ingtegrable
           · intro x; apply abs_nonneg
           · exact fun _ ↦ le_of_lt hε
           · exact fun t ht ↦ le_of_lt (hδ.2 _ (le_lt_trans (InInterval_abs ht) hlt))
