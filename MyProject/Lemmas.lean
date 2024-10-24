@@ -214,6 +214,8 @@ theorem pos_sub_iff (a b : Real) : a < b ↔ 0 < b - a := by
 theorem lt_cast (n m : Nat) : n < m → (n : Real) < m := by
   sorry
 
+open Range
+
 theorem incl_lt_addone (n : Nat) (i : Range n) : (incl i).val < (addone i).val := by
   sorry
 
@@ -258,3 +260,50 @@ theorem lt_trans (a b c : Real) : a < b → b < c → a < c := by
 
 theorem pos_div_pos (a b : Real) : 0 < a → 0 < b → 0 < a / b := by
   sorry
+
+theorem summation_zero (f : Range 0 → Real) : Sumation 0 f = 0 := rfl
+
+theorem summation_succ (n : Nat) (f : Range n.succ → Real) :
+  Sumation n.succ f = Sumation n (fun i ↦ f (incl i)) + f ⟨n, by exact Nat.lt_add_one n⟩ := by
+  rfl
+
+theorem telescope_2 (a b c : Real) : b - a = (c - a) + (b - c) := by
+  sorry
+
+theorem telescope_sum (n : Nat) (f : Range n.succ → Real) :
+  Sumation n (fun i ↦ f (addone i) - f (incl i)) = f ⟨n, by exact Nat.lt_add_one n⟩ - f ⟨0, by simp⟩ :=
+  match n with
+  | Nat.zero => by
+    rw [summation_zero]
+    rw [sub_self]
+  | Nat.succ n => by
+    rw [summation_succ]
+    let f' : Range n.succ → Real := fun i => f (incl i)
+    have (i : Range n) : addone (incl i) = incl (addone i) := by rw [addone_incl_comm n i]
+    have : (fun i ↦ f (addone (incl i)) - f (incl (incl i))) = fun i ↦ f (incl (addone i)) - f (incl (incl i)) := by
+      apply funext
+      intro i
+      rw [this]
+    rw [this]
+    rw [telescope_sum n f']
+    dsimp [f']
+    rw [← telescope_2]
+    rfl
+
+theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by sorry
+
+theorem add_left_le (a b c : Real) : b ≤ c → a + b ≤ a + c := by sorry
+
+theorem div_right_le (a b c : Real) : 0 ≤ c → a ≤ b → a / c ≤  b / c := by sorry
+
+theorem ceil_nonneg (a : Real) : (0 : Real) ≤ ↑(ceil a) := by sorry
+
+theorem nonneg_mul_nonneg (a b c : Real) (h : 0 ≤ c) : a ≤ b → a * c ≤ b * c := by sorry
+
+theorem nonneg_sub_iff (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by sorry
+
+theorem cast_lt (a b : Nat) : a < b → (a : Real) < b := by sorry
+
+theorem le_lt_trans' (a b c : Real) : a ≤ b → b < c → a < c := by sorry
+
+theorem nonneg_div_nonneg (a b : Real) : 0 ≤ a → 0 < b → 0 ≤ a / b := by sorry

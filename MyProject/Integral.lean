@@ -7,6 +7,8 @@ import MyProject.Integral.Triangle
 theorem integral_sub_interval (f : Real → Real) (a b c : Real) :
     Integral f a b - Integral f a c = Integral f c b := by
   apply integral_sub_interval'
+  sorry
+  sorry
 
 -- theorem oint_triangle_ineq (f : Real → Real) (a b : Real) (h'' : ∃ i, IsIntegral f a b i) :
 --   abs (Integral f a b) ≤ abs (Integral (fun x ↦ abs (f x)) a b) := by
@@ -45,9 +47,6 @@ theorem integral_monotone' (f g : Real → Real) (a b : Real)
 
 theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous f) :
   ∃ i, IsIntegral f a x i := by sorry
-
-theorem constant_ingtegrable (a b c : Real) : IsIntegrable (fun _ ↦ c) a b := by
-  sorry
 
 theorem integrable_abs_integrable (f : Real → Real) (a b : Real)
     (h : IsIntegrable f a b) :

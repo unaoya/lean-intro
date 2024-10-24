@@ -16,16 +16,31 @@ theorem A (a b c : Nat) (h₀ : a = b) (h₁ : b = c) : a = c := Eq.trans h₀ h
 
 #check Eq.trans
 
-theorem B (a b : Nat) : (a + 1) * b = a * b + b :=
-  Eq.trans (Nat.right_distrib a 1 b) (congrArg (fun x => a * b + x) (Nat.one_mul b))
+theorem B (a b : Nat) :
+  (a + 1) * b = a * b + b :=
+  Eq.trans
+    (Nat.right_distrib a 1 b)
+    (congrArg
+      (fun x => a * b + x)
+      (Nat.one_mul b))
+
+#check Nat.right_distrib
+#check Nat.right_distrib 1 1 2
+
+#check Nat.one_mul 3
+
 
 theorem B' (a b : Nat) : (a + 1) * b = a * b + b :=
   Eq.trans (Nat.right_distrib _ _ _) (congrArg _ (Nat.one_mul _))
 
-theorem B'' (a b : Nat) : (a + 1) * b = a * b + b :=
-  have h₀ : (a + 1) * b = a * b + 1 * b := Nat.right_distrib _ _ _
-  have h₁ : 1 * b = b := Nat.one_mul _
-  have h₂ : a * b + 1 * b = a * b + b := congrArg (fun x => (a * b) + x) h₁
+theorem B'' (a b : Nat) :
+  (a + 1) * b = a * b + b :=
+  have h₀ : (a + 1) * b = a * b + 1 * b :=
+    Nat.right_distrib _ _ _
+  have h₁ : 1 * b = b :=
+    Nat.one_mul _
+  have h₂ : a * b + 1 * b = a * b + b :=
+    congrArg (fun x => (a * b) + x) h₁
   Eq.trans h₀ h₂
 
 theorem C (a b : Nat) : (a + 1) * (b + 1) = a * b + a + b + 1 :=
@@ -58,13 +73,19 @@ theorem C'' (a : Nat) : (a + 1) * (b + 1) = a * b + a + b + 1 :=
         (congrArg _ (Nat.mul_one _))))).trans
     (Nat.add_assoc _ _ _).symm
 
-theorem C''' (a : Nat) : (a + 1) * (b + 1) = a * b + a + b + 1 :=
-  have h₀ : (a + 1) * (b + 1) = a * (b + 1) + (b + 1) := B _ _
+theorem C''' (a : Nat) :
+  (a + 1) * (b + 1) = a * b + a + b + 1 :=
+  have h₀ : (a + 1) * (b + 1) =
+    a * (b + 1) + (b + 1) := B _ _
   have h₁ : a * (b + 1) = a * b + a :=
-    Eq.trans (Nat.left_distrib _ _ _) (congrArg _ (Nat.mul_one _))
-  have h₂ : a * (b + 1) + (b + 1) = a * b + a + (b + 1) :=
+    Eq.trans (Nat.left_distrib _ _ _)
+      (congrArg _ (Nat.mul_one _))
+  have h₂ : a * (b + 1) + (b + 1) =
+    a * b + a + (b + 1) :=
     congrArg (fun x => x + _) h₁
-  have h₃ : a * b + a + (b + 1) = a * b + a + b + 1 := Eq.symm (Nat.add_assoc _ _ _)
+  have h₃ : a * b + a + (b + 1) =
+    a * b + a + b + 1 :=
+      Eq.symm (Nat.add_assoc _ _ _)
   Eq.trans (Eq.trans h₀ h₂) h₃
 
 theorem C'''' (a : Nat) : (a + 1) * (b + 1) = a * b + a + b + 1 :=

@@ -11,7 +11,7 @@ open Real Classical
 
 -- 極限の定義
 
--- 関数の極限（HasLimAtの方がいい？）
+-- 関数の極限
 def IsLimAt (f : Real → Real) (l : Real) (a : Real) : Prop :=
   ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ ∀ x, 0 < abs (x - a) ∧ abs (x - a) < δ → abs (f x - l) < ε
 

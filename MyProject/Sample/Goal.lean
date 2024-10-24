@@ -7,9 +7,10 @@ import mathlib
 -- hがfが連続であるという命題の証明と解釈できる。
 variable (f : ℝ → ℝ) (h : Continuous f)
 
--- 不定積分（原始関数？）の定義
+-- 不定積分（原始関数）の定義
 noncomputable
-def F : ℝ → ℝ := fun u ↦ ∫ x in (0 : ℝ)..u, f x
+def F : ℝ → ℝ :=
+  fun u ↦ ∫ x in (0 : ℝ)..u, f x
 
 -- 定理の主張とその証明
 example : HasStrictDerivAt (F f) (f b) b :=
@@ -17,6 +18,9 @@ example : HasStrictDerivAt (F f) (f b) b :=
     (Continuous.intervalIntegrable h 0 b)
     (Continuous.stronglyMeasurableAtFilter h MeasureTheory.volume (nhds b))
     (Continuous.continuousAt h)
+
+#check intervalIntegral.integral_hasStrictDerivAt_right
+
 
 -- intervalIntegral.integral_hasStrictDerivAt_right.{u_3}
 --   {E : Type u_3} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]

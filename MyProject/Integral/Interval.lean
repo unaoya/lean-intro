@@ -7,9 +7,8 @@ open Real Classical
 -- 積分の区間についての加法性
 
 -- リーマン可積分なら有界であることを示し、それを用いる。
-
-theorem integrable_bounded (f : Real → Real) (a b : Real) (i : Real)
-  (h : IsIntegral f a b i) : ∃ M, ∀ x, InInterval a b x → abs (f x) ≤ M := by
+theorem integrable_bounded (f : Real → Real) (a b : Real)
+  (h : IsIntegrable f a b) : ∃ M, ∀ x, InInterval a b x → abs (f x) ≤ M := by
   sorry
 
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)
@@ -35,13 +34,15 @@ theorem interval_add_integrable (f : Real → Real) (a b c : Real)
     -- 上は等式にはできない。代表点をうまく選んでも無理。誤差を許容する必要がある。
 
 
-theorem interval_add_integral (f : Real → Real) (a b c : Real) :
-  Integral f a b + Integral f b c = Integral f a c := by
+theorem interval_add_integral (f : Real → Real) (a b c : Real)
+    (hab : IsIntegrable f a b) (hbc : IsIntegrable f b c) :
+    Integral f a b + Integral f b c = Integral f a c := by
   symm
   rw [← IsIntegral_iff]
   have hab : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
   have hbc : IsIntegral f b c (Integral f b c) := by rw [IsIntegral_iff]
   apply interval_add_integrable _ _ _ _ hab hbc
 
-theorem integral_sub_interval' (f : Real → Real) (a b c : Real) :
+theorem integral_sub_interval' (f : Real → Real) (a b c : Real)
+    (hab : IsIntegrable f a b) (hbc : IsIntegrable f b c) :
     Integral f a b - Integral f a c = Integral f c b := by sorry
