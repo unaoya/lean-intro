@@ -12,7 +12,7 @@
 - mathlib を使わない。`ring` / `linarith` / `simp` の強力版のような自動化もない。すべての補題が目の前で手作りされる——ブラックボックスゼロ。
 - その上で第 III 部において、**第 I・II 部で手作業だった証明の自動化（`my_ring` 等）を読者自身が作る**。「道具を使う」のではなく「道具を使い、最後にその道具を自作する」構成は既存教材（TPiL4 / MIL）にない本書独自の弧である。
 - 数学の説明は最小限（読者は数学既知）。紙面は Lean 固有の概念に集中する。
-- **縦糸は Lean の 3 つの鍵 — universe・依存型・帰納型。** 序章で予告し、依存型は Ch3（∀=Π としての量化子・署名読解）、universe は Ch3（Prop vs Type と Sort 階層 — 本書の全コードが Type 0 と Prop で完結することを universe 理解の教材として使う）、帰納型は Ch6（And/Or/Exists/Eq も Nat も帰納型という「正体」）で正面から扱い、Ch14（多項式 AST）で帰納型の応用として回収する。
+- **縦糸は Lean の 3 つの鍵 — universe・依存型・帰納型。** 序章で予告し、依存型は Ch3（∀=Π としての量化子・署名読解）、universe は Ch3（Prop vs Type と Sort 階層 — 本書の全コードが Type 0 と Prop で完結することを universe 理解の教材として使う）、帰納型は Ch6（And/Or/Exists/Eq も Nat も帰納型という「正体」）で正面から扱い、Ch15（多項式 AST）で帰納型の応用として回収する。
 
 ## 2. 読者と方針（確定事項）
 
@@ -30,48 +30,78 @@
 
 ## 3. 章立て
 
-**設計原則: 1 章 = 1 つの Lean 機能。**機械の軸が主、数学の進行は素材。第 I 部で Lean 機能を一つずつ習得し、第 II 部は統合応用として FTC に登り、第 III 部で自動化を自作する。**Lean 学習の順序を優先し、数学的順序は従とする**（結果的に import 鎖との整合はほぼ保たれている）。
+**設計原則: 1 章 = 1 つの Lean 機能。**機械の軸が主、数学の進行は素材。**Lean 学習の順序を優先し、数学的順序は従とする。** 第 I 部はリーマン和の定義と性質を到達点とし、第 II 部で積分を定義してその存在（連続⇒可積分）に登り、第 III 部で自動化を自作する。
 
-### 第 I 部 Lean の機能（Ch1–8、1 章 1 概念）
+### 数学的背骨（全体の物語）
+
+```
+1. リーマン和の定義            （定義のみ・証明技術ゼロで書ける）
+2. リーマン和の性質 5 本        （帰納法・代数補題・IsRepr がここで動機付きで入る）
+3. 積分の定義 ＝ 網目の極限     （ε-δ ネスト・choose・一意性）
+4. 積分の性質                  （2 の各性質の ε/2 持ち上げ）
+5. 連続 ⇒ 可積分              （山頂）
+6. FTC
+```
+
+- 段 2 の「リーマン和の性質」は後段で実際に使う 5 本に厳選する: `additive_riemann_sum` / `neg_riemann_sum` / `const_riemann_sum`（望遠鏡和 `length_sum` が最初の本格的帰納法）/ `RiemannSum_nonneg`（**ここで IsRepr / InInterval が「タグが区間内になければ非負にならない」という反例込みの動機で初登場**）/ `rs_abs_bound`。点挿入系（rs_insert_bound 等）は存在定理の機械なので付録 B。
+- 段 3 では読者が 3 種類の ε-δ（`IsLimAt`＝点列なし関数極限・`Continuous`・`IsIntegral`＝分割の網目に関するネット収束）を比較できる。「ε-δ という同じ形の異なる実例」を Lean の型の違いとして見せる。
+- 段 4 は段 2 との対応表が章の構造になる:
+
+| リーマン和の性質 | （持ち上げ） | 積分の性質 |
+|---|---|---|
+| additive_riemann_sum | ε/2 論法 | isintegral_add |
+| const_riemann_sum | δ 任意 | const_has_integral |
+| RiemannSum_nonneg | 矛盾論法 | integral_nonneg |
+| rs_abs_bound | sup 構成の有界性 | integrable_of_cauchy 内部 |
+
+- 段 5「連続⇒可積分」は難易度の異なる 4 部品に分解して扱いを変える:
+  (i) 一様連続性 `continuous_unif_cont`（sup による区間帰納、308 行）= **statement 精読＋付録 A**
+  (ii) コーシー型判定 `integrable_of_cauchy`（sup で積分値を構成する 55 行）= **本文精読＋誘導演習**
+  (iii) 細分比較 `rs_compare`（多点挿入・階段原始関数、269 行）= **statement 精読＋付録 B**
+  (iv) 組み立て `continuous_integrable`（41 行）= **本文完全精読**
+  「補題を 2 本引用すれば主定理の証明は明快」という論文読解と同型の経験をさせる。`#print axioms` が sorry の混入を許さないので、引用した補題も証明済みであることが保証されている。
+
+### 第 I 部 リーマン和への道（Ch1–8、1 章 1 概念）
 
 | 章 | 主役の Lean 機能 | 数学素材（演習対象） |
 |---|---|---|
 | Ch0 | 環境構築・lake・`#check` / `#print` / `#print axioms` | リポジトリの歩き方 |
-| Ch1 | **term mode の証明**: 命題=型・証明=項、`fun`、適用、`⟨⟩`、`Eq.refl` / `Eq.trans` / `congrArg` | Nat 等式・命題論理（新規演習 C01） |
+| Ch1 | **term mode の証明**: 命題=型・証明=項、`fun`、適用、`⟨⟩`、`Eq.refl` / `Eq.trans` / `congrArg` | Nat 等式・命題論理（新規演習 C01）＋実コードの `le_of_lt` / `lt_of_le_of_ne` / `ne_of_gt`（`<` が `≤ ∧ ≠` のペアである体系を活かす） |
 | Ch2 | **tactic mode の証明**: ゴール状態、intro / exact / apply / rw / calc / have / show、`by`、term↔tactic の相互変換 | Ch1 と同素材の再訪＋∀ε>0∃δ>0 型トイ命題（新規演習 C02） |
-| Ch3 | **依存型・量化子・universe**【鍵 1・2】: `∀`=Π としての量化子、`∃`、`{}` / `[]` / `()` と暗黙引数、カリー化、署名の読み方、namespace / section / variable / open、**Prop vs Type と Sort 階層**（`Real : Type`・命題 : Prop の意味。本書の全コードが Type 0 と Prop に収まる事実と、mathlib の `Type*` への展望） | Axioms.lean の公理 5 本の型を精読 |
-| Ch4 | **class と instance**: 代数階層の設計、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入。class は structure の特殊形であることを明示（詳細は Ch8 で再訪） | Real/Algebra.lean の補題（add_left_cancel' / neg_neg / telescope_2 等） |
-| Ch5 | **defeq と rw の構文性**: `rfl` の意味、`show` 正規化、rw が失敗するとき、calc の設計 | Real/Order・Div・Abs（half_add / abs_triangle / abs_le 等） |
-| Ch6 | **帰納型と再帰**【鍵 3】: `inductive` の一般論（And / Or / Exists / Eq も Nat も帰納型 — Ch1–2 で使った道具の正体）、`Subtype`（`Range n`）、構造的再帰（`Summation`）、`induction` タクティク、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等）＋ cast_nonneg / cast_lt（Nat 帰納法） |
-| Ch7 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable`（構成的な Ch6 との対比で非構成的原理を導入） | sup_near・**archimedean**（上限公理→定理、白眉その 1）・ceil |
-| Ch8 | **structure**: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、Ch4 の class との関係を回収（class = structure＋インスタンス探索） | Partition / TaggedPartition、equalPartition 構成演習 |
+| Ch3 | **依存型・量化子・universe**【鍵 1・2】: `∀`=Π、`∃`、`{}` / `[]` / `()` と暗黙引数、カリー化、署名の読み方、namespace / section / open、**Prop vs Type と Sort 階層** | Axioms.lean の公理 5 本の型を精読（`Real.sup` の「証明を引数に取り、型が項に依存する」署名が依存型の決定的標本） |
+| Ch4 | **class と instance**: 代数階層、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入（class は structure の特殊形、Ch7 で再訪） | Real/Algebra.lean の補題演習。コラム: NatCast 二重インスタンス事件（ダイヤモンド） |
+| Ch5 | **defeq と rw の構文性**: `rfl` の意味（`a + -b = a - b := rfl`）、`show` 正規化、rw が失敗するとき、calc の設計 | Real/Order・Div・Abs（half_add / abs_triangle / abs_le 等）。「なぜこの show 行があるか」型読解問題 |
+| Ch6 | **帰納型と再帰**【鍵 3】: `inductive` の一般論（And / Or / Exists / Eq も Nat も帰納型 — Ch1–2 の道具の正体）、`Subtype`（`Range n`）、構造的再帰（`Summation`）、`induction`、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等）＋ cast_nonneg / cast_lt |
+| Ch7 | **structure**: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、証明を運ぶレコード（`increase` フィールド）、Ch4 の class との関係を回収 | `Partition`、equalPartition 構成演習（フィールド穴埋め） |
+| Ch8 | **第 I 部の到達点: リーマン和の定義と性質**（総合章: 暗黙引数を持つ定義の設計と、自分の定義への API 構築） | `RiemannSum` の定義＋性質 5 本（additive / neg / const / nonneg / abs_bound）。IsRepr / InInterval が動機付きで初登場 |
 
-順序の設計判断: ① 量化子は ∀=Π の必然から依存型と同じ Ch3 に置く（TPiL4 の独立章「Quantifiers and Equality」に相当）。② 帰納法（Ch6）→ choice（Ch7）の順は、Ch7 の素材（archimedean / ceil）が Nat 帰納法による cast 補題を前提とするため、および「構成的 → 非構成的」の概念順のため。③ class（Ch4）が structure（Ch8）より先なのは TPiL4 と逆だが、Ch3 で Axioms.lean を精読する以上 class の説明を遅らせるとブラックボックスが生じ本書の理念に反する。前方参照＋ Ch8 での回収で処理する。
+順序の設計判断: ① 量化子は ∀=Π の必然から依存型と同じ Ch3 に置く（TPiL4 の「Quantifiers and Equality」相当）。② class（Ch4）が structure（Ch7）より先なのは TPiL4 と逆だが、Ch3 で Axioms.lean を精読する以上 class の説明を遅らせるとブラックボックスが生じ本書の理念に反する。前方参照＋Ch7 での回収で処理。③ **古典論理と choice は第 I 部に置かない**: リーマン和とその性質までは構成的に進められる（choice が要るのは積分の定義の `Classical.choose` と分割の存在定理から）。必要になる直前＝第 II 部冒頭に置く。
 
-### 第 II 部 統合応用 — FTC へ（Ch9–12、新概念は最小限）
+### 第 II 部 積分 — 定義・性質・存在（Ch9–13）
 
-| 章 | 統合テーマ（復習される Lean 機能） | 数学素材 |
+| 章 | 主役テーマ | 数学素材 |
 |---|---|---|
-| Ch9 | choose で定義を作る（`dite` / `dif_pos`、定義の well-definedness） | RiemannSum・IsIntegral・Integral・integral_unique |
-| Ch10 | ε/2 論法の定石化（部品合成・`min δf δg` パターン） | 定数関数の積分・isintegral_add / neg・単調性 |
-| Ch11 | 大規模証明のアーキテクチャ（private・section・分割統治、誘導演習＋読解） | integrable_bounded・integrable_of_cauchy・連続⇒可積分 |
-| Ch12 | 総仕上げ（statement 中の `let`、`#print axioms` 監査の意味。コラム: 監査に現れる `propext` / `Quot.sound` / `Classical.choice` とは何か） | OIntegral・**main'**（calc 骨格演習）・main |
+| Ch9 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable`（構成的だった第 I 部との対比で導入） | `min`（Nat の最小値）・ceil・sup_near・**archimedean**（上限公理→定理、白眉その 1）・exists_fine_partition |
+| Ch10 | **積分の定義**: 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）、`TaggedPartition` への束ね直し、`dite`＋`Classical.choose` による定義、well-definedness | `IsIntegral`・`IsIntegrable`・`Integral`・`integral_unique`・`isintegral_self` / `integral_of_not_le`（junk 値の設計判断はコードコメントに経緯ごと残っている） |
+| Ch11 | **積分の性質 ＝ リーマン和の性質の ε/2 持ち上げ**（対応表が章の構造。`min δf δg` パターンの定石化） | const_has_integral・**isintegral_add**（ε/2 論法の最純形）・isintegral_neg・integral_nonneg・integral_monotone |
+| Ch12 | **山頂: 連続 ⇒ 可積分**（4 部品分解。大規模証明のアーキテクチャ: private・section・分割統治・import DAG） | (ii) integrable_of_cauchy 精読＋ sup 構成 4 ブロック誘導演習、(iv) continuous_integrable 完全精読、(i)(iii) は statement 精読＋付録参照 |
+| Ch13 | **FTC**: statement 中の `let`、`#print axioms` 監査の意味。コラム: `propext` / `Quot.sound` / `Classical.choice` とは何か | OIntegral（向き付き積分）・**main'**（calc 骨格演習）・main |
 
-### 第 III 部 自動化を自作する（Ch13–14）— 本書の弧の回収
+### 第 III 部 自動化を自作する（Ch14–15）— 本書の弧の回収
 
 | 章 | 主役の Lean 機能 | 内容 |
 |---|---|---|
-| Ch13 | **notation とタクティクの合成**: `notation` / `macro` / `macro_rules`、simp セット設計（`@[simp]` 属性の戦略、`simp only` カスタムセット）、`ac_rfl` を支える `Std.Associative` インスタンスの仕組み | `∫ x in a..b, f` 記法の自作（本体に積分記法が無いことを逆手に取る）＋第 I・II 部で繰り返したパターン（三角不等式分解・min 分配・移項）を `real_simp` / `triangle` 等の自作タクティクに固める演習 |
-| Ch14 | **proof by reflection で my_ring を作る**（白眉その 2）: 多項式 AST（帰納型の本格応用）→ 正規化関数 → 健全性定理 → `rfl` / `decide` による証明。ゴールの reify（`elab` による Expr 操作）は最小限の解説 | 自作 `my_ring` で第 I 部の手書き calc 証明を 1 行に置換してみせる。linarith は仕組みの読み物。mathlib の `ring` / `linarith` の実装思想への接続 |
+| Ch14 | **notation とタクティクの合成**: `notation` / `macro` / `macro_rules`、simp セット設計、`ac_rfl` を支える `Std.Associative` インスタンスの仕組み | `∫ x in a..b, f` 記法の自作（本体に積分記法が無いことを逆手に取る）＋頻出パターンを `real_simp` / `triangle` 等の自作タクティクに固める演習 |
+| Ch15 | **proof by reflection で my_ring を作る**（白眉その 2）: 多項式 AST（帰納型【鍵 3】の応用回収）→ 正規化関数 → 健全性定理 → `rfl` / `decide`。ゴールの reify（`elab`）は最小限 | 自作 `my_ring` で第 I 部の手書き calc を 1 行に置換。linarith は読み物。mathlib の `ring` / `linarith` への接続 |
 
-第 III 部の素材コード `MyProject/Tactic/`（Ch13: 合成タクティク群、Ch14: `MyRing.lean` = AST / norm / soundness ＋ reifier）は新規開発が必要（P4 の章執筆ループ内。本体ビルドに含めるが背骨の import 鎖には不干渉）。
+第 III 部の素材コード `MyProject/Tactic/`（Ch14: 記法と合成タクティク、Ch15: `MyRing.lean` = AST / norm / soundness ＋ reifier）は新規開発が必要（P4 の章執筆ループ内。本体ビルドに含めるが背骨の import 鎖には不干渉）。
 
 **my_ring 設計方針**: 可換環の項を Nat 係数多項式の正規形（ソート済み単項式リスト）に正規化し、`DecidableEq` で正規形を比較。健全性 `eval ρ e = eval ρ (norm e)` を帰納法で証明し、タクティクは「reify → 健全性適用 → `decide` / `rfl`」。
 
 ### 付録
 
-- 付録 A: 一様連続性を読む（UniformContinuity）
-- 付録 B: 細分・振動和・区間加法性（Insert / Refine / Oscillation / IntervalAdd）
+- 付録 A: 一様連続性を読む（UniformContinuity — Ch12 部品 (i) の全証明）
+- 付録 B: 細分・振動和・区間加法性（Insert / Refine / Oscillation / IntervalAdd — Ch12 部品 (iii) ほか）
 - 付録 C: mathlib への橋（本書の各概念の mathlib 対応表。MIL を次の一冊として推薦）
 
 ## 4. 演習機構の設計
@@ -84,7 +114,7 @@ Exercises/
   C02_TacticsLogic.lean     -- Ch2（同上）
   C03_Axioms.lean           -- 以降、本体ファイルのミラー
   ...
-  C14_MyRing.lean
+  C15_MyRing.lean
   Solutions/                -- C01/C02 等、本体に対応物がない問題の解答
 Exercises.lean              -- umbrella
 ```
@@ -125,7 +155,7 @@ lean_lib «Exercises» where
 | **P1 toolchain 更新** | `lean-toolchain` を最新安定版へ。先に Range.lean の無名 `WellFoundedRelation` インスタンスに明示名を付けてから更新（自動生成名 `Range.instWellFoundedRelation` への直接参照が壊れやすいため）。コア Nat 補題のリネーム等はエラー駆動で修正 | `lake build` 警告ゼロ・`#print axioms main` が公理 5 本＋標準 3 本のまま |
 | **P2 教材向け本体改修** | ① Range.lean の `has_min` を技巧的な形から素直な `Nat.strongRecOn` 適用形へ書き直し（Ch6 の教材対象）② Integral/Def.lean の private キャスト系ヘルパー（my_cast_nonneg / cast_le_succ / nat_ne_zero_of_nonneg_lt / cast_pos_of_ne）を Real/Cast.lean へ公開移動（4.2 の規則の成立条件）③ Continuity.lean を 2 分割（Continuous 定義＋continuous_sub/const = Ch7 と、UniformContinuity.lean = 付録 A）④ 命名修正: `IsIntegral_iff` → `integral_eq_of_isIntegral`、Real/Algebra.lean のプライム混在エイリアス一本化 ⑤ 清掃: 未使用 typo クラス `CompletLinearOrderedField`、`#check` 残骸等 ⑥ 背骨の主要定義に doc comment | ビルド・公理監査グリーン |
 | **P3 演習基盤＋book 骨格** | Exercises/ 雛形＋機構実証として C03・C04 を実作＋lakefile 追記＋`scripts/check_exercises.py`＋book/ 骨格（SUMMARY.md・ch00 ドラフト・各章スタブ）＋README を教材リポジトリとして更新 | `lake build` 警告ゼロ・`lake build Exercises` は sorry 警告のみ・ドリフト検査が機能 |
-| **P4 章執筆ループ** | 章ごとに「演習作成 → 自力 1 周で難度調整 → 原稿 md 執筆（include 配線）→ ドリフト検査」。推奨順: Ch3→4→8→9→10→1→2→5→6→7→11→12→13→14（`MyProject/Tactic/` 開発含む）→0→付録 | 各章: 演習が sorry 以外で警告ゼロ・原稿ビルド成功 |
+| **P4 章執筆ループ** | 章ごとに「演習作成 → 自力 1 周で難度調整 → 原稿 md 執筆（include 配線）→ ドリフト検査」。推奨順: Ch3→4→6→7→8（第 I 部の背骨確認）→9→10→11→1→2→5→12→13→14→15（`MyProject/Tactic/` 開発含む）→0→付録 | 各章: 演習が sorry 以外で警告ゼロ・原稿ビルド成功 |
 | **P5 公開** | 公開先決定（Zenn / GitHub Pages）、deploy 整備、Ch0 に導線 | 公開 URL で全章閲覧可・clone から演習着手まで 10 分以内 |
 
 ## 7. 既存教材との関係・参考文献
