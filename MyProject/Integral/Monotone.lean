@@ -1,5 +1,4 @@
 import MyProject.Integral.Linearity
-import MyProject.Integral.Interval
 
 noncomputable section
 

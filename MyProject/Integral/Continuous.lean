@@ -1,4 +1,4 @@
-import MyProject.Integral.UnifCont
+import MyProject.Continuity
 import MyProject.Integral.Refine
 import MyProject.Integral.Criterion
 

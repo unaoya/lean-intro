@@ -1,4 +1,4 @@
-import MyProject.Integral.Interval
+import MyProject.Integral.IntervalAdd
 
 noncomputable section
 
