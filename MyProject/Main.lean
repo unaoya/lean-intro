@@ -43,9 +43,9 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
         _ = (Integral f x (x + h) / h - f x * (x + h - x) / h).abs := by
             rw [aux (f x) x h hne]
         _ = (Integral f x (x + h) / h - Integral (fun _ ↦ f x) x (x + h) / h).abs := by
-            rw [integral_const x (x + h) (f x) hxxh]
+            rw [const_integral (f x) x (x + h) hxxh]
         _ ≤ ((Integral (fun t ↦ (f t - f x).abs) x (x + h)) / h).abs := by
-            rw [div_sub_div, ← integral_sub f (fun _ ↦ f x) x (x + h) hxxh
+            rw [div_sub_div, ← sub_integral f (fun _ ↦ f x) x (x + h) hxxh
               (continuous_integrable f x (x + h) hf) (constant_integrable x (x + h) (f x))]
             exact div_abs_le (integral_triangle_ineq hxxh
               (continuous_integrable _ x (x + h)
@@ -55,7 +55,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             apply integral_monotone'
             · exact hxxh
             · apply integrable_abs_integrable
-              apply integrable_sub_integrable
+              apply integrable_sub
               · apply continuous_integrable _ _ _ hf
               · apply constant_integrable
             · apply constant_integrable
@@ -63,7 +63,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             · exact fun _ ↦ le_of_lt hε
             · exact fun t ht ↦ le_of_lt (hδf _ (le_lt_trans (InInterval_abs ht) hlt))
         _ = ε := by
-            rw [integral_const _ _ _ hxxh, add_sub_cancel, mul_div_cancel _ _ hne]
+            rw [const_integral _ _ _ hxxh, add_sub_cancel, mul_div_cancel _ _ hne]
             apply pos_abs hε
     | inr hneg =>
       -- h ≤ 0 の場合
@@ -102,10 +102,10 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             rw [show f x * (x + h - x) = -(f x * (x - (x + h))) from by
                   rw [neg_x_sub_x_add, mul_neg, neg_neg, add_sub_cancel]]
         _ = ((Integral f (x + h) x - Integral (fun _ ↦ f x) (x + h) x) / h).abs := by
-            rw [integral_const (x + h) x (f x) hxhx]
+            rw [const_integral (f x) (x + h) x hxhx]
             rfl
         _ = ((Integral (fun t ↦ f t - f x) (x + h) x) / h).abs := by
-            rw [← integral_sub f (fun _ ↦ f x) (x + h) x hxhx
+            rw [← sub_integral f (fun _ ↦ f x) (x + h) x hxhx
               (continuous_integrable f (x + h) x hf)
               (constant_integrable (x + h) x (f x))]
         _ ≤ ((Integral (fun t ↦ (f t - f x).abs) (x + h) x) / h).abs :=
@@ -117,7 +117,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             apply integral_monotone'
             · exact hxhx
             · apply integrable_abs_integrable
-              apply integrable_sub_integrable
+              apply integrable_sub
               · apply continuous_integrable _ _ _ hf
               · apply constant_integrable
             · apply constant_integrable
@@ -125,7 +125,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             · exact fun _ ↦ le_of_lt hε
             · exact fun t ht ↦ le_of_lt (hδf _ (le_lt_trans (InInterval_abs (hconv t ht)) hlt))
         _ = ε := by
-            rw [integral_const _ _ _ hxhx, neg_x_sub_x_add, mul_neg, neg_div,
+            rw [const_integral _ _ _ hxhx, neg_x_sub_x_add, mul_neg, neg_div,
                 mul_div_cancel _ _ hne, abs_neg]
             apply pos_abs hε
   exact limit_at0_iff_le _ _ h₄

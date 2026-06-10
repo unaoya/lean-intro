@@ -1046,6 +1046,10 @@ theorem mul_le_mul_left (c x y : Real) (hc : 0 ≤ c) (h : x ≤ y) : c * x ≤ 
   rw [MulCommMonoid.mul_comm c x, MulCommMonoid.mul_comm c y]
   exact nonneg_mul_nonneg x y c hc h
 
+theorem mul_div_assoc (a b c : Real) : a * b / c = a * (b / c) := by
+  show a * b * Field.inv c = a * (b * Field.inv c)
+  exact MulCommMonoid.mul_assoc a b (Field.inv c)
+
 theorem div_mul_cancel' (a b : Real) (hb : b ≠ 0) : a / b * b = a := by
   show a * Field.inv b * b = a
   rw [MulCommMonoid.mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]

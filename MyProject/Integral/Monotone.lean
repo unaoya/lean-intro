@@ -27,10 +27,6 @@ theorem nonneg_nonneg_div_nonneg (a b : Real) (ha : 0 ≤ a) (hb : 0 ≤ b) :
   | inr hne =>
     exact nonneg_div_nonneg a b ha ⟨hb, fun h => hne h.symm⟩
 
-theorem mul_div_assoc (a b c : Real) : a * b / c = a * (b / c) := by
-  show a * b * Field.inv c = a * (b * Field.inv c)
-  exact MulCommMonoid.mul_assoc a b (Field.inv c)
-
 theorem increse' (n : Nat) (a b : Real) (bnonneg : 0 ≤ b) :
   ∀ i : Range n, a + i.incl.val * b ≤ a + i.addone.val * b := by
   intro i
@@ -100,3 +96,18 @@ theorem integral_monotone (f g : Real → Real) (a b : Real)
   · apply integrable_sub
     exact hg
     exact hf
+
+theorem integral_monotone' (f g : Real → Real) (a b : Real)
+    (hab : a ≤ b)
+    (hf : ∃ i, IsIntegral f a b i)
+    (hg : ∃ i, IsIntegral g a b i)
+    (fnonneg : ∀ x, 0 ≤ f x)
+    (gnonneg : ∀ x, 0 ≤ g x)
+    (h : ∀ x, InInterval a b x → f x ≤ g x) :
+    (Integral f a b).abs ≤ (Integral g a b).abs := by
+  have hf_nn : 0 ≤ Integral f a b :=
+    integral_nonneg f a b hab (fun x _ => fnonneg x) hf
+  have hg_nn : 0 ≤ Integral g a b :=
+    integral_nonneg g a b hab (fun x _ => gnonneg x) hg
+  rw [nonneg_abs hf_nn, nonneg_abs hg_nn]
+  exact integral_monotone f g a b hab h hf hg
