@@ -1,4 +1,4 @@
-import MyProject.Numbers.Real
+import MyProject.Axioms
 import MyProject.Numbers.NatNum
 
 noncomputable section
@@ -729,7 +729,7 @@ theorem lt_cast (n m : Nat) : n < m → (n : Real) < m := cast_lt n m
 -- ============================================================
 -- §14. Ceil
 -- ============================================================
-axiom archimedean (a : Real) : ∃ n : Nat, a < n
+-- アルキメデスの公理 archimedean は Axioms.lean に移動した
 
 def ceil (a : Real) : Nat := min (fun n => a < n) (archimedean a)
 

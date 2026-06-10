@@ -11,12 +11,12 @@ package «my_project» where
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"
 
--- 実数の基礎（Structure, NatNum, Real, Lemmas）
+-- 実数の基礎（Structure, NatNum, Axioms, Lemmas）
 lean_lib «RealNumbers» where
   globs := #[
     .one `MyProject.Numbers.Structure,
     .one `MyProject.Numbers.NatNum,
-    .one `MyProject.Numbers.Real,
+    .one `MyProject.Axioms,
     .one `MyProject.Lemmas
   ]
 
