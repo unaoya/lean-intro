@@ -6,14 +6,14 @@ P のリーマン和の ε-近傍に入る」なら可積分（積分値は sup 
 theorem integrable_of_cauchy (g : Real → Real) (a b : Real) (hab : a ≤ b)
     (M : Real) (hM : ∀ t, InInterval a b t → (g t).abs ≤ M)
     (hcauchy : ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧
-      ∀ P : TaggedPartition a b, Partition.diam P.Δ < δ →
-        ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
-          (RiemannSum g P'.Δ P'.ξ - RiemannSum g P.Δ P.ξ).abs ≤ ε) :
+      ∀ P : TaggedPartition a b, P.diam < δ →
+        ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, P'.diam < δ' →
+          (P'.sum g - P.sum g).abs ≤ ε) :
     IsIntegrable g a b := by
   -- S = 「十分細かい分割では常に RS 以下」となる y の集合
   let S : Real → Prop := fun y =>
     ∃ δ, 0 < δ ∧ ∀ P : TaggedPartition a b,
-      Partition.diam P.Δ < δ → y ≤ RiemannSum g P.Δ P.ξ
+      P.diam < δ → y ≤ P.sum g
   have hS_ne : ∃ y, S y := by
     refine ⟨-(M * (b - a)), 1, zero_lt_one, fun ⟨n, Δ, ξ, hr⟩ _ => ?_⟩
     exact neg_le_swap (le_trans (neg_le_abs _) (rs_abs_bound g M hM Δ ξ hr))

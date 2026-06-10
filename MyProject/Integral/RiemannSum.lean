@@ -292,3 +292,10 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
           Real.ofNat (m + 1) * (2 * M * Partition.diam Δ)
       rw [hdecomp]
       exact le_trans (abs_triangle _ _) hsum_le
+
+/-- タグ付き分割上のリーマン和。 -/
+noncomputable def TaggedPartition.sum {a b : Real} (P : TaggedPartition a b)
+    (f : Real → Real) : Real := RiemannSum f P.Δ P.ξ
+
+@[simp] theorem TaggedPartition.sum_def {a b : Real} (P : TaggedPartition a b)
+    (f : Real → Real) : P.sum f = RiemannSum f P.Δ P.ξ := rfl

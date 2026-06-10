@@ -8,7 +8,7 @@ open Real Classical
 diam < δ の任意のタグ付き分割のリーマン和が i の ε-近傍に入る。 -/
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
   ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ P : TaggedPartition a b,
-    Partition.diam P.Δ < δ → abs (RiemannSum f P.Δ P.ξ - i) < ε
+    P.diam < δ → abs (P.sum f - i) < ε
 
 theorem sub_zero_eq (x y : Real) : x - y = 0 ↔ x = y := by
   constructor
@@ -118,7 +118,7 @@ theorem equalPartition_diam_lt (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a
 
 -- 任意の細かさの等分割の存在
 theorem exists_fine_partition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
-    ∃ P : TaggedPartition a b, Partition.diam P.Δ < δ := by
+    ∃ P : TaggedPartition a b, P.diam < δ := by
   have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp hab
   have hba_div_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
   have hm_lt : (b - a) / δ < ((ceil ((b - a) / δ)) : Real) := ceil_lt _
@@ -182,6 +182,7 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
     exact (le_antisymm _ _ hi.1 hi.2).symm
   have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
     unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
+  show abs (RiemannSum f Δ ξ - 0) < _
   rw [hRS, const_riemann_sum, sub_self,
       show f a * (0 : Real) = 0 from by
         rw [mul_comm]; exact zero_mul' _,
@@ -212,10 +213,14 @@ theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : �
     intro i; rw [h (ξ i)]
   have hfg : ∀ i, IsIntegral f a b i → IsIntegral g a b i := fun i hi ε hε => by
     rcases hi ε hε with ⟨δ, hδ, hh⟩
-    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by rw [← hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
+    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by
+      show abs (RiemannSum g Δ ξ - i) < ε
+      rw [← hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
   have hgf : ∀ i, IsIntegral g a b i → IsIntegral f a b i := fun i hi ε hε => by
     rcases hi ε hε with ⟨δ, hδ, hh⟩
-    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by rw [hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
+    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by
+      show abs (RiemannSum f Δ ξ - i) < ε
+      rw [hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
   unfold Integral
   cases Classical.em (IsIntegrable f a b) with
   | inl hf =>

@@ -197,8 +197,8 @@ theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
       (∀ j, Δ.points (Range.incl (σ j)) ≤ Δp.points (Range.incl j) ∧
             Δp.points (Range.addone j) ≤ Δ.points (Range.addone (σ j))) →
       (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs ≤ B) :
-    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
-      (RiemannSum g P'.Δ P'.ξ - RiemannSum g Δ ξ).abs ≤ B + θ := by
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, P'.diam < δ' →
+      (P'.sum g - RiemannSum g Δ ξ).abs ≤ B + θ := by
   have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
   have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
     pos_mul_pos _ _ hofn_pos (pos_mul_pos 2 M zero_lt_two hM_pos)
@@ -248,9 +248,9 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δuc : Real)
     (huc : ∀ s t, (a ≤ s ∧ s ≤ b) → (a ≤ t ∧ t ≤ b) → (s - t).abs < δuc →
       (f s - f t).abs < ε')
-    (P : TaggedPartition a b) (hd : Partition.diam P.Δ < δuc) :
-    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
-      (RiemannSum f P'.Δ P'.ξ - RiemannSum f P.Δ P.ξ).abs ≤ ε' * (b - a) + θ := by
+    (P : TaggedPartition a b) (hd : P.diam < δuc) :
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, P'.diam < δ' →
+      (P'.sum f - P.sum f).abs ≤ ε' * (b - a) + θ := by
   obtain ⟨n, Δ, ξ, hr⟩ := P
   apply rs_refine_compare f M hM hM_pos hab Δ ξ (ε' * (b - a)) θ hθ
   intro N Δp ξp hrp σ hσ

@@ -12,11 +12,11 @@ private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p +
 theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_pos : 0 < M)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δf : Real)
-    (hδf : ∀ P : TaggedPartition a b, Partition.diam P.Δ < δf →
-      (RiemannSum f P.Δ P.ξ - If).abs < ε')
-    (P : TaggedPartition a b) (hd : Partition.diam P.Δ < δf) :
-    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
-      (RiemannSum (fun x => (f x).abs) P'.Δ P'.ξ -
+    (hδf : ∀ P : TaggedPartition a b, P.diam < δf →
+      (P.sum f - If).abs < ε')
+    (P : TaggedPartition a b) (hd : P.diam < δf) :
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, P'.diam < δ' →
+      (P'.sum (fun x => (f x).abs) -
        RiemannSum (fun x => (f x).abs) P.Δ P.ξ).abs ≤ (ε' + ε') + θ := by
   obtain ⟨n, Δ, ξ, hr⟩ := P
   have hab_le : a ≤ b := hab.1

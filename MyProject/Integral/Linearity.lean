@@ -18,6 +18,7 @@ theorem isintegral_add {f g : Real → Real} {a b if_ ig : Real}
     lt_le_trans _ _ _ hd (min_left_le δf δg)
   have hdg : Partition.diam Δ < δg :=
     lt_le_trans _ _ _ hd (min_right_le δf δg)
+  show abs (RiemannSum (fun x ↦ f x + g x) Δ ξ - _) < _
   rw [additive_riemann_sum, add_sub_add]
   calc abs (RiemannSum f Δ ξ - if_ + (RiemannSum g Δ ξ - ig))
       ≤ abs (RiemannSum f Δ ξ - if_) + abs (RiemannSum g Δ ξ - ig) :=
@@ -31,6 +32,7 @@ theorem isintegral_neg {f : Real → Real} {a b i : Real}
   intro ε hε
   rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
   refine ⟨δ, hδ_pos, fun ⟨n, Δ, ξ, hr⟩ hd => ?_⟩
+  show abs (RiemannSum (fun x ↦ -(f x)) Δ ξ - _) < _
   rw [neg_riemann_sum]
   rw [show -RiemannSum f Δ ξ - -i = -(RiemannSum f Δ ξ - i) from by
         show -RiemannSum f Δ ξ + -(-i) = -(RiemannSum f Δ ξ + -i)

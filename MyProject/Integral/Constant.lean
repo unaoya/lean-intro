@@ -12,6 +12,7 @@ theorem const_has_integral (c a b : Real) (_ : a ≤ b) : IsIntegral (fun _ ↦ 
   constructor
   · exact zero_lt_one
   · intro ⟨n, Δ, ξ, _⟩ _
+    show abs (RiemannSum (fun _ ↦ c) Δ ξ - _) < _
     rw [const_riemann_sum, sub_self, abs_zero]
     exact hε
 
@@ -20,4 +21,5 @@ theorem const_integral (c a b : Real) (h : a ≤ b) : Integral (fun _ ↦ c) a b
 
 theorem constant_integrable (a b c : Real) : IsIntegrable (fun _ ↦ c) a b :=
   ⟨c * (b - a), fun ε hε => ⟨1, zero_lt_one, fun ⟨n, Δ, ξ, _⟩ _ => by
+    show abs (RiemannSum (fun _ ↦ c) Δ ξ - _) < _
     rw [const_riemann_sum, sub_self, abs_zero]; exact hε⟩⟩

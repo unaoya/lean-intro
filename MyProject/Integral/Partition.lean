@@ -367,3 +367,13 @@ structure TaggedPartition (a b : Real) where
   Δ : Partition n a b
   ξ : Range n → Real
   repr : Δ.IsRepr ξ
+
+namespace TaggedPartition
+
+/-- タグ付き分割の網目の細かさ。 -/
+noncomputable def diam {a b : Real} (P : TaggedPartition a b) : Real := P.Δ.diam
+
+@[simp] theorem diam_def {a b : Real} (P : TaggedPartition a b) :
+    P.diam = P.Δ.diam := rfl
+
+end TaggedPartition
