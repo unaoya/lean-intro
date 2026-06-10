@@ -42,22 +42,19 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       -- f の有界性
       obtain ⟨M₁, hM₁⟩ := integrable_bounded f a b hab_le ⟨I₁, h₁⟩
       obtain ⟨M₂, hM₂⟩ := integrable_bounded f b c hbc_le ⟨I₂, h₂⟩
-      have hM₁_nn : (0 : Real) ≤ M₁ := le_trans abs_nonneg (hM₁ a (by
-        dsimp [InInterval]; rw [if_pos hab_le]; exact ⟨le_refl a, hab_le⟩))
-      have hM₂_nn : (0 : Real) ≤ M₂ := le_trans abs_nonneg (hM₂ b (by
-        dsimp [InInterval]; rw [if_pos hbc_le]; exact ⟨le_refl b, hbc_le⟩))
+      have hM₁_nn : (0 : Real) ≤ M₁ := le_trans abs_nonneg
+        (hM₁ a ((in_interval_iff hab_le).mpr ⟨le_refl a, hab_le⟩))
+      have hM₂_nn : (0 : Real) ≤ M₂ := le_trans abs_nonneg
+        (hM₂ b ((in_interval_iff hbc_le).mpr ⟨le_refl b, hbc_le⟩))
       have hM : ∀ t, InInterval a c t → (f t).abs ≤ M₁ + M₂ := by
         intro t ht
-        dsimp [InInterval] at ht
-        rw [if_pos hac_le] at ht
+        have ht' := in_interval_pair hac_le ht
         cases LinearOrderedField.le_total t b with
         | inl htb =>
-          apply le_trans (hM₁ t (by
-            dsimp [InInterval]; rw [if_pos hab_le]; exact ⟨ht.1, htb⟩))
+          apply le_trans (hM₁ t ((in_interval_iff hab_le).mpr ⟨ht'.1, htb⟩))
           exact le_of_add_nonneg_eq rfl hM₂_nn
         | inr hbt =>
-          apply le_trans (hM₂ t (by
-            dsimp [InInterval]; rw [if_pos hbc_le]; exact ⟨hbt, ht.2⟩))
+          apply le_trans (hM₂ t ((in_interval_iff hbc_le).mpr ⟨hbt, ht'.2⟩))
           exact le_of_nonneg_add_eq rfl hM₁_nn
       have hM_nn : (0 : Real) ≤ M₁ + M₂ :=
         le_trans hM₁_nn (le_of_add_nonneg_eq rfl hM₂_nn)
@@ -74,12 +71,8 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         min_pos _ _ (min_pos _ _ hδ₁_pos hδ₂_pos)
           (pos_div_pos _ _ (pos_half ε hε) hK_pos), ?_⟩
       intro n Δ ξ hr hd
-      have hn : 0 < n := by
-        cases n with
-        | zero => exact absurd (Partition.zero Δ) hac_lt.2
-        | succ m => exact Nat.zero_lt_succ m
-      have hb_in : InInterval a c b := by
-        dsimp [InInterval]; rw [if_pos hac_le]; exact ⟨hab_le, hbc_le⟩
+      have hn : 0 < n := Δ.pos_of_lt hac_lt
+      have hb_in : InInterval a c b := (in_interval_iff hac_le).mpr ⟨hab_le, hbc_le⟩
       obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ b hn hb_in
       obtain ⟨ξ', hr', hbd'⟩ :=
         rs_insert_bound f b (M₁ + M₂) hM hM_nn Δ ξ hr k hkL hkR
@@ -108,32 +101,9 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         fun j => hr' ⟨kv + j.val + 1, by have := j.property; omega⟩
       -- 各小区間の長さは元の diam 以下
       have hlen' : ∀ q : Range (kv + d + 1 + 1),
-          Partition.length Δ' q ≤
-          Partition.diam Δ := by
-        intro q
-        show Partition.length
-          (Δ.insertPoint b ⟨kv, hkv⟩ hkL hkR) q ≤ _
-        by_cases h1 : q.val < kv
-        · rw [Partition.insertPoint_length_low b Δ ⟨kv, hkv⟩ hkL hkR q h1]
-          exact le_fmax' _ _ _
-        · by_cases h2 : kv + 1 < q.val
-          · rw [Partition.insertPoint_length_high b Δ ⟨kv, hkv⟩ hkL hkR q h2]
-            exact le_fmax' _ _ _
-          · have hsplit := Partition.insertPoint_length_split b Δ
-              ⟨kv, hkv⟩ hkL hkR
-            by_cases h3 : q.val = kv
-            · rw [show q = ⟨kv, by omega⟩ from Subtype.ext h3]
-              exact le_trans (le_of_add_nonneg_eq hsplit
-                (Partition.length_nonneg _ ⟨kv + 1, by omega⟩))
-                (le_fmax' _ _ ⟨kv, hkv⟩)
-            · have h4 : q.val = kv + 1 := by have := q.property; omega
-              rw [show q = ⟨kv + 1, by omega⟩ from Subtype.ext h4]
-              exact le_trans (le_of_nonneg_add_eq hsplit
-                (Partition.length_nonneg _ ⟨kv, by omega⟩))
-                (le_fmax' _ _ ⟨kv, hkv⟩)
-      have hdiam_nn : 0 ≤ Partition.diam Δ :=
-        le_trans (Partition.length_nonneg Δ ⟨0, by omega⟩)
-          (le_fmax' _ _ ⟨0, by omega⟩)
+          Partition.length Δ' q ≤ Partition.diam Δ :=
+        Partition.insertPoint_length_le_diam b Δ ⟨kv, hkv⟩ hkL hkR
+      have hdiam_nn : 0 ≤ Partition.diam Δ := Δ.diam_nonneg hn
       have hdiamL : Partition.diam ΔL < δ₁ :=
         le_lt_trans
           (fmax'_le (kv + 1) _ _ hdiam_nn
@@ -208,25 +178,15 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         rw [show ε / 2 = ε / 2 / 2 + ε / 2 / 2 from (half_add (ε / 2)).symm]
         exact lt_add_lt _ _ _ _ hL_close hR_close
       calc (RiemannSum f Δ ξ - (I₁ + I₂)).abs
-          = ((RiemannSum f Δ' ξ' - (I₁ + I₂)) +
-             (RiemannSum f Δ ξ -
-              RiemannSum f Δ' ξ')).abs := by
-            rw [telescope_2 (I₁ + I₂) (RiemannSum f Δ ξ)
-                (RiemannSum f Δ' ξ')]
-        _ ≤ (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs +
-            (RiemannSum f Δ ξ -
-             RiemannSum f Δ' ξ').abs := abs_triangle _ _
-        _ = (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs +
-            (RiemannSum f Δ' ξ' -
-             RiemannSum f Δ ξ).abs := by
-            rw [show RiemannSum f Δ ξ -
-                  RiemannSum f Δ' ξ' =
-                  -(RiemannSum f Δ' ξ' -
-                    RiemannSum f Δ ξ) from
-                  (neg_sub _ _).symm, abs_neg]
-        _ ≤ (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs + ε / 2 :=
-            add_left_le _ _ _ hsplit_term
-        _ < ε / 2 + ε / 2 := add_lt_add_right' hA (ε / 2)
+          ≤ (RiemannSum f Δ ξ - RiemannSum f Δ' ξ').abs +
+            (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs :=
+            abs_sub_le_add _ (RiemannSum f Δ' ξ') _
+        _ = (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs +
+            (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs := by
+            rw [abs_sub_comm (RiemannSum f Δ ξ)]
+        _ ≤ ε / 2 + (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs :=
+            LinearOrderedField.add_le_add _ _ _ hsplit_term
+        _ < ε / 2 + ε / 2 := add_left_lt _ _ _ hA
         _ = ε := half_add ε
 
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)

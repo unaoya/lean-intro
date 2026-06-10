@@ -18,8 +18,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     -- a < b : f の可積分性（積分値 If への収束）からコーシー型条件を導く
     have hab' : a < b := ne_le_lt b a hba
     obtain ⟨M₀, hM₀⟩ := integrable_bounded f a b h h''
-    have ha_in : InInterval a b a := by
-      dsimp [InInterval]; rw [if_pos h]; exact ⟨le_refl a, h⟩
+    have ha_in : InInterval a b a := (in_interval_iff h).mpr ⟨le_refl a, h⟩
     have hM₀_nn : (0 : Real) ≤ M₀ := le_trans abs_nonneg (hM₀ a ha_in)
     have hM_pos : (0 : Real) < M₀ + 1 := by
       apply lt_le_trans 0 1 (M₀ + 1) zero_lt_one

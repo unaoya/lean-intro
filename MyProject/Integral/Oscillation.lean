@@ -28,10 +28,9 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
   have hmem_ab : ∀ (i : Range n) (t : Real),
       Δ.points (Range.incl i) ≤ t → t ≤ Δ.points (Range.addone i) → InInterval a b t := by
     intro i t h1 h2
-    dsimp [InInterval]
-    rw [if_pos hab_le]
-    exact ⟨le_trans (Partition.left_le_point Δ (Range.incl i)) h1,
-           le_trans h2 (Partition.point_le_right Δ (Range.addone i))⟩
+    exact (in_interval_iff hab_le).mpr
+      ⟨le_trans (Partition.left_le_point Δ (Range.incl i)) h1,
+       le_trans h2 (Partition.point_le_right Δ (Range.addone i))⟩
   -- 各小区間上の f の上限と (−f) の上限
   have hSne : ∀ i : Range n, ∃ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
       t ≤ Δ.points (Range.addone i)) ∧ v = f t) :=
@@ -176,15 +175,12 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
   have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
   refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
   intro n' Δ' ξ' hr' hd'
-  have hn' : 0 < n' := by
-    cases n' with
-    | zero => exact absurd (Partition.zero Δ') hab.2
-    | succ m => exact Nat.zero_lt_succ m
+  have hn' : 0 < n' := Δ'.pos_of_lt hab
   have hMg : ∀ t, InInterval a b t → ((fun x => (f x).abs) t).abs ≤ M := by
     intro t ht
     rw [nonneg_abs abs_nonneg]
     exact hM t ht
-  obtain ⟨Δp, ξp, hrp, hlenp, hptsp, hbdp⟩ :=
+  obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
     rs_multi_insert_bound (fun x => (f x).abs) M hMg (Real.le_of_lt hM_pos)
       hn' Δ' ξ' hr' (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
       (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
@@ -193,10 +189,7 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     intro i
     obtain ⟨q, hq⟩ := hptsp ⟨i.val, i.property⟩
     exact ⟨q, hq⟩
-  have hn_pos : 0 < n := by
-    cases n with
-    | zero => exact absurd (Partition.zero Δ) hab.2
-    | succ m => exact Nat.zero_lt_succ m
+  have hn_pos : 0 < n := Δ.pos_of_lt hab
   have hσex := refine_parent a b n (n' + (n + 1)) hn_pos Δ Δp hpts_all
   have hσ : ∀ j : Range (n' + (n + 1)),
       Δ.points (Range.incl (Classical.choose (hσex j))) ≤ Δp.points (Range.incl j) ∧
@@ -236,12 +229,8 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       intro j
       rw [abs_mul_nonneg (Partition.length_nonneg Δp j)]
       apply nonneg_mul_nonneg _ _ _ (Partition.length_nonneg Δp j)
-      have hb1 := hrp j
-      dsimp [Partition.IsRepr, InInterval] at hb1
-      rw [if_pos (Δp.increase j)] at hb1
-      have hb2 := hr (Classical.choose (hσex j))
-      dsimp [Partition.IsRepr, InInterval] at hb2
-      rw [if_pos (Δ.increase (Classical.choose (hσex j)))] at hb2
+      have hb1 := Partition.repr_bounds hrp j
+      have hb2 := Partition.repr_bounds hr (Classical.choose (hσex j))
       exact hosc (Classical.choose (hσex j)) (ξp j) (ξ (Classical.choose (hσex j)))
         (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
     calc (Summation (n' + (n + 1)) (fun j =>

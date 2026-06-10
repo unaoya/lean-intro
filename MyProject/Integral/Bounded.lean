@@ -17,9 +17,8 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     have heq : a = b := LinearOrderedField.le_asymm a b hab hba
     subst heq
     refine ⟨(f a).abs, fun x hx => ?_⟩
-    dsimp [InInterval] at hx
-    rw [if_pos (le_refl a)] at hx
-    rw [LinearOrderedField.le_asymm x a hx.2 hx.1]
+    have hx' := in_interval_pair (le_refl a) hx
+    rw [LinearOrderedField.le_asymm x a hx'.2 hx'.1]
     exact le_refl _
   | inr hba =>
     have hba_pos : 0 < b - a := (pos_iff_lt a b).mp (ne_le_lt b a hba)
@@ -49,11 +48,8 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ x hm_pos hx
     let ξ' : Range m → Real := fun i => if i.val = k.val then x else ξ i
     have hr_bounds : ∀ j : Range m,
-        Δ.points j.incl ≤ ξ j ∧ ξ j ≤ Δ.points j.addone := by
-      intro j
-      have hj := h_repr j
-      dsimp [InInterval] at hj
-      rwa [if_pos (Δ.increase j)] at hj
+        Δ.points j.incl ≤ ξ j ∧ ξ j ≤ Δ.points j.addone :=
+      fun j => Partition.repr_bounds h_repr j
     have h_repr' : Δ.IsRepr ξ' := by
       apply Partition.le_isrepr
       intro i
@@ -84,17 +80,12 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     have hRS' : (RiemannSum f Δ ξ' - I).abs < 1 := hbound m Δ ξ' h_repr' h_diam
     have h2 : ((f x - f (ξ k)) * Partition.length Δ k).abs < 2 := by
       rw [← hdiff]
-      have hns : I - RiemannSum f Δ ξ = -(RiemannSum f Δ ξ - I) := by
-        show I + -RiemannSum f Δ ξ = -(RiemannSum f Δ ξ + -I)
-        rw [neg_add_distrib, neg_neg, add_comm]
       calc (RiemannSum f Δ ξ' - RiemannSum f Δ ξ).abs
-          = ((I - RiemannSum f Δ ξ) + (RiemannSum f Δ ξ' - I)).abs := by
-            rw [telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ ξ') I]
-        _ ≤ (I - RiemannSum f Δ ξ).abs + (RiemannSum f Δ ξ' - I).abs :=
-            abs_triangle _ _
-        _ = (RiemannSum f Δ ξ - I).abs + (RiemannSum f Δ ξ' - I).abs := by
-            rw [hns, abs_neg]
-        _ < 1 + 1 := lt_add_lt _ _ _ _ hRS hRS'
+          ≤ (RiemannSum f Δ ξ' - I).abs + (I - RiemannSum f Δ ξ).abs :=
+            abs_sub_le_add _ I _
+        _ = (RiemannSum f Δ ξ' - I).abs + (RiemannSum f Δ ξ - I).abs := by
+            rw [abs_sub_comm I]
+        _ < 1 + 1 := lt_add_lt _ _ _ _ hRS' hRS
         _ = 2 := rfl
     have hlen : Partition.length Δ k = (b - a) / (m : Real) :=
       equalPartition_length m a b hm_ne hab k

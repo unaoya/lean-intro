@@ -145,11 +145,9 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     have h_j : (RS - j).abs < ε / 2 :=
       hδj2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_right_le δi δj))
     calc (i - j).abs
-        = ((RS - j) + (i - RS)).abs := by rw [telescope_2 j i RS]
-      _ ≤ (RS - j).abs + (i - RS).abs := abs_triangle (RS - j) (i - RS)
-      _ = (RS - j).abs + (RS - i).abs := by
-          rw [show i - RS = -(RS - i) from (neg_sub RS i).symm, abs_neg]
-      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ h_j h_i
+        ≤ (i - RS).abs + (RS - j).abs := abs_sub_le_add i RS j
+      _ = (RS - i).abs + (RS - j).abs := by rw [abs_sub_comm i RS]
+      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ h_i h_j
       _ = ε := half_add ε
   rw [← sub_zero_eq]
   exact lt_epsilon_zero _ this
@@ -178,9 +176,8 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
     fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
   have hxi : ∀ (i : Range n), ξ i = a := by
     intro i
-    have hi := hr i
-    dsimp [InInterval] at hi
-    rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
+    have hi := Partition.repr_bounds hr i
+    rw [hpts (Range.incl i), hpts (Range.addone i)] at hi
     exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
   have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
     unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]

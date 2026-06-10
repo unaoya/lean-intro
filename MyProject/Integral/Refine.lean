@@ -237,12 +237,9 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
   have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
   refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
   intro n' Δ' ξ' hr' hd'
-  have hn' : 0 < n' := by
-    cases n' with
-    | zero => exact absurd (Partition.zero Δ') hab.2
-    | succ m => exact Nat.zero_lt_succ m
+  have hn' : 0 < n' := Δ'.pos_of_lt hab
   -- Δ の全分点を Δ' に挿入
-  obtain ⟨Δp, ξp, hrp, hlenp, hptsp, hbdp⟩ :=
+  obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
     rs_multi_insert_bound f M hM (Real.le_of_lt hM_pos) hn' Δ' ξ' hr'
       (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
       (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
@@ -251,10 +248,7 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     intro i
     obtain ⟨q, hq⟩ := hptsp ⟨i.val, i.property⟩
     exact ⟨q, hq⟩
-  have hn_pos : 0 < n := by
-    cases n with
-    | zero => exact absurd (Partition.zero Δ) hab.2
-    | succ m => exact Nat.zero_lt_succ m
+  have hn_pos : 0 < n := Δ.pos_of_lt hab
   have hσex := refine_parent a b n (n' + (n + 1)) hn_pos Δ Δp hpts_all
   have hσ : ∀ j : Range (n' + (n + 1)),
       Δ.points (Range.incl (Classical.choose (hσex j))) ≤ Δp.points (Range.incl j) ∧
@@ -275,9 +269,7 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     · have hb1 := hrp j
       dsimp [Partition.IsRepr, InInterval] at hb1
       rw [if_pos (Δp.increase j)] at hb1
-      have hb2 := hr (Classical.choose (hσex j))
-      dsimp [Partition.IsRepr, InInterval] at hb2
-      rw [if_pos (Δ.increase (Classical.choose (hσex j)))] at hb2
+      have hb2 := Partition.repr_bounds hr (Classical.choose (hσex j))
       have habs := abs_sub_le_of_mem
         (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
       exact le_lt_trans

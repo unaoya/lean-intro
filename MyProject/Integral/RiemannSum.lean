@@ -78,9 +78,8 @@ theorem rs_insert_bound (f : Real → Real) {a b : Real} (c M : Real)
     else if h₂ : i.val ≤ k.val + 1 then c
     else ξ ⟨i.val - 1, by have := i.property; have := k.property; omega⟩
   have hr_bounds : ∀ j : Range n,
-      Δ.points (incl j) ≤ ξ j ∧ ξ j ≤ Δ.points (addone j) := by
-    intro j; have hj := hr j; dsimp [InInterval] at hj
-    rwa [if_pos (Δ.increase j)] at hj
+      Δ.points (incl j) ≤ ξ j ∧ ξ j ≤ Δ.points (addone j) :=
+    fun j => Partition.repr_bounds hr j
   refine ⟨ξ', ?repr, ?bound⟩
   case repr =>
     apply Partition.le_isrepr
@@ -197,10 +196,9 @@ theorem rs_insert_bound (f : Real → Real) {a b : Real} (c M : Real)
     rw [hDiff, abs_mul_nonneg (Δ.length_nonneg k)]
     apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg k)
     -- Goal: |f c - f (ξ k)| ≤ 2 * M
-    have hc_in : InInterval a b c := by
-      dsimp [InInterval]; rw [if_pos (Δ.left_le_right)]
-      exact ⟨le_trans (Δ.left_le_point (incl k)) hL,
-             le_trans hR (Δ.point_le_right (addone k))⟩
+    have hc_in : InInterval a b c := (in_interval_iff Δ.left_le_right).mpr
+      ⟨le_trans (Δ.left_le_point (incl k)) hL,
+       le_trans hR (Δ.point_le_right (addone k))⟩
     have hfc : (f c).abs ≤ M := hM c hc_in
     have hfξ : (f (ξ k)).abs ≤ M := hM _ (Δ.repr_in_interval ξ hr k)
     apply le_trans (abs_triangle (f c) (-(f (ξ k))))
@@ -242,31 +240,10 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
     obtain ⟨ξ₂, hr₂, hbd₂⟩ := rs_insert_bound f c M hM hM_nn Δ₁ ξ₁ hr₁ k hkL hkR
     let Δ₂ := Δ₁.insertPoint c k hkL hkR
     refine ⟨Δ₂, ξ₂, hr₂, ?_, ?_, ?_⟩
-    · -- ∀ i, Δ₂.length i ≤ Δ.diam
+    · -- ∀ i, Δ₂.length i ≤ Δ.diam（挿入で長さは増えず、Δ₁ の長さは Δ.diam 以下）
       intro i
-      show Partition.length Δ₂ i ≤ Partition.diam Δ
-      by_cases h1 : i.val < k.val
-      · calc Partition.length Δ₂ i
-              = Δ₁.length ⟨i.val, by have := k.property; omega⟩ :=
-                Partition.insertPoint_length_low c Δ₁ k hkL hkR i h1
-            _ ≤ Δ.diam := hlen₁ ⟨i.val, by have := k.property; omega⟩
-      · by_cases h2 : k.val + 1 < i.val
-        · calc Partition.length Δ₂ i
-                = Δ₁.length ⟨i.val - 1, by have := i.property; have := k.property; omega⟩ :=
-                  Partition.insertPoint_length_high c Δ₁ k hkL hkR i h2
-              _ ≤ Δ.diam := hlen₁ ⟨i.val - 1, by have := i.property; have := k.property; omega⟩
-        · -- Split intervals: i ∈ {k.val, k.val + 1}
-          have hsplit := Partition.insertPoint_length_split c Δ₁ k hkL hkR
-          by_cases h3 : i.val = k.val
-          · have hi : i = ⟨k.val, Nat.lt_succ_of_lt k.property⟩ := Subtype.ext h3
-            rw [hi]
-            exact le_trans (le_of_add_nonneg_eq hsplit
-              (Δ₂.length_nonneg ⟨k.val + 1, Nat.succ_lt_succ k.property⟩)) (hlen₁ k)
-          · have h4 : i.val = k.val + 1 := by have := i.property; omega
-            have hi : i = ⟨k.val + 1, Nat.succ_lt_succ k.property⟩ := Subtype.ext h4
-            rw [hi]
-            exact le_trans (le_of_nonneg_add_eq hsplit
-              (Δ₂.length_nonneg ⟨k.val, Nat.lt_succ_of_lt k.property⟩)) (hlen₁ k)
+      exact le_trans (Partition.insertPoint_length_le_diam c Δ₁ k hkL hkR i)
+        (fmax'_le _ _ _ (Δ.diam_nonneg hn) hlen₁)
     · -- 挿入した点はすべて Δ₂ の分点
       intro j
       by_cases hjm : j.val = m

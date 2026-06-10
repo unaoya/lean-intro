@@ -120,10 +120,8 @@ theorem points_mono {n : Nat} {a b : Real} (Δ : Partition n a b)
     exact ih ⟨i.val + d, Nat.lt_succ_of_lt hd'⟩ rfl
 
 theorem points_in_interval {n : Nat} {a b : Real} (Δ : Partition n a b) (i : Range n.succ) :
-    InInterval a b (Δ.points i) := by
-  dsimp [InInterval]
-  rw [if_pos Δ.left_le_right]
-  exact ⟨Δ.left_le_point i, Δ.point_le_right i⟩
+    InInterval a b (Δ.points i) :=
+  (in_interval_iff Δ.left_le_right).mpr ⟨Δ.left_le_point i, Δ.point_le_right i⟩
 
 -- 代表点を定義
 def IsRepr {n : Nat} {a b : Real} (Δ : Partition n a b)
@@ -132,23 +130,23 @@ def IsRepr {n : Nat} {a b : Real} (Δ : Partition n a b)
 
 theorem le_isrepr {n : Nat} {a b : Real} (Δ : Partition n a b)
     (ξ : Range n → Real) (h : ∀ i, (Δ.points i.incl) ≤ ξ i ∧ ξ i ≤ (Δ.points i.addone)) :
-    IsRepr Δ ξ := by
-  intro i
-  dsimp [InInterval]
-  rw [if_pos (Δ.increase i)]
-  exact h i
+    IsRepr Δ ξ :=
+  fun i => (in_interval_iff (Δ.increase i)).mpr (h i)
+
+-- 代表点の小区間内境界（IsRepr の展開）
+theorem repr_bounds {n : Nat} {a b : Real} {Δ : Partition n a b} {ξ : Range n → Real}
+    (h : IsRepr Δ ξ) (i : Range n) :
+    Δ.points (incl i) ≤ ξ i ∧ ξ i ≤ Δ.points (addone i) :=
+  in_interval_pair (Δ.increase i) (h i)
 
 theorem repr_in_interval {n : Nat} {a b : Real} (Δ : Partition n a b)
   (ξ : Range n → Real) (h : IsRepr Δ ξ) :
     ∀ i : Range n, InInterval a b (ξ i) := by
   intro i
-  have : InInterval (Δ.points i.incl) (Δ.points i.addone) (ξ i) := h i
-  dsimp [InInterval] at *
-  rw [if_pos Δ.left_le_right]
-  rw [if_pos (Δ.increase i)] at this
-  constructor
-  · apply le_trans (Δ.left_le_point i.incl) this.left
-  · apply le_trans this.right (Δ.point_le_right i.addone)
+  have hb := repr_bounds h i
+  exact (in_interval_iff Δ.left_le_right).mpr
+    ⟨le_trans (Δ.left_le_point i.incl) hb.1,
+     le_trans hb.2 (Δ.point_le_right i.addone)⟩
 
 def length {n : Nat} {a b : Real} (Δ : Partition n a b) (i : Range n) : Real :=
   Δ.points (addone i) - Δ.points (incl i)
@@ -173,8 +171,8 @@ theorem find_interval {n : Nat} {a b : Real} (Δ : Partition n a b) (x : Real)
     (hn : 0 < n) (hx : InInterval a b x) :
     ∃ k : Range n, Δ.points (incl k) ≤ x ∧ x ≤ Δ.points (addone k) := by
   have hab := Δ.left_le_right
-  have hxa : a ≤ x := by dsimp [InInterval] at hx; rw [if_pos hab] at hx; exact hx.1
-  have hxb : x ≤ b := by dsimp [InInterval] at hx; rw [if_pos hab] at hx; exact hx.2
+  have hxa : a ≤ x := (in_interval_pair hab hx).1
+  have hxb : x ≤ b := (in_interval_pair hab hx).2
   -- p(i) := i < n ∧ x ≤ Δ.points ⟨i+1, ⟩
   let p : Nat → Prop := fun i =>
     ∃ h : i < n, x ≤ Δ.points ⟨i + 1, Nat.succ_lt_succ h⟩
@@ -332,14 +330,6 @@ theorem insertPoint_length_high {n : Nat} {a b : Real} (c : Real) (Δ : Partitio
       insertPoint_pt_gt c Δ k hL hR (incl i) (by simp [incl_val]; omega)]
   congr 1
   · congr 1; exact Subtype.ext (by simp [addone_val]; omega)
-
--- 代表点の小区間内境界（IsRepr の展開）
-theorem repr_bounds {n : Nat} {a b : Real} {Δ : Partition n a b} {ξ : Range n → Real}
-    (h : IsRepr Δ ξ) (i : Range n) :
-    Δ.points (incl i) ≤ ξ i ∧ ξ i ≤ Δ.points (addone i) := by
-  have hi := h i
-  dsimp [InInterval] at hi
-  rwa [if_pos (Δ.increase i)] at hi
 
 -- a < b なら分割は少なくとも 1 区間を持つ
 theorem pos_of_lt {n : Nat} {a b : Real} (Δ : Partition n a b) (hab : a < b) : 0 < n := by
