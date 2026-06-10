@@ -221,8 +221,7 @@ theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
 -- 核心補題：固定した細かい分割 Δ に対し、十分細かい任意の Δ' の RS は RS(Δ) に近い
 theorem rs_compare (f : Real → Real) (a b M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_pos : 0 < M)
-    (hab : a < b) (ε' θ : Real) (hε' : 0 < ε') (hθ : 0 < θ)
-    (δuc : Real) (hδuc : 0 < δuc)
+    (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δuc : Real)
     (huc : ∀ s t, (a ≤ s ∧ s ≤ b) → (a ≤ t ∧ t ≤ b) → (s - t).abs < δuc →
       (f s - f t).abs < ε')
     (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)

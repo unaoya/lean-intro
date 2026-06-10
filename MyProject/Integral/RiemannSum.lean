@@ -64,7 +64,7 @@ theorem rs_abs_bound (f : Real → Real) (M : Real) {n : Nat} {a b : Real}
 
 -- 分割に点を挿入した時の RS の差のバウンド
 theorem rs_insert_bound (f : Real → Real) {a b : Real} (c M : Real)
-    (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
+    (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (_hM_nn : 0 ≤ M)
     {n : Nat} (Δ : Partition n a b) (ξ : Range n → Real) (hr : Δ.IsRepr ξ)
     (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
     ∃ (ξ' : Range (n + 1) → Real),
@@ -214,7 +214,7 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
     {n : Nat} (hn : 0 < n) (Δ : Partition n a b)
     (ξ : Range n → Real) (hr : Δ.IsRepr ξ) :
-    ∀ (m : Nat) (cs : Range m → Real) (hcs : ∀ j, InInterval a b (cs j)),
+    ∀ (m : Nat) (cs : Range m → Real) (_hcs : ∀ j, InInterval a b (cs j)),
     ∃ (Δ' : Partition (n + m) a b) (ξ' : Range (n + m) → Real),
       Δ'.IsRepr ξ' ∧
       (∀ i : Range (n + m), Δ'.length i ≤ Δ.diam) ∧
@@ -223,7 +223,7 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
         Real.ofNat m * (2 * M * Δ.diam) := by
   intro m; induction m with
   | zero =>
-    intro cs hcs
+    intro cs _hcs
     exact ⟨Δ, ξ, hr, fun i => le_fmax' n Δ.length i,
       fun j => absurd j.property (Nat.not_lt_zero _), by
       show (RiemannSum f Δ ξ - RiemannSum f Δ ξ).abs ≤
@@ -232,7 +232,6 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
   | succ m ih =>
     intro cs hcs
     -- First m points
-    let cs' : Range m → Real := fun j => cs ⟨j.val, Nat.lt_succ_of_lt j.property⟩
     obtain ⟨Δ₁, ξ₁, hr₁, hlen₁, hpts₁, hbd₁⟩ :=
       ih (fun j => cs ⟨j.val, Nat.lt_succ_of_lt j.property⟩)
          (fun j => hcs ⟨j.val, Nat.lt_succ_of_lt j.property⟩)

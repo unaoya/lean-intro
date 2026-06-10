@@ -148,7 +148,6 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       exact h₁
     | inr hne_bc =>
       have hab_lt : a < b := ⟨hab_le, hne_ab⟩
-      have hbc_lt : b < c := ⟨hbc_le, hne_bc⟩
       have hac_le : a ≤ c := le_trans hab_le hbc_le
       have hac_lt : a < c := lt_le_trans a b c hab_lt hbc_le
       -- f の有界性

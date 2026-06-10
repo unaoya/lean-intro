@@ -87,7 +87,7 @@ theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤
   rw [add_sub_cancel (i.val : Real) 1, one_mul]
 
 -- Repr: ξ i = left endpoint of each subinterval
-def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+def equalPartitionRepr (m : Nat) (a b : Real) (_hm : m ≠ 0) (_hab : a ≤ b) :
     Range m → Real :=
   fun i => a + (i.val : Real) * (b - a) / (m : Real)
 
@@ -190,7 +190,7 @@ theorem integral_self (f : Real → Real) (a : Real) : Integral f a a = 0 :=
 -- b < a のときは分割が存在しないため、（特に 0 を）積分値にできる
 theorem isintegral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
     IsIntegral f a b 0 :=
-  fun _ hε => ⟨1, zero_lt_one, fun _ Δ _ _ _ => absurd Δ.left_le_right h⟩
+  fun _ _ => ⟨1, zero_lt_one, fun _ Δ _ _ _ => absurd Δ.left_le_right h⟩
 
 -- 逆は言えない。積分の値が0でないなら可積分は言えるが。
 

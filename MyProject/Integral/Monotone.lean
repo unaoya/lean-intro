@@ -69,7 +69,6 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       rw [h0I, pos_abs hε] at hRS
       exact hRS.2 rfl
     | inr hne =>
-      have hab_lt : a < b := ⟨h, hne⟩
       obtain ⟨m, Δ, ξ, hr, hd⟩ := exists_fine_partition a b δ h hδ
       have habs := hh m Δ ξ hr hd
       have hRS_nn : 0 ≤ RiemannSum f Δ ξ :=

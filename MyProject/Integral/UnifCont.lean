@@ -9,7 +9,7 @@ private theorem abs_lt_of_nonneg_lt {x y : Real} (hx : 0 ≤ x) (hxy : x < y) : 
   | inr hne => rw [pos_abs ⟨hx, fun h => hne h.symm⟩]; exact hxy
 
 private theorem close_to_c_half {s c δ : Real} (hs_le : s ≤ c)
-    (hs_gt : c - δ / 2 < s) (hδ : 0 < δ) : (s - c).abs < δ / 2 := by
+    (hs_gt : c - δ / 2 < s) (_hδ : 0 < δ) : (s - c).abs < δ / 2 := by
   have hcs_nn : 0 ≤ c - s := (nonneg_sub_iff s c).mp hs_le
   calc (s - c).abs = (-(c - s)).abs := by rw [neg_sub c s]
     _ = (c - s).abs := abs_neg _
@@ -59,7 +59,6 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
           _ ≤ -(δ_c / 2) + δ_c / 2 := h1
           _ = 0 := AddCommGroup.neg_add _
       exact (pos_half δ_c hδc_pos).2 (LinearOrderedField.le_asymm _ _ (pos_half δ_c hδc_pos).1 this)
-  have ht₀c : t₀ ≤ c := Real.sup_ub S hne hbdd t₀ ht₀S
   have ht₀_gt : c - δ_c / 2 < t₀ := ne_le_lt _ _ ht₀_close
   obtain ⟨δ₀, hδ₀_pos, hδ₀⟩ := ht₀S.2.2
   let δ' := min δ₀ (δ_c / 2)

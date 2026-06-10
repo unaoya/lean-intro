@@ -24,7 +24,7 @@ def limit (f : Real → Real) (a : Real) (hf : HasLimAt f a) : Real :=
 theorem limit_eq (f : Real → Real) (a : Real) (hf : HasLimAt f a) : IsLimAt f (limit f a hf) a :=
   choose_spec hf
 
-def limit' (f : Real → Real) (a : Real) {l : Real} (hf : IsLimAt f l a) : Real := l
+def limit' (f : Real → Real) (a : Real) {l : Real} (_hf : IsLimAt f l a) : Real := l
 
 -- Helper: sub_eq_zero_iff
 private theorem sub_eq_zero_imp (a b : Real) (h : a - b = 0) : a = b := by
@@ -175,7 +175,7 @@ theorem continuous_sub (f g : Real → Real) (hf : Continuous f) (hg : Continuou
     _ = ε := half_add ε
 
 -- PROOF 7: continuous_const
-theorem continuous_const (c : Real) : Continuous (fun t ↦ c) := by
+theorem continuous_const (c : Real) : Continuous (fun _ ↦ c) := by
   intro a ε hε
   exact ⟨1, zero_lt_one, fun x _ => by
     show abs (c - c) < ε

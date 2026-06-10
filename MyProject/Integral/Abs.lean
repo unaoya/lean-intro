@@ -15,8 +15,7 @@ private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p +
 -- |RS_{|f|}(Δ') − RS_{|f|}(Δ)| ≤ (ε' + ε') + θ
 private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_pos : 0 < M)
-    (hab : a < b) (ε' θ : Real) (hε' : 0 < ε') (hθ : 0 < θ)
-    (δf : Real) (hδf_pos : 0 < δf)
+    (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δf : Real)
     (hδf : ∀ (k : Nat) (Δk : Partition k a b) (ξk : Range k → Real),
       Δk.IsRepr ξk → Partition.diam Δk < δf →
       (RiemannSum f Δk ξk - If).abs < ε')
@@ -336,8 +335,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     refine ⟨δf, hδf_pos, ?_⟩
     intro n Δ ξ hr hd
     obtain ⟨δ', hδ'_pos, hcomp⟩ := abs_rs_compare f a b (M₀ + 1) If hM hM_pos hab'
-      (ε / 2 / 2) (ε / 2) (pos_half _ (pos_half ε hε)) (pos_half ε hε)
-      δf hδf_pos hδf n Δ ξ hr hd
+      (ε / 2 / 2) (ε / 2) (pos_half ε hε) δf hδf n Δ ξ hr hd
     refine ⟨δ', hδ'_pos, ?_⟩
     intro n' Δ' ξ' hr' hd'
     have h1 := hcomp n' Δ' ξ' hr' hd'
