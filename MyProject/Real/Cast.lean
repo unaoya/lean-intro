@@ -94,10 +94,6 @@ theorem ceil_spec (a : Real) :
 
 theorem ceil_lt (a : Real) : a < ↑(ceil a) := (ceil_spec a).1
 
-theorem ceil_nonneg (a : Real) : (0 : Real) ≤ ↑(ceil a) := cast_nonneg (ceil a)
-
-theorem pos_ceil_pos (a : Real) : 0 < a → (0 : Real) < ↑(ceil a) :=
-  fun h => lt_trans 0 a ↑(ceil a) h (ceil_lt a)
 
 -- ============================================================
 -- §15. Range value theorems
@@ -106,8 +102,6 @@ theorem pos_ceil_pos (a : Real) : 0 < a → (0 : Real) < ↑(ceil a) :=
 
 
 open Range
-
-theorem cast_incl_val (n : Nat) (k : Range n) : ((incl k).val : Real) = (k.val : Real) := rfl
 
 theorem cast_addone_val (n : Nat) (k : Range n) : ((addone k).val : Real) = (k.val : Real) + 1 := by
   show (Nat.cast (k.val + 1) : Real) = (Nat.cast k.val : Real) + 1

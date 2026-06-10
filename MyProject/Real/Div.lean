@@ -79,9 +79,6 @@ theorem pos_inv (b : Real) (hb : 0 < b) : 0 < Field.inv b := by
         _ = b * Field.inv b := by rw [h]
         _ = 1 := Field.mul_inv b hbne)
 
-theorem nonneg_inv (b : Real) (hb : 0 ≤ b) (hbne : b ≠ 0) : 0 ≤ Field.inv b :=
-  (pos_inv b ⟨hb, hbne.symm⟩).1
-
 -- ============================================================
 -- §6. Division theorems
 -- ============================================================

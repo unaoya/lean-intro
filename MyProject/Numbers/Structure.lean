@@ -44,18 +44,6 @@ class NonNeg (α : Type) where
 class Abs (α : Type) where
   abs : α → α
 
--- NatCast for LinearOrderedField (no OfNat dependency)
-section NatCastDef
-variable {α : Type} [LinearOrderedField α]
-
-noncomputable def natCastOfField : Nat → α
-  | 0 => AddCommGroup.zero
-  | 1 => MulCommMonoid.one
-  | Nat.succ (Nat.succ n) => natCastOfField (Nat.succ n) + MulCommMonoid.one
-
-noncomputable instance instNatCastLOF : NatCast α := ⟨natCastOfField⟩
-end NatCastDef
-
 variable {α : Type} [LinearOrderedField α] [OfNat α 0]
 
 instance : NonNeg α := ⟨fun a => 0 ≤ a⟩

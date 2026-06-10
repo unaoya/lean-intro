@@ -7,23 +7,6 @@ open Real Classical Range
 -- 積分の単調性
 -- 極限の単調性を使いたい
 
-theorem cast_le (n m : Nat) : n ≤ m → (n : Real) ≤ m := by
-  intro h
-  rcases Nat.eq_or_lt_of_le h with heq | hlt
-  · subst heq; exact le_refl _
-  · exact le_of_lt (cast_lt n m hlt)
-
-theorem increse' (n : Nat) (a b : Real) (bnonneg : 0 ≤ b) :
-  ∀ i : Range n, a + i.incl.val * b ≤ a + i.addone.val * b := by
-  intro i
-  apply add_left_le
-  apply nonneg_mul_nonneg _ _ _ bnonneg
-  apply cast_le
-  exact Nat.le_succ i.val
-
-private theorem nat_ne_zero_of_pos_cast (m : Nat) (h : 0 < (m : Real)) : m ≠ 0 := by
-  intro hm; subst hm; exact h.2 rfl
-
 theorem integral_nonneg (f : Real → Real) (a b : Real)
     (h : a ≤ b) (fnn : ∀ x, InInterval a b x → 0 ≤ f x)
     (hf : IsIntegrable f a b) : 0 ≤ Integral f a b := by

@@ -6,10 +6,6 @@ noncomputable section
 -- 区間加法性のための補助補題
 -- ============================================================
 
-private theorem add_lt_add_right' {x y : Real} (h : x < y) (c : Real) : x + c < y + c := by
-  rw [add_comm x c, add_comm y c]
-  exact add_left_lt c x y h
-
 -- [a,a] 上の積分値は 0
 private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
     (h : IsIntegral f a a i) : i = 0 :=
