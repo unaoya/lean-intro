@@ -21,15 +21,14 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
 アルキメデスの性質は上限公理から定理として導出（`Real/Cast.lean`）。
 他は Lean 標準の `propext` / `Classical.choice` / `Quot.sound` のみ
 （ルートモジュール `MyProject.lean` の `#print axioms main` で常時監査）。
+実数は公理的導入で完結とし、構成的定義（Cauchy 列等）は扱わない。
 
 ## 構成
 
 ```
 MyProject/
-  Numbers/Structure.lean   代数構造のクラス階層（独自・mathlib 非依存）
-  Numbers/NatNum.lean      Range・有限和 Summation・自然数の min
-  Numbers/Constructive/    （将来計画）Cauchy 列による実数構成 → 公理の定理化
-  Axioms.lean              実数の公理（5 本）
+  Range.lean               Range・有限和 Summation・自然数の min
+  Axioms.lean              代数構造のクラス階層＋実数の公理（5 本）
   Real/                    実数の基本補題（Algebra → Order → {Div, Sup} → Abs
                            → MinMax → Summation → Cast → Interval の鎖）
   Lemmas.lean              ↑の umbrella

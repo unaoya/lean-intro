@@ -1,5 +1,5 @@
+import MyProject.Range
 import MyProject.Axioms
-import MyProject.Numbers.NatNum
 
 noncomputable section
 

@@ -8,11 +8,10 @@ package «my_project» where
   ]
   -- add any additional package configuration options here
 
--- 実数の基礎（構造クラス・Range/Summation・公理・基本補題 Real/）
+-- 実数の基礎（Range/Summation・公理（クラス含む）・基本補題 Real/）
 lean_lib «RealNumbers» where
   globs := #[
-    .one `MyProject.Numbers.Structure,
-    .one `MyProject.Numbers.NatNum,
+    .one `MyProject.Range,
     .one `MyProject.Axioms,
     .andSubmodules `MyProject.Real,
     .one `MyProject.Lemmas
