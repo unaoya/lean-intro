@@ -73,7 +73,7 @@
 | Ch5 | **defeq と rw の構文性**: `rfl` の意味（`a + -b = a - b := rfl`）、`show` 正規化、rw が失敗するとき、calc の設計 | Real/Order・Div・Abs（half_add / abs_triangle / abs_le 等）。「なぜこの show 行があるか」型読解問題 |
 | Ch6 | **帰納型と再帰**【鍵 3】: `inductive` の一般論（And / Or / Exists / Eq も Nat も帰納型 — Ch1–2 の道具の正体）、`Subtype`（`Range n`）、構造的再帰（`Summation`）、`induction`、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等）＋ cast_nonneg / cast_lt |
 | Ch7 | **structure**（双子章・後編）: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、証明を運ぶレコード（`increase`）。Ch4 の比較表の structure 側を埋めて完成させ、「Partition を class にしてみよ」演習で差を確定 | `Partition`、equalPartition 構成演習（フィールド穴埋め）。種明かし: Ch1 の `⟨h, hne⟩`（And）も structure だった |
-| Ch8 | **第 I 部の到達点: リーマン和の定義と性質**（総合章: 暗黙引数を持つ定義の設計と、自分の定義への API 構築） | `RiemannSum` の定義＋性質 5 本（additive / neg / const / nonneg / abs_bound）。IsRepr / InInterval が動機付きで初登場 |
+| Ch8 | **第 I 部の到達点: リーマン和の定義と性質**（総合章: 暗黙引数を持つ定義の設計と、自分の定義への API 構築） | `RiemannSum` の定義＋性質 5 本（additive / neg / const / nonneg / abs_bound）。IsRepr / InInterval が動機付きで初登場。**名物演習: y = x の [0,1] n 等分**（下記） |
 
 順序の設計判断: ① 量化子は ∀=Π の必然から依存型と同じ Ch3 に置く（TPiL4 の「Quantifiers and Equality」相当）。② class（Ch4）が structure（Ch7）より先なのは TPiL4 と逆だが、Ch3 で Axioms.lean を精読する以上 class の説明を遅らせるとブラックボックスが生じ本書の理念に反する。前方参照＋Ch7 での回収で処理。③ **古典論理と choice は第 I 部に置かない**: リーマン和とその性質までは構成的に進められる（choice が要るのは積分の定義の `Classical.choose` と分割の存在定理から）。必要になる直前＝第 II 部冒頭に置く。
 
@@ -113,12 +113,25 @@
 - **Ch7**: 証明を運ぶレコード `Partition`。双子章後編（比較表完成＋反転演習）。equalPartition フィールド穴埋め。引き:「役者が揃った」
 - **Ch8**: リーマン和の定義は 1 行 — この 1 行に第 I 部の全章が映っている。後半は性質 5 本の総合演習: 望遠鏡和 `Σ length = b − a` の快感、`RiemannSum_nonneg` の反例から IsRepr が必然として登場。幕引き:「この和はどこへ向かうのか。それに答えるには値をひとつ選び取る力が要る（第 II 部、choice と極限へ）」
 
+### 貫通する具体例: y = x の [0,1] n 等分（Ch8 → Ch10 をまたぐ物語）
+
+**n 等分の表現方針**: 自然数を Real の部分集合として構成する必要はない。型理論の正道は「`Nat`（帰納型）からの埋め込み」であり、本体に実装済み（`Real.ofNat` の構造的再帰・`NatCast` インスタンス・cast 補題群・`equalPartition` の分点 `a + i·(b−a)/m`）。代替案 2 つも素材として回収する:
+
+- **杉浦流「最小の継承的集合」**は Prop の非可述性で 1 行で書ける（`InductiveSet x := ∀ S : Real → Prop, S 0 → (∀ y, S y → S (y+1)) → S x`）。これが cast の像述語 `fun x => ∃ n : Nat, x = ↑n`（**archimedean の証明に既出**）と同値であることを Ch9 のコラム＋発展演習にする — Ch3 の universe（Prop への量化）の生きた応用であり、原典（杉浦）との接続点。
+- **「n·x = 1 の解」**は独立の構成にはならない（n 回足すことを述べるのに Nat が要る）が、「順序体では 0 < n·1、ゆえに標数 0 で 1/n が存在」は本体の実定理（`cast_pos_succ`）。「1/n は n·x = 1 の唯一解」を小演習にする。
+
+**Ch8 名物演習**: `equalPartition n 0 1` の分点が `i/n` であることの確認（show の練習）→ 新補題 `sum_id : Summation n (fun i => (i.val : Real)) = n(n−1)/2` を帰納法＋cast 計算で証明（旧 NatNum.lean に sorry 付きで眠っていた式の回収）→ 右端タグで **RS = (n+1)/(2n)**、左端タグで (n−1)/(2n)（タグの選び方で値が変わることも見せる）。
+
+**Ch10 誘導演習**: f = id は「定義から直接」可積分性を示せる稀有な例。中点和が望遠鏡和になり（Σ midᵢ·lenᵢ = (b²−a²)/2）、任意のタグで |ξᵢ − midᵢ| ≤ diam/2 だから **|RS − (b²−a²)/2| ≤ diam·(b−a)/2** — よって `IsIntegral id a b ((b²−a²)/2)`。`integral_unique` で Ch8 の「n 等分の極限 (n+1)/2n → 1/2」と「∫₀¹ x = 1/2」が繋がり、具体例が 2 章をまたいで閉じる。
+
+必要な本体追加（P4 で開発）: `sum_id`（Real/Summation.lean）と `isintegral_id`（Integral/ 配下、中点望遠鏡和の補題込み）。
+
 ### 第 II 部 積分 — 定義・性質・存在（Ch9–13）
 
 | 章 | 主役テーマ | 数学素材 |
 |---|---|---|
-| Ch9 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable`（構成的だった第 I 部との対比で導入） | `min`（Nat の最小値）・ceil・sup_near・**archimedean**（上限公理→定理、白眉その 1）・exists_fine_partition |
-| Ch10 | **積分の定義**: 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）、`TaggedPartition` への束ね直し、`dite`＋`Classical.choose` による定義、well-definedness | `IsIntegral`・`IsIntegrable`・`Integral`・`integral_unique`・`isintegral_self` / `integral_of_not_le`（junk 値の設計判断はコードコメントに経緯ごと残っている） |
+| Ch9 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable`（構成的だった第 I 部との対比で導入） | `min`（Nat の最小値）・ceil・sup_near・**archimedean**（上限公理→定理、白眉その 1）・exists_fine_partition。コラム＋発展演習: 杉浦流「最小の継承的集合」との同値（下記） |
+| Ch10 | **積分の定義**: 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）、`TaggedPartition` への束ね直し、`dite`＋`Classical.choose` による定義、well-definedness | `IsIntegral`・`IsIntegrable`・`Integral`・`integral_unique`・`isintegral_self` / `integral_of_not_le`（junk 値の設計判断はコードコメントに経緯ごと残っている）。誘導演習: **IsIntegral id a b ((b²−a²)/2) を定義から直接示す**（下記） |
 | Ch11 | **積分の性質 ＝ リーマン和の性質の ε/2 持ち上げ**（対応表が章の構造。`min δf δg` パターンの定石化） | const_has_integral・**isintegral_add**（ε/2 論法の最純形）・isintegral_neg・integral_nonneg・integral_monotone |
 | Ch12 | **山頂: 連続 ⇒ 可積分**（4 部品分解。大規模証明のアーキテクチャ: private・section・分割統治・import DAG） | (ii) integrable_of_cauchy 精読＋ sup 構成 4 ブロック誘導演習、(iv) continuous_integrable 完全精読、(i)(iii) は statement 精読＋付録参照 |
 | Ch13 | **FTC**: statement 中の `let`、`#print axioms` 監査の意味。コラム: `propext` / `Quot.sound` / `Classical.choice` とは何か | OIntegral（向き付き積分）・**main'**（calc 骨格演習）・main |
