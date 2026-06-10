@@ -74,41 +74,7 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       exact hRS.2 rfl
     | inr hne =>
       have hab_lt : a < b := ⟨h, hne⟩
-      have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab_lt
-      have hba_div : 0 < (b - a) / δ := pos_div_pos _ _ hba_pos hδ
-      let m := ceil ((b - a) / δ)
-      have hm_lt : (b - a) / δ < (m : Real) := ceil_lt _
-      have hm_pos : 0 < (m : Real) := lt_trans 0 ((b - a) / δ) (m : Real) hba_div hm_lt
-      have hm_nonneg : 0 ≤ (m : Real) := Real.le_of_lt hm_pos
-      have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp h
-      let Δ : Partition m a b := {
-        points := fun i => a + (i.val : Real) * (b - a) / (m : Real),
-        increase := by
-          intro i; apply add_left_le; apply div_right_le
-          · exact hm_nonneg
-          · apply nonneg_mul_nonneg
-            exact hba_nn
-            exact Real.le_of_lt (cast_lt i.val (i.val + 1) (Nat.lt_succ_self _))
-        left := by
-          show a + (0 : Real) * (b - a) / (m : Real) = a
-          rw [zero_mul', zero_div, add_zero]
-        right := by
-          show a + (m : Real) * (b - a) / (m : Real) = b
-          rw [mul_div_cancel' (m : Real) (b - a) hm_pos.2.symm, add_sub_cancel' a b]
-      }
-      let ξ : Range m → Real := fun i => a + (i.val : Real) * (b - a) / (m : Real)
-      have hr : Δ.IsRepr ξ := by
-        apply Partition.le_isrepr; intro i; exact ⟨le_refl _, Δ.increase i⟩
-      have hd : Partition.diam Δ < δ := by
-        apply fmax'_lt m _ δ hδ
-        intro i
-        show (a + ((i.val + 1 : Nat) : Real) * (b - a) / ↑m) -
-             (a + ↑i.val * (b - a) / ↑m) < δ
-        rw [add_sub_add' a, div_sub_div, mul_sub_mul]
-        show ((Nat.cast (i.val + 1) : Real) - ↑i.val) * (b - a) / ↑m < δ
-        rw [show ((Nat.cast (i.val + 1) : Real)) = (i.val : Real) + 1 from cast_addone_val m i,
-            add_sub_cancel (i.val : Real) 1, one_mul]
-        exact (div_lt_iff (b - a) δ (m : Real) hδ hm_pos).mp hm_lt
+      obtain ⟨m, Δ, ξ, hr, hd⟩ := exists_fine_partition a b δ h hδ
       have habs := hh m Δ ξ hr hd
       have hRS_nn : 0 ≤ RiemannSum f Δ ξ :=
         RiemannSum_nonneg f Δ ξ fnn hr

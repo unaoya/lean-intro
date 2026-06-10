@@ -110,6 +110,20 @@ theorem equalPartition_diam_lt (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a
   rw [equalPartition_length m a b hm hab i]
   exact (div_lt_iff (b - a) δ (m : Real) hδ hm_pos).mp hlt
 
+-- 任意の細かさの等分割の存在
+theorem exists_fine_partition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
+    ∃ (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real),
+      Δ.IsRepr ξ ∧ Partition.diam Δ < δ := by
+  have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp hab
+  have hba_div_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
+  have hm_lt : (b - a) / δ < ((ceil ((b - a) / δ)) : Real) := ceil_lt _
+  have hm_ne : ceil ((b - a) / δ) ≠ 0 :=
+    nat_ne_zero_of_nonneg_lt _ _ hba_div_nn hm_lt
+  exact ⟨ceil ((b - a) / δ), equalPartition _ a b hm_ne hab,
+    equalPartitionRepr _ a b hm_ne hab,
+    equalPartitionRepr_isrepr _ a b hm_ne hab,
+    equalPartition_diam_lt _ a b δ hm_ne hab hδ hm_lt⟩
+
 -- 一意性
 theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     (hab : a ≤ b) (hi : IsIntegral f a b i) (hj : IsIntegral f a b j) : i = j := by
@@ -117,18 +131,8 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     intro ε hε
     rcases hi (ε / 2) (pos_half ε hε) with ⟨δi, ⟨hδi1, hδi2⟩⟩
     rcases hj (ε / 2) (pos_half ε hε) with ⟨δj, ⟨hδj1, hδj2⟩⟩
-    let δ := min δi δj
-    have hδ : 0 < δ := min_pos δi δj hδi1 hδj1
-    have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp hab
-    have hba_div_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
-    let m := ceil ((b - a) / δ)
-    have hm_lt : (b - a) / δ < (m : Real) := ceil_lt _
-    have hm_ne : m ≠ 0 := nat_ne_zero_of_nonneg_lt _ m hba_div_nn hm_lt
-    let Δ := equalPartition m a b hm_ne hab
-    let ξ := equalPartitionRepr m a b hm_ne hab
-    have h_repr : Δ.IsRepr ξ := equalPartitionRepr_isrepr m a b hm_ne hab
-    have h_diam : Partition.diam Δ < δ :=
-      equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
+    have hδ : 0 < min δi δj := min_pos δi δj hδi1 hδj1
+    obtain ⟨m, Δ, ξ, h_repr, h_diam⟩ := exists_fine_partition a b (min δi δj) hab hδ
     let RS := RiemannSum f Δ ξ
     have h_i : (RS - i).abs < ε / 2 :=
       hδi2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_left_le δi δj))
@@ -159,6 +163,34 @@ theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real)
   have h₀ : IsIntegrable f a b := ⟨i, h⟩
   rw [dif_pos h₀]
   exact integral_unique _ _ _ _ _ hab (Classical.choose_spec h₀) h
+
+-- [a,a] 上の積分は 0
+theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := by
+  intro ε hε
+  refine ⟨1, zero_lt_one, fun n Δ ξ hr _ => ?_⟩
+  have hpts : ∀ (i : Range n.succ), Δ.points i = a :=
+    fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
+  have hxi : ∀ (i : Range n), ξ i = a := by
+    intro i
+    have hi := hr i
+    dsimp [InInterval] at hi
+    rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
+    exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
+  have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
+    unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
+  rw [hRS, const_riemann_sum, sub_self,
+      show f a * (0 : Real) = 0 from by
+        rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
+      sub_self, abs_zero]
+  exact hε
+
+theorem integral_self (f : Real → Real) (a : Real) : Integral f a a = 0 :=
+  IsIntegral_iff f a a 0 (le_refl a) (isintegral_self f a)
+
+-- b < a のときは分割が存在しないため、（特に 0 を）積分値にできる
+theorem isintegral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
+    IsIntegral f a b 0 :=
+  fun _ hε => ⟨1, zero_lt_one, fun _ Δ _ _ _ => absurd Δ.left_le_right h⟩
 
 -- 逆は言えない。積分の値が0でないなら可積分は言えるが。
 

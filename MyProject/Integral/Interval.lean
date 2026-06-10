@@ -123,24 +123,8 @@ private theorem add_lt_add_right' {x y : Real} (h : x < y) (c : Real) : x + c < 
 
 -- [a,a] 上の積分値は 0
 private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
-    (h : IsIntegral f a a i) : i = 0 := by
-  apply lt_epsilon_zero
-  intro ε hε
-  obtain ⟨δ, hδ_pos, hδ⟩ := h ε hε
-  let Δ0 : Partition 0 a a := {
-    points := fun _ => a
-    increase := fun i => absurd i.property (Nat.not_lt_zero _)
-    left := rfl
-    right := rfl }
-  have hr0 : Δ0.IsRepr (fun _ => a) :=
-    fun i => absurd i.property (Nat.not_lt_zero _)
-  have hd0 : Partition.diam Δ0 < δ := hδ_pos
-  have hclose := hδ 0 Δ0 (fun _ => a) hr0 hd0
-  rw [show RiemannSum f Δ0 (fun _ => a) - i = -i from by
-        show Summation 0 (fun q => f a * Partition.length Δ0 q) - i = -i
-        rw [summation_zero]
-        exact AddCommGroup.zero_add (-i)] at hclose
-  rwa [abs_neg] at hclose
+    (h : IsIntegral f a a i) : i = 0 :=
+  integral_unique f a a i 0 (le_refl a) h (isintegral_self f a)
 
 -- 区間加法性の核心：a ≤ b ≤ c のとき積分値も加法的
 private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : Real)

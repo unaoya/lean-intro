@@ -1301,29 +1301,6 @@ theorem integral_triangle_ineq {f : Real → Real} {a b : Real} (hab : a ≤ b)
 -- 向き付き積分
 -- ============================================================
 
--- [a,a] 上の積分は 0
-theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := by
-  intro ε hε
-  refine ⟨1, zero_lt_one, fun n Δ ξ hr _ => ?_⟩
-  have hpts : ∀ (i : Range n.succ), Δ.points i = a :=
-    fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
-  have hxi : ∀ (i : Range n), ξ i = a := by
-    intro i
-    have hi := hr i
-    dsimp [InInterval] at hi
-    rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
-    exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
-  have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
-    unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
-  rw [hRS, const_riemann_sum, sub_self,
-      show f a * (0 : Real) = 0 from by
-        rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
-      sub_self, abs_zero]
-  exact hε
-
-theorem integral_self (f : Real → Real) (a : Real) : Integral f a a = 0 :=
-  IsIntegral_iff f a a 0 (le_refl a) (isintegral_self f a)
-
 -- 向き付き積分の定義：a > b のときは符号を反転する
 noncomputable def OIntegral (f : Real → Real) (a b : Real) : Real :=
   if a ≤ b then Integral f a b else -(Integral f b a)
