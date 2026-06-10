@@ -402,7 +402,7 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
   -- Step 2: sum gives RS(ξ) ≤ RS(ξ') + C*(b-a)
   have h_upper : RiemannSum f a b n Δ ξ ≤ RiemannSum f a b n Δ ξ' + C * (b - a) := by
     have h5 := summation_le n _ _ h_term
-    rw [addtive_summation, summation_smul, Partition.length_sum] at h5
+    rw [additive_summation, summation_smul, Partition.length_sum] at h5
     exact h5
   -- Step 3: symmetric bound gives RS(ξ') ≤ RS(ξ) + C*(b-a)
   have h_term' : ∀ i : Range n,
@@ -419,7 +419,7 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
     rw [add_mul] at h5; exact h5
   have h_lower : RiemannSum f a b n Δ ξ' ≤ RiemannSum f a b n Δ ξ + C * (b - a) := by
     have h6 := summation_le n _ _ h_term'
-    rw [addtive_summation, summation_smul, Partition.length_sum] at h6; exact h6
+    rw [additive_summation, summation_smul, Partition.length_sum] at h6; exact h6
   -- Step 4: combine using abs_le
   apply abs_le
   -- -(RS(ξ) - RS(ξ')) ≤ C*(b-a), i.e., RS(ξ') - RS(ξ) ≤ C*(b-a)
@@ -470,7 +470,7 @@ private theorem rs_abs_bound (f : Real → Real) (a b M : Real)
 -- 区分定数関数の原始関数：G(t) = Σ_i f(ξ_i)·(min t p_{i+1} − min t p_i)
 private noncomputable def stepAnti (f : Real → Real) (n : Nat) (a b : Real)
     (Δ : Partition n a b) (ξ : Range n → Real) (t : Real) : Real :=
-  Sumation n (fun i => f (ξ i) *
+  Summation n (fun i => f (ξ i) *
     (min t (Δ.points (Range.addone i)) - min t (Δ.points (Range.incl i))))
 
 -- 同一小区間 [p_σ, p_{σ+1}] 内の c ≤ d に対する増分
@@ -520,11 +520,11 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
               rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
             sub_self]
   calc stepAnti f n a b Δ ξ d - stepAnti f n a b Δ ξ c
-      = Sumation n (fun i =>
+      = Summation n (fun i =>
           f (ξ i) * (min d (Δ.points (Range.addone i)) - min d (Δ.points (Range.incl i))) -
           f (ξ i) * (min c (Δ.points (Range.addone i)) - min c (Δ.points (Range.incl i)))) :=
         sub_summation n _ _
-    _ = Sumation n (fun i => if i.val = σ.val then f (ξ σ) * (d - c) else 0) :=
+    _ = Summation n (fun i => if i.val = σ.val then f (ξ σ) * (d - c) else 0) :=
         summation_congr n _ _ hterm
     _ = (if σ.val = σ.val then f (ξ σ) * (d - c) else 0) :=
         summation_one_term n σ _ (fun i hne => if_neg hne)
@@ -553,7 +553,7 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
           MulCommMonoid.mul_comm]
       exact zero_mul' _
     calc stepAnti f n a b Δ ξ a
-        = Sumation n (fun _ => (0 : Real)) := summation_congr n _ _ hz
+        = Summation n (fun _ => (0 : Real)) := summation_congr n _ _ hz
       _ = 0 := summation_all_zero n
   have hjterm : ∀ j : Range N,
       f (ξ (σ j)) * Partition.length N a b Δ' j =
@@ -562,7 +562,7 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
     (stepAnti_inc f n a b Δ ξ (σ j) (Δ'.points (Range.incl j)) (Δ'.points (Range.addone j))
       (hσ j).1 (Δ'.increase j) (hσ j).2).symm
   calc RiemannSum f a b N Δ' (fun j => ξ (σ j))
-      = Sumation N (fun j => stepAnti f n a b Δ ξ (Δ'.points (Range.addone j)) -
+      = Summation N (fun j => stepAnti f n a b Δ ξ (Δ'.points (Range.addone j)) -
                              stepAnti f n a b Δ ξ (Δ'.points (Range.incl j))) :=
         summation_congr N _ _ hjterm
     _ = stepAnti f n a b Δ ξ (Δ'.points ⟨N, Nat.lt_add_one N⟩) -
@@ -797,7 +797,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     · exact le_trans (LinearOrderedField.add_le_add (f s) (SupF i) (-(f t))
         (hF1 i s hs1 hs2)) (add_left_le (SupF i) _ _ (hF2 i t ht1 ht2))
   -- 振動和の評価：Σ Osc·len ≤ ε' + ε'
-  have hosc_sum : Sumation n (fun i => Osc i * Partition.length n a b Δ i) ≤ ε' + ε' := by
+  have hosc_sum : Summation n (fun i => Osc i * Partition.length n a b Δ i) ≤ ε' + ε' := by
     apply le_of_forall_le_add
     intro γ hγ
     have hγ2 : 0 < γ / 2 / (b - a) := pos_div_pos _ _ (pos_half γ hγ) hba_pos
@@ -835,29 +835,29 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       exact le_refl _
     have hsum := summation_le n _ _ hterm
     -- 右辺を整理
-    have hRHS : Sumation n (fun i => ((f (Classical.choose (hu i)) -
+    have hRHS : Summation n (fun i => ((f (Classical.choose (hu i)) -
         f (Classical.choose (hv i))) + (γ / 2 / (b - a) + γ / 2 / (b - a))) *
         Partition.length n a b Δ i) =
         (RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
          RiemannSum f a b n Δ (fun i => Classical.choose (hv i))) + γ := by
-      calc Sumation n (fun i => ((f (Classical.choose (hu i)) -
+      calc Summation n (fun i => ((f (Classical.choose (hu i)) -
               f (Classical.choose (hv i))) + (γ / 2 / (b - a) + γ / 2 / (b - a))) *
               Partition.length n a b Δ i)
-          = Sumation n (fun i => (f (Classical.choose (hu i)) -
+          = Summation n (fun i => (f (Classical.choose (hu i)) -
               f (Classical.choose (hv i))) * Partition.length n a b Δ i +
               (γ / 2 / (b - a) + γ / 2 / (b - a)) * Partition.length n a b Δ i) :=
             summation_congr n _ _ (fun i => add_mul _ _ _)
-        _ = Sumation n (fun i => (f (Classical.choose (hu i)) -
+        _ = Summation n (fun i => (f (Classical.choose (hu i)) -
               f (Classical.choose (hv i))) * Partition.length n a b Δ i) +
-            Sumation n (fun i => (γ / 2 / (b - a) + γ / 2 / (b - a)) *
-              Partition.length n a b Δ i) := addtive_summation n _ _
+            Summation n (fun i => (γ / 2 / (b - a) + γ / 2 / (b - a)) *
+              Partition.length n a b Δ i) := additive_summation n _ _
         _ = (RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
              RiemannSum f a b n Δ (fun i => Classical.choose (hv i))) + γ := by
             rw [summation_smul, Partition.length_sum]
             congr 1
-            · calc Sumation n (fun i => (f (Classical.choose (hu i)) -
+            · calc Summation n (fun i => (f (Classical.choose (hu i)) -
                     f (Classical.choose (hv i))) * Partition.length n a b Δ i)
-                  = Sumation n (fun i =>
+                  = Summation n (fun i =>
                       f (Classical.choose (hu i)) * Partition.length n a b Δ i -
                       f (Classical.choose (hv i)) * Partition.length n a b Δ i) :=
                     summation_congr n _ _ (fun i => (mul_sub_mul _ _ _).symm)
@@ -927,17 +927,21 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     have hsub : RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
         RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp
           (fun j => ξ (Classical.choose (hσex j))) =
-        Sumation (n' + (n + 1)) (fun j =>
+        Summation (n' + (n + 1)) (fun j =>
           ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
           Partition.length (n' + (n + 1)) a b Δp j) := by
       calc RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
             RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp
               (fun j => ξ (Classical.choose (hσex j)))
-          = Sumation (n' + (n + 1)) (fun j =>
+          = Summation (n' + (n + 1)) (fun j =>
               (f (ξp j)).abs * Partition.length (n' + (n + 1)) a b Δp j -
               (f (ξ (Classical.choose (hσex j)))).abs *
-                Partition.length (n' + (n + 1)) a b Δp j) := sub_summation _ _ _
-        _ = Sumation (n' + (n + 1)) (fun j =>
+                Partition.length (n' + (n + 1)) a b Δp j) :=
+            sub_summation (n' + (n + 1))
+              (fun j => (f (ξp j)).abs * Partition.length (n' + (n + 1)) a b Δp j)
+              (fun j => (f (ξ (Classical.choose (hσex j)))).abs *
+                Partition.length (n' + (n + 1)) a b Δp j)
+        _ = Summation (n' + (n + 1)) (fun j =>
               ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
               Partition.length (n' + (n + 1)) a b Δp j) :=
             summation_congr _ _ _ (fun j => mul_sub_mul _ _ _)
@@ -957,16 +961,16 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       rw [if_pos (Δ.increase (Classical.choose (hσex j)))] at hb2
       exact hosc (Classical.choose (hσex j)) (ξp j) (ξ (Classical.choose (hσex j)))
         (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
-    calc (Sumation (n' + (n + 1)) (fun j =>
+    calc (Summation (n' + (n + 1)) (fun j =>
             ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
             Partition.length (n' + (n + 1)) a b Δp j)).abs
-        ≤ Sumation (n' + (n + 1)) (fun j =>
+        ≤ Summation (n' + (n + 1)) (fun j =>
             ((((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
               Partition.length (n' + (n + 1)) a b Δp j)).abs) := abs_summation_le _ _
-      _ ≤ Sumation (n' + (n + 1)) (fun j =>
+      _ ≤ Summation (n' + (n + 1)) (fun j =>
             Osc (Classical.choose (hσex j)) * Partition.length (n' + (n + 1)) a b Δp j) :=
           summation_le _ _ _ hperj
-      _ = Sumation n (fun i => Osc i * Partition.length n a b Δ i) :=
+      _ = Summation n (fun i => Osc i * Partition.length n a b Δ i) :=
           rs_refine_eq (fun t => t) a b n Δ Osc (n' + (n + 1)) Δp
             (fun j => Classical.choose (hσex j)) hσ
       _ ≤ ε' + ε' := hosc_sum

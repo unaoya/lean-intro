@@ -64,8 +64,8 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     -- 一点だけ代表点を変えた RS の差 = (f x - f (ξ k)) * length k
     have hdiff : RiemannSum f a b m Δ ξ' - RiemannSum f a b m Δ ξ =
         (f x - f (ξ k)) * Partition.length m a b Δ k := by
-      show Sumation m (fun i => f (ξ' i) * Partition.length m a b Δ i) -
-          Sumation m (fun i => f (ξ i) * Partition.length m a b Δ i) = _
+      show Summation m (fun i => f (ξ' i) * Partition.length m a b Δ i) -
+          Summation m (fun i => f (ξ i) * Partition.length m a b Δ i) = _
       have hterm : ∀ i : Range m, f (ξ' i) * Partition.length m a b Δ i =
           f (ξ i) * Partition.length m a b Δ i +
           (if i.val = k.val then (f x - f (ξ k)) * Partition.length m a b Δ k
@@ -75,7 +75,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
         · have hik : i = k := Subtype.ext hi
           rw [show ξ' i = x from if_pos hi, if_pos hi, hik, ← add_mul, add_sub_cancel']
         · rw [show ξ' i = ξ i from if_neg hi, if_neg hi, add_zero]
-      rw [summation_congr m _ _ hterm, addtive_summation,
+      rw [summation_congr m _ _ hterm, additive_summation,
           summation_one_term m k _ (fun i hne => if_neg hne),
           if_pos (show k.val = k.val from rfl), add_sub_cancel]
     have hRS : (RiemannSum f a b m Δ ξ - I).abs < 1 := hbound m Δ ξ h_repr h_diam
@@ -137,7 +137,7 @@ private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
   have hd0 : Partition.diam 0 a a Δ0 < δ := hδ_pos
   have hclose := hδ 0 Δ0 (fun _ => a) hr0 hd0
   rw [show RiemannSum f a a 0 Δ0 (fun _ => a) - i = -i from by
-        show Sumation 0 (fun q => f a * Partition.length 0 a a Δ0 q) - i = -i
+        show Summation 0 (fun q => f a * Partition.length 0 a a Δ0 q) - i = -i
         rw [summation_zero]
         exact AddCommGroup.zero_add (-i)] at hclose
   rwa [abs_neg] at hclose
@@ -276,31 +276,36 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       have hR_close := hδ₂ (d + 1) ΔR ξR hrR hdiamR
       -- RS の分割恒等式
       have e1 : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
-          Sumation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
+          Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨i.val, by have := i.property; omega⟩) +
-          Sumation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
+          Summation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨kv + j.val, by have := j.property; omega⟩) :=
-        summation_split_at kv (d + 2) _
-      have e2 : Sumation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
+        summation_split_at kv (d + 2)
+          (fun q => f (ξ' q) * Partition.length (kv + d + 1 + 1) a c Δ' q)
+      have e2 : Summation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨kv + j.val, by have := j.property; omega⟩) =
           f (ξ' ⟨kv, by omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ' ⟨kv, by omega⟩ +
-          Sumation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
+          Summation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨kv + j.val + 1, by have := j.property; omega⟩) :=
-        summation_first (d + 1) _
+        summation_first (d + 1)
+          (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
+            Partition.length (kv + d + 1 + 1) a c Δ'
+              ⟨kv + j.val, by have := j.property; omega⟩)
       have e3 : RiemannSum f a b (kv + 1) ΔL ξL =
-          Sumation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
+          Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨i.val, by have := i.property; omega⟩) +
           f (ξ' ⟨kv, by omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ' ⟨kv, by omega⟩ :=
-        summation_succ kv _
+        summation_succ kv
+          (fun i => f (ξL i) * Partition.length (kv + 1) a b ΔL i)
       have e4 : RiemannSum f b c (d + 1) ΔR ξR =
-          Sumation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
+          Summation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
             Partition.length (kv + d + 1 + 1) a c Δ'
               ⟨kv + j.val + 1, by have := j.property; omega⟩) := rfl
       have hsplit_sum : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =

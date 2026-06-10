@@ -160,8 +160,8 @@ theorem length_nonneg (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range n
   exact Δ.increase i
 
 theorem length_sum (n : Nat) (a b : Real) (Δ : Partition n a b) :
-  Sumation n (Δ.length n a b) = b - a := by
-  have : Sumation n (Δ.length n a b) = Sumation n (fun i ↦ Δ.points (addone i) - Δ.points (incl i)) := by rfl
+  Summation n (Δ.length n a b) = b - a := by
+  have : Summation n (Δ.length n a b) = Summation n (fun i ↦ Δ.points (addone i) - Δ.points (incl i)) := by rfl
   rw [this, telescope_sum n (Δ.points)]
   simp [Δ.left, Δ.right]
 

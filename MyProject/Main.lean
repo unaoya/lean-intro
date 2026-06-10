@@ -46,7 +46,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             rw [integral_const x (x + h) (f x) hxxh]
         _ ≤ ((Integral (fun t ↦ (f t - f x).abs) x (x + h)) / h).abs := by
             rw [div_sub_div, ← integral_sub f (fun _ ↦ f x) x (x + h) hxxh
-              (continuous_integrable f x (x + h) hf) (constant_ingtegrable x (x + h) (f x))]
+              (continuous_integrable f x (x + h) hf) (constant_integrable x (x + h) (f x))]
             exact div_abs_le (integral_triangle_ineq hxxh
               (continuous_integrable _ x (x + h)
                 (continuous_sub f (fun _ ↦ f x) hf (continuous_const (f x)))))
@@ -57,8 +57,8 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             · apply integrable_abs_integrable
               apply integrable_sub_integrable
               · apply continuous_integrable _ _ _ hf
-              · apply constant_ingtegrable
-            · apply constant_ingtegrable
+              · apply constant_integrable
+            · apply constant_integrable
             · intro t; apply abs_nonneg
             · exact fun _ ↦ le_of_lt hε
             · exact fun t ht ↦ le_of_lt (hδf _ (le_lt_trans (InInterval_abs ht) hlt))
@@ -107,7 +107,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
         _ = ((Integral (fun t ↦ f t - f x) (x + h) x) / h).abs := by
             rw [← integral_sub f (fun _ ↦ f x) (x + h) x hxhx
               (continuous_integrable f (x + h) x hf)
-              (constant_ingtegrable (x + h) x (f x))]
+              (constant_integrable (x + h) x (f x))]
         _ ≤ ((Integral (fun t ↦ (f t - f x).abs) (x + h) x) / h).abs :=
             div_abs_le (integral_triangle_ineq hxhx
               (continuous_integrable _ (x + h) x
@@ -119,8 +119,8 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             · apply integrable_abs_integrable
               apply integrable_sub_integrable
               · apply continuous_integrable _ _ _ hf
-              · apply constant_ingtegrable
-            · apply constant_ingtegrable
+              · apply constant_integrable
+            · apply constant_integrable
             · intro t; apply abs_nonneg
             · exact fun _ ↦ le_of_lt hε
             · exact fun t ht ↦ le_of_lt (hδf _ (le_lt_trans (InInterval_abs (hconv t ht)) hlt))

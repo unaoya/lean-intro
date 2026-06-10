@@ -8,7 +8,7 @@ open Real Classical Range
 -- リーマン和の定義
 def RiemannSum (f : Real → Real) (a b : Real) (n : Nat)
   (Δ : Partition n a b) (ξ : Range n → Real) : Real :=
-    Sumation n (fun i ↦ f (ξ i) * Δ.length i)
+    Summation n (fun i ↦ f (ξ i) * Δ.length i)
 
 theorem const_riemann_sum (c a b : Real) (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) :
   RiemannSum (fun _ ↦ c) a b n Δ ξ = c * (b - a) := by
@@ -17,7 +17,7 @@ theorem const_riemann_sum (c a b : Real) (n : Nat) (Δ : Partition n a b) (ξ : 
 theorem additive_riemann_sum (f g : Real → Real) (a b : Real) (n : Nat)
   (Δ : Partition n a b) (ξ : Range n → Real) :
   RiemannSum (fun t ↦ f t + g t) a b n Δ ξ = RiemannSum f a b n Δ ξ + RiemannSum g a b n Δ ξ := by
-  rw [RiemannSum, RiemannSum, RiemannSum, ← addtive_summation, summation_congr]
+  rw [RiemannSum, RiemannSum, RiemannSum, ← additive_summation, summation_congr]
   intro i
   rw [add_mul]
 
@@ -33,7 +33,7 @@ theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
     (Δ : Partition n a b) (ξ : Range n → Real)
     (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr a b n ξ) :
     0 ≤ RiemannSum f a b n Δ ξ := by
-  apply sumation_nonneg
+  apply summation_nonneg
   intro i
   apply mul_nonneg
   · apply h' (ξ i) (Δ.repr_in_interval a b n ξ h i)
@@ -119,9 +119,9 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
       let fk : Range n → Real := fun i =>
         if i.val = k.val then f c * Partition.length n a b Δ k
         else f (ξ i) * Partition.length n a b Δ i
-      -- Step 1: RS' sum collapses to Sumation n fk
-      have hRS' : Sumation (n + 1) (fun i ↦ f (ξ' i) * Partition.length (n + 1) a b Δ' i) =
-          Sumation n fk := by
+      -- Step 1: RS' sum collapses to Summation n fk
+      have hRS' : Summation (n + 1) (fun i ↦ f (ξ' i) * Partition.length (n + 1) a b Δ' i) =
+          Summation n fk := by
         apply summation_split_term n k
         · -- h_low: i < k
           intro i hi
@@ -152,8 +152,8 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
                fk ⟨i.val - 1, _⟩
           show _ = if (⟨i.val - 1, _⟩ : Range n).val = k.val then _ else _
           rw [if_neg (show i.val - 1 ≠ k.val from by omega)]
-      -- Step 2: Sumation n fk = RS + correction
-      have heq : Sumation n fk = Sumation n (fun i ↦ f (ξ i) * Partition.length n a b Δ i) +
+      -- Step 2: Summation n fk = RS + correction
+      have heq : Summation n fk = Summation n (fun i ↦ f (ξ i) * Partition.length n a b Δ i) +
           (f c - f (ξ k)) * Partition.length n a b Δ k := by
         have hterm : ∀ i : Range n, fk i = f (ξ i) * Partition.length n a b Δ i +
             (if i.val = k.val then (f c - f (ξ k)) * Partition.length n a b Δ k
@@ -166,7 +166,7 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
             have hik : i = k := Subtype.ext hi; subst hik
             rw [← add_mul, add_sub_cancel']
           · rw [if_neg hi, if_neg hi, add_zero]
-        rw [summation_congr n _ _ hterm, addtive_summation,
+        rw [summation_congr n _ _ hterm, additive_summation,
             summation_one_term n k _ (fun i hne => if_neg hne)]
         rw [if_pos (show k.val = k.val from rfl)]
       -- Step 3: Conclude
