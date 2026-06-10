@@ -47,10 +47,6 @@ private theorem my_cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
 private theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
   Real.le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
 
--- Helper: -(a - b) = b - a
-private theorem neg_sub' (a b : Real) : -(a - b) = b - a := by
-  show -(a + -b) = b + -a
-  rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
 
 -- Helper: m ≠ 0 when 0 ≤ x < (m : Real)
 private theorem nat_ne_zero_of_nonneg_lt (x : Real) (m : Nat) (hx : 0 ≤ x) (hlt : x < (m : Real)) :
@@ -142,7 +138,7 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
         = ((RS - j) + (i - RS)).abs := by rw [telescope_2 j i RS]
       _ ≤ (RS - j).abs + (i - RS).abs := abs_triangle (RS - j) (i - RS)
       _ = (RS - j).abs + (RS - i).abs := by
-          rw [show i - RS = -(RS - i) from (neg_sub' RS i).symm, abs_neg]
+          rw [show i - RS = -(RS - i) from (neg_sub RS i).symm, abs_neg]
       _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ h_j h_i
       _ = ε := half_add ε
   rw [← sub_zero_eq]

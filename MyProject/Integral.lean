@@ -17,11 +17,6 @@ theorem integral_sub (f g : Real → Real) (a b : Real)
     Integral (fun t ↦ f t - g t) a b = Integral f a b - Integral g a b := by
   exact sub_integral f g a b hab hf hg
 
-private theorem nonneg_abs' {x : Real} (hx : 0 ≤ x) : x.abs = x := by
-  cases Classical.em (x = 0) with
-  | inl heq => rw [heq]; exact abs_zero
-  | inr hne => exact pos_abs ⟨hx, fun h => hne h.symm⟩
-
 theorem integral_monotone' (f g : Real → Real) (a b : Real)
     (hab : a ≤ b)
     (hf : ∃ i, IsIntegral f a b i)
@@ -34,55 +29,19 @@ theorem integral_monotone' (f g : Real → Real) (a b : Real)
     integral_nonneg f a b hab (fun x _ => fnonneg x) hf
   have hg_nn : 0 ≤ Integral g a b :=
     integral_nonneg g a b hab (fun x _ => gnonneg x) hg
-  rw [nonneg_abs' hf_nn, nonneg_abs' hg_nn]
+  rw [nonneg_abs hf_nn, nonneg_abs hg_nn]
   exact integral_monotone f g a b hab h hf hg
 
 -- Helpers for continuous_unif_cont
-private theorem not_lt_imp_le {a b : Real} (h : ¬(a < b)) : b ≤ a := by
-  cases LinearOrderedField.le_total a b with
-  | inl hle =>
-    cases Classical.em (a = b) with
-    | inl heq => exact heq ▸ le_refl a
-    | inr hne => exact absurd ⟨hle, hne⟩ h
-  | inr hle => exact hle
-
-private theorem half_lt' {ε : Real} (hε : 0 < ε) : ε / 2 < ε := by
-  have h1 := add_left_lt (ε / 2) 0 (ε / 2) (pos_half ε hε)
-  rw [add_zero] at h1; rw [half_add] at h1; exact h1
-
-private theorem neg_sub'' (a b : Real) : -(a - b) = b - a := by
-  show -(a + -b) = b + -a; rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
-
--- -a ≤ b implies -b ≤ a
-private theorem neg_le_swap {a b : Real} (h : -a ≤ b) : -b ≤ a := by
-  have h1 := add_left_le a (-a) b h
-  rw [AddCommGroup.add_neg] at h1
-  -- h1 : AddCommGroup.zero ≤ a + b
-  have h2 := add_left_le (-b) AddCommGroup.zero (a + b) h1
-  rw [AddCommGroup.add_zero] at h2
-  have h3 : -b + (a + b) = a := by
-    calc -b + (a + b) = (-b + a) + b := (AddCommGroup.add_assoc _ _ _).symm
-      _ = (a + -b) + b := by rw [AddCommGroup.add_comm (-b) a]
-      _ = a + (-b + b) := AddCommGroup.add_assoc _ _ _
-      _ = a + AddCommGroup.zero := by rw [AddCommGroup.neg_add]
-      _ = a := AddCommGroup.add_zero _
-  rw [h3] at h2; exact h2
-
 private theorem abs_lt_of_nonneg_lt {x y : Real} (hx : 0 ≤ x) (hxy : x < y) : x.abs < y := by
   cases Classical.em (x = 0) with
   | inl heq => subst heq; rw [abs_zero]; exact hxy
   | inr hne => rw [pos_abs ⟨hx, fun h => hne h.symm⟩]; exact hxy
 
-private theorem sub_lt_swap {a b c : Real} (h : a - b < c) : a - c < b := by
-  have h1 := add_left_lt (b - c) (a - b) c h
-  rw [show (b - c) + (a - b) = a - c from (telescope_2 c a b).symm,
-      show (b - c) + c = b from by rw [AddCommGroup.add_comm]; exact add_sub_cancel' c b] at h1
-  exact h1
-
 private theorem close_to_c_half {s c δ : Real} (hs_le : s ≤ c)
     (hs_gt : c - δ / 2 < s) (hδ : 0 < δ) : (s - c).abs < δ / 2 := by
   have hcs_nn : 0 ≤ c - s := (nonneg_sub_iff s c).mp hs_le
-  calc (s - c).abs = (-(c - s)).abs := by rw [neg_sub'' c s]
+  calc (s - c).abs = (-(c - s)).abs := by rw [neg_sub c s]
     _ = (c - s).abs := abs_neg _
     _ < δ / 2 := abs_lt_of_nonneg_lt hcs_nn (sub_lt_swap hs_gt)
 
@@ -158,7 +117,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
         | inr hs₁_gt =>
           -- s₁ > t₀ > c - δ_c/2, so close to c
           exact lt_trans _ _ _ (close_to_c_half hs₁.2
-            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₁_gt)) hδc_pos) (half_lt' hδc_pos)
+            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₁_gt)) hδc_pos) (half_lt hδc_pos)
         | inl hs₁_le =>
           -- s₂ > t₀ (since ¬both ≤ t₀)
           have hs₂_gt : ¬(s₂ ≤ t₀) := fun h => hnotboth ⟨hs₁_le, h⟩
@@ -173,7 +132,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
         cases Classical.em (s₂ ≤ t₀) with
         | inr hs₂_gt =>
           exact lt_trans _ _ _ (close_to_c_half hs₂.2
-            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₂_gt)) hδc_pos) (half_lt' hδc_pos)
+            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₂_gt)) hδc_pos) (half_lt hδc_pos)
         | inl hs₂_le =>
           have hs₁_gt : ¬(s₁ ≤ t₀) := fun h => hnotboth ⟨h, hs₂_le⟩
           have h_s1_half := close_to_c_half hs₁.2
@@ -181,14 +140,14 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
           calc (s₂ - c).abs = ((s₁ - c) + (s₂ - s₁)).abs := by rw [telescope_2 c s₂ s₁]
             _ ≤ (s₁ - c).abs + (s₂ - s₁).abs := abs_triangle _ _
             _ = (s₁ - c).abs + (s₁ - s₂).abs := by
-                rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub'' s₁ s₂).symm, abs_neg]
+                rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub s₁ s₂).symm, abs_neg]
             _ < δ_c / 2 + δ_c / 2 := lt_add_lt _ _ _ _ h_s1_half hdist_le
             _ = δ_c := half_add δ_c
       -- Triangle: f s₁ - f s₂ = (f s₁ - f c) + (f c - f s₂)
       have hf1 := hδc s₁ h_s1_close
       have hf2 := hδc s₂ h_s2_close
       have hsplit : f s₁ - f s₂ = (f s₁ - f c) + (f c - f s₂) := by
-        rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub'' (f s₂) (f c)).symm]
+        rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm]
         rw [show f s₁ - f c + -(f s₂ - f c) = f s₁ - f c - (f s₂ - f c) from rfl]
         rw [show f s₁ - f s₂ = (f s₁ - f c) - (f s₂ - f c) from by
           show f s₁ + -(f s₂) = (f s₁ + -(f c)) + -((f s₂) + -(f c))
@@ -204,7 +163,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
           = ((f s₁ - f c) + (f c - f s₂)).abs := by rw [hsplit]
           _ ≤ (f s₁ - f c).abs + (f c - f s₂).abs := abs_triangle _ _
           _ = (f s₁ - f c).abs + (f s₂ - f c).abs := by
-              rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub'' (f s₂) (f c)).symm, abs_neg]
+              rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm, abs_neg]
           _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ hf1 hf2
           _ = ε := half_add ε
   -- Helper: a < b, c ≤ d → a + c < b + d
@@ -237,7 +196,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
       -- c + η ≤ b
       have hcη_le_b : c + η ≤ b := by
         have hη_le_bc : η ≤ b - c :=
-          le_trans (le_trans (min_right_le δ' _) (min_right_le _ _)) (half_lt' hbc_pos).1
+          le_trans (le_trans (min_right_le δ' _) (min_right_le _ _)) (half_lt hbc_pos).1
         have h1 := add_left_le c η (b - c) hη_le_bc
         rw [add_sub_cancel' c b] at h1; exact h1
       -- a ≤ c + η
@@ -251,7 +210,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
         have hle : s - c ≤ η := by
           have h1 := LinearOrderedField.add_le_add s (c + η) (-c) hscη
           rw [add_neg_cancel_η] at h1; exact h1
-        rw [nonneg_abs' hnn]
+        rw [nonneg_abs hnn]
         exact le_trans hle hη_le_δc2
       -- S(c + η) holds
       have hSext : S (c + η) := ⟨ha_le_cη, hcη_le_b, δ', hδ'_pos, fun s₁ s₂ hs₁ hs₂ hdist => by
@@ -265,7 +224,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             | inr hs₁_gt =>
               have hc_le := not_lt_imp_le (fun hlt => hs₁_gt hlt.1)
               calc (s₁ - c).abs ≤ δ_c / 2 := close_ext s₁ hc_le hs₁.2
-                _ < δ_c := half_lt' hδc_pos
+                _ < δ_c := half_lt hδc_pos
             | inl hs₁_le =>
               have hs₂_gt : ¬(s₂ ≤ c) := fun h => hnotboth ⟨hs₁_le, h⟩
               have hc_le_s₂ := not_lt_imp_le (fun hlt => hs₂_gt hlt.1)
@@ -282,7 +241,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             | inr hs₂_gt =>
               have hc_le := not_lt_imp_le (fun hlt => hs₂_gt hlt.1)
               calc (s₂ - c).abs ≤ δ_c / 2 := close_ext s₂ hc_le hs₂.2
-                _ < δ_c := half_lt' hδc_pos
+                _ < δ_c := half_lt hδc_pos
             | inl hs₂_le =>
               have hs₁_gt : ¬(s₁ ≤ c) := fun h => hnotboth ⟨h, hs₂_le⟩
               have hc_le_s₁ := not_lt_imp_le (fun hlt => hs₁_gt hlt.1)
@@ -290,7 +249,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
                   = ((s₁ - c) + (s₂ - s₁)).abs := by rw [telescope_2 c s₂ s₁]
                 _ ≤ (s₁ - c).abs + (s₂ - s₁).abs := abs_triangle _ _
                 _ = (s₁ - c).abs + (s₁ - s₂).abs := by
-                    rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub'' s₁ s₂).symm, abs_neg]
+                    rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub s₁ s₂).symm, abs_neg]
                 _ < δ_c / 2 + δ_c / 2 := by
                     rw [AddCommGroup.add_comm ((s₁ - c).abs) ((s₁ - s₂).abs)]
                     exact lt_add_le' (lt_le_trans _ _ _ hdist hδ'_le_δc2)
@@ -303,7 +262,7 @@ private theorem continuous_unif_cont (f : Real → Real) (a b : Real)
               = ((f c - f s₂) + (f s₁ - f c)).abs := by rw [telescope_2 (f s₂) (f s₁) (f c)]
             _ ≤ (f c - f s₂).abs + (f s₁ - f c).abs := abs_triangle _ _
             _ = (f s₂ - f c).abs + (f s₁ - f c).abs := by
-                rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub'' (f s₂) (f c)).symm, abs_neg]
+                rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm, abs_neg]
             _ = (f s₁ - f c).abs + (f s₂ - f c).abs := by
                 rw [AddCommGroup.add_comm ((f s₂ - f c).abs) ((f s₁ - f c).abs)]
             _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ hf1 hf2
@@ -385,7 +344,7 @@ private theorem continuous_bounded (f : Real → Real) (a b : Real)
             add_sub_cancel (a + (k : Real) * (δ / 2)) (δ / 2)
           rw [hc] at h; exact h
         have hdist : (t - (a + (k : Real) * (δ / 2))).abs < δ :=
-          le_lt_trans (by rw [nonneg_abs' hts_nn]; exact hts_le) (half_lt' hδ_pos)
+          le_lt_trans (by rw [nonneg_abs hts_nn]; exact hts_le) (half_lt hδ_pos)
         -- UC + IH + triangle
         have h_uc := huc t (a + (k : Real) * (δ / 2)) ⟨hat, htb⟩ ⟨has, hsb⟩ hdist
         have h_ih := ih (a + (k : Real) * (δ / 2)) has hsb (le_refl _)
@@ -451,7 +410,7 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
     intro i
     have h1 : f (ξ' i) ≤ f (ξ i) + C := by
       have h2 : (f (ξ' i) - f (ξ i)).abs ≤ C := by
-        rw [show f (ξ' i) - f (ξ i) = -(f (ξ i) - f (ξ' i)) from (neg_sub'' _ _).symm,
+        rw [show f (ξ' i) - f (ξ i) = -(f (ξ i) - f (ξ' i)) from (neg_sub _ _).symm,
             abs_neg]; exact hclose i
       have h3 := le_trans (le_abs _) h2
       have h4 := add_left_le (f (ξ i)) (f (ξ' i) - f (ξ i)) C h3
@@ -464,7 +423,7 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
   -- Step 4: combine using abs_le
   apply abs_le
   -- -(RS(ξ) - RS(ξ')) ≤ C*(b-a), i.e., RS(ξ') - RS(ξ) ≤ C*(b-a)
-  · rw [neg_sub'' (RiemannSum f a b n Δ ξ) (RiemannSum f a b n Δ ξ')]
+  · rw [neg_sub (RiemannSum f a b n Δ ξ) (RiemannSum f a b n Δ ξ')]
     have h7 := add_left_le (-(RiemannSum f a b n Δ ξ)) (RiemannSum f a b n Δ ξ')
         (RiemannSum f a b n Δ ξ + C * (b - a)) h_lower
     have h8 : -(RiemannSum f a b n Δ ξ) + (RiemannSum f a b n Δ ξ + C * (b - a))
@@ -508,32 +467,6 @@ private theorem rs_abs_bound (f : Real → Real) (a b M : Real)
 -- continuous_integrable 用の細分比較補題群
 -- ============================================================
 
-private theorem min_eq_left'' {a b : Real} (h : a ≤ b) : min a b = a := by
-  show (if a ≤ b then a else b) = a
-  rw [if_pos h]
-
-private theorem min_eq_right'' {a b : Real} (h : b ≤ a) : min a b = b := by
-  show (if a ≤ b then a else b) = b
-  cases Classical.em (a ≤ b) with
-  | inl h' => rw [if_pos h']; exact LinearOrderedField.le_asymm a b h' h
-  | inr h' => rw [if_neg h']
-
-private theorem sub_summation' (n : Nat) (F G : Range n → Real) :
-    Sumation n F - Sumation n G = Sumation n (fun i => F i - G i) := by
-  calc Sumation n F - Sumation n G
-      = Sumation n F + Sumation n (fun i => -G i) := by
-        show Sumation n F + -Sumation n G = _
-        rw [neg_summation]
-    _ = Sumation n (fun i => F i + -G i) := (addtive_summation n F (fun i => -G i)).symm
-    _ = Sumation n (fun i => F i - G i) := rfl
-
-private theorem sub_zero' (x : Real) : x - 0 = x := by
-  show x + -(0 : Real) = x
-  rw [show -(0 : Real) = 0 from by
-        rw [← AddCommGroup.zero_add (-(0 : Real))]
-        exact AddCommGroup.add_neg 0,
-      add_zero]
-
 -- 区分定数関数の原始関数：G(t) = Σ_i f(ξ_i)·(min t p_{i+1} − min t p_i)
 private noncomputable def stepAnti (f : Real → Real) (n : Nat) (a b : Real)
     (Δ : Partition n a b) (ξ : Range n → Real) (t : Real) : Real :=
@@ -554,8 +487,8 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
     by_cases hiσ : i.val = σ.val
     · rw [if_pos hiσ]
       have hi : i = σ := Subtype.ext hiσ
-      rw [hi, min_eq_left'' hd, min_eq_right'' (le_trans hc hcd),
-          min_eq_left'' (le_trans hcd hd), min_eq_right'' hc,
+      rw [hi, min_eq_left hd, min_eq_right (le_trans hc hcd),
+          min_eq_left (le_trans hcd hd), min_eq_right hc,
           MulCommMonoid.mul_comm (f (ξ σ)) (d - Δ.points (Range.incl σ)),
           MulCommMonoid.mul_comm (f (ξ σ)) (c - Δ.points (Range.incl σ)),
           mul_sub_mul,
@@ -572,7 +505,7 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
         have h2 : Δ.points (Range.incl i) ≤ c := le_trans (Δ.increase i) h1
         have h1d : Δ.points (Range.addone i) ≤ d := le_trans h1 hcd
         have h2d : Δ.points (Range.incl i) ≤ d := le_trans h2 hcd
-        rw [min_eq_right'' h1d, min_eq_right'' h2d, min_eq_right'' h1, min_eq_right'' h2,
+        rw [min_eq_right h1d, min_eq_right h2d, min_eq_right h1, min_eq_right h2,
             sub_self]
       · -- 小区間 i は [P,Q] の右側
         have h1 : d ≤ Δ.points (Range.incl i) :=
@@ -581,7 +514,7 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
         have h2 : d ≤ Δ.points (Range.addone i) := le_trans h1 (Δ.increase i)
         have h1c : c ≤ Δ.points (Range.incl i) := le_trans hcd h1
         have h2c : c ≤ Δ.points (Range.addone i) := le_trans hcd h2
-        rw [min_eq_left'' h2, min_eq_left'' h1, min_eq_left'' h2c, min_eq_left'' h1c,
+        rw [min_eq_left h2, min_eq_left h1, min_eq_left h2c, min_eq_left h1c,
             sub_self d, sub_self c,
             show f (ξ i) * (0 : Real) = 0 from by
               rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
@@ -590,7 +523,7 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
       = Sumation n (fun i =>
           f (ξ i) * (min d (Δ.points (Range.addone i)) - min d (Δ.points (Range.incl i))) -
           f (ξ i) * (min c (Δ.points (Range.addone i)) - min c (Δ.points (Range.incl i)))) :=
-        sub_summation' n _ _
+        sub_summation n _ _
     _ = Sumation n (fun i => if i.val = σ.val then f (ξ σ) * (d - c) else 0) :=
         summation_congr n _ _ hterm
     _ = (if σ.val = σ.val then f (ξ σ) * (d - c) else 0) :=
@@ -608,15 +541,15 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
   have hGb : stepAnti f n a b Δ ξ b = RiemannSum f a b n Δ ξ := by
     apply summation_congr
     intro i
-    rw [min_eq_right'' (Partition.point_le_right n a b Δ (Range.addone i)),
-        min_eq_right'' (Partition.point_le_right n a b Δ (Range.incl i))]
+    rw [min_eq_right (Partition.point_le_right n a b Δ (Range.addone i)),
+        min_eq_right (Partition.point_le_right n a b Δ (Range.incl i))]
     rfl
   have hGa : stepAnti f n a b Δ ξ a = 0 := by
     have hz : ∀ i : Range n, f (ξ i) *
         (min a (Δ.points (Range.addone i)) - min a (Δ.points (Range.incl i))) = 0 := by
       intro i
-      rw [min_eq_left'' (Partition.left_le_point n a b Δ (Range.addone i)),
-          min_eq_left'' (Partition.left_le_point n a b Δ (Range.incl i)), sub_self,
+      rw [min_eq_left (Partition.left_le_point n a b Δ (Range.addone i)),
+          min_eq_left (Partition.left_le_point n a b Δ (Range.incl i)), sub_self,
           MulCommMonoid.mul_comm]
       exact zero_mul' _
     calc stepAnti f n a b Δ ξ a
@@ -637,7 +570,7 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
         telescope_sum N (fun r => stepAnti f n a b Δ ξ (Δ'.points r))
     _ = stepAnti f n a b Δ ξ b - stepAnti f n a b Δ ξ a := by rw [Δ'.right, Δ'.left]
     _ = RiemannSum f a b n Δ ξ - 0 := by rw [hGb, hGa]
-    _ = RiemannSum f a b n Δ ξ := sub_zero' _
+    _ = RiemannSum f a b n Δ ξ := sub_zero _
 
 -- Δ の全分点が Δ'' の分点に含まれるなら、Δ'' の各小区間は Δ のある小区間に含まれる
 private theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
@@ -687,46 +620,6 @@ private theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
     | inr hrj =>
       rw [← hr]
       exact Partition.points_mono N a b Δ'' r (Range.incl j) hrj
-
--- s, t ∈ [P, Q] なら |s − t| ≤ Q − P
-private theorem abs_sub_le_of_mem {P Q s t : Real}
-    (hsP : P ≤ s) (hsQ : s ≤ Q) (htP : P ≤ t) (htQ : t ≤ Q) :
-    (s - t).abs ≤ Q - P := by
-  have hnegt : -t ≤ -P := neg_le_swap (show -(-P) ≤ t from by rw [neg_neg]; exact htP)
-  have hnegs : -s ≤ -P := neg_le_swap (show -(-P) ≤ s from by rw [neg_neg]; exact hsP)
-  apply abs_le
-  · rw [neg_sub'']
-    exact le_trans (LinearOrderedField.add_le_add t Q (-s) htQ) (add_left_le Q _ _ hnegs)
-  · exact le_trans (LinearOrderedField.add_le_add s Q (-t) hsQ) (add_left_le Q _ _ hnegt)
-
-private theorem in_interval_pair {a b t : Real} (hab : a ≤ b) (h : InInterval a b t) :
-    a ≤ t ∧ t ≤ b := by
-  dsimp [InInterval] at h
-  rwa [if_pos hab] at h
-
-private theorem mul_left_le' (c x y : Real) (hc : 0 ≤ c) (h : x ≤ y) : c * x ≤ c * y := by
-  rw [MulCommMonoid.mul_comm c x, MulCommMonoid.mul_comm c y]
-  exact nonneg_mul_nonneg x y c hc h
-
-private theorem sub_le_swap' {a b c : Real} (h : a - b ≤ c) : a - c ≤ b := by
-  have h1 := LinearOrderedField.add_le_add (a - b) c (b - c) h
-  rw [show a - b + (b - c) = a - c from by
-        rw [AddCommGroup.add_comm]; exact (telescope_2 c a b).symm,
-      show c + (b - c) = b from add_sub_cancel' c b] at h1
-  exact h1
-
-private theorem le_add_of_sub_le {A B C : Real} (h : A - B ≤ C) : A ≤ B + C := by
-  have h1 := LinearOrderedField.add_le_add (A - B) C B h
-  rw [AddCommGroup.add_comm (A - B) B, add_sub_cancel' B A,
-      AddCommGroup.add_comm C B] at h1
-  exact h1
-
-private theorem sub_le_of_le_add {A B C : Real} (h : A ≤ B + C) : A - B ≤ C := by
-  have h1 := LinearOrderedField.add_le_add A (B + C) (-B) h
-  rw [show B + C + -B = C from by
-        rw [AddCommGroup.add_comm B C, AddCommGroup.add_assoc, AddCommGroup.add_neg,
-            AddCommGroup.add_zero]] at h1
-  exact h1
 
 -- 核心補題：固定した細かい分割 Δ に対し、十分細かい任意の Δ' の RS は RS(Δ) に近い
 private theorem rs_compare (f : Real → Real) (a b M : Real)
@@ -799,7 +692,7 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam n' a b Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam n' a b Δ' from
           (MulCommMonoid.mul_assoc _ _ _).symm]
-    apply le_trans (mul_left_le' (Real.ofNat (n + 1) * (2 * M)) _ _
+    apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
       (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
     rw [← mul_div_assoc, MulCommMonoid.mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
         mul_div_cancel θ _ hK_ne]
@@ -817,80 +710,13 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
         (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n' Δ' ξ').abs := by
         rw [show RiemannSum f a b n' Δ' ξ' - RiemannSum f a b (n' + (n + 1)) Δp ξp =
               -(RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n' Δ' ξ') from
-              (neg_sub'' _ _).symm, abs_neg]
+              (neg_sub _ _).symm, abs_neg]
     _ ≤ ε' * (b - a) + θ :=
         le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
 
 -- ============================================================
 -- abs_integrable 用の補題群（振動和による評価）
 -- ============================================================
-
-private theorem abs_summation_le (n : Nat) (h : Range n → Real) :
-    (Sumation n h).abs ≤ Sumation n (fun i => (h i).abs) := by
-  induction n with
-  | zero =>
-    rw [show Sumation 0 h = 0 from rfl, abs_zero]
-    exact le_refl 0
-  | succ m ih =>
-    rw [summation_succ m h, summation_succ m (fun i => (h i).abs)]
-    apply le_trans (abs_triangle _ _)
-    exact LinearOrderedField.add_le_add _ _ _ (ih (fun i => h (Range.incl i)))
-
--- 逆三角不等式
-private theorem abs_abs_sub_abs (x y : Real) : (x.abs - y.abs).abs ≤ (x - y).abs := by
-  apply abs_le
-  · rw [neg_sub'']
-    apply sub_le_of_le_add
-    calc y.abs = (x + (y - x)).abs := by rw [add_sub_cancel' x y]
-      _ ≤ x.abs + (y - x).abs := abs_triangle _ _
-      _ = x.abs + (x - y).abs := by
-          rw [show y - x = -(x - y) from (neg_sub'' x y).symm, abs_neg]
-  · apply sub_le_of_le_add
-    calc x.abs = (y + (x - y)).abs := by rw [add_sub_cancel' y x]
-      _ ≤ y.abs + (x - y).abs := abs_triangle _ _
-
-private theorem le_of_forall_le_add {A B : Real} (h : ∀ γ, 0 < γ → A ≤ B + γ) : A ≤ B := by
-  cases LinearOrderedField.le_total A B with
-  | inl hle => exact hle
-  | inr hge =>
-    cases Classical.em (A = B) with
-    | inl heq => rw [heq]; exact le_refl B
-    | inr hne =>
-      exfalso
-      have hBA : B < A := ⟨hge, fun h0 => hne h0.symm⟩
-      have hpos : 0 < A - B := (pos_iff_lt B A).mp hBA
-      have h1 := h ((A - B) / 2) (pos_half _ hpos)
-      have h2 : B + (A - B) / 2 < B + (A - B) := add_left_lt B _ _ (half_lt' hpos)
-      rw [add_sub_cancel' B A] at h2
-      exact (le_lt_trans h1 h2).2 rfl
-
-private theorem div_mul_cancel'' (a b : Real) (hb : b ≠ 0) : a / b * b = a := by
-  show a * Field.inv b * b = a
-  rw [MulCommMonoid.mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]
-
--- 上限の γ-近似元の存在
-private theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S x → x ≤ B)
-    (γ : Real) (hγ : 0 < γ) : ∃ x, S x ∧ Real.sup S hne hbdd - γ < x := by
-  cases Classical.em (∃ x, S x ∧ Real.sup S hne hbdd - γ < x) with
-  | inl hex => exact hex
-  | inr hnex =>
-    exfalso
-    have hub : ∀ x, S x → x ≤ Real.sup S hne hbdd - γ := fun x hx =>
-      (Classical.em (Real.sup S hne hbdd - γ < x)).elim
-        (fun hlt => absurd ⟨x, hx, hlt⟩ hnex) not_lt_imp_le
-    have hle := Real.sup_lub S hne hbdd _ hub
-    have h1 := LinearOrderedField.add_le_add (Real.sup S hne hbdd)
-      (Real.sup S hne hbdd - γ) (-(Real.sup S hne hbdd)) hle
-    rw [AddCommGroup.add_neg] at h1
-    rw [show Real.sup S hne hbdd - γ + -(Real.sup S hne hbdd) = -γ from by
-          show Real.sup S hne hbdd + -γ + -(Real.sup S hne hbdd) = -γ
-          rw [AddCommGroup.add_comm (Real.sup S hne hbdd) (-γ),
-              AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
-    have h2 : γ ≤ 0 :=
-      calc γ = 0 + γ := (AddCommGroup.zero_add γ).symm
-        _ ≤ -γ + γ := LinearOrderedField.add_le_add 0 (-γ) γ h1
-        _ = 0 := AddCommGroup.neg_add γ
-    exact hγ.2 (LinearOrderedField.le_asymm 0 γ hγ.1 h2)
 
 private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p + p) := by
   rw [AddCommGroup.add_comm p x, AddCommGroup.add_assoc x p (p + y),
@@ -963,9 +789,9 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       Δ.points (Range.incl i) ≤ t → t ≤ Δ.points (Range.addone i) →
       ((f s).abs - (f t).abs).abs ≤ Osc i := by
     intro i s t hs1 hs2 ht1 ht2
-    apply le_trans (abs_abs_sub_abs (f s) (f t))
+    apply le_trans (abs_sub_abs_le (f s) (f t))
     apply abs_le
-    · rw [neg_sub'']
+    · rw [neg_sub]
       exact le_trans (LinearOrderedField.add_le_add (f t) (SupF i) (-(f s))
         (hF1 i t ht1 ht2)) (add_left_le (SupF i) _ _ (hF2 i s hs1 hs2))
     · exact le_trans (LinearOrderedField.add_le_add (f s) (SupF i) (-(f t))
@@ -1037,8 +863,8 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
                     summation_congr n _ _ (fun i => (mul_sub_mul _ _ _).symm)
                 _ = RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
                     RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) :=
-                    (sub_summation' n _ _).symm
-            · rw [add_mul, div_mul_cancel'' (γ / 2) (b - a) hba_ne, half_add]
+                    (sub_summation n _ _).symm
+            · rw [add_mul, div_mul_cancel' (γ / 2) (b - a) hba_ne, half_add]
     rw [hRHS] at hsum
     -- RS の差を If 経由で評価
     have hu_close := hδf n Δ (fun i => Classical.choose (hu i)) hu_repr hd
@@ -1055,7 +881,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       apply lt_add_lt
       · rw [show If - RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) =
               -(RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) - If) from
-              (neg_sub'' _ _).symm]
+              (neg_sub _ _).symm]
         exact le_lt_trans (le_abs _) (by rw [abs_neg]; exact hv_close)
       · exact le_lt_trans (le_abs _) hu_close
     exact le_trans hsum (LinearOrderedField.add_le_add _ _ γ hdiff)
@@ -1073,7 +899,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     | succ m => exact Nat.zero_lt_succ m
   have hMg : ∀ t, InInterval a b t → ((fun x => (f x).abs) t).abs ≤ M := by
     intro t ht
-    rw [nonneg_abs' abs_nonneg]
+    rw [nonneg_abs abs_nonneg]
     exact hM t ht
   obtain ⟨Δp, ξp, hrp, hlenp, hptsp, hbdp⟩ :=
     rs_multi_insert_bound (fun x => (f x).abs) a b M hMg (Real.le_of_lt hM_pos)
@@ -1110,7 +936,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
           = Sumation (n' + (n + 1)) (fun j =>
               (f (ξp j)).abs * Partition.length (n' + (n + 1)) a b Δp j -
               (f (ξ (Classical.choose (hσex j)))).abs *
-                Partition.length (n' + (n + 1)) a b Δp j) := sub_summation' _ _ _
+                Partition.length (n' + (n + 1)) a b Δp j) := sub_summation _ _ _
         _ = Sumation (n' + (n + 1)) (fun j =>
               ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
               Partition.length (n' + (n + 1)) a b Δp j) :=
@@ -1151,7 +977,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam n' a b Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam n' a b Δ' from
           (MulCommMonoid.mul_assoc _ _ _).symm]
-    apply le_trans (mul_left_le' (Real.ofNat (n + 1) * (2 * M)) _ _
+    apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
       (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
     rw [← mul_div_assoc, MulCommMonoid.mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
         mul_div_cancel θ _ hK_ne]
@@ -1179,7 +1005,7 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
               RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp =
               -(RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
                 RiemannSum (fun x => (f x).abs) a b n' Δ' ξ') from
-              (neg_sub'' _ _).symm, abs_neg]
+              (neg_sub _ _).symm, abs_neg]
     _ ≤ (ε' + ε') + θ :=
         le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
 
@@ -1285,9 +1111,9 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
           apply le_trans (le_abs _)
           rw [show RiemannSum f a x n Δ ξ - RiemannSum f a x n' Δ' ξ' =
                 -(RiemannSum f a x n' Δ' ξ' - RiemannSum f a x n Δ ξ) from
-                (neg_sub'' _ _).symm, abs_neg]
+                (neg_sub _ _).symm, abs_neg]
           exact h
-        exact sub_le_swap' h2
+        exact sub_le_swap h2
       have h_lower := Real.sup_ub S hS_ne hS_bdd _ hmem
       -- 上から：I ≤ RS + (ε/2 + ε/4)
       have h_upper : I ≤ RiemannSum f a x n Δ ξ + (ε / 2 + ε / 2 / 2) := by
@@ -1318,11 +1144,11 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
       -- |RS − I| ≤ 3ε/4 < ε
       have habs : (RiemannSum f a x n Δ ξ - I).abs ≤ ε / 2 + ε / 2 / 2 := by
         apply abs_le
-        · rw [neg_sub'']
+        · rw [neg_sub]
           exact sub_le_of_le_add h_upper
-        · exact sub_le_swap' h_lower
+        · exact sub_le_swap h_lower
       have hBlt : ε / 2 + ε / 2 / 2 < ε := by
-        have h := add_left_lt (ε / 2) (ε / 2 / 2) (ε / 2) (half_lt' (pos_half ε hε))
+        have h := add_left_lt (ε / 2) (ε / 2 / 2) (ε / 2) (half_lt (pos_half ε hε))
         rwa [half_add ε] at h
       exact le_lt_trans habs hBlt
 
@@ -1370,7 +1196,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
       have h1 := add_left_le M₀ 0 1 zero_lt_one.1
       rwa [add_zero] at h1
     have hMg : ∀ t, InInterval a b t → ((f t).abs).abs ≤ M₀ + 1 := fun t ht => by
-      rw [nonneg_abs' abs_nonneg]; exact hM t ht
+      rw [nonneg_abs abs_nonneg]; exact hM t ht
     obtain ⟨If, hIf⟩ := h''
     -- S = 「十分細かい分割では常に RS_{|f|} 以下」となる y の集合
     let S : Real → Prop := fun y =>
@@ -1419,9 +1245,9 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
               RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' =
               -(RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
                 RiemannSum (fun x => (f x).abs) a b n Δ ξ) from
-              (neg_sub'' _ _).symm, abs_neg]
+              (neg_sub _ _).symm, abs_neg]
         exact h1
-      exact sub_le_swap' h2
+      exact sub_le_swap h2
     have h_lower := Real.sup_ub S hS_ne hS_bdd _ hmem
     -- 上から：sup ≤ RS + ε/2
     have h_upper : Real.sup S hS_ne hS_bdd ≤
@@ -1445,10 +1271,10 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     have habs : (RiemannSum (fun x => (f x).abs) a b n Δ ξ -
         Real.sup S hS_ne hS_bdd).abs ≤ ε / 2 := by
       apply abs_le
-      · rw [neg_sub'']
+      · rw [neg_sub]
         exact sub_le_of_le_add h_upper
-      · exact sub_le_swap' h_lower
-    exact le_lt_trans habs (half_lt' hε)
+      · exact sub_le_swap h_lower
+    exact le_lt_trans habs (half_lt hε)
 
 -- 積分の三角不等式（Triangle.lean から移設）
 theorem int_triangle_ineq (f : Real → Real) (a b : Real) (h : a ≤ b)
@@ -1487,7 +1313,7 @@ theorem integral_triangle_ineq {f : Real → Real} {a b : Real} (hab : a ≤ b)
   have habs : IsIntegrable (fun t ↦ (f t).abs) a b := integrable_abs_integrable f a b h
   have hnn : 0 ≤ Integral (fun t ↦ (f t).abs) a b :=
     integral_nonneg (fun t ↦ (f t).abs) a b hab (fun t _ => abs_nonneg) habs
-  rw [nonneg_abs' hnn]
+  rw [nonneg_abs hnn]
   exact int_triangle_ineq f a b hab h
 
 -- ============================================================
@@ -1517,10 +1343,6 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
 theorem integral_self (f : Real → Real) (a : Real) : Integral f a a = 0 :=
   IsIntegral_iff f a a 0 (le_refl a) (isintegral_self f a)
 
-private theorem neg_zero' : -(0 : Real) = 0 := by
-  rw [← AddCommGroup.zero_add (-(0 : Real))]
-  exact AddCommGroup.add_neg 0
-
 -- 向き付き積分の定義：a > b のときは符号を反転する
 noncomputable def OIntegral (f : Real → Real) (a b : Real) : Real :=
   if a ≤ b then Integral f a b else -(Integral f b a)
@@ -1537,7 +1359,7 @@ theorem OIntegral_of_ge (f : Real → Real) {a b : Real} (h : b ≤ a) :
     have heq : a = b := LinearOrderedField.le_asymm a b hab h
     subst heq
     show (if a ≤ a then Integral f a a else -(Integral f a a)) = -(Integral f a a)
-    rw [if_pos (le_refl a), integral_self, neg_zero']
+    rw [if_pos (le_refl a), integral_self, neg_zero]
   | inr hnab =>
     show (if a ≤ b then Integral f a b else -(Integral f b a)) = -(Integral f b a)
     rw [if_neg hnab]
@@ -1552,21 +1374,6 @@ theorem OIntegral_swap (f : Real → Real) (a b : Real) :
 theorem OIntegral_self (f : Real → Real) (a : Real) : OIntegral f a a = 0 := by
   rw [OIntegral_of_le f (le_refl a)]
   exact integral_self f a
-
--- 加法の整理用補助
-private theorem add_neg_cancel_right' (x y : Real) : (x + y) + -y = x := by
-  rw [AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]
-
-private theorem neg_add_cancel_left' (x y : Real) : -x + (x + y) = y := by
-  rw [← AddCommGroup.add_assoc, AddCommGroup.neg_add, AddCommGroup.zero_add]
-
-private theorem neg_neg_cancel_left (x y : Real) : (-x + -y) + x = -y := by
-  rw [AddCommGroup.add_comm (-x) (-y), AddCommGroup.add_assoc, AddCommGroup.neg_add,
-      AddCommGroup.add_zero]
-
-private theorem add_neg_neg_cancel (x y : Real) : x + (-y + -x) = -y := by
-  rw [AddCommGroup.add_comm (-y) (-x), ← AddCommGroup.add_assoc, AddCommGroup.add_neg,
-      AddCommGroup.zero_add]
 
 -- 向き付き積分の加法性（a, b, c の順序によらず成立）
 theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u v)
@@ -1585,7 +1392,7 @@ theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u 
         -- a ≤ c ≤ b
         rw [OIntegral_of_le f hab, OIntegral_of_ge f hcb, OIntegral_of_le f hac,
             ← interval_add_integral f a c b hac hcb (hint a c) (hint c b)]
-        exact add_neg_cancel_right' _ _
+        exact add_neg_cancel_right _ _
       | inr hca =>
         -- c ≤ a ≤ b
         rw [OIntegral_of_le f hab, OIntegral_of_ge f hcb, OIntegral_of_ge f hca,
@@ -1599,7 +1406,7 @@ theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u 
         -- b ≤ a ≤ c
         rw [OIntegral_of_ge f hba, OIntegral_of_le f hbc, OIntegral_of_le f hac,
             ← interval_add_integral f b a c hba hac (hint b a) (hint a c)]
-        exact neg_add_cancel_left' _ _
+        exact neg_add_cancel_left _ _
       | inr hca =>
         -- b ≤ c ≤ a
         rw [OIntegral_of_ge f hba, OIntegral_of_le f hbc, OIntegral_of_ge f hca,

@@ -186,16 +186,6 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
       rw [show (2 : Real) = 1 + 1 from rfl, add_mul, one_mul]]
     exact le_trans (LinearOrderedField.add_le_add _ _ _ hfc) (add_left_le _ _ _ hfξ)
 
--- a + b = c かつ 0 ≤ b なら a ≤ c
-private theorem le_of_add_nonneg_eq {a b c : Real} (h : a + b = c) (hb : 0 ≤ b) : a ≤ c := by
-  calc a = a + 0 := (add_zero a).symm
-    _ ≤ a + b := add_left_le a 0 b hb
-    _ = c := h
-
--- a + b = c かつ 0 ≤ a なら b ≤ c
-private theorem le_of_nonneg_add_eq {a b c : Real} (h : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
-  rw [AddCommGroup.add_comm] at h; exact le_of_add_nonneg_eq h ha
-
 -- m 点挿入で RS の差を制御
 theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)

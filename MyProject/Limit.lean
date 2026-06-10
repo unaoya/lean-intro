@@ -45,14 +45,6 @@ private theorem abs_pos_of_ne {x : Real} (h : x ≠ 0) : 0 < abs x := by
     rw [show abs x = -x from by show (if x ≤ -x then -x else x) = -x; rw [if_pos hle2]]
     exact hneg_pos
 
--- Helper: half_lt
-private theorem half_lt {ε : Real} (hε : 0 < ε) : ε / 2 < ε := by
-  have hε2 := pos_half ε hε
-  have h1 : ε / 2 + 0 < ε / 2 + ε / 2 := add_left_lt (ε / 2) 0 (ε / 2) hε2
-  rw [add_zero] at h1
-  rw [half_add] at h1
-  exact h1
-
 -- PROOF 1: limit_unique
 theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real)
     (h₁ : IsLimAt f l₁ a) (h₂ : IsLimAt f l₂ a) : l₁ = l₂ := by

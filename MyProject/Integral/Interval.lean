@@ -117,92 +117,9 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
 -- 区間加法性のための補助補題
 -- ============================================================
 
-private theorem neg_sub_iv (a b : Real) : -(a - b) = b - a := by
-  show -(a + -b) = b + -a
-  rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
-
 private theorem add_lt_add_right' {x y : Real} (h : x < y) (c : Real) : x + c < y + c := by
   rw [AddCommGroup.add_comm x c, AddCommGroup.add_comm y c]
   exact add_left_lt c x y h
-
-private theorem mul_left_le_iv (c x y : Real) (hc : 0 ≤ c) (h : x ≤ y) : c * x ≤ c * y := by
-  rw [MulCommMonoid.mul_comm c x, MulCommMonoid.mul_comm c y]
-  exact nonneg_mul_nonneg x y c hc h
-
-private theorem div_mul_cancel_iv (a b : Real) (hb : b ≠ 0) : a / b * b = a := by
-  show a * Field.inv b * b = a
-  rw [MulCommMonoid.mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]
-
-private theorem le_of_add_nonneg_eq_iv {a b c : Real} (h : a + b = c) (hb : 0 ≤ b) : a ≤ c := by
-  calc a = a + 0 := (add_zero a).symm
-    _ ≤ a + b := add_left_le a 0 b hb
-    _ = c := h
-
-private theorem le_of_nonneg_add_eq_iv {a b c : Real} (h : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
-  rw [AddCommGroup.add_comm] at h
-  exact le_of_add_nonneg_eq_iv h ha
-
--- 総和を前後 2 ブロックに分割
-private theorem summation_split_at (c d : Nat) (g : Range (c + d) → Real) :
-    Sumation (c + d) g =
-    Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
-    Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩) := by
-  induction d with
-  | zero =>
-    rw [summation_zero, add_zero]
-    apply summation_congr
-    intro i
-    rfl
-  | succ d ih =>
-    calc Sumation (c + (d + 1)) g
-        = Sumation (c + d) (fun i => g (Range.incl i)) +
-          g ⟨c + d, Nat.lt_succ_self (c + d)⟩ := summation_succ (c + d) g
-      _ = (Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
-           Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩)) +
-          g ⟨c + d, Nat.lt_succ_self (c + d)⟩ :=
-          congrArg (fun s => s + g ⟨c + d, Nat.lt_succ_self (c + d)⟩)
-            (ih (fun i => g (Range.incl i)))
-      _ = Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
-          (Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩) +
-           g ⟨c + d, Nat.lt_succ_self (c + d)⟩) := AddCommGroup.add_assoc _ _ _
-      _ = Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
-          Sumation (d + 1) (fun j => g ⟨c + j.val, by have := j.property; omega⟩) :=
-          congrArg (fun s => Sumation c (fun i =>
-              g ⟨i.val, by have := i.property; omega⟩) + s)
-            (summation_succ d (fun j : Range (d + 1) =>
-              g ⟨c + j.val, by have := j.property; omega⟩)).symm
-
--- 総和の先頭 1 項を取り出す
-private theorem summation_first (m : Nat) (h : Range (m + 1) → Real) :
-    Sumation (m + 1) h = h ⟨0, Nat.zero_lt_succ m⟩ +
-      Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) := by
-  induction m with
-  | zero =>
-    calc Sumation (0 + 1) h
-        = Sumation 0 (fun i => h (Range.incl i)) + h ⟨0, Nat.zero_lt_succ 0⟩ :=
-          summation_succ 0 h
-      _ = 0 + h ⟨0, Nat.zero_lt_succ 0⟩ := rfl
-      _ = h ⟨0, Nat.zero_lt_succ 0⟩ := AddCommGroup.zero_add _
-      _ = h ⟨0, Nat.zero_lt_succ 0⟩ +
-          Sumation 0 (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) :=
-          (add_zero _).symm
-  | succ m ih =>
-    calc Sumation (m + 1 + 1) h
-        = Sumation (m + 1) (fun i => h (Range.incl i)) +
-          h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩ := summation_succ (m + 1) h
-      _ = (h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
-           Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ (Nat.lt_succ_of_lt j.property)⟩)) +
-          h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩ :=
-          congrArg (fun s => s + h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩)
-            (ih (fun i => h (Range.incl i)))
-      _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
-          (Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ (Nat.lt_succ_of_lt j.property)⟩) +
-           h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩) := AddCommGroup.add_assoc _ _ _
-      _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
-          Sumation (m + 1) (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) :=
-          congrArg (fun s => h ⟨0, Nat.zero_lt_succ (m + 1)⟩ + s)
-            (summation_succ m (fun j : Range (m + 1) =>
-              h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩)).symm
 
 -- [a,a] 上の積分値は 0
 private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
@@ -265,13 +182,13 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         | inl htb =>
           apply le_trans (hM₁ t (by
             dsimp [InInterval]; rw [if_pos hab_le]; exact ⟨ht.1, htb⟩))
-          exact le_of_add_nonneg_eq_iv rfl hM₂_nn
+          exact le_of_add_nonneg_eq rfl hM₂_nn
         | inr hbt =>
           apply le_trans (hM₂ t (by
             dsimp [InInterval]; rw [if_pos hbc_le]; exact ⟨hbt, ht.2⟩))
-          exact le_of_nonneg_add_eq_iv rfl hM₁_nn
+          exact le_of_nonneg_add_eq rfl hM₁_nn
       have hM_nn : (0 : Real) ≤ M₁ + M₂ :=
-        le_trans hM₁_nn (le_of_add_nonneg_eq_iv rfl hM₂_nn)
+        le_trans hM₁_nn (le_of_add_nonneg_eq rfl hM₂_nn)
       have h2M_nn : (0 : Real) ≤ 2 * (M₁ + M₂) := mul_nonneg 2 (M₁ + M₂) zero_lt_two.1 hM_nn
       have hx1 : 2 * (M₁ + M₂) < 2 * (M₁ + M₂) + 1 := by
         have h := add_left_lt (2 * (M₁ + M₂)) 0 1 zero_lt_one
@@ -334,12 +251,12 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
               ⟨kv, hkv⟩ hkL hkR
             by_cases h3 : q.val = kv
             · rw [show q = ⟨kv, by omega⟩ from Subtype.ext h3]
-              exact le_trans (le_of_add_nonneg_eq_iv hsplit
+              exact le_trans (le_of_add_nonneg_eq hsplit
                 (Partition.length_nonneg _ a c _ ⟨kv + 1, by omega⟩))
                 (le_fmax' _ _ ⟨kv, hkv⟩)
             · have h4 : q.val = kv + 1 := by have := q.property; omega
               rw [show q = ⟨kv + 1, by omega⟩ from Subtype.ext h4]
-              exact le_trans (le_of_nonneg_add_eq_iv hsplit
+              exact le_trans (le_of_nonneg_add_eq hsplit
                 (Partition.length_nonneg _ a c _ ⟨kv, by omega⟩))
                 (le_fmax' _ _ ⟨kv, hkv⟩)
       have hdiam_nn : 0 ≤ Partition.diam (kv + d + 1) a c Δ :=
@@ -401,12 +318,12 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
           Real.le_of_lt (lt_le_trans _ _ _ hd (min_right_le _ _))
         calc 2 * (M₁ + M₂) * Partition.length (kv + d + 1) a c Δ ⟨kv, hkv⟩
             ≤ 2 * (M₁ + M₂) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
-              mul_left_le_iv _ _ _ h2M_nn (le_trans h1 h2)
+              mul_le_mul_left _ _ _ h2M_nn (le_trans h1 h2)
           _ ≤ (2 * (M₁ + M₂) + 1) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
               nonneg_mul_nonneg _ _ _ hδ₃_nn (Real.le_of_lt hx1)
           _ = ε / 2 := by
               rw [MulCommMonoid.mul_comm]
-              exact div_mul_cancel_iv (ε / 2) _ hK_ne
+              exact div_mul_cancel' (ε / 2) _ hK_ne
       -- 仕上げ
       have hA : (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs < ε / 2 := by
         rw [hsplit_sum, add_sub_add]
@@ -429,7 +346,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
                   RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
                   -(RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' -
                     RiemannSum f a c (kv + d + 1) Δ ξ) from
-                  (neg_sub_iv _ _).symm, abs_neg]
+                  (neg_sub _ _).symm, abs_neg]
         _ ≤ (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs + ε / 2 :=
             add_left_le _ _ _ hsplit_term
         _ < ε / 2 + ε / 2 := add_lt_add_right' hA (ε / 2)

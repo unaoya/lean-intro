@@ -7,17 +7,6 @@ open Real Classical
 -- 補助補題
 -- ============================================================
 
-private theorem div_add_div' (a b c : Real) : a / c + b / c = (a + b) / c := by
-  show a * Field.inv c + b * Field.inv c = (a + b) * Field.inv c
-  exact (add_mul a b (Field.inv c)).symm
-
-private theorem mul_neg' (a b : Real) : a * -b = -(a * b) := by
-  rw [MulCommMonoid.mul_comm a (-b), neg_mul, MulCommMonoid.mul_comm b a]
-
-private theorem neg_div' (a b : Real) : -a / b = -(a / b) := by
-  show -a * Field.inv b = -(a * Field.inv b)
-  exact neg_mul a (Field.inv b)
-
 private theorem neg_x_sub_x_add (x h : Real) : x - (x + h) = -h := by
   show x + -(x + h) = -h
   rw [neg_add_distrib, ← AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.zero_add]
@@ -100,7 +89,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
       calc ((F (x + h) - F x) / h - f x).abs
           = ((-(Integral f (x + h) x)) / h - f x).abs := by rw [hFdiff]
         _ = (-(Integral f (x + h) x / h + f x)).abs := by
-            rw [neg_div', show -(Integral f (x + h) x / h) - f x =
+            rw [neg_div, show -(Integral f (x + h) x / h) - f x =
                   -(Integral f (x + h) x / h + f x) from by
                 show -(Integral f (x + h) x / h) + -(f x) = _
                 rw [← neg_add_distrib]]
@@ -108,10 +97,10 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
         _ = (Integral f (x + h) x / h + f x * (x + h - x) / h).abs := by
             rw [aux (f x) x h hne]
         _ = ((Integral f (x + h) x + f x * (x + h - x)) / h).abs := by
-            rw [div_add_div']
+            rw [div_add_div]
         _ = ((Integral f (x + h) x + -(f x * (x - (x + h)))) / h).abs := by
             rw [show f x * (x + h - x) = -(f x * (x - (x + h))) from by
-                  rw [neg_x_sub_x_add, mul_neg', neg_neg, add_sub_cancel]]
+                  rw [neg_x_sub_x_add, mul_neg, neg_neg, add_sub_cancel]]
         _ = ((Integral f (x + h) x - Integral (fun _ ↦ f x) (x + h) x) / h).abs := by
             rw [integral_const (x + h) x (f x) hxhx]
             rfl
@@ -136,7 +125,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
             · exact fun _ ↦ le_of_lt hε
             · exact fun t ht ↦ le_of_lt (hδf _ (le_lt_trans (InInterval_abs (hconv t ht)) hlt))
         _ = ε := by
-            rw [integral_const _ _ _ hxhx, neg_x_sub_x_add, mul_neg', neg_div',
+            rw [integral_const _ _ _ hxhx, neg_x_sub_x_add, mul_neg, neg_div,
                 mul_div_cancel _ _ hne, abs_neg]
             apply pos_abs hε
   exact limit_at0_iff_le _ _ h₄

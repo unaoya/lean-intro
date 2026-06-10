@@ -27,7 +27,7 @@ private theorem add_left_cancel' (a b c : Real) (h : a + b = a + c) : b = c := b
     _ = 0 + c := by rw [neg_add']
     _ = c := zero_add' _
 
-private theorem mul_zero' (a : Real) : a * (0 : Real) = 0 := by
+theorem mul_zero' (a : Real) : a * (0 : Real) = 0 := by
   apply add_left_cancel' (a * (0 : Real))
   calc a * 0 + (a * 0) = a * (0 + 0) := (CommRing.left_distrib a 0 0).symm
     _ = a * 0 := by rw [zero_add' (0 : Real)]
@@ -36,7 +36,7 @@ private theorem mul_zero' (a : Real) : a * (0 : Real) = 0 := by
 private theorem zero_mul_r (a : Real) : (0 : Real) * a = 0 := by
   rw [MulCommMonoid.mul_comm]; exact mul_zero' a
 
-private theorem neg_zero : -(0 : Real) = 0 := by
+theorem neg_zero : -(0 : Real) = 0 := by
   calc -(0 : Real) = -(0 : Real) + 0 := (add_zero' _).symm
     _ = 0 := neg_add' 0
 
@@ -64,7 +64,7 @@ theorem neg_mul (a b : Real) : -a * b = -(a * b) := by
     _ = 0 := zero_mul_r b
     _ = a * b + -(a * b) := (add_neg' _).symm
 
-private theorem neg_mul_right (a b : Real) : a * (-b) = -(a * b) := by
+theorem mul_neg (a b : Real) : a * (-b) = -(a * b) := by
   rw [MulCommMonoid.mul_comm a (-b), neg_mul, MulCommMonoid.mul_comm b a]
 
 theorem sub_self (a : Real) : a - a = 0 := add_neg' a
@@ -198,7 +198,7 @@ private theorem neg_le_neg (a b : Real) (h : a ≤ b) : -b ≤ -a := by
 theorem mul_nonneg (a b : Real) (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a * b :=
   LinearOrderedField.mul_pos a b h h'
 
-private theorem nonneg_mul_right_le (a b c : Real) (hc : 0 ≤ c) (hab : 0 ≤ b - a) :
+private theorem nonmul_neg_le (a b c : Real) (hc : 0 ≤ c) (hab : 0 ≤ b - a) :
     0 ≤ b * c - a * c := by
   rw [show b * c - a * c = b * c + -(a * c) from rfl,
       show -(a * c) = (-a) * c from (neg_mul a c).symm,
@@ -207,7 +207,7 @@ private theorem nonneg_mul_right_le (a b c : Real) (hc : 0 ≤ c) (hab : 0 ≤ b
 
 theorem nonneg_mul_nonneg (a b c : Real) (h : 0 ≤ c) : a ≤ b → a * c ≤ b * c := by
   intro hab; rw [nonneg_iff_le] at hab ⊢
-  exact nonneg_mul_right_le a b c h hab
+  exact nonmul_neg_le a b c h hab
 
 theorem mul_right_lt (a b c : Real) : 0 < c → a < b → a * c < b * c := by
   intro ⟨hc, hnc⟩ ⟨hab, hne⟩
@@ -230,7 +230,7 @@ theorem zero_lt_one : (0 : Real) < 1 := by
     have h1 : (0 : Real) ≤ (-1) * (-1) := LinearOrderedField.mul_pos (-1) (-1) h0 h0
     have h2 : (-1 : Real) * (-1) = 1 := by
       calc (-1 : Real) * (-1) = -(1 * (-1)) := neg_mul 1 (-1)
-        _ = -(-(1 * 1)) := by rw [neg_mul_right]
+        _ = -(-(1 * 1)) := by rw [mul_neg]
         _ = 1 * 1 := neg_neg _
         _ = 1 := one_mul_b 1
     rw [h2] at h1
@@ -256,7 +256,7 @@ private theorem pos_inv (b : Real) (hb : 0 < b) : 0 < Field.inv b := by
       have h0 : (0 : Real) ≤ -(Field.inv b) := neg_neg_nonneg _ h
       have h1 : (0 : Real) ≤ b * -(Field.inv b) :=
         LinearOrderedField.mul_pos b (-(Field.inv b)) hb.1 h0
-      rw [neg_mul_right, show b * Field.inv b = (1 : Real) from Field.mul_inv b hbne] at h1
+      rw [mul_neg, show b * Field.inv b = (1 : Real) from Field.mul_inv b hbne] at h1
       have h2 : (1 : Real) ≤ 0 := by
         have := LinearOrderedField.add_le_add (0 : Real) (-(1 : Real)) (1 : Real) h1
         rw [zero_add', neg_add'] at this; exact this
@@ -393,7 +393,7 @@ theorem pos_abs {x : Real} (h : 0 < x) : x.abs = x := by
   rw [if_neg (fun hle => h.2 (LinearOrderedField.le_asymm (0 : Real) x h.1
     (LinearOrderedField.le_trans x (-x) 0 hle hneg_le)))]
 
-private theorem nonneg_abs {x : Real} (hx : 0 ≤ x) : x.abs = x := by
+theorem nonneg_abs {x : Real} (hx : 0 ≤ x) : x.abs = x := by
   cases Classical.em (x = 0) with
   | inl heq => rw [heq]; exact abs_zero
   | inr hne => exact pos_abs ⟨hx, fun h => hne h.symm⟩
@@ -467,7 +467,7 @@ private theorem abs_mul' (x y : Real) : Real.abs (x * y) = Real.abs x * Real.abs
   | inl hy => rw [abs_mul_nonneg hy, nonneg_abs hy]
   | inr hy =>
     have hny : (0 : Real) ≤ -y := neg_neg_nonneg y hy
-    rw [show x * y = -(x * (-y)) from by rw [neg_mul_right, neg_neg],
+    rw [show x * y = -(x * (-y)) from by rw [mul_neg, neg_neg],
         abs_neg, abs_mul_nonneg hny, nonpos_abs hy]
 
 theorem div_abs_le {a b c : Real} (h : a.abs ≤ b.abs) : (a / c).abs ≤ (b / c).abs := by
@@ -950,6 +950,279 @@ theorem summation_split_term (n : Nat) (k : Range n) (f : Range n → Real)
         (fun i hi => h_low (incl i) (by simp only [incl_val]; exact hi))
         h_split
         (fun i hi => h_high (incl i) (by simp only [incl_val]; exact hi))
+
+-- ============================================================
+-- §17. 集約補題（Integral 以下の重複 private を統合）
+-- ============================================================
+
+-- 順序
+theorem not_lt_imp_le {a b : Real} (h : ¬(a < b)) : b ≤ a := by
+  cases LinearOrderedField.le_total a b with
+  | inl hle =>
+    cases Classical.em (a = b) with
+    | inl heq => exact heq ▸ le_refl a
+    | inr hne => exact absurd ⟨hle, hne⟩ h
+  | inr hle => exact hle
+
+-- 代数（符号の整理）
+theorem neg_sub (a b : Real) : -(a - b) = b - a := by
+  show -(a + -b) = b + -a; rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
+
+theorem sub_zero (x : Real) : x - 0 = x := by
+  show x + -(0 : Real) = x
+  rw [neg_zero, add_zero]
+
+theorem add_neg_cancel_right (x y : Real) : (x + y) + -y = x := by
+  rw [AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]
+
+theorem neg_add_cancel_left (x y : Real) : -x + (x + y) = y := by
+  rw [← AddCommGroup.add_assoc, AddCommGroup.neg_add, AddCommGroup.zero_add]
+
+theorem neg_neg_cancel_left (x y : Real) : (-x + -y) + x = -y := by
+  rw [AddCommGroup.add_comm (-x) (-y), AddCommGroup.add_assoc, AddCommGroup.neg_add,
+      AddCommGroup.add_zero]
+
+theorem add_neg_neg_cancel (x y : Real) : x + (-y + -x) = -y := by
+  rw [AddCommGroup.add_comm (-y) (-x), ← AddCommGroup.add_assoc, AddCommGroup.add_neg,
+      AddCommGroup.zero_add]
+
+-- 順序（移項）
+theorem neg_le_swap {a b : Real} (h : -a ≤ b) : -b ≤ a := by
+  have h1 := add_left_le a (-a) b h
+  rw [AddCommGroup.add_neg] at h1
+  have h2 := add_left_le (-b) AddCommGroup.zero (a + b) h1
+  rw [AddCommGroup.add_zero] at h2
+  have h3 : -b + (a + b) = a := by
+    calc -b + (a + b) = (-b + a) + b := (AddCommGroup.add_assoc _ _ _).symm
+      _ = (a + -b) + b := by rw [AddCommGroup.add_comm (-b) a]
+      _ = a + (-b + b) := AddCommGroup.add_assoc _ _ _
+      _ = a + AddCommGroup.zero := by rw [AddCommGroup.neg_add]
+      _ = a := AddCommGroup.add_zero _
+  rw [h3] at h2; exact h2
+
+theorem sub_lt_swap {a b c : Real} (h : a - b < c) : a - c < b := by
+  have h1 := add_left_lt (b - c) (a - b) c h
+  rw [show (b - c) + (a - b) = a - c from (telescope_2 c a b).symm,
+      show (b - c) + c = b from by rw [AddCommGroup.add_comm]; exact add_sub_cancel' c b] at h1
+  exact h1
+
+theorem sub_le_swap {a b c : Real} (h : a - b ≤ c) : a - c ≤ b := by
+  have h1 := LinearOrderedField.add_le_add (a - b) c (b - c) h
+  rw [show a - b + (b - c) = a - c from by
+        rw [AddCommGroup.add_comm]; exact (telescope_2 c a b).symm,
+      show c + (b - c) = b from add_sub_cancel' c b] at h1
+  exact h1
+
+theorem le_add_of_sub_le {A B C : Real} (h : A - B ≤ C) : A ≤ B + C := by
+  have h1 := LinearOrderedField.add_le_add (A - B) C B h
+  rw [AddCommGroup.add_comm (A - B) B, add_sub_cancel' B A,
+      AddCommGroup.add_comm C B] at h1
+  exact h1
+
+theorem sub_le_of_le_add {A B C : Real} (h : A ≤ B + C) : A - B ≤ C := by
+  have h1 := LinearOrderedField.add_le_add A (B + C) (-B) h
+  rw [show B + C + -B = C from by
+        rw [AddCommGroup.add_comm B C, AddCommGroup.add_assoc, AddCommGroup.add_neg,
+            AddCommGroup.add_zero]] at h1
+  exact h1
+
+theorem le_of_add_nonneg_eq {a b c : Real} (h : a + b = c) (hb : 0 ≤ b) : a ≤ c := by
+  calc a = a + 0 := (add_zero a).symm
+    _ ≤ a + b := add_left_le a 0 b hb
+    _ = c := h
+
+theorem le_of_nonneg_add_eq {a b c : Real} (h : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
+  rw [AddCommGroup.add_comm] at h
+  exact le_of_add_nonneg_eq h ha
+
+-- 乗法・除法
+theorem mul_le_mul_left (c x y : Real) (hc : 0 ≤ c) (h : x ≤ y) : c * x ≤ c * y := by
+  rw [MulCommMonoid.mul_comm c x, MulCommMonoid.mul_comm c y]
+  exact nonneg_mul_nonneg x y c hc h
+
+theorem div_mul_cancel' (a b : Real) (hb : b ≠ 0) : a / b * b = a := by
+  show a * Field.inv b * b = a
+  rw [MulCommMonoid.mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]
+
+theorem div_add_div (a b c : Real) : a / c + b / c = (a + b) / c := by
+  show a * Field.inv c + b * Field.inv c = (a + b) * Field.inv c
+  exact (add_mul a b (Field.inv c)).symm
+
+theorem neg_div (a b : Real) : -a / b = -(a / b) := by
+  show -a * Field.inv b = -(a * Field.inv b)
+  exact neg_mul a (Field.inv b)
+
+theorem half_lt {ε : Real} (hε : 0 < ε) : ε / 2 < ε := by
+  have h1 := add_left_lt (ε / 2) 0 (ε / 2) (pos_half ε hε)
+  rw [add_zero] at h1; rw [half_add] at h1; exact h1
+
+-- min
+theorem min_eq_left {a b : Real} (h : a ≤ b) : min a b = a := by
+  show (if a ≤ b then a else b) = a
+  rw [if_pos h]
+
+theorem min_eq_right {a b : Real} (h : b ≤ a) : min a b = b := by
+  show (if a ≤ b then a else b) = b
+  cases Classical.em (a ≤ b) with
+  | inl h' => rw [if_pos h']; exact LinearOrderedField.le_asymm a b h' h
+  | inr h' => rw [if_neg h']
+
+-- ε-論法
+theorem le_of_forall_le_add {A B : Real} (h : ∀ γ, 0 < γ → A ≤ B + γ) : A ≤ B := by
+  cases LinearOrderedField.le_total A B with
+  | inl hle => exact hle
+  | inr hge =>
+    cases Classical.em (A = B) with
+    | inl heq => rw [heq]; exact le_refl B
+    | inr hne =>
+      exfalso
+      have hBA : B < A := ⟨hge, fun h0 => hne h0.symm⟩
+      have hpos : 0 < A - B := (pos_iff_lt B A).mp hBA
+      have h1 := h ((A - B) / 2) (pos_half _ hpos)
+      have h2 : B + (A - B) / 2 < B + (A - B) := add_left_lt B _ _ (half_lt hpos)
+      rw [add_sub_cancel' B A] at h2
+      exact (le_lt_trans h1 h2).2 rfl
+
+-- 絶対値
+theorem abs_sub_comm (a b : Real) : (a - b).abs = (b - a).abs := by
+  rw [← neg_sub a b, abs_neg]
+
+theorem abs_sub_le_add (x y z : Real) : (x - z).abs ≤ (x - y).abs + (y - z).abs := by
+  calc (x - z).abs
+      = ((y - z) + (x - y)).abs := by rw [telescope_2 z x y]
+    _ ≤ (y - z).abs + (x - y).abs := abs_triangle _ _
+    _ = (x - y).abs + (y - z).abs := AddCommGroup.add_comm _ _
+
+theorem abs_sub_le_of_mem {P Q s t : Real}
+    (hsP : P ≤ s) (hsQ : s ≤ Q) (htP : P ≤ t) (htQ : t ≤ Q) :
+    (s - t).abs ≤ Q - P := by
+  have hnegt : -t ≤ -P := neg_le_swap (show -(-P) ≤ t from by rw [neg_neg]; exact htP)
+  have hnegs : -s ≤ -P := neg_le_swap (show -(-P) ≤ s from by rw [neg_neg]; exact hsP)
+  apply abs_le
+  · rw [neg_sub]
+    exact le_trans (LinearOrderedField.add_le_add t Q (-s) htQ) (add_left_le Q _ _ hnegs)
+  · exact le_trans (LinearOrderedField.add_le_add s Q (-t) hsQ) (add_left_le Q _ _ hnegt)
+
+-- InInterval の展開
+theorem in_interval_iff {a b t : Real} (hab : a ≤ b) :
+    InInterval a b t ↔ a ≤ t ∧ t ≤ b := by
+  dsimp [InInterval]
+  rw [if_pos hab]
+
+theorem in_interval_pair {a b t : Real} (hab : a ≤ b) (h : InInterval a b t) :
+    a ≤ t ∧ t ≤ b := (in_interval_iff hab).mp h
+
+-- 総和（Summation = Sumation の正書きエイリアス）
+abbrev Summation := Sumation
+
+theorem abs_summation_le (n : Nat) (h : Range n → Real) :
+    (Sumation n h).abs ≤ Sumation n (fun i => (h i).abs) := by
+  induction n with
+  | zero =>
+    rw [show Sumation 0 h = 0 from rfl, abs_zero]
+    exact le_refl 0
+  | succ m ih =>
+    rw [summation_succ m h, summation_succ m (fun i => (h i).abs)]
+    apply le_trans (abs_triangle _ _)
+    exact LinearOrderedField.add_le_add _ _ _ (ih (fun i => h (Range.incl i)))
+
+theorem sub_summation (n : Nat) (F G : Range n → Real) :
+    Sumation n F - Sumation n G = Sumation n (fun i => F i - G i) := by
+  calc Sumation n F - Sumation n G
+      = Sumation n F + Sumation n (fun i => -G i) := by
+        show Sumation n F + -Sumation n G = _
+        rw [neg_summation]
+    _ = Sumation n (fun i => F i + -G i) := (addtive_summation n F (fun i => -G i)).symm
+    _ = Sumation n (fun i => F i - G i) := rfl
+
+-- 総和を前後 2 ブロックに分割
+theorem summation_split_at (c d : Nat) (g : Range (c + d) → Real) :
+    Sumation (c + d) g =
+    Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
+    Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩) := by
+  induction d with
+  | zero =>
+    rw [summation_zero, add_zero]
+    apply summation_congr
+    intro i
+    rfl
+  | succ d ih =>
+    calc Sumation (c + (d + 1)) g
+        = Sumation (c + d) (fun i => g (Range.incl i)) +
+          g ⟨c + d, Nat.lt_succ_self (c + d)⟩ := summation_succ (c + d) g
+      _ = (Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
+           Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩)) +
+          g ⟨c + d, Nat.lt_succ_self (c + d)⟩ :=
+          congrArg (fun s => s + g ⟨c + d, Nat.lt_succ_self (c + d)⟩)
+            (ih (fun i => g (Range.incl i)))
+      _ = Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
+          (Sumation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩) +
+           g ⟨c + d, Nat.lt_succ_self (c + d)⟩) := AddCommGroup.add_assoc _ _ _
+      _ = Sumation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
+          Sumation (d + 1) (fun j => g ⟨c + j.val, by have := j.property; omega⟩) :=
+          congrArg (fun s => Sumation c (fun i =>
+              g ⟨i.val, by have := i.property; omega⟩) + s)
+            (summation_succ d (fun j : Range (d + 1) =>
+              g ⟨c + j.val, by have := j.property; omega⟩)).symm
+
+-- 総和の先頭 1 項を取り出す
+theorem summation_first (m : Nat) (h : Range (m + 1) → Real) :
+    Sumation (m + 1) h = h ⟨0, Nat.zero_lt_succ m⟩ +
+      Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) := by
+  induction m with
+  | zero =>
+    calc Sumation (0 + 1) h
+        = Sumation 0 (fun i => h (Range.incl i)) + h ⟨0, Nat.zero_lt_succ 0⟩ :=
+          summation_succ 0 h
+      _ = 0 + h ⟨0, Nat.zero_lt_succ 0⟩ := rfl
+      _ = h ⟨0, Nat.zero_lt_succ 0⟩ := AddCommGroup.zero_add _
+      _ = h ⟨0, Nat.zero_lt_succ 0⟩ +
+          Sumation 0 (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) :=
+          (add_zero _).symm
+  | succ m ih =>
+    calc Sumation (m + 1 + 1) h
+        = Sumation (m + 1) (fun i => h (Range.incl i)) +
+          h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩ := summation_succ (m + 1) h
+      _ = (h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
+           Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ (Nat.lt_succ_of_lt j.property)⟩)) +
+          h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩ :=
+          congrArg (fun s => s + h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩)
+            (ih (fun i => h (Range.incl i)))
+      _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
+          (Sumation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ (Nat.lt_succ_of_lt j.property)⟩) +
+           h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩) := AddCommGroup.add_assoc _ _ _
+      _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
+          Sumation (m + 1) (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) :=
+          congrArg (fun s => h ⟨0, Nat.zero_lt_succ (m + 1)⟩ + s)
+            (summation_succ m (fun j : Range (m + 1) =>
+              h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩)).symm
+
+-- ============================================================
+-- §18. 上限の近似
+-- ============================================================
+
+theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S x → x ≤ B)
+    (γ : Real) (hγ : 0 < γ) : ∃ x, S x ∧ Real.sup S hne hbdd - γ < x := by
+  cases Classical.em (∃ x, S x ∧ Real.sup S hne hbdd - γ < x) with
+  | inl hex => exact hex
+  | inr hnex =>
+    exfalso
+    have hub : ∀ x, S x → x ≤ Real.sup S hne hbdd - γ := fun x hx =>
+      (Classical.em (Real.sup S hne hbdd - γ < x)).elim
+        (fun hlt => absurd ⟨x, hx, hlt⟩ hnex) not_lt_imp_le
+    have hle := Real.sup_lub S hne hbdd _ hub
+    have h1 := LinearOrderedField.add_le_add (Real.sup S hne hbdd)
+      (Real.sup S hne hbdd - γ) (-(Real.sup S hne hbdd)) hle
+    rw [AddCommGroup.add_neg] at h1
+    rw [show Real.sup S hne hbdd - γ + -(Real.sup S hne hbdd) = -γ from by
+          show Real.sup S hne hbdd + -γ + -(Real.sup S hne hbdd) = -γ
+          rw [AddCommGroup.add_comm (Real.sup S hne hbdd) (-γ),
+              AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
+    have h2 : γ ≤ 0 :=
+      calc γ = 0 + γ := (AddCommGroup.zero_add γ).symm
+        _ ≤ -γ + γ := LinearOrderedField.add_le_add 0 (-γ) γ h1
+        _ = 0 := AddCommGroup.neg_add γ
+    exact hγ.2 (LinearOrderedField.le_asymm 0 γ hγ.1 h2)
 
 #check (inferInstance : Max Real)
 
