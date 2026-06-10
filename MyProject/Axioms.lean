@@ -9,9 +9,9 @@ import MyProject.Numbers.Structure
 -- Real を完備線形順序体として公理的に導入する。
 -- 本プロジェクトの実数公理はこのファイルに集約されている：
 --   (R1) Real は線形順序体（体の公理＋順序の公理） … Real.instLOF
---   (R2) inv 0 = 0 の規約                         … Real.inv_zero
---   (R3) 連続性（上限公理）                        … Real.sup / sup_ub / sup_lub
---   (R4) アルキメデスの公理                        … archimedean
+--   (R2) 連続性（上限公理）                        … Real.sup / sup_ub / sup_lub
+-- アルキメデスの性質は上限公理から定理として導出する（Real/Cast.lean の archimedean）。
+-- inv 0 = 0 の規約は不要になったため公理から外した（除法の補題は正値仮定で運用）。
 -- ============================================================
 
 axiom Real : Type
@@ -35,18 +35,12 @@ noncomputable instance (n : Nat) : OfNat Real (n + 2) := ⟨Real.ofNat (n + 2)�
 
 noncomputable instance : NatCast Real := ⟨Real.ofNat⟩
 
--- (R2) 逆元のゼロでの値（inv 0 = 0 の規約）
-axiom Real.inv_zero : Field.inv (0 : Real) = (0 : Real)
-
--- (R3) 連続性（上限公理）
+-- (R2) 連続性（上限公理）
 axiom Real.sup (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ M, ∀ x, S x → x ≤ M) : Real
 axiom Real.sup_ub (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ M, ∀ x, S x → x ≤ M) :
   ∀ x, S x → x ≤ Real.sup S hne hbdd
 axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ M, ∀ x, S x → x ≤ M) :
   ∀ M, (∀ x, S x → x ≤ M) → Real.sup S hne hbdd ≤ M
-
--- (R4) アルキメデスの公理
-axiom archimedean (a : Real) : ∃ n : Nat, a < n
 
 namespace Real
 

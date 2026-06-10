@@ -1,4 +1,5 @@
 import MyProject.Real.Summation
+import MyProject.Real.Sup
 
 noncomputable section
 
@@ -55,6 +56,32 @@ theorem cast_lt (a b : Nat) : a < b → (a : Real) < b := by
   rw [add_zero'] at h1; exact h1
 
 theorem lt_cast (n m : Nat) : n < m → (n : Real) < m := cast_lt n m
+
+-- アルキメデスの性質：上限公理から導かれるため公理ではなく定理
+theorem archimedean (a : Real) : ∃ n : Nat, a < n := by
+  cases Classical.em (∃ n : Nat, a < n) with
+  | inl h => exact h
+  | inr h =>
+    exfalso
+    -- すべての n で ↑n ≤ a となり、自然数の像が上に有界になってしまう
+    have hub : ∀ n : Nat, (n : Real) ≤ a := fun n =>
+      not_lt_imp_le (fun hlt => h ⟨n, hlt⟩)
+    have hS_ne : ∃ x : Real, ∃ n : Nat, x = (n : Real) := ⟨(0 : Real), 0, rfl⟩
+    have hS_bdd : ∃ M, ∀ x : Real, (∃ n : Nat, x = (n : Real)) → x ≤ M :=
+      ⟨a, fun x hx => by obtain ⟨n, rfl⟩ := hx; exact hub n⟩
+    obtain ⟨x, hxS, hgt⟩ := sup_near _ hS_ne hS_bdd 1 zero_lt_one
+    obtain ⟨n, rfl⟩ := hxS
+    -- sup − 1 < ↑n から sup < ↑(n+1) ≤ sup の矛盾
+    have h1 : Real.sup _ hS_ne hS_bdd < (1 : Real) + (n : Real) := by
+      have h2 := add_left_lt 1 (Real.sup _ hS_ne hS_bdd - 1) (n : Real) hgt
+      rwa [add_sub_cancel' 1 (Real.sup _ hS_ne hS_bdd)] at h2
+    have h3 : (1 : Real) + (n : Real) = ((n + 1 : Nat) : Real) := by
+      rw [add_comm]
+      exact (succ_ofNat n).symm
+    have h4 : ((n + 1 : Nat) : Real) ≤ Real.sup _ hS_ne hS_bdd :=
+      Real.sup_ub _ hS_ne hS_bdd _ ⟨n + 1, rfl⟩
+    rw [h3] at h1
+    exact (lt_le_trans _ _ _ h1 h4).2 rfl
 
 -- ============================================================
 -- §14. Ceil

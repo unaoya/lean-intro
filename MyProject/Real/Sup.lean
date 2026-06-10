@@ -1,4 +1,4 @@
-import MyProject.Real.Interval
+import MyProject.Real.Order
 
 noncomputable section
 

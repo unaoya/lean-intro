@@ -131,14 +131,8 @@ theorem nonneg_div_nonneg (a b : Real) : 0 ≤ a → 0 < b → 0 ≤ a / b :=
 theorem div_right_lt (a b c : Real) : 0 < c → a < b → a / c < b / c :=
   fun hc hab => mul_right_lt a b (Field.inv c) (pos_inv c hc) hab
 
-theorem div_right_le (a b c : Real) : 0 ≤ c → a ≤ b → a / c ≤ b / c := by
-  intro hc hab
-  cases Classical.em (c = 0) with
-  | inl heq =>
-    show a * Field.inv c ≤ b * Field.inv c
-    have hinv : Field.inv c = (0 : Real) := by rw [heq]; exact Real.inv_zero
-    rw [hinv, mul_zero', mul_zero']; exact le_refl 0
-  | inr hne => exact nonneg_mul_nonneg a b (Field.inv c) (nonneg_inv c hc hne) hab
+theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c := fun hc hab =>
+  nonneg_mul_nonneg a b (Field.inv c) (Real.le_of_lt (pos_inv c hc)) hab
 
 -- ============================================================
 -- §7. More order

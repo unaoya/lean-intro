@@ -13,19 +13,6 @@ theorem cast_le (n m : Nat) : n ≤ m → (n : Real) ≤ m := by
   · subst heq; exact le_refl _
   · exact Real.le_of_lt (cast_lt n m hlt)
 
-theorem nonneg_nonneg_div_nonneg (a b : Real) (ha : 0 ≤ a) (hb : 0 ≤ b) :
-  0 ≤ a / b := by
-  cases Classical.em (b = 0) with
-  | inl heq =>
-    have : a / b = 0 := by
-      show a * Field.inv b = 0
-      calc a * Field.inv b = a * 0 := by rw [heq, Real.inv_zero]
-        _ = 0 * a := by rw [mul_comm]
-        _ = 0 := zero_mul' a
-    rw [this]; exact le_refl 0
-  | inr hne =>
-    exact nonneg_div_nonneg a b ha ⟨hb, fun h => hne h.symm⟩
-
 theorem increse' (n : Nat) (a b : Real) (bnonneg : 0 ≤ b) :
   ∀ i : Range n, a + i.incl.val * b ≤ a + i.addone.val * b := by
   intro i

@@ -53,6 +53,12 @@ private theorem nat_ne_zero_of_nonneg_lt (x : Real) (m : Nat) (hx : 0 ≤ x) (hl
     m ≠ 0 := by
   intro hm; subst hm; exact (le_lt_trans hx hlt).2 rfl
 
+-- Helper: 0 < (m : Real) for m ≠ 0
+private theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
+  cases m with
+  | zero => exact absurd rfl hm
+  | succ k => exact cast_pos_succ k
+
 -- Equal partition: points i = a + i * (b-a) / m
 def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) : Partition m a b where
   points := fun i => a + (i.val : Real) * (b - a) / (m : Real)
@@ -60,7 +66,7 @@ def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) : Parti
     intro i
     apply add_left_le
     apply div_right_le
-    · exact my_cast_nonneg m
+    · exact cast_pos_of_ne m hm
     · exact nonneg_mul_nonneg _ _ _ ((nonneg_iff_le a b).mp hab) (cast_le_succ i.val)
   left := by
     show a + (0 : Real) * (b - a) / (m : Real) = a

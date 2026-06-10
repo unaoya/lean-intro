@@ -23,11 +23,7 @@ theorem summation_smul (n : Nat) (f : Range n → Real) (c : Real) :
     rw [ih]; exact (CommRing.left_distrib c _ _).symm
 
 theorem add_four_comm (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) := by
-  calc (a + b) + (c + d) = a + (b + (c + d)) := add_assoc _ _ _
-    _ = a + ((b + c) + d) := by rw [(add_assoc b c d).symm]
-    _ = a + ((c + b) + d) := by rw [add_comm b c]
-    _ = a + (c + (b + d)) := by rw [add_assoc c b d]
-    _ = (a + c) + (b + d) := (add_assoc _ _ _).symm
+  ac_rfl
 
 theorem additive_summation (n : Nat) (f g : Range n → Real) :
   Summation n (fun i ↦ f i + g i) = Summation n f + Summation n g := by
