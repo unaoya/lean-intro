@@ -78,19 +78,19 @@ def fmax (n : Nat) (f : Range n → Nat) : Nat :=
   | Nat.zero => 0
   | Nat.succ n => max (f ⟨n, Nat.lt_succ_self n⟩) (fmax n (fpred n.succ f))
 
-def Sumation : (n : Nat) → (Range n → α) → α
+def Summation : (n : Nat) → (Range n → α) → α
   | 0 => fun _ => 0
   | Nat.succ n =>
       fun f =>
-        Sumation n
+        Summation n
           (fun k =>
             f ⟨k.val, Nat.lt_trans k.property (Nat.lt_add_one n)⟩)
             + f ⟨n, (Nat.lt_add_one n)⟩
 
-theorem sumation_zero (f : Range 0 → α) : Sumation 0 f = 0 := rfl
+theorem sumation_zero (f : Range 0 → α) : Summation 0 f = 0 := rfl
 
 theorem sumation_succ (n : Nat) (f : Range n.succ → α) :
-  Sumation n.succ f = Sumation n (res n n.succ (Nat.le_succ n) f) + f ⟨n, Nat.lt_add_one n⟩ := rfl
+  Summation n.succ f = Summation n (res n n.succ (Nat.le_succ n) f) + f ⟨n, Nat.lt_add_one n⟩ := rfl
 
 def natMul : Nat → α → α
   | 0, _ => 0
@@ -102,12 +102,12 @@ theorem zero_mul (a : α) : (0 : Nat) * a = (0 : α) := rfl
 
 theorem succ_mul (n : Nat) (a : α) : n.succ * a = n * a + a := rfl
 
-theorem sum_const (n : Nat) (a : α) : Sumation n (fun _ => a) = n * a :=
+theorem sum_const (n : Nat) (a : α) : Summation n (fun _ => a) = n * a :=
   match n with
   | 0 => (sumation_zero _).trans (zero_mul a).symm
   | Nat.succ n => (congrArg (fun x => x + a) (sum_const n a)).trans (succ_mul n a).symm
 
--- theorem sum_id (n : Nat) : Sumation n (fun k => k.val) = n * (n - 1) / 2 :=
+-- theorem sum_id (n : Nat) : Summation n (fun k => k.val) = n * (n - 1) / 2 :=
 --   match n with
 --   | 0 => rfl
 --   | Nat.succ n => by sorry

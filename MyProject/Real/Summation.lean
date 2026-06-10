@@ -7,9 +7,6 @@ open Range
 
 -- 有限和 Summation とその性質
 
--- Summation は Numbers/NatNum.lean の Summation（タイポ）の正書きエイリアス
-abbrev Summation {α : Type} [Add α] [OfNat α 0] : (n : Nat) → (Range n → α) → α := Sumation
-
 -- ============================================================
 -- §0. Bridge lemmas
 -- ============================================================
@@ -17,9 +14,9 @@ abbrev Summation {α : Type} [Add α] [OfNat α 0] : (n : Nat) → (Range n → 
 theorem summation_smul (n : Nat) (f : Range n → Real) (c : Real) :
   Summation n (fun i ↦ c * f i) = c * Summation n f := by
   induction n with
-  | zero => simp [Summation, Sumation]; exact (mul_zero' c).symm
+  | zero => simp [Summation]; exact (mul_zero' c).symm
   | succ n ih =>
-    simp only [Summation, Sumation] at ih ⊢
+    simp only [Summation] at ih ⊢
     rw [ih]; exact (CommRing.left_distrib c _ _).symm
 
 theorem add_four_comm (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) := by
@@ -28,9 +25,9 @@ theorem add_four_comm (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) :
 theorem additive_summation (n : Nat) (f g : Range n → Real) :
   Summation n (fun i ↦ f i + g i) = Summation n f + Summation n g := by
   induction n with
-  | zero => simp [Summation, Sumation]; exact (zero_add' 0).symm
+  | zero => simp [Summation]; exact (zero_add' 0).symm
   | succ n ih =>
-    simp only [Summation, Sumation] at ih ⊢
+    simp only [Summation] at ih ⊢
     rw [ih]
     exact add_four_comm _ _ _ _
 
@@ -40,15 +37,15 @@ theorem summation_congr (n : Nat) (f g : Range n → Real) (h : ∀ i, f i = g i
 theorem neg_summation (n : Nat) (f : Range n → Real) :
   -Summation n f = Summation n (fun i ↦ -f i) := by
   induction n with
-  | zero => simp [Summation, Sumation]; exact neg_zero
-  | succ n ih => simp only [Summation, Sumation]; rw [neg_add_distrib, ih]
+  | zero => simp [Summation]; exact neg_zero
+  | succ n ih => simp only [Summation]; rw [neg_add_distrib, ih]
 
 theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i) :
   0 ≤ Summation n f := by
   induction n with
   | zero => exact le_refl 0
   | succ n ih =>
-    simp only [Summation, Sumation]
+    simp only [Summation]
     let f' : Range n → Real := fun k => f ⟨k.val, Nat.lt_of_lt_of_le k.property (Nat.le_succ n)⟩
     have h1 : (0 : Real) ≤ Summation n f' :=
       ih f' (fun i => h ⟨i.val, Nat.lt_of_lt_of_le i.property (Nat.le_succ n)⟩)
@@ -62,7 +59,7 @@ theorem summation_le (n : Nat) (f g : Range n → Real) (h : ∀ i, f i ≤ g i)
   induction n with
   | zero => exact le_refl 0
   | succ n ih =>
-    simp only [Summation, Sumation]
+    simp only [Summation]
     let f' : Range n → Real := fun k => f ⟨k.val, Nat.lt_of_lt_of_le k.property (Nat.le_succ n)⟩
     let g' : Range n → Real := fun k => g ⟨k.val, Nat.lt_of_lt_of_le k.property (Nat.le_succ n)⟩
     have ih' : Summation n f' ≤ Summation n g' :=
