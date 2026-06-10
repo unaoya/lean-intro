@@ -14,6 +14,7 @@ lean_lib «RealNumbers» where
     .one `MyProject.Numbers.Structure,
     .one `MyProject.Numbers.NatNum,
     .one `MyProject.Axioms,
+    .andSubmodules `MyProject.Real,
     .one `MyProject.Lemmas
   ]
 
