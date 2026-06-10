@@ -155,17 +155,18 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
 def IsIntegrable (f : Real → Real) (a b : Real) : Prop :=
   ∃ i, IsIntegral f a b i
 
--- 向きなし積分。本当はa ≤ bを仮定する必要あり
+-- 向きなし積分。a ≤ b かつ可積分のときに限り積分値を返し、それ以外は 0。
+-- （b < a では分割が存在せず IsIntegrable が空虚に真になるため、
+--   条件に a ≤ b を含めて不定値を排除している。向き付きは Oriented.lean の OIntegral。）
 def Integral (f : Real → Real) (a b : Real) : Real :=
-  dite (IsIntegrable f a b) (λ h => Classical.choose h) (λ _ => 0)
-  -- if h : IsIntegrable f a b then Classical.choose h else 0
+  dite (a ≤ b ∧ IsIntegrable f a b) (λ h => Classical.choose h.2) (λ _ => 0)
 
 theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real)
     (hab : a ≤ b) (h : IsIntegral f a b i) :
     Integral f a b = i := by
   unfold Integral
   have h₀ : IsIntegrable f a b := ⟨i, h⟩
-  rw [dif_pos h₀]
+  rw [dif_pos (⟨hab, h₀⟩ : a ≤ b ∧ IsIntegrable f a b)]
   exact integral_unique _ _ _ _ _ hab (Classical.choose_spec h₀) h
 
 -- [a,a] 上の積分は 0
@@ -195,6 +196,10 @@ theorem isintegral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) 
     IsIntegral f a b 0 :=
   fun _ _ => ⟨1, zero_lt_one, fun _ Δ _ _ _ => absurd Δ.left_le_right h⟩
 
+-- b < a では Integral は 0
+theorem integral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
+    Integral f a b = 0 := dif_neg (fun hc => h hc.1)
+
 -- 逆は言えない。積分の値が0でないなら可積分は言えるが。
 
 theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : ∀ x, f x = g x) :
@@ -215,8 +220,9 @@ theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : �
   cases Classical.em (IsIntegrable f a b) with
   | inl hf =>
     have hg : IsIntegrable g a b := by rcases hf with ⟨i, hi⟩; exact ⟨i, hfg i hi⟩
-    rw [dif_pos hf, dif_pos hg]
+    rw [dif_pos (⟨hab, hf⟩ : a ≤ b ∧ IsIntegrable f a b),
+        dif_pos (⟨hab, hg⟩ : a ≤ b ∧ IsIntegrable g a b)]
     exact integral_unique g a b _ _ hab (hfg _ (Classical.choose_spec hf)) (Classical.choose_spec hg)
   | inr hf =>
     have hg : ¬IsIntegrable g a b := fun ⟨i, hi⟩ => hf ⟨i, hgf i hi⟩
-    rw [dif_neg hf, dif_neg hg]
+    rw [dif_neg (fun hc => hf hc.2), dif_neg (fun hc => hg hc.2)]
