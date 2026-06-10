@@ -137,12 +137,6 @@ instance : Trans (LE.le : Real → Real → Prop) Eq LE.le :=
 -- §12. More theorems
 -- ============================================================
 
-theorem pos_sub_iff (a b : Real) : a < b ↔ 0 < b - a := pos_iff_lt a b
-
-theorem nonneg_sub_iff (a b : Real) : a ≤ b ↔ 0 ≤ b - a := nonneg_iff_le a b
-
-theorem le_lt_trans' (a b c : Real) : a ≤ b → b < c → a < c := le_lt_trans
-
 -- 順序
 theorem not_lt_imp_le {a b : Real} (h : ¬(a < b)) : b ≤ a := by
   cases LinearOrderedField.le_total a b with

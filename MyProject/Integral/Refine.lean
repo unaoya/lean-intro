@@ -9,56 +9,23 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
     (n : Nat) (Δ : Partition n a b) (ξ ξ' : Range n → Real)
     (hclose : ∀ i, (f (ξ i) - f (ξ' i)).abs ≤ C) :
     (RiemannSum f Δ ξ - RiemannSum f Δ ξ').abs ≤ C * (b - a) := by
-  -- Step 1: for each i, f(ξ_i)*len_i ≤ f(ξ'_i)*len_i + C*len_i
-  have h_term : ∀ i : Range n,
-      f (ξ i) * Δ.length i ≤ f (ξ' i) * Δ.length i + C * Δ.length i := by
+  have hsub : RiemannSum f Δ ξ - RiemannSum f Δ ξ' =
+      Summation n (fun i => (f (ξ i) - f (ξ' i)) * Partition.length Δ i) := by
+    calc RiemannSum f Δ ξ - RiemannSum f Δ ξ'
+        = Summation n (fun i => f (ξ i) * Partition.length Δ i -
+            f (ξ' i) * Partition.length Δ i) := sub_summation n _ _
+      _ = Summation n (fun i => (f (ξ i) - f (ξ' i)) * Partition.length Δ i) :=
+          summation_congr n _ _ (fun i => mul_sub_mul _ _ _)
+  rw [hsub]
+  apply le_trans (abs_summation_le _ _)
+  have hterm : ∀ i, ((f (ξ i) - f (ξ' i)) * Partition.length Δ i).abs ≤
+      C * Partition.length Δ i := by
     intro i
-    have h1 : f (ξ i) ≤ f (ξ' i) + C := by
-      have h2 := le_trans (le_abs _) (hclose i)
-      have h3 := add_left_le (f (ξ' i)) (f (ξ i) - f (ξ' i)) C h2
-      rw [add_sub_cancel' (f (ξ' i)) (f (ξ i))] at h3; exact h3
-    have h4 := nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i) h1
-    rw [add_mul] at h4; exact h4
-  -- Step 2: sum gives RS(ξ) ≤ RS(ξ') + C*(b-a)
-  have h_upper : RiemannSum f Δ ξ ≤ RiemannSum f Δ ξ' + C * (b - a) := by
-    have h5 := summation_le n _ _ h_term
-    rw [additive_summation, summation_smul, Partition.length_sum] at h5
-    exact h5
-  -- Step 3: symmetric bound gives RS(ξ') ≤ RS(ξ) + C*(b-a)
-  have h_term' : ∀ i : Range n,
-      f (ξ' i) * Δ.length i ≤ f (ξ i) * Δ.length i + C * Δ.length i := by
-    intro i
-    have h1 : f (ξ' i) ≤ f (ξ i) + C := by
-      have h2 : (f (ξ' i) - f (ξ i)).abs ≤ C := by
-        rw [show f (ξ' i) - f (ξ i) = -(f (ξ i) - f (ξ' i)) from (neg_sub _ _).symm,
-            abs_neg]; exact hclose i
-      have h3 := le_trans (le_abs _) h2
-      have h4 := add_left_le (f (ξ i)) (f (ξ' i) - f (ξ i)) C h3
-      rw [add_sub_cancel' (f (ξ i)) (f (ξ' i))] at h4; exact h4
-    have h5 := nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i) h1
-    rw [add_mul] at h5; exact h5
-  have h_lower : RiemannSum f Δ ξ' ≤ RiemannSum f Δ ξ + C * (b - a) := by
-    have h6 := summation_le n _ _ h_term'
-    rw [additive_summation, summation_smul, Partition.length_sum] at h6; exact h6
-  -- Step 4: combine using abs_le
-  apply abs_le
-  -- -(RS(ξ) - RS(ξ')) ≤ C*(b-a), i.e., RS(ξ') - RS(ξ) ≤ C*(b-a)
-  · rw [neg_sub (RiemannSum f Δ ξ) (RiemannSum f Δ ξ')]
-    have h7 := add_left_le (-(RiemannSum f Δ ξ)) (RiemannSum f Δ ξ')
-        (RiemannSum f Δ ξ + C * (b - a)) h_lower
-    have h8 : -(RiemannSum f Δ ξ) + (RiemannSum f Δ ξ + C * (b - a))
-        = C * (b - a) := by
-      rw [← add_assoc, add_comm (-(RiemannSum f Δ ξ))
-          (RiemannSum f Δ ξ), AddCommGroup.add_neg, AddCommGroup.zero_add]
-    rw [add_comm, h8] at h7; exact h7
-  -- RS(ξ) - RS(ξ') ≤ C*(b-a)
-  · have h7 := add_left_le (-(RiemannSum f Δ ξ')) (RiemannSum f Δ ξ)
-        (RiemannSum f Δ ξ' + C * (b - a)) h_upper
-    have h8 : -(RiemannSum f Δ ξ') + (RiemannSum f Δ ξ' + C * (b - a))
-        = C * (b - a) := by
-      rw [← add_assoc, add_comm (-(RiemannSum f Δ ξ'))
-          (RiemannSum f Δ ξ'), AddCommGroup.add_neg, AddCommGroup.zero_add]
-    rw [add_comm, h8] at h7; exact h7
+    rw [abs_mul_nonneg (Δ.length_nonneg i)]
+    exact nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i) (hclose i)
+  apply le_trans (summation_le n _ _ hterm)
+  rw [summation_smul, Partition.length_sum]
+  exact le_refl _
 
 -- ============================================================
 -- continuous_integrable 用の細分比較補題群

@@ -10,7 +10,7 @@ private theorem abs_lt_of_nonneg_lt {x y : Real} (hx : 0 ≤ x) (hxy : x < y) : 
 
 private theorem close_to_c_half {s c δ : Real} (hs_le : s ≤ c)
     (hs_gt : c - δ / 2 < s) (_hδ : 0 < δ) : (s - c).abs < δ / 2 := by
-  have hcs_nn : 0 ≤ c - s := (nonneg_sub_iff s c).mp hs_le
+  have hcs_nn : 0 ≤ c - s := (nonneg_iff_le s c).mp hs_le
   calc (s - c).abs = (-(c - s)).abs := by rw [neg_sub c s]
     _ = (c - s).abs := abs_neg _
     _ < δ / 2 := abs_lt_of_nonneg_lt hcs_nn (sub_lt_swap hs_gt)
@@ -149,7 +149,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
     | inr hne_cb =>
       exfalso
       have hclt : c < b := ⟨hcb, hne_cb⟩
-      have hbc_pos : 0 < b - c := (pos_sub_iff c b).mp hclt
+      have hbc_pos : 0 < b - c := (pos_iff_lt c b).mp hclt
       let η := min δ' (min (δ_c / 2) ((b - c) / 2))
       have hη_pos : 0 < η :=
         min_pos _ _ hδ'_pos (min_pos _ _ (pos_half δ_c hδc_pos) (pos_half (b - c) hbc_pos))
@@ -175,7 +175,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
       -- Helper: s ∈ [c, c+η] → |s - c| ≤ δ_c / 2
       have close_ext : ∀ s, c ≤ s → s ≤ c + η → (s - c).abs ≤ δ_c / 2 := by
         intro s hsc hscη
-        have hnn : 0 ≤ s - c := (nonneg_sub_iff c s).mp hsc
+        have hnn : 0 ≤ s - c := (nonneg_iff_le c s).mp hsc
         have hle : s - c ≤ η := by
           have h1 := LinearOrderedField.add_le_add s (c + η) (-c) hscη
           rw [add_neg_cancel_η] at h1; exact h1
@@ -255,7 +255,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
   have hδ2_pos : 0 < δ / 2 := pos_half δ hδ_pos
   have hδ2_ne : δ / 2 ≠ 0 := fun h => hδ2_pos.2 h.symm
   have hab' : a ≤ b := hab.1
-  have hba_pos : 0 < b - a := (pos_sub_iff a b).mp hab
+  have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab
   let N := ceil ((b - a) / (δ / 2))
   have hN_lt : (b - a) / (δ / 2) < (N : Real) := ceil_lt _
   -- b - a < N * (δ/2) via div cancellation
@@ -303,7 +303,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
         have hsb : a + (k : Real) * (δ / 2) ≤ b := le_trans hs_lt_t.1 htb
         -- |t - s| ≤ δ/2 < δ
         have hts_nn : 0 ≤ t - (a + (k : Real) * (δ / 2)) :=
-          (nonneg_sub_iff _ t).mp hs_lt_t.1
+          (nonneg_iff_le _ t).mp hs_lt_t.1
         have hts_le : t - (a + (k : Real) * (δ / 2)) ≤ δ / 2 := by
           rw [hsucc, add_mul, one_mul,
               (add_assoc a ((k : Real) * (δ / 2)) (δ / 2)).symm] at htk1
