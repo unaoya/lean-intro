@@ -27,15 +27,18 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
 ```
 MyProject/
   Numbers/Structure.lean   代数構造のクラス階層（独自・mathlib 非依存）
-  Numbers/NatNum.lean      Range・有限和 Sumation・自然数の min
+  Numbers/NatNum.lean      Range・有限和 Summation・自然数の min
   Numbers/Constructive/    （将来計画）Cauchy 列による実数構成 → 公理の定理化
   Axioms.lean              実数の公理（5 本）
   Real/                    実数の基本補題（Algebra → Order → {Div, Sup} → Abs
                            → MinMax → Summation → Cast → Interval の鎖）
   Lemmas.lean              ↑の umbrella
-  Limit.lean / Continuity.lean / Deriv.lean   極限・一様連続・微分
+  Limit.lean               極限（IsLimAt）
+  Continuity.lean          連続性・一様連続性・有界性
+  Deriv.lean               微分（HasDerivAt）
   Integral/
     Partition.lean         分割・TaggedPartition
+    Insert.lean            分割への点挿入と小区間探索
     RiemannSum.lean        リーマン和と点挿入評価
     Refine.lean            細分比較（ステップ関数の原始関数・共通エンベロープ）
     Def.lean               積分の定義・等分割・一意性

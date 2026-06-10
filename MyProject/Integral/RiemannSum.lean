@@ -1,5 +1,4 @@
-import MyProject.Integral.Partition
-import MyProject.Limit
+import MyProject.Integral.Insert
 
 noncomputable section
 
