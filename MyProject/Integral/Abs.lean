@@ -1,4 +1,5 @@
 import MyProject.Integral.Refine
+import MyProject.Integral.Criterion
 import MyProject.Integral.Monotone
 
 noncomputable section
@@ -308,27 +309,10 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     -- a = b : RS は常に 0
     have heq : a = b := LinearOrderedField.le_asymm a b h hba
     subst heq
-    exact ⟨0, fun ε hε => ⟨1, zero_lt_one, fun n Δ ξ hr _ => by
-      have hpts : ∀ (i : Range n.succ), Δ.points i = a :=
-        fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i)
-          (Δ.point_le_right i)).symm
-      have hxi : ∀ (i : Range n), ξ i = a := by
-        intro i
-        have hi := hr i
-        dsimp [InInterval] at hi
-        rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
-        exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
-      have hRS : RiemannSum (fun x => (f x).abs) Δ ξ =
-          RiemannSum (fun _ => (f a).abs) Δ ξ := by
-        unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
-      rw [hRS, const_riemann_sum, sub_self,
-          show (f a).abs * (0 : Real) = 0 from by
-            rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
-          sub_self, abs_zero]
-      exact hε⟩⟩
+    exact ⟨0, isintegral_self _ a⟩
   | inr hba =>
+    -- a < b : f の可積分性（積分値 If への収束）からコーシー型条件を導く
     have hab' : a < b := ne_le_lt b a hba
-    -- f の有界性
     obtain ⟨M₀, hM₀⟩ := integrable_bounded f a b h h''
     have ha_in : InInterval a b a := by
       dsimp [InInterval]; rw [if_pos h]; exact ⟨le_refl a, h⟩
@@ -346,83 +330,19 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     have hMg : ∀ t, InInterval a b t → ((f t).abs).abs ≤ M₀ + 1 := fun t ht => by
       rw [nonneg_abs abs_nonneg]; exact hM t ht
     obtain ⟨If, hIf⟩ := h''
-    -- S = 「十分細かい分割では常に RS_{|f|} 以下」となる y の集合
-    let S : Real → Prop := fun y =>
-      ∃ δ, 0 < δ ∧ ∀ n (Δ : Partition n a b) (ξ : Range n → Real),
-        Δ.IsRepr ξ → Partition.diam Δ < δ →
-        y ≤ RiemannSum (fun x => (f x).abs) Δ ξ
-    have hS_ne : ∃ y, S y :=
-      ⟨0, 1, zero_lt_one, fun n Δ ξ hr _ =>
-        RiemannSum_nonneg _ Δ ξ (fun x _ => abs_nonneg) hr⟩
-    have hS_bdd : ∃ ub, ∀ y, S y → y ≤ ub := by
-      refine ⟨(M₀ + 1) * (b - a), fun y hy => ?_⟩
-      obtain ⟨δ, hδ, hy_le⟩ := hy
-      have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp h
-      have hdiv_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
-      have hm_lt : (b - a) / δ < ((ceil ((b - a) / δ)) : Real) := ceil_lt _
-      have hm_ne : ceil ((b - a) / δ) ≠ 0 := by
-        intro h0; rw [h0] at hm_lt; exact (le_lt_trans hdiv_nn hm_lt).2 rfl
-      have h_repr := equalPartitionRepr_isrepr (ceil ((b - a) / δ)) a b hm_ne h
-      have h_diam := equalPartition_diam_lt (ceil ((b - a) / δ)) a b δ hm_ne h hδ hm_lt
-      have h_le := hy_le _ _ _ h_repr h_diam
-      exact le_trans h_le (le_trans (le_abs _)
-        (rs_abs_bound (fun x => (f x).abs) (M₀ + 1) hMg _ _ h_repr))
-    refine ⟨Real.sup S hS_ne hS_bdd, fun ε hε => ?_⟩
-    have hε8 : 0 < ε / 2 / 2 / 2 := pos_half _ (pos_half _ (pos_half ε hε))
-    obtain ⟨δf, hδf_pos, hδf⟩ := hIf (ε / 2 / 2 / 2) hε8
+    apply integrable_of_cauchy _ a b h (M₀ + 1) hMg
+    intro ε hε
+    obtain ⟨δf, hδf_pos, hδf⟩ := hIf (ε / 2 / 2) (pos_half _ (pos_half ε hε))
     refine ⟨δf, hδf_pos, ?_⟩
     intro n Δ ξ hr hd
     obtain ⟨δ', hδ'_pos, hcomp⟩ := abs_rs_compare f a b (M₀ + 1) If hM hM_pos hab'
-      (ε / 2 / 2 / 2) (ε / 2 / 2) hε8 (pos_half _ (pos_half ε hε))
+      (ε / 2 / 2) (ε / 2) (pos_half _ (pos_half ε hε)) (pos_half ε hε)
       δf hδf_pos hδf n Δ ξ hr hd
-    have hbound : ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
-        Partition.IsRepr Δ' ξ' → Partition.diam Δ' < δ' →
-        (RiemannSum (fun x => (f x).abs) Δ' ξ' -
-         RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ ε / 2 := by
-      intro n' Δ' ξ' hr' hd'
-      have h1 := hcomp n' Δ' ξ' hr' hd'
-      rwa [half_add (ε / 2 / 2), half_add (ε / 2)] at h1
-    -- 下から：RS − ε/2 ∈ S
-    have hmem : S (RiemannSum (fun x => (f x).abs) Δ ξ - ε / 2) := by
-      refine ⟨δ', hδ'_pos, fun n' Δ' ξ' hr' hd' => ?_⟩
-      have h1 := hbound n' Δ' ξ' hr' hd'
-      have h2 : RiemannSum (fun x => (f x).abs) Δ ξ -
-          RiemannSum (fun x => (f x).abs) Δ' ξ' ≤ ε / 2 := by
-        apply le_trans (le_abs _)
-        rw [show RiemannSum (fun x => (f x).abs) Δ ξ -
-              RiemannSum (fun x => (f x).abs) Δ' ξ' =
-              -(RiemannSum (fun x => (f x).abs) Δ' ξ' -
-                RiemannSum (fun x => (f x).abs) Δ ξ) from
-              (neg_sub _ _).symm, abs_neg]
-        exact h1
-      exact sub_le_swap h2
-    have h_lower := Real.sup_ub S hS_ne hS_bdd _ hmem
-    -- 上から：sup ≤ RS + ε/2
-    have h_upper : Real.sup S hS_ne hS_bdd ≤
-        RiemannSum (fun x => (f x).abs) Δ ξ + ε / 2 := by
-      apply Real.sup_lub S hS_ne hS_bdd
-      intro y hy
-      obtain ⟨δy, hδy_pos, hy_le⟩ := hy
-      have hδm_pos : 0 < min δy δ' := min_pos δy δ' hδy_pos hδ'_pos
-      have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp h
-      have hdiv_nn : 0 ≤ (b - a) / min δy δ' := nonneg_div_nonneg _ _ hba_nn hδm_pos
-      have hm_lt : (b - a) / min δy δ' <
-          ((ceil ((b - a) / min δy δ')) : Real) := ceil_lt _
-      have hm_ne : ceil ((b - a) / min δy δ') ≠ 0 := by
-        intro h0; rw [h0] at hm_lt; exact (le_lt_trans hdiv_nn hm_lt).2 rfl
-      have hEr := equalPartitionRepr_isrepr (ceil ((b - a) / min δy δ')) a b hm_ne h
-      have hEd := equalPartition_diam_lt (ceil ((b - a) / min δy δ')) a b
-        (min δy δ') hm_ne h hδm_pos hm_lt
-      have h1 := hy_le _ _ _ hEr (lt_le_trans _ _ _ hEd (min_left_le δy δ'))
-      have h2 := hbound _ _ _ hEr (lt_le_trans _ _ _ hEd (min_right_le δy δ'))
-      exact le_trans h1 (le_add_of_sub_le (le_trans (le_abs _) h2))
-    have habs : (RiemannSum (fun x => (f x).abs) Δ ξ -
-        Real.sup S hS_ne hS_bdd).abs ≤ ε / 2 := by
-      apply abs_le
-      · rw [neg_sub]
-        exact sub_le_of_le_add h_upper
-      · exact sub_le_swap h_lower
-    exact le_lt_trans habs (half_lt hε)
+    refine ⟨δ', hδ'_pos, ?_⟩
+    intro n' Δ' ξ' hr' hd'
+    have h1 := hcomp n' Δ' ξ' hr' hd'
+    -- (ε/4 + ε/4) + ε/2 = ε/2 + ε/2 = ε
+    rwa [half_add (ε / 2), half_add ε] at h1
 
 -- 積分の三角不等式（Triangle.lean から移設）
 theorem int_triangle_ineq (f : Real → Real) (a b : Real) (h : a ≤ b)
