@@ -8,9 +8,6 @@ package «my_project» where
   ]
   -- add any additional package configuration options here
 
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"
-
 -- 実数の基礎（Structure, NatNum, Axioms, Lemmas）
 lean_lib «RealNumbers» where
   globs := #[
