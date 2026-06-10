@@ -15,6 +15,23 @@ private theorem close_to_c_half {s c δ : Real} (hs_le : s ≤ c)
     _ = (c - s).abs := abs_neg _
     _ < δ / 2 := abs_lt_of_nonneg_lt hcs_nn (sub_lt_swap hs_gt)
 
+-- 片方が c の δ/2-近傍にあり、もう片方がその δ/2-近傍にあれば、両方 c の δ-近傍
+private theorem near_c_of_partner {s t c δ_c : Real}
+    (h_half : (t - c).abs ≤ δ_c / 2) (hdist : (s - t).abs < δ_c / 2) :
+    (s - c).abs < δ_c := by
+  calc (s - c).abs ≤ (s - t).abs + (t - c).abs := abs_sub_le_add _ _ _
+    _ < δ_c / 2 + δ_c / 2 := lt_add_le hdist h_half
+    _ = δ_c := half_add δ_c
+
+-- x, y がともに c の ε/2-近傍なら |x - y| < ε
+private theorem both_near_then {x y c ε : Real}
+    (h1 : (x - c).abs < ε / 2) (h2 : (y - c).abs < ε / 2) :
+    (x - y).abs < ε := by
+  calc (x - y).abs ≤ (x - c).abs + (c - y).abs := abs_sub_le_add _ _ _
+    _ = (x - c).abs + (y - c).abs := by rw [abs_sub_comm c]
+    _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ h1 h2
+    _ = ε := half_add ε
+
 -- Helper: continuous on [a,b] implies uniformly continuous on [a,b]
 -- Uses sup axiom: define S(t) = "f is ε-unif cont on [a,t]", show sup S = b
 theorem continuous_unif_cont (f : Real → Real) (a b : Real)
@@ -90,13 +107,8 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
         | inl hs₁_le =>
           -- s₂ > t₀ (since ¬both ≤ t₀)
           have hs₂_gt : ¬(s₂ ≤ t₀) := fun h => hnotboth ⟨hs₁_le, h⟩
-          have h_s2_half := close_to_c_half hs₂.2
-            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₂_gt)) hδc_pos
-          -- |s₁ - c| ≤ |s₁ - s₂| + |s₂ - c| < δ_c/2 + δ_c/2 = δ_c
-          calc (s₁ - c).abs = ((s₂ - c) + (s₁ - s₂)).abs := by rw [telescope_2 c s₁ s₂]
-            _ ≤ (s₂ - c).abs + (s₁ - s₂).abs := abs_triangle _ _
-            _ < δ_c / 2 + δ_c / 2 := lt_add_lt _ _ _ _ h_s2_half hdist_le
-            _ = δ_c := half_add δ_c
+          exact near_c_of_partner (le_of_lt (close_to_c_half hs₂.2
+            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₂_gt)) hδc_pos)) hdist_le
       have h_s2_close : (s₂ - c).abs < δ_c := by
         cases Classical.em (s₂ ≤ t₀) with
         | inr hs₂_gt =>
@@ -104,44 +116,10 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₂_gt)) hδc_pos) (half_lt hδc_pos)
         | inl hs₂_le =>
           have hs₁_gt : ¬(s₁ ≤ t₀) := fun h => hnotboth ⟨h, hs₂_le⟩
-          have h_s1_half := close_to_c_half hs₁.2
-            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₁_gt)) hδc_pos
-          calc (s₂ - c).abs = ((s₁ - c) + (s₂ - s₁)).abs := by rw [telescope_2 c s₂ s₁]
-            _ ≤ (s₁ - c).abs + (s₂ - s₁).abs := abs_triangle _ _
-            _ = (s₁ - c).abs + (s₁ - s₂).abs := by
-                rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub s₁ s₂).symm, abs_neg]
-            _ < δ_c / 2 + δ_c / 2 := lt_add_lt _ _ _ _ h_s1_half hdist_le
-            _ = δ_c := half_add δ_c
-      -- Triangle: f s₁ - f s₂ = (f s₁ - f c) + (f c - f s₂)
-      have hf1 := hδc s₁ h_s1_close
-      have hf2 := hδc s₂ h_s2_close
-      have hsplit : f s₁ - f s₂ = (f s₁ - f c) + (f c - f s₂) := by
-        rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm]
-        rw [show f s₁ - f c + -(f s₂ - f c) = f s₁ - f c - (f s₂ - f c) from rfl]
-        rw [show f s₁ - f s₂ = (f s₁ - f c) - (f s₂ - f c) from by
-          show f s₁ + -(f s₂) = (f s₁ + -(f c)) + -((f s₂) + -(f c))
-          rw [neg_add_distrib, neg_neg,
-              show f s₁ + -(f c) + (-(f s₂) + f c) =
-                   f s₁ + (-(f c) + (-(f s₂) + f c)) from add_assoc _ _ _,
-              show -(f c) + (-(f s₂) + f c) = -(f s₂) from by
-                rw [add_comm (-(f s₂)) (f c),
-                    show -(f c) + (f c + -(f s₂)) = (-(f c) + f c) + -(f s₂) from
-                      (add_assoc _ _ _).symm,
-                    AddCommGroup.neg_add, AddCommGroup.zero_add]]]
-      calc (f s₁ - f s₂).abs
-          = ((f s₁ - f c) + (f c - f s₂)).abs := by rw [hsplit]
-          _ ≤ (f s₁ - f c).abs + (f c - f s₂).abs := abs_triangle _ _
-          _ = (f s₁ - f c).abs + (f s₂ - f c).abs := by
-              rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm, abs_neg]
-          _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ hf1 hf2
-          _ = ε := half_add ε
-  -- Helper: a < b, c ≤ d → a + c < b + d
-  have lt_add_le' : ∀ {a' b' c' d' : Real}, a' < b' → c' ≤ d' → a' + c' < b' + d' := by
-    intro a' b' c' d' hab' hcd'
-    calc a' + c' ≤ a' + d' := add_left_le a' c' d' hcd'
-      _ < b' + d' := by
-        rw [add_comm a' d', add_comm b' d']
-        exact add_left_lt d' a' b' hab'
+          exact near_c_of_partner (le_of_lt (close_to_c_half hs₁.2
+            (lt_trans _ _ _ ht₀_gt (ne_le_lt _ _ hs₁_gt)) hδc_pos))
+            (by rw [abs_sub_comm]; exact hdist_le)
+      exact both_near_then (hδc s₁ h_s1_close) (hδc s₂ h_s2_close)
   -- Show c = b by contradiction
   have hcb_eq : c = b := by
     cases Classical.em (c = b) with
@@ -197,14 +175,8 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             | inl hs₁_le =>
               have hs₂_gt : ¬(s₂ ≤ c) := fun h => hnotboth ⟨hs₁_le, h⟩
               have hc_le_s₂ := not_lt_imp_le (fun hlt => hs₂_gt hlt.1)
-              calc (s₁ - c).abs
-                  = ((s₂ - c) + (s₁ - s₂)).abs := by rw [telescope_2 c s₁ s₂]
-                _ ≤ (s₂ - c).abs + (s₁ - s₂).abs := abs_triangle _ _
-                _ < δ_c / 2 + δ_c / 2 := by
-                    rw [add_comm ((s₂ - c).abs) ((s₁ - s₂).abs)]
-                    exact lt_add_le' (lt_le_trans _ _ _ hdist hδ'_le_δc2)
-                      (close_ext s₂ hc_le_s₂ hs₂.2)
-                _ = δ_c := half_add δ_c
+              exact near_c_of_partner (close_ext s₂ hc_le_s₂ hs₂.2)
+                (lt_le_trans _ _ _ hdist hδ'_le_δc2)
           have h_s2_close : (s₂ - c).abs < δ_c := by
             cases Classical.em (s₂ ≤ c) with
             | inr hs₂_gt =>
@@ -214,28 +186,9 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             | inl hs₂_le =>
               have hs₁_gt : ¬(s₁ ≤ c) := fun h => hnotboth ⟨h, hs₂_le⟩
               have hc_le_s₁ := not_lt_imp_le (fun hlt => hs₁_gt hlt.1)
-              calc (s₂ - c).abs
-                  = ((s₁ - c) + (s₂ - s₁)).abs := by rw [telescope_2 c s₂ s₁]
-                _ ≤ (s₁ - c).abs + (s₂ - s₁).abs := abs_triangle _ _
-                _ = (s₁ - c).abs + (s₁ - s₂).abs := by
-                    rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub s₁ s₂).symm, abs_neg]
-                _ < δ_c / 2 + δ_c / 2 := by
-                    rw [add_comm ((s₁ - c).abs) ((s₁ - s₂).abs)]
-                    exact lt_add_le' (lt_le_trans _ _ _ hdist hδ'_le_δc2)
-                      (close_ext s₁ hc_le_s₁ hs₁.2)
-                _ = δ_c := half_add δ_c
-          -- Triangle: |f s₁ - f s₂| ≤ |f s₁ - f c| + |f c - f s₂| < ε
-          have hf1 := hδc s₁ h_s1_close
-          have hf2 := hδc s₂ h_s2_close
-          calc (f s₁ - f s₂).abs
-              = ((f c - f s₂) + (f s₁ - f c)).abs := by rw [telescope_2 (f s₂) (f s₁) (f c)]
-            _ ≤ (f c - f s₂).abs + (f s₁ - f c).abs := abs_triangle _ _
-            _ = (f s₂ - f c).abs + (f s₁ - f c).abs := by
-                rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm, abs_neg]
-            _ = (f s₁ - f c).abs + (f s₂ - f c).abs := by
-                rw [add_comm ((f s₂ - f c).abs) ((f s₁ - f c).abs)]
-            _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ hf1 hf2
-            _ = ε := half_add ε⟩
+              exact near_c_of_partner (close_ext s₁ hc_le_s₁ hs₁.2)
+                (by rw [abs_sub_comm]; exact lt_le_trans _ _ _ hdist hδ'_le_δc2)
+          exact both_near_then (hδc s₁ h_s1_close) (hδc s₂ h_s2_close)⟩
       -- c + η ≤ sup S = c, but c + η > c: contradiction
       have hle_sup := Real.sup_ub S hne hbdd (c + η) hSext
       have hlt : c < c + η := by
@@ -320,8 +273,8 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
         have h_tri : (f t - f a).abs ≤
             (f (a + (k : Real) * (δ / 2)) - f a).abs +
             (f t - f (a + (k : Real) * (δ / 2))).abs := by
-          rw [telescope_2 (f a) (f t) (f (a + (k : Real) * (δ / 2)))]
-          exact abs_triangle _ _
+          rw [add_comm]
+          exact abs_sub_le_add (f t) (f (a + (k : Real) * (δ / 2))) (f a)
         have h_lt : (f (a + (k : Real) * (δ / 2)) - f a).abs +
             (f t - f (a + (k : Real) * (δ / 2))).abs < (k : Real) + 1 :=
           le_lt_trans

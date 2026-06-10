@@ -61,6 +61,11 @@ theorem add_left_lt (a b c : Real) : b < c → a + b < a + c := by
   intro ⟨hle, hne⟩
   exact ⟨add_left_le a b c hle, fun h => hne (add_left_cancel' a b c h)⟩
 
+theorem lt_add_le {a b c d : Real} (h₁ : a < b) (h₂ : c ≤ d) : a + c < b + d := by
+  apply le_lt_trans (add_left_le a c d h₂)
+  rw [add_comm a d, add_comm b d]
+  exact add_left_lt d a b h₁
+
 theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by
   constructor
   · intro h

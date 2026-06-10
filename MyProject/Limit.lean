@@ -81,28 +81,14 @@ theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real)
     -- |f x - l₁| < ε and |f x - l₂| < ε
     have hfx1 := hδ₁ (a + min δ₁ δ₂ / 2) ⟨hxa_pos, hxa_lt_δ₁⟩
     have hfx2 := hδ₂ (a + min δ₁ δ₂ / 2) ⟨hxa_pos, hxa_lt_δ₂⟩
-    -- |l₁ - l₂| = |(f x - l₂) + (l₁ - f x)| by telescope
-    have hsplit : l₁ - l₂ = (f (a + min δ₁ δ₂ / 2) - l₂) + (l₁ - f (a + min δ₁ δ₂ / 2)) :=
-      telescope_2 l₂ l₁ (f (a + min δ₁ δ₂ / 2))
-    -- |l₁ - f x| = |f x - l₁|
-    have habs_comm : abs (l₁ - f (a + min δ₁ δ₂ / 2)) = abs (f (a + min δ₁ δ₂ / 2) - l₁) := by
-      have : l₁ - f (a + min δ₁ δ₂ / 2) = -(f (a + min δ₁ δ₂ / 2) - l₁) := by
-        show l₁ + -(f (a + min δ₁ δ₂ / 2)) = -(f (a + min δ₁ δ₂ / 2) + -l₁)
-        rw [neg_add_distrib (f (a + min δ₁ δ₂ / 2)) (-l₁), neg_neg l₁,
-            add_comm l₁ (-(f (a + min δ₁ δ₂ / 2)))]
-      rw [this, abs_neg]
-    -- triangle: |l₁ - l₂| ≤ |f x - l₂| + |l₁ - f x|
-    have htri : abs (l₁ - l₂) ≤ abs (f (a + min δ₁ δ₂ / 2) - l₂) + abs (l₁ - f (a + min δ₁ δ₂ / 2)) := by
-      rw [hsplit]; exact abs_triangle _ _
-    -- sum < ε + ε = |l₁ - l₂|
-    have hsum : abs (f (a + min δ₁ δ₂ / 2) - l₂) + abs (l₁ - f (a + min δ₁ δ₂ / 2)) < abs (l₁ - l₂) := by
-      rw [habs_comm]
-      calc abs (f (a + min δ₁ δ₂ / 2) - l₂) + abs (f (a + min δ₁ δ₂ / 2) - l₁)
-          < abs (l₁ - l₂) / 2 + abs (l₁ - l₂) / 2 := lt_add_lt _ _ _ _ hfx2 hfx1
-        _ = abs (l₁ - l₂) := half_add _
-    -- contradiction: |l₁ - l₂| < |l₁ - l₂|
-    have := le_lt_trans htri hsum
-    exact this.2 rfl
+    -- |l₁ - l₂| ≤ |l₁ - fx| + |fx - l₂| < ε + ε = |l₁ - l₂| で矛盾
+    have hcontra : abs (l₁ - l₂) < abs (l₁ - l₂) :=
+      le_lt_trans (abs_sub_le_add l₁ (f (a + min δ₁ δ₂ / 2)) l₂)
+        (by rw [abs_sub_comm l₁ (f (a + min δ₁ δ₂ / 2))]
+            calc abs (f (a + min δ₁ δ₂ / 2) - l₁) + abs (f (a + min δ₁ δ₂ / 2) - l₂)
+                < abs (l₁ - l₂) / 2 + abs (l₁ - l₂) / 2 := lt_add_lt _ _ _ _ hfx1 hfx2
+              _ = abs (l₁ - l₂) := half_add _)
+    exact hcontra.2 rfl
 
 -- PROOF 2: limit_eq'
 theorem limit_eq' (f : Real → Real) (a : Real) (l : Real) (h : IsLimAt f l a) : limit f a ⟨l, h⟩ = l := by
