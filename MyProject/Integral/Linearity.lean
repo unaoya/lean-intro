@@ -19,9 +19,9 @@ theorem add_integrable (f g : Real → Real) (a b : Real)
   rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
   rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
   refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
-  have hdf : Partition.diam n a b Δ < δf :=
+  have hdf : Partition.diam Δ < δf :=
     lt_le_trans _ _ _ hd (min_left_le δf δg)
-  have hdg : Partition.diam n a b Δ < δg :=
+  have hdg : Partition.diam Δ < δg :=
     lt_le_trans _ _ _ hd (min_right_le δf δg)
   rw [additive_riemann_sum, add_sub_add]
   calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))
@@ -70,9 +70,9 @@ theorem additive_integral (f g : Real → Real) (a b : Real)
     rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
     rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
     refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
-    have hdf : Partition.diam n a b Δ < δf :=
+    have hdf : Partition.diam Δ < δf :=
       lt_le_trans _ _ _ hd (min_left_le δf δg)
-    have hdg : Partition.diam n a b Δ < δg :=
+    have hdg : Partition.diam Δ < δg :=
       lt_le_trans _ _ _ hd (min_right_le δf δg)
     rw [additive_riemann_sum, add_sub_add]
     calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))

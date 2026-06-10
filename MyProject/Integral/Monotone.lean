@@ -61,8 +61,8 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       let Δ : Partition 0 a a := ⟨fun _ => a,
         fun i => absurd i.property (Nat.not_lt_zero _), rfl, rfl⟩
       let ξ : Range 0 → Real := fun i => absurd i.property (Nat.not_lt_zero _)
-      have hr : Δ.IsRepr a a 0 ξ := fun i => absurd i.property (Nat.not_lt_zero _)
-      have hd : Partition.diam 0 a a Δ < δ := by show fmax' 0 _ < δ; exact hδ
+      have hr : Δ.IsRepr ξ := fun i => absurd i.property (Nat.not_lt_zero _)
+      have hd : Partition.diam Δ < δ := by show fmax' 0 _ < δ; exact hδ
       have hRS := hh 0 Δ ξ hr hd
       have hRS0 : RiemannSum f a a 0 Δ ξ = 0 := rfl
       rw [hRS0] at hRS
@@ -97,9 +97,9 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
           rw [mul_div_cancel' (m : Real) (b - a) hm_pos.2.symm, add_sub_cancel' a b]
       }
       let ξ : Range m → Real := fun i => a + (i.val : Real) * (b - a) / (m : Real)
-      have hr : Δ.IsRepr a b m ξ := by
+      have hr : Δ.IsRepr ξ := by
         apply Partition.le_isrepr; intro i; exact ⟨le_refl _, Δ.increase i⟩
-      have hd : Partition.diam m a b Δ < δ := by
+      have hd : Partition.diam Δ < δ := by
         apply fmax'_lt m _ δ hδ
         intro i
         show (a + ((i.val + 1 : Nat) : Real) * (b - a) / ↑m) -

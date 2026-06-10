@@ -36,15 +36,15 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     have hm_pos : 0 < m := Nat.pos_of_ne_zero hm_ne
     let Δ := equalPartition m a b hm_ne hab
     let ξ := equalPartitionRepr m a b hm_ne hab
-    have h_repr : Δ.IsRepr a b m ξ := equalPartitionRepr_isrepr m a b hm_ne hab
-    have h_diam : Partition.diam m a b Δ < δ :=
+    have h_repr : Δ.IsRepr ξ := equalPartitionRepr_isrepr m a b hm_ne hab
+    have h_diam : Partition.diam Δ < δ :=
       equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
     have hL_pos : 0 < (b - a) / (m : Real) := pos_div_pos _ _ hba_pos hm_pos_r
     have hL_ne : (b - a) / (m : Real) ≠ 0 := fun h0 => hL_pos.2 h0.symm
     -- 各点 x で、x を含む小区間の代表点だけ x に取り替えた代表点列と比較する
     refine ⟨2 / ((b - a) / (m : Real)) + fmax' m (fun j => (f (ξ j)).abs), ?_⟩
     intro x hx
-    obtain ⟨k, hkL, hkR⟩ := Partition.find_interval m a b x Δ hm_pos hx
+    obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ x hm_pos hx
     let ξ' : Range m → Real := fun i => if i.val = k.val then x else ξ i
     have hr_bounds : ∀ j : Range m,
         Δ.points j.incl ≤ ξ j ∧ ξ j ≤ Δ.points j.addone := by
@@ -52,7 +52,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
       have hj := h_repr j
       dsimp [InInterval] at hj
       rwa [if_pos (Δ.increase j)] at hj
-    have h_repr' : Δ.IsRepr a b m ξ' := by
+    have h_repr' : Δ.IsRepr ξ' := by
       apply Partition.le_isrepr
       intro i
       by_cases hi : i.val = k.val
@@ -63,12 +63,12 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
         exact hr_bounds i
     -- 一点だけ代表点を変えた RS の差 = (f x - f (ξ k)) * length k
     have hdiff : RiemannSum f a b m Δ ξ' - RiemannSum f a b m Δ ξ =
-        (f x - f (ξ k)) * Partition.length m a b Δ k := by
-      show Summation m (fun i => f (ξ' i) * Partition.length m a b Δ i) -
-          Summation m (fun i => f (ξ i) * Partition.length m a b Δ i) = _
-      have hterm : ∀ i : Range m, f (ξ' i) * Partition.length m a b Δ i =
-          f (ξ i) * Partition.length m a b Δ i +
-          (if i.val = k.val then (f x - f (ξ k)) * Partition.length m a b Δ k
+        (f x - f (ξ k)) * Partition.length Δ k := by
+      show Summation m (fun i => f (ξ' i) * Partition.length Δ i) -
+          Summation m (fun i => f (ξ i) * Partition.length Δ i) = _
+      have hterm : ∀ i : Range m, f (ξ' i) * Partition.length Δ i =
+          f (ξ i) * Partition.length Δ i +
+          (if i.val = k.val then (f x - f (ξ k)) * Partition.length Δ k
            else 0) := by
         intro i
         by_cases hi : i.val = k.val
@@ -80,7 +80,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
           if_pos (show k.val = k.val from rfl), add_sub_cancel]
     have hRS : (RiemannSum f a b m Δ ξ - I).abs < 1 := hbound m Δ ξ h_repr h_diam
     have hRS' : (RiemannSum f a b m Δ ξ' - I).abs < 1 := hbound m Δ ξ' h_repr' h_diam
-    have h2 : ((f x - f (ξ k)) * Partition.length m a b Δ k).abs < 2 := by
+    have h2 : ((f x - f (ξ k)) * Partition.length Δ k).abs < 2 := by
       rw [← hdiff]
       have hns : I - RiemannSum f a b m Δ ξ = -(RiemannSum f a b m Δ ξ - I) := by
         show I + -RiemannSum f a b m Δ ξ = -(RiemannSum f a b m Δ ξ + -I)
@@ -94,7 +94,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
             rw [hns, abs_neg]
         _ < 1 + 1 := lt_add_lt _ _ _ _ hRS hRS'
         _ = 2 := rfl
-    have hlen : Partition.length m a b Δ k = (b - a) / (m : Real) :=
+    have hlen : Partition.length Δ k = (b - a) / (m : Real) :=
       equalPartition_length m a b hm_ne hab k
     rw [hlen, abs_mul_nonneg hL_pos.1] at h2
     -- |f x - f (ξ k)| < 2 / L
@@ -132,12 +132,12 @@ private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
     increase := fun i => absurd i.property (Nat.not_lt_zero _)
     left := rfl
     right := rfl }
-  have hr0 : Δ0.IsRepr a a 0 (fun _ => a) :=
+  have hr0 : Δ0.IsRepr (fun _ => a) :=
     fun i => absurd i.property (Nat.not_lt_zero _)
-  have hd0 : Partition.diam 0 a a Δ0 < δ := hδ_pos
+  have hd0 : Partition.diam Δ0 < δ := hδ_pos
   have hclose := hδ 0 Δ0 (fun _ => a) hr0 hd0
   rw [show RiemannSum f a a 0 Δ0 (fun _ => a) - i = -i from by
-        show Summation 0 (fun q => f a * Partition.length 0 a a Δ0 q) - i = -i
+        show Summation 0 (fun q => f a * Partition.length Δ0 q) - i = -i
         rw [summation_zero]
         exact AddCommGroup.zero_add (-i)] at hclose
   rwa [abs_neg] at hclose
@@ -204,19 +204,19 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       intro n Δ ξ hr hd
       have hn : 0 < n := by
         cases n with
-        | zero => exact absurd (Partition.zero a c Δ) hac_lt.2
+        | zero => exact absurd (Partition.zero Δ) hac_lt.2
         | succ m => exact Nat.zero_lt_succ m
       have hb_in : InInterval a c b := by
         dsimp [InInterval]; rw [if_pos hac_le]; exact ⟨hab_le, hbc_le⟩
-      obtain ⟨k, hkL, hkR⟩ := Partition.find_interval n a c b Δ hn hb_in
+      obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ b hn hb_in
       obtain ⟨ξ', hr', hbd'⟩ :=
         rs_insert_bound f a c b (M₁ + M₂) hM hM_nn n Δ ξ hr k hkL hkR
       obtain ⟨kv, hkv⟩ := k
       obtain ⟨d, hd_eq⟩ : ∃ d, n = kv + d + 1 := ⟨n - kv - 1, by omega⟩
       subst hd_eq
-      let Δ' := Δ.insertPoint (kv + d + 1) a c b ⟨kv, hkv⟩ hkL hkR
+      let Δ' := Δ.insertPoint b ⟨kv, hkv⟩ hkL hkR
       have hb_pt : Δ'.points ⟨kv + 1, by omega⟩ = b :=
-        Partition.insertPoint_pt_mid (kv + d + 1) a c b Δ ⟨kv, hkv⟩ hkL hkR
+        Partition.insertPoint_pt_mid b Δ ⟨kv, hkv⟩ hkL hkR
       -- 左右の部分分割
       let ΔL : Partition (kv + 1) a b := {
         points := fun p => Δ'.points ⟨p.val, by have := p.property; omega⟩
@@ -224,7 +224,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         left := Δ'.left
         right := hb_pt }
       let ξL : Range (kv + 1) → Real := fun i => ξ' ⟨i.val, by have := i.property; omega⟩
-      have hrL : ΔL.IsRepr a b (kv + 1) ξL :=
+      have hrL : ΔL.IsRepr ξL :=
         fun i => hr' ⟨i.val, by have := i.property; omega⟩
       let ΔR : Partition (d + 1) b c := {
         points := fun p => Δ'.points ⟨kv + p.val + 1, by have := p.property; omega⟩
@@ -232,42 +232,42 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         left := hb_pt
         right := Δ'.right }
       let ξR : Range (d + 1) → Real := fun j => ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩
-      have hrR : ΔR.IsRepr b c (d + 1) ξR :=
+      have hrR : ΔR.IsRepr ξR :=
         fun j => hr' ⟨kv + j.val + 1, by have := j.property; omega⟩
       -- 各小区間の長さは元の diam 以下
       have hlen' : ∀ q : Range (kv + d + 1 + 1),
-          Partition.length (kv + d + 1 + 1) a c Δ' q ≤
-          Partition.diam (kv + d + 1) a c Δ := by
+          Partition.length Δ' q ≤
+          Partition.diam Δ := by
         intro q
-        show Partition.length (kv + d + 1 + 1) a c
-          (Δ.insertPoint (kv + d + 1) a c b ⟨kv, hkv⟩ hkL hkR) q ≤ _
+        show Partition.length
+          (Δ.insertPoint b ⟨kv, hkv⟩ hkL hkR) q ≤ _
         by_cases h1 : q.val < kv
-        · rw [Partition.insertPoint_length_low (kv + d + 1) a c b Δ ⟨kv, hkv⟩ hkL hkR q h1]
+        · rw [Partition.insertPoint_length_low b Δ ⟨kv, hkv⟩ hkL hkR q h1]
           exact le_fmax' _ _ _
         · by_cases h2 : kv + 1 < q.val
-          · rw [Partition.insertPoint_length_high (kv + d + 1) a c b Δ ⟨kv, hkv⟩ hkL hkR q h2]
+          · rw [Partition.insertPoint_length_high b Δ ⟨kv, hkv⟩ hkL hkR q h2]
             exact le_fmax' _ _ _
-          · have hsplit := Partition.insertPoint_length_split (kv + d + 1) a c b Δ
+          · have hsplit := Partition.insertPoint_length_split b Δ
               ⟨kv, hkv⟩ hkL hkR
             by_cases h3 : q.val = kv
             · rw [show q = ⟨kv, by omega⟩ from Subtype.ext h3]
               exact le_trans (le_of_add_nonneg_eq hsplit
-                (Partition.length_nonneg _ a c _ ⟨kv + 1, by omega⟩))
+                (Partition.length_nonneg _ ⟨kv + 1, by omega⟩))
                 (le_fmax' _ _ ⟨kv, hkv⟩)
             · have h4 : q.val = kv + 1 := by have := q.property; omega
               rw [show q = ⟨kv + 1, by omega⟩ from Subtype.ext h4]
               exact le_trans (le_of_nonneg_add_eq hsplit
-                (Partition.length_nonneg _ a c _ ⟨kv, by omega⟩))
+                (Partition.length_nonneg _ ⟨kv, by omega⟩))
                 (le_fmax' _ _ ⟨kv, hkv⟩)
-      have hdiam_nn : 0 ≤ Partition.diam (kv + d + 1) a c Δ :=
-        le_trans (Partition.length_nonneg _ a c Δ ⟨0, by omega⟩)
+      have hdiam_nn : 0 ≤ Partition.diam Δ :=
+        le_trans (Partition.length_nonneg Δ ⟨0, by omega⟩)
           (le_fmax' _ _ ⟨0, by omega⟩)
-      have hdiamL : Partition.diam (kv + 1) a b ΔL < δ₁ :=
+      have hdiamL : Partition.diam ΔL < δ₁ :=
         le_lt_trans
           (fmax'_le (kv + 1) _ _ hdiam_nn
             (fun i => hlen' ⟨i.val, by have := i.property; omega⟩))
           (lt_le_trans _ _ _ hd (le_trans (min_left_le _ _) (min_left_le δ₁ δ₂)))
-      have hdiamR : Partition.diam (d + 1) b c ΔR < δ₂ :=
+      have hdiamR : Partition.diam ΔR < δ₂ :=
         le_lt_trans
           (fmax'_le (d + 1) _ _ hdiam_nn
             (fun j => hlen' ⟨kv + j.val + 1, by have := j.property; omega⟩))
@@ -277,36 +277,36 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       -- RS の分割恒等式
       have e1 : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
           Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨i.val, by have := i.property; omega⟩) +
           Summation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨kv + j.val, by have := j.property; omega⟩) :=
         summation_split_at kv (d + 2)
-          (fun q => f (ξ' q) * Partition.length (kv + d + 1 + 1) a c Δ' q)
+          (fun q => f (ξ' q) * Partition.length Δ' q)
       have e2 : Summation (d + 2) (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨kv + j.val, by have := j.property; omega⟩) =
           f (ξ' ⟨kv, by omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ' ⟨kv, by omega⟩ +
+            Partition.length Δ' ⟨kv, by omega⟩ +
           Summation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨kv + j.val + 1, by have := j.property; omega⟩) :=
         summation_first (d + 1)
           (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨kv + j.val, by have := j.property; omega⟩)
       have e3 : RiemannSum f a b (kv + 1) ΔL ξL =
           Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨i.val, by have := i.property; omega⟩) +
           f (ξ' ⟨kv, by omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ' ⟨kv, by omega⟩ :=
+            Partition.length Δ' ⟨kv, by omega⟩ :=
         summation_succ kv
-          (fun i => f (ξL i) * Partition.length (kv + 1) a b ΔL i)
+          (fun i => f (ξL i) * Partition.length ΔL i)
       have e4 : RiemannSum f b c (d + 1) ΔR ξR =
           Summation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
-            Partition.length (kv + d + 1 + 1) a c Δ'
+            Partition.length Δ'
               ⟨kv + j.val + 1, by have := j.property; omega⟩) := rfl
       have hsplit_sum : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
           RiemannSum f a b (kv + 1) ΔL ξL + RiemannSum f b c (d + 1) ΔR ξR := by
@@ -317,11 +317,11 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       have hsplit_term : (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' -
           RiemannSum f a c (kv + d + 1) Δ ξ).abs ≤ ε / 2 := by
         apply le_trans hbd'
-        have h1 : Partition.length (kv + d + 1) a c Δ ⟨kv, hkv⟩ ≤
-            Partition.diam (kv + d + 1) a c Δ := le_fmax' _ _ _
-        have h2 : Partition.diam (kv + d + 1) a c Δ ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
+        have h1 : Partition.length Δ ⟨kv, hkv⟩ ≤
+            Partition.diam Δ := le_fmax' _ _ _
+        have h2 : Partition.diam Δ ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
           Real.le_of_lt (lt_le_trans _ _ _ hd (min_right_le _ _))
-        calc 2 * (M₁ + M₂) * Partition.length (kv + d + 1) a c Δ ⟨kv, hkv⟩
+        calc 2 * (M₁ + M₂) * Partition.length Δ ⟨kv, hkv⟩
             ≤ 2 * (M₁ + M₂) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
               mul_le_mul_left _ _ _ h2M_nn (le_trans h1 h2)
           _ ≤ (2 * (M₁ + M₂) + 1) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=

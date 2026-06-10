@@ -31,24 +31,24 @@ theorem neg_riemann_sum (f : Real → Real) (a b : Real) (n : Nat)
 
 theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
     (Δ : Partition n a b) (ξ : Range n → Real)
-    (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr a b n ξ) :
+    (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr ξ) :
     0 ≤ RiemannSum f a b n Δ ξ := by
   apply summation_nonneg
   intro i
   apply mul_nonneg
-  · apply h' (ξ i) (Δ.repr_in_interval a b n ξ h i)
-  · apply Δ.length_nonneg n a b i
+  · apply h' (ξ i) (Δ.repr_in_interval ξ h i)
+  · apply Δ.length_nonneg i
 
 -- 分割に点を挿入した時の RS の差のバウンド
 theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
-    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) (hr : Δ.IsRepr a b n ξ)
+    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) (hr : Δ.IsRepr ξ)
     (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
     ∃ (ξ' : Range (n + 1) → Real),
-      (Δ.insertPoint n a b c k hL hR).IsRepr a b (n + 1) ξ' ∧
-      (RiemannSum f a b (n + 1) (Δ.insertPoint n a b c k hL hR) ξ' -
-       RiemannSum f a b n Δ ξ).abs ≤ 2 * M * Partition.length n a b Δ k := by
-  let Δ' := Δ.insertPoint n a b c k hL hR
+      (Δ.insertPoint c k hL hR).IsRepr ξ' ∧
+      (RiemannSum f a b (n + 1) (Δ.insertPoint c k hL hR) ξ' -
+       RiemannSum f a b n Δ ξ).abs ≤ 2 * M * Partition.length Δ k := by
+  let Δ' := Δ.insertPoint c k hL hR
   -- repr: c for split intervals, original elsewhere
   let ξ' : Range (n + 1) → Real := fun i =>
     if h : i.val < k.val then ξ ⟨i.val, by have := k.property; omega⟩
@@ -65,9 +65,9 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
     by_cases h1 : i.val < k.val
     · -- i < k: same repr, same partition points
       rw [show ξ' i = ξ ⟨i.val, by have := k.property; omega⟩ from dif_pos h1,
-          Partition.insertPoint_pt_le n a b c Δ k hL hR (incl i)
+          Partition.insertPoint_pt_le c Δ k hL hR (incl i)
             (by simp [incl_val]; omega),
-          Partition.insertPoint_pt_le n a b c Δ k hL hR (addone i)
+          Partition.insertPoint_pt_le c Δ k hL hR (addone i)
             (by simp [addone_val]; omega)]
       exact hr_bounds ⟨i.val, by have := k.property; omega⟩
     · by_cases h2 : i.val ≤ k.val + 1
@@ -77,7 +77,7 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
         · -- i = k: interval [Δ.pts(incl k), c]
           constructor
           · have hpt : Δ'.points (incl i) = Δ.points (incl k) := by
-              rw [Partition.insertPoint_pt_le n a b c Δ k hL hR (incl i)
+              rw [Partition.insertPoint_pt_le c Δ k hL hR (incl i)
                     (by simp [incl_val]; omega)]
               congr 1; exact Subtype.ext (by simp [incl_val]; omega)
             rw [hpt]; exact hL
@@ -90,7 +90,7 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
               Subtype.ext (by simp [incl_val]; omega)
             rw [this, Partition.insertPoint_pt_mid]; exact le_refl c
           · have hpt : Δ'.points (addone i) = Δ.points (addone k) := by
-              rw [Partition.insertPoint_pt_gt n a b c Δ k hL hR (addone i)
+              rw [Partition.insertPoint_pt_gt c Δ k hL hR (addone i)
                     (by simp [addone_val]; omega)]
               congr 1; exact Subtype.ext (by simp [addone_val]; omega)
             rw [hpt]; exact hR
@@ -99,14 +99,14 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
           (dif_neg h1).trans (dif_neg (by omega))
         have hb := hr_bounds ⟨i.val - 1, by have := i.property; have := k.property; omega⟩
         constructor
-        · rw [hξ, Partition.insertPoint_pt_gt n a b c Δ k hL hR (incl i)
+        · rw [hξ, Partition.insertPoint_pt_gt c Δ k hL hR (incl i)
               (by simp [incl_val]; omega)]
           exact hb.1
         · rw [hξ]
           have h_pt : Δ'.points (addone i) =
               Δ.points (addone ⟨i.val - 1,
               by have := i.property; have := k.property; omega⟩) := by
-            rw [Partition.insertPoint_pt_gt n a b c Δ k hL hR (addone i)
+            rw [Partition.insertPoint_pt_gt c Δ k hL hR (addone i)
                 (by simp [addone_val]; omega)]
             congr 1; exact Subtype.ext (by simp [addone_val]; omega)
           rw [h_pt]; exact hb.2
@@ -117,17 +117,17 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
       rw [RiemannSum, RiemannSum]
       -- Collapsed n-term function matching the (n+1)-term RS'
       let fk : Range n → Real := fun i =>
-        if i.val = k.val then f c * Partition.length n a b Δ k
-        else f (ξ i) * Partition.length n a b Δ i
+        if i.val = k.val then f c * Partition.length Δ k
+        else f (ξ i) * Partition.length Δ i
       -- Step 1: RS' sum collapses to Summation n fk
-      have hRS' : Summation (n + 1) (fun i ↦ f (ξ' i) * Partition.length (n + 1) a b Δ' i) =
+      have hRS' : Summation (n + 1) (fun i ↦ f (ξ' i) * Partition.length Δ' i) =
           Summation n fk := by
         apply summation_split_term n k
         · -- h_low: i < k
           intro i hi
           rw [show ξ' i = ξ ⟨i.val, by have := k.property; omega⟩ from dif_pos hi,
-              Partition.insertPoint_length_low n a b c Δ k hL hR i hi]
-          show f (ξ ⟨i.val, _⟩) * Partition.length n a b Δ ⟨i.val, _⟩ = fk ⟨i.val, _⟩
+              Partition.insertPoint_length_low c Δ k hL hR i hi]
+          show f (ξ ⟨i.val, _⟩) * Partition.length Δ ⟨i.val, _⟩ = fk ⟨i.val, _⟩
           show _ = if (⟨i.val, _⟩ : Range n).val = k.val then _ else _
           rw [if_neg (show i.val ≠ k.val from by omega)]
         · -- h_split: k and k+1
@@ -139,28 +139,28 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
               if h₂ : k.val + 1 ≤ k.val + 1 then c else _) = c
             rw [dif_neg (by omega), dif_pos (by omega)]
           rw [hξk, hξk1, ← CommRing.left_distrib,
-              Partition.insertPoint_length_split n a b c Δ k hL hR]
-          show f c * Partition.length n a b Δ k = fk k
+              Partition.insertPoint_length_split c Δ k hL hR]
+          show f c * Partition.length Δ k = fk k
           show _ = if k.val = k.val then _ else _
           rw [if_pos rfl]
         · -- h_high: i > k+1
           intro i hi
           rw [show ξ' i = ξ ⟨i.val - 1, by have := i.property; have := k.property; omega⟩ from
                 (dif_neg (by omega)).trans (dif_neg (by omega)),
-              Partition.insertPoint_length_high n a b c Δ k hL hR i hi]
-          show f (ξ ⟨i.val - 1, _⟩) * Partition.length n a b Δ ⟨i.val - 1, _⟩ =
+              Partition.insertPoint_length_high c Δ k hL hR i hi]
+          show f (ξ ⟨i.val - 1, _⟩) * Partition.length Δ ⟨i.val - 1, _⟩ =
                fk ⟨i.val - 1, _⟩
           show _ = if (⟨i.val - 1, _⟩ : Range n).val = k.val then _ else _
           rw [if_neg (show i.val - 1 ≠ k.val from by omega)]
       -- Step 2: Summation n fk = RS + correction
-      have heq : Summation n fk = Summation n (fun i ↦ f (ξ i) * Partition.length n a b Δ i) +
-          (f c - f (ξ k)) * Partition.length n a b Δ k := by
-        have hterm : ∀ i : Range n, fk i = f (ξ i) * Partition.length n a b Δ i +
-            (if i.val = k.val then (f c - f (ξ k)) * Partition.length n a b Δ k
+      have heq : Summation n fk = Summation n (fun i ↦ f (ξ i) * Partition.length Δ i) +
+          (f c - f (ξ k)) * Partition.length Δ k := by
+        have hterm : ∀ i : Range n, fk i = f (ξ i) * Partition.length Δ i +
+            (if i.val = k.val then (f c - f (ξ k)) * Partition.length Δ k
              else 0) := by
           intro i
-          show (if i.val = k.val then f c * Partition.length n a b Δ k
-                else f (ξ i) * Partition.length n a b Δ i) = _
+          show (if i.val = k.val then f c * Partition.length Δ k
+                else f (ξ i) * Partition.length Δ i) = _
           by_cases hi : i.val = k.val
           · rw [if_pos hi, if_pos hi]
             have hik : i = k := Subtype.ext hi; subst hik
@@ -171,15 +171,15 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
         rw [if_pos (show k.val = k.val from rfl)]
       -- Step 3: Conclude
       rw [hRS', heq, add_sub_cancel]
-    rw [hDiff, abs_mul_nonneg (Δ.length_nonneg n a b k)]
-    apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg n a b k)
+    rw [hDiff, abs_mul_nonneg (Δ.length_nonneg k)]
+    apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg k)
     -- Goal: |f c - f (ξ k)| ≤ 2 * M
     have hc_in : InInterval a b c := by
-      dsimp [InInterval]; rw [if_pos (Δ.left_le_right n a b)]
+      dsimp [InInterval]; rw [if_pos (Δ.left_le_right)]
       exact ⟨le_trans (Δ.left_le_point (incl k)) hL,
              le_trans hR (Δ.point_le_right (addone k))⟩
     have hfc : (f c).abs ≤ M := hM c hc_in
-    have hfξ : (f (ξ k)).abs ≤ M := hM _ (Δ.repr_in_interval a b n ξ hr k)
+    have hfξ : (f (ξ k)).abs ≤ M := hM _ (Δ.repr_in_interval ξ hr k)
     apply le_trans (abs_triangle (f c) (-(f (ξ k))))
     rw [abs_neg]
     rw [show (2 : Real) * M = M + M from by
@@ -190,10 +190,10 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
 theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
     (n : Nat) (hn : 0 < n) (Δ : Partition n a b)
-    (ξ : Range n → Real) (hr : Δ.IsRepr a b n ξ) :
+    (ξ : Range n → Real) (hr : Δ.IsRepr ξ) :
     ∀ (m : Nat) (cs : Range m → Real) (hcs : ∀ j, InInterval a b (cs j)),
     ∃ (Δ' : Partition (n + m) a b) (ξ' : Range (n + m) → Real),
-      Δ'.IsRepr a b (n + m) ξ' ∧
+      Δ'.IsRepr ξ' ∧
       (∀ i : Range (n + m), Δ'.length i ≤ Δ.diam) ∧
       (∀ j : Range m, ∃ p : Range (n + m + 1), Δ'.points p = cs j) ∧
       (RiemannSum f a b (n + m) Δ' ξ' - RiemannSum f a b n Δ ξ).abs ≤
@@ -204,7 +204,7 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
     exact ⟨Δ, ξ, hr, fun i => le_fmax' n Δ.length i,
       fun j => absurd j.property (Nat.not_lt_zero _), by
       show (RiemannSum f a b n Δ ξ - RiemannSum f a b n Δ ξ).abs ≤
-        0 * (2 * M * Partition.diam n a b Δ)
+        0 * (2 * M * Partition.diam Δ)
       rw [sub_self, abs_zero, zero_mul']; exact le_refl 0⟩
   | succ m ih =>
     intro cs hcs
@@ -216,41 +216,41 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
     -- Insert (m+1)-th point
     let c := cs ⟨m, Nat.lt_succ_self m⟩
     have hc_in := hcs ⟨m, Nat.lt_succ_self m⟩
-    obtain ⟨k, hkL, hkR⟩ := Partition.find_interval (n + m) a b c Δ₁ (by omega) hc_in
+    obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ₁ c (by omega) hc_in
     obtain ⟨ξ₂, hr₂, hbd₂⟩ := rs_insert_bound f a b c M hM hM_nn (n + m) Δ₁ ξ₁ hr₁ k hkL hkR
-    let Δ₂ := Δ₁.insertPoint (n + m) a b c k hkL hkR
+    let Δ₂ := Δ₁.insertPoint c k hkL hkR
     refine ⟨Δ₂, ξ₂, hr₂, ?_, ?_, ?_⟩
     · -- ∀ i, Δ₂.length i ≤ Δ.diam
       intro i
-      show Partition.length (n + m + 1) a b Δ₂ i ≤ Partition.diam n a b Δ
+      show Partition.length Δ₂ i ≤ Partition.diam Δ
       by_cases h1 : i.val < k.val
-      · calc Partition.length (n + m + 1) a b Δ₂ i
+      · calc Partition.length Δ₂ i
               = Δ₁.length ⟨i.val, by have := k.property; omega⟩ :=
-                Partition.insertPoint_length_low (n + m) a b c Δ₁ k hkL hkR i h1
+                Partition.insertPoint_length_low c Δ₁ k hkL hkR i h1
             _ ≤ Δ.diam := hlen₁ ⟨i.val, by have := k.property; omega⟩
       · by_cases h2 : k.val + 1 < i.val
-        · calc Partition.length (n + m + 1) a b Δ₂ i
+        · calc Partition.length Δ₂ i
                 = Δ₁.length ⟨i.val - 1, by have := i.property; have := k.property; omega⟩ :=
-                  Partition.insertPoint_length_high (n + m) a b c Δ₁ k hkL hkR i h2
+                  Partition.insertPoint_length_high c Δ₁ k hkL hkR i h2
               _ ≤ Δ.diam := hlen₁ ⟨i.val - 1, by have := i.property; have := k.property; omega⟩
         · -- Split intervals: i ∈ {k.val, k.val + 1}
-          have hsplit := Partition.insertPoint_length_split (n + m) a b c Δ₁ k hkL hkR
+          have hsplit := Partition.insertPoint_length_split c Δ₁ k hkL hkR
           by_cases h3 : i.val = k.val
           · have hi : i = ⟨k.val, Nat.lt_succ_of_lt k.property⟩ := Subtype.ext h3
             rw [hi]
             exact le_trans (le_of_add_nonneg_eq hsplit
-              (Δ₂.length_nonneg _ _ _ ⟨k.val + 1, Nat.succ_lt_succ k.property⟩)) (hlen₁ k)
+              (Δ₂.length_nonneg ⟨k.val + 1, Nat.succ_lt_succ k.property⟩)) (hlen₁ k)
           · have h4 : i.val = k.val + 1 := by have := i.property; omega
             have hi : i = ⟨k.val + 1, Nat.succ_lt_succ k.property⟩ := Subtype.ext h4
             rw [hi]
             exact le_trans (le_of_nonneg_add_eq hsplit
-              (Δ₂.length_nonneg _ _ _ ⟨k.val, Nat.lt_succ_of_lt k.property⟩)) (hlen₁ k)
+              (Δ₂.length_nonneg ⟨k.val, Nat.lt_succ_of_lt k.property⟩)) (hlen₁ k)
     · -- 挿入した点はすべて Δ₂ の分点
       intro j
       by_cases hjm : j.val = m
       · refine ⟨⟨k.val + 1, by have := k.property; omega⟩, ?_⟩
         rw [show j = ⟨m, Nat.lt_succ_self m⟩ from Subtype.ext hjm]
-        exact Partition.insertPoint_pt_mid (n + m) a b c Δ₁ k hkL hkR
+        exact Partition.insertPoint_pt_mid c Δ₁ k hkL hkR
       · have hjm' : j.val < m := by have := j.property; omega
         obtain ⟨p, hp⟩ := hpts₁ ⟨j.val, hjm'⟩
         have hcsj : cs ⟨j.val, Nat.lt_succ_of_lt hjm'⟩ = cs j := by
@@ -258,10 +258,10 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
         rw [hcsj] at hp
         by_cases hpk : p.val ≤ k.val
         · refine ⟨⟨p.val, by have := p.property; omega⟩, ?_⟩
-          exact (Partition.insertPoint_pt_le (n + m) a b c Δ₁ k hkL hkR
+          exact (Partition.insertPoint_pt_le c Δ₁ k hkL hkR
             ⟨p.val, by have := p.property; omega⟩ hpk).trans hp
         · refine ⟨⟨p.val + 1, by have := p.property; omega⟩, ?_⟩
-          exact (Partition.insertPoint_pt_gt (n + m) a b c Δ₁ k hkL hkR
+          exact (Partition.insertPoint_pt_gt c Δ₁ k hkL hkR
             ⟨p.val + 1, by have := p.property; omega⟩
             (show k.val + 1 < p.val + 1 by omega)).trans hp
     · -- |RS₂ - RS₀| ≤ ofNat (m+1) * (2M * diam)
@@ -290,6 +290,6 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
         rw [← hstep]
         exact le_trans (LinearOrderedField.add_le_add _ _ _ hbd₁) (add_left_le _ _ _ h_single)
       show (RiemannSum f a b (n + m + 1) Δ₂ ξ₂ - RiemannSum f a b n Δ ξ).abs ≤
-          Real.ofNat (m + 1) * (2 * M * Partition.diam n a b Δ)
+          Real.ofNat (m + 1) * (2 * M * Partition.diam Δ)
       rw [hdecomp]
       exact le_trans (abs_triangle _ _) hsum_le

@@ -7,7 +7,7 @@ open Real Classical
 -- 積分の定義
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
   ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ n : Nat, ∀ Δ : Partition n a b, ∀ ξ : Range n → Real,
-    Δ.IsRepr a b n ξ → (Partition.diam n a b Δ) < δ →
+    Δ.IsRepr ξ → (Partition.diam Δ) < δ →
     abs (RiemannSum f a b n Δ ξ - i) < ε
 
 theorem sub_zero_eq (x y : Real) : x - y = 0 ↔ x = y := by
@@ -78,7 +78,7 @@ def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) : Parti
 -- Length of each subinterval = (b-a)/m
 theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b)
     (i : Range m) :
-    (equalPartition m a b hm hab).length m a b i = (b - a) / (m : Real) := by
+    (equalPartition m a b hm hab).length i = (b - a) / (m : Real) := by
   show (a + ((i.val + 1 : Nat) : Real) * (b - a) / (m : Real)) -
        (a + (i.val : Real) * (b - a) / (m : Real)) = (b - a) / (m : Real)
   rw [add_sub_add' a, div_sub_div, mul_sub_mul]
@@ -92,7 +92,7 @@ def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
   fun i => a + (i.val : Real) * (b - a) / (m : Real)
 
 theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
-    (equalPartition m a b hm hab).IsRepr a b m (equalPartitionRepr m a b hm hab) := by
+    (equalPartition m a b hm hab).IsRepr (equalPartitionRepr m a b hm hab) := by
   apply Partition.le_isrepr
   intro i
   exact ⟨le_refl _, (equalPartition m a b hm hab).increase i⟩
@@ -100,7 +100,7 @@ theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a
 -- Diam of equal partition < δ
 theorem equalPartition_diam_lt (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a ≤ b)
     (hδ : 0 < δ) (hlt : (b - a) / δ < (m : Real)) :
-    Partition.diam m a b (equalPartition m a b hm hab) < δ := by
+    Partition.diam (equalPartition m a b hm hab) < δ := by
   have hm_pos : 0 < (m : Real) := by
     cases m with
     | zero => exact absurd rfl hm
@@ -126,8 +126,8 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     have hm_ne : m ≠ 0 := nat_ne_zero_of_nonneg_lt _ m hba_div_nn hm_lt
     let Δ := equalPartition m a b hm_ne hab
     let ξ := equalPartitionRepr m a b hm_ne hab
-    have h_repr : Δ.IsRepr a b m ξ := equalPartitionRepr_isrepr m a b hm_ne hab
-    have h_diam : Partition.diam m a b Δ < δ :=
+    have h_repr : Δ.IsRepr ξ := equalPartitionRepr_isrepr m a b hm_ne hab
+    have h_diam : Partition.diam Δ < δ :=
       equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
     let RS := RiemannSum f a b m Δ ξ
     have h_i : (RS - i).abs < ε / 2 :=
