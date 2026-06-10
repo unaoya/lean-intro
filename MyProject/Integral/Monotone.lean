@@ -20,7 +20,7 @@ theorem nonneg_nonneg_div_nonneg (a b : Real) (ha : 0 ≤ a) (hb : 0 ≤ b) :
     have : a / b = 0 := by
       show a * Field.inv b = 0
       calc a * Field.inv b = a * 0 := by rw [heq, Real.inv_zero]
-        _ = 0 * a := by rw [MulCommMonoid.mul_comm]
+        _ = 0 * a := by rw [mul_comm]
         _ = 0 := zero_mul' a
     rw [this]; exact le_refl 0
   | inr hne =>
@@ -63,7 +63,7 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       rw [hRS0] at hRS
       have h0I : ((0 : Real) - I) = -I := by
         show (0 : Real) + -I = -I
-        calc (0 : Real) + -I = -I + (0 : Real) := AddCommGroup.add_comm _ _
+        calc (0 : Real) + -I = -I + (0 : Real) := add_comm _ _
           _ = -I := add_zero _
       rw [h0I, pos_abs hε] at hRS
       exact hRS.2 rfl

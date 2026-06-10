@@ -5,9 +5,7 @@ noncomputable section
 -- 振動和（区間ごとの sup f + sup(−f)）による |f| のリーマン和の比較評価
 
 private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p + p) := by
-  rw [AddCommGroup.add_comm p x, AddCommGroup.add_assoc x p (p + y),
-      ← AddCommGroup.add_assoc p p y, AddCommGroup.add_comm (p + p) y,
-      ← AddCommGroup.add_assoc x y (p + p)]
+  ac_rfl
 
 -- 核心補題（|f| 版）：固定した細かい分割 Δ に対し、十分細かい任意の Δ' で
 -- |RS_{|f|}(Δ') − RS_{|f|}(Δ)| ≤ (ε' + ε') + θ
@@ -265,10 +263,10 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     apply le_trans hbdp
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
-          (MulCommMonoid.mul_assoc _ _ _).symm]
+          (mul_assoc _ _ _).symm]
     apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
       (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
-    rw [← mul_div_assoc, MulCommMonoid.mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
+    rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
         mul_div_cancel θ _ hK_ne]
     exact le_refl θ
   -- 三角不等式で合成

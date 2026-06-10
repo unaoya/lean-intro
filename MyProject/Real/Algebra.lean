@@ -23,6 +23,18 @@ theorem mul_one_b (a : Real) : a * (1 : Real) = a := MulCommMonoid.mul_one a
 -- §1. Basic algebra
 -- ============================================================
 
+-- ac_rfl 用の可換・結合インスタンス
+instance : Std.Associative (α := Real) (· + ·) := ⟨AddCommGroup.add_assoc⟩
+instance : Std.Commutative (α := Real) (· + ·) := ⟨AddCommGroup.add_comm⟩
+instance : Std.Associative (α := Real) (· * ·) := ⟨MulCommMonoid.mul_assoc⟩
+instance : Std.Commutative (α := Real) (· * ·) := ⟨MulCommMonoid.mul_comm⟩
+
+-- 短縮エイリアス
+theorem add_comm (a b : Real) : a + b = b + a := AddCommGroup.add_comm a b
+theorem add_assoc (a b c : Real) : a + b + c = a + (b + c) := AddCommGroup.add_assoc a b c
+theorem mul_comm (a b : Real) : a * b = b * a := MulCommMonoid.mul_comm a b
+theorem mul_assoc (a b c : Real) : a * b * c = a * (b * c) := MulCommMonoid.mul_assoc a b c
+
 theorem add_left_cancel' (a b c : Real) (h : a + b = a + c) : b = c := by
   calc b = 0 + b := (zero_add' _).symm
     _ = (-a + a) + b := by rw [neg_add']

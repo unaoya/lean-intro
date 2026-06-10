@@ -86,7 +86,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
       rw [← hdiff]
       have hns : I - RiemannSum f Δ ξ = -(RiemannSum f Δ ξ - I) := by
         show I + -RiemannSum f Δ ξ = -(RiemannSum f Δ ξ + -I)
-        rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
+        rw [neg_add_distrib, neg_neg, add_comm]
       calc (RiemannSum f Δ ξ' - RiemannSum f Δ ξ).abs
           = ((I - RiemannSum f Δ ξ) + (RiemannSum f Δ ξ' - I)).abs := by
             rw [telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ ξ') I]
@@ -106,7 +106,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     calc (f x).abs
         = ((f x - f (ξ k)) + f (ξ k)).abs := by
           rw [show f x - f (ξ k) + f (ξ k) = f (ξ k) + (f x - f (ξ k)) from
-                AddCommGroup.add_comm _ _,
+                add_comm _ _,
               add_sub_cancel' (f (ξ k)) (f x)]
       _ ≤ (f x - f (ξ k)).abs + (f (ξ k)).abs := abs_triangle _ _
       _ ≤ 2 / ((b - a) / (m : Real)) + (f (ξ k)).abs :=

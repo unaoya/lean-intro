@@ -49,8 +49,8 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
       have hsub : (c - δ_c / 2) - c = -(δ_c / 2) := by
         show (c + -(δ_c / 2)) + -c = -(δ_c / 2)
         calc (c + -(δ_c / 2)) + -c
-            = (-(δ_c / 2) + c) + -c := by rw [AddCommGroup.add_comm c (-(δ_c / 2))]
-          _ = -(δ_c / 2) + (c + -c) := AddCommGroup.add_assoc _ _ _
+            = (-(δ_c / 2) + c) + -c := by rw [add_comm c (-(δ_c / 2))]
+          _ = -(δ_c / 2) + (c + -c) := add_assoc _ _ _
           _ = -(δ_c / 2) := by rw [AddCommGroup.add_neg, AddCommGroup.add_zero]
       rw [hsub] at h0
       have : δ_c / 2 ≤ 0 := by
@@ -122,11 +122,11 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
           show f s₁ + -(f s₂) = (f s₁ + -(f c)) + -((f s₂) + -(f c))
           rw [neg_add_distrib, neg_neg,
               show f s₁ + -(f c) + (-(f s₂) + f c) =
-                   f s₁ + (-(f c) + (-(f s₂) + f c)) from AddCommGroup.add_assoc _ _ _,
+                   f s₁ + (-(f c) + (-(f s₂) + f c)) from add_assoc _ _ _,
               show -(f c) + (-(f s₂) + f c) = -(f s₂) from by
-                rw [AddCommGroup.add_comm (-(f s₂)) (f c),
+                rw [add_comm (-(f s₂)) (f c),
                     show -(f c) + (f c + -(f s₂)) = (-(f c) + f c) + -(f s₂) from
-                      (AddCommGroup.add_assoc _ _ _).symm,
+                      (add_assoc _ _ _).symm,
                     AddCommGroup.neg_add, AddCommGroup.zero_add]]]
       calc (f s₁ - f s₂).abs
           = ((f s₁ - f c) + (f c - f s₂)).abs := by rw [hsplit]
@@ -140,7 +140,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
     intro a' b' c' d' hab' hcd'
     calc a' + c' ≤ a' + d' := add_left_le a' c' d' hcd'
       _ < b' + d' := by
-        rw [AddCommGroup.add_comm a' d', AddCommGroup.add_comm b' d']
+        rw [add_comm a' d', add_comm b' d']
         exact add_left_lt d' a' b' hab'
   -- Show c = b by contradiction
   have hcb_eq : c = b := by
@@ -158,9 +158,9 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
       have hδ'_le_δc2 : δ' ≤ δ_c / 2 := min_right_le δ₀ (δ_c / 2)
       -- (c + η) + -c = η (avoids HSub/HAdd mismatch in rw)
       have add_neg_cancel_η : (c + η) + -c = η := by
-        calc (c + η) + -c = c + (η + -c) := AddCommGroup.add_assoc c η (-c)
-          _ = c + (-c + η) := by rw [AddCommGroup.add_comm η (-c)]
-          _ = (c + -c) + η := (AddCommGroup.add_assoc c (-c) η).symm
+        calc (c + η) + -c = c + (η + -c) := add_assoc c η (-c)
+          _ = c + (-c + η) := by rw [add_comm η (-c)]
+          _ = (c + -c) + η := (add_assoc c (-c) η).symm
           _ = η := by rw [AddCommGroup.add_neg, AddCommGroup.zero_add]
       -- c + η ≤ b
       have hcη_le_b : c + η ≤ b := by
@@ -201,7 +201,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
                   = ((s₂ - c) + (s₁ - s₂)).abs := by rw [telescope_2 c s₁ s₂]
                 _ ≤ (s₂ - c).abs + (s₁ - s₂).abs := abs_triangle _ _
                 _ < δ_c / 2 + δ_c / 2 := by
-                    rw [AddCommGroup.add_comm ((s₂ - c).abs) ((s₁ - s₂).abs)]
+                    rw [add_comm ((s₂ - c).abs) ((s₁ - s₂).abs)]
                     exact lt_add_le' (lt_le_trans _ _ _ hdist hδ'_le_δc2)
                       (close_ext s₂ hc_le_s₂ hs₂.2)
                 _ = δ_c := half_add δ_c
@@ -220,7 +220,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
                 _ = (s₁ - c).abs + (s₁ - s₂).abs := by
                     rw [show s₂ - s₁ = -(s₁ - s₂) from (neg_sub s₁ s₂).symm, abs_neg]
                 _ < δ_c / 2 + δ_c / 2 := by
-                    rw [AddCommGroup.add_comm ((s₁ - c).abs) ((s₁ - s₂).abs)]
+                    rw [add_comm ((s₁ - c).abs) ((s₁ - s₂).abs)]
                     exact lt_add_le' (lt_le_trans _ _ _ hdist hδ'_le_δc2)
                       (close_ext s₁ hc_le_s₁ hs₁.2)
                 _ = δ_c := half_add δ_c
@@ -233,7 +233,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
             _ = (f s₂ - f c).abs + (f s₁ - f c).abs := by
                 rw [show f c - f s₂ = -(f s₂ - f c) from (neg_sub (f s₂) (f c)).symm, abs_neg]
             _ = (f s₁ - f c).abs + (f s₂ - f c).abs := by
-                rw [AddCommGroup.add_comm ((f s₂ - f c).abs) ((f s₁ - f c).abs)]
+                rw [add_comm ((f s₂ - f c).abs) ((f s₁ - f c).abs)]
             _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ hf1 hf2
             _ = ε := half_add ε⟩
       -- c + η ≤ sup S = c, but c + η > c: contradiction
@@ -261,9 +261,9 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
   -- b - a < N * (δ/2) via div cancellation
   have hdiv_cancel : (b - a) / (δ / 2) * (δ / 2) = b - a := by
     show (b - a) * Field.inv (δ / 2) * (δ / 2) = b - a
-    rw [MulCommMonoid.mul_assoc]
+    rw [mul_assoc]
     have : Field.inv (δ / 2) * (δ / 2) = (1 : Real) := by
-      rw [MulCommMonoid.mul_comm]; exact Field.mul_inv _ hδ2_ne
+      rw [mul_comm]; exact Field.mul_inv _ hδ2_ne
     rw [this]
     exact MulCommMonoid.mul_one _
   have hba_lt : b - a < (N : Real) * (δ / 2) := by
@@ -306,7 +306,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
           (nonneg_sub_iff _ t).mp hs_lt_t.1
         have hts_le : t - (a + (k : Real) * (δ / 2)) ≤ δ / 2 := by
           rw [hsucc, add_mul, one_mul,
-              (AddCommGroup.add_assoc a ((k : Real) * (δ / 2)) (δ / 2)).symm] at htk1
+              (add_assoc a ((k : Real) * (δ / 2)) (δ / 2)).symm] at htk1
           have h := LinearOrderedField.add_le_add t _
             (-(a + (k : Real) * (δ / 2))) htk1
           have hc : a + (k : Real) * (δ / 2) + δ / 2 + -(a + (k : Real) * (δ / 2)) = δ / 2 :=
@@ -346,7 +346,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
       have h1 : (f t).abs = ((f t - f a) + f a).abs := by
         congr 1
         have h := add_sub_cancel' (f a) (f t)
-        rw [AddCommGroup.add_comm] at h; exact h.symm
+        rw [add_comm] at h; exact h.symm
       rw [h1]; exact abs_triangle _ _
     exact (le_lt_trans
       (le_trans h_split (LinearOrderedField.add_le_add _ _ _ hchain))

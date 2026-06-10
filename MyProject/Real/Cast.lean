@@ -37,7 +37,7 @@ theorem cast_add (n m : Nat) : (Nat.cast : Nat → Real) n + (Nat.cast m) = (Nat
     have eq3 : Real.ofNat (n + m).succ = Real.ofNat (n + m) + 1 := succ_ofNat (n + m)
     rw [eq1, eq2, eq3]
     calc Real.ofNat n + (Real.ofNat m + 1)
-      = (Real.ofNat n + Real.ofNat m) + 1 := (AddCommGroup.add_assoc _ _ _).symm
+      = (Real.ofNat n + Real.ofNat m) + 1 := (add_assoc _ _ _).symm
       _ = Real.ofNat (n + m) + 1 := by rw [ih]
 
 theorem cast_lt (a b : Nat) : a < b → (a : Real) < b := by

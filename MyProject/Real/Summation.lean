@@ -23,11 +23,11 @@ theorem summation_smul (n : Nat) (f : Range n → Real) (c : Real) :
     rw [ih]; exact (CommRing.left_distrib c _ _).symm
 
 theorem add_four_comm (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) := by
-  calc (a + b) + (c + d) = a + (b + (c + d)) := AddCommGroup.add_assoc _ _ _
-    _ = a + ((b + c) + d) := by rw [(AddCommGroup.add_assoc b c d).symm]
-    _ = a + ((c + b) + d) := by rw [AddCommGroup.add_comm b c]
-    _ = a + (c + (b + d)) := by rw [AddCommGroup.add_assoc c b d]
-    _ = (a + c) + (b + d) := (AddCommGroup.add_assoc _ _ _).symm
+  calc (a + b) + (c + d) = a + (b + (c + d)) := add_assoc _ _ _
+    _ = a + ((b + c) + d) := by rw [(add_assoc b c d).symm]
+    _ = a + ((c + b) + d) := by rw [add_comm b c]
+    _ = a + (c + (b + d)) := by rw [add_assoc c b d]
+    _ = (a + c) + (b + d) := (add_assoc _ _ _).symm
 
 theorem additive_summation (n : Nat) (f g : Range n → Real) :
   Summation n (fun i ↦ f i + g i) = Summation n f + Summation n g := by
@@ -154,7 +154,7 @@ theorem summation_split_term (n : Nat) (k : Range n) (f : Range n → Real)
       have hcongr : ∀ i : Range n, g (incl (incl i)) = f (incl i) := by
         intro i; have := i.property
         exact h_low (incl (incl i)) (by simp only [incl_val]; omega)
-      rw [summation_congr n _ _ hcongr, AddCommGroup.add_assoc]; congr 1
+      rw [summation_congr n _ _ hcongr, add_assoc]; congr 1
       -- Goal: g (incl ⟨n, _⟩) + g ⟨n+1, _⟩ = f ⟨n, _⟩
       -- h_split: g ⟨k.val, _⟩ + g ⟨k.val+1, _⟩ = f k
       have e1 : (⟨k.val, Nat.lt_succ_of_lt k.property⟩ : Range (n + 2)) =
@@ -222,7 +222,7 @@ theorem summation_split_at (c d : Nat) (g : Range (c + d) → Real) :
             (ih (fun i => g (Range.incl i)))
       _ = Summation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
           (Summation d (fun j => g ⟨c + j.val, by have := j.property; omega⟩) +
-           g ⟨c + d, Nat.lt_succ_self (c + d)⟩) := AddCommGroup.add_assoc _ _ _
+           g ⟨c + d, Nat.lt_succ_self (c + d)⟩) := add_assoc _ _ _
       _ = Summation c (fun i => g ⟨i.val, by have := i.property; omega⟩) +
           Summation (d + 1) (fun j => g ⟨c + j.val, by have := j.property; omega⟩) :=
           congrArg (fun s => Summation c (fun i =>
@@ -255,7 +255,7 @@ theorem summation_first (m : Nat) (h : Range (m + 1) → Real) :
             (ih (fun i => h (Range.incl i)))
       _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
           (Summation m (fun j => h ⟨j.val + 1, Nat.succ_lt_succ (Nat.lt_succ_of_lt j.property)⟩) +
-           h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩) := AddCommGroup.add_assoc _ _ _
+           h ⟨m + 1, Nat.lt_succ_self (m + 1)⟩) := add_assoc _ _ _
       _ = h ⟨0, Nat.zero_lt_succ (m + 1)⟩ +
           Summation (m + 1) (fun j => h ⟨j.val + 1, Nat.succ_lt_succ j.property⟩) :=
           congrArg (fun s => h ⟨0, Nat.zero_lt_succ (m + 1)⟩ + s)

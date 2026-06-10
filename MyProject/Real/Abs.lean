@@ -121,32 +121,32 @@ theorem abs_sub_abs_le (a b : Real) : (a.abs - b.abs).abs ≤ (a - b).abs := by
     have h1 : b.abs ≤ (b - a).abs + a.abs := by
       calc b.abs = ((b - a) + a).abs := by
             congr 1; show b = (b + -a) + a
-            rw [AddCommGroup.add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero]
+            rw [add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero]
         _ ≤ (b - a).abs + a.abs := abs_triangle (b - a) a
     have h2 : b.abs - a.abs ≤ (b - a).abs := by
       have h1' := LinearOrderedField.add_le_add _ _ (-a.abs) h1
       rw [show (b - a).abs + a.abs + -a.abs = (b - a).abs from by
-        rw [AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1'
+        rw [add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1'
       exact h1'
     have h3 : -(a.abs - b.abs) = b.abs - a.abs := by
       show -(a.abs + -b.abs) = b.abs + -a.abs
-      rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
+      rw [neg_add_distrib, neg_neg, add_comm]
     rw [h3]
     calc b.abs - a.abs ≤ (b - a).abs := h2
       _ = (a - b).abs := by
         have : b - a = -(a - b) := by
           show b + -a = -(a + -b)
-          rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
+          rw [neg_add_distrib, neg_neg, add_comm]
         rw [this, abs_neg]
   · -- |a| - |b| ≤ |a - b|
     have h1 : a.abs ≤ (a - b).abs + b.abs := by
       calc a.abs = ((a - b) + b).abs := by
             congr 1; show a = (a + -b) + b
-            rw [AddCommGroup.add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero]
+            rw [add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero]
         _ ≤ (a - b).abs + b.abs := abs_triangle (a - b) b
     have h1' := LinearOrderedField.add_le_add _ _ (-b.abs) h1
     rw [show (a - b).abs + b.abs + -b.abs = (a - b).abs from by
-      rw [AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1'
+      rw [add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1'
     exact h1'
 
 -- ============================================================
@@ -174,7 +174,7 @@ theorem abs_sub_le_add (x y z : Real) : (x - z).abs ≤ (x - y).abs + (y - z).ab
   calc (x - z).abs
       = ((y - z) + (x - y)).abs := by rw [telescope_2 z x y]
     _ ≤ (y - z).abs + (x - y).abs := abs_triangle _ _
-    _ = (x - y).abs + (y - z).abs := AddCommGroup.add_comm _ _
+    _ = (x - y).abs + (y - z).abs := add_comm _ _
 
 theorem abs_sub_le_of_mem {P Q s t : Real}
     (hsP : P ≤ s) (hsQ : s ≤ Q) (htP : P ≤ t) (htQ : t ≤ Q) :

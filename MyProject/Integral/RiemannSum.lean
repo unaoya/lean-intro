@@ -293,8 +293,8 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
       have h_single : (RiemannSum f Δ₂ ξ₂ -
           RiemannSum f Δ₁ ξ₁).abs ≤ 2 * M * Δ.diam := by
         apply le_trans hbd₂
-        rw [show 2 * M * Δ₁.length k = Δ₁.length k * (2 * M) from MulCommMonoid.mul_comm _ _,
-            show 2 * M * Δ.diam = Δ.diam * (2 * M) from MulCommMonoid.mul_comm _ _]
+        rw [show 2 * M * Δ₁.length k = Δ₁.length k * (2 * M) from mul_comm _ _,
+            show 2 * M * Δ.diam = Δ.diam * (2 * M) from mul_comm _ _]
         exact nonneg_mul_nonneg _ _ _ h2M_nn (hlen₁ k)
       -- Triangle: |RS₂ - RS₀| ≤ |RS₁ - RS₀| + |RS₂ - RS₁|
       let K := 2 * M * Δ.diam

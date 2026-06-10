@@ -80,7 +80,7 @@ theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u 
       rw [OIntegral_of_ge f hba, OIntegral_of_ge f hcb,
           OIntegral_of_ge f (le_trans hcb hba),
           ← interval_add_integral f c b a hcb hba (hint c b) (hint b a), neg_add_distrib]
-      exact AddCommGroup.add_comm _ _
+      exact add_comm _ _
 
 -- 区間の差：削除した integral_sub_interval の向き付き版（順序の仮定なしで成立）
 theorem oint_sub_interval (f : Real → Real) (hint : ∀ u v, IsIntegrable f u v)

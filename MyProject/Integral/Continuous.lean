@@ -36,6 +36,6 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
       have h1 := hcomp n' Δ' ξ' hr' hd'
       -- ε'(x−a) + ε/2 = ε/2 + ε/2 = ε
       have hdmc : ε / 2 / (x - a) * (x - a) = ε / 2 := by
-        rw [MulCommMonoid.mul_comm, ← mul_div_assoc,
-            MulCommMonoid.mul_comm (x - a) (ε / 2), mul_div_cancel _ _ hxa_ne]
+        rw [mul_comm, ← mul_div_assoc,
+            mul_comm (x - a) (ε / 2), mul_div_cancel _ _ hxa_ne]
       rwa [hdmc, half_add ε] at h1

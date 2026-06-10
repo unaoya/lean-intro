@@ -48,17 +48,17 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
         (RiemannSum f Δ ξ + C * (b - a)) h_lower
     have h8 : -(RiemannSum f Δ ξ) + (RiemannSum f Δ ξ + C * (b - a))
         = C * (b - a) := by
-      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f Δ ξ))
+      rw [← add_assoc, add_comm (-(RiemannSum f Δ ξ))
           (RiemannSum f Δ ξ), AddCommGroup.add_neg, AddCommGroup.zero_add]
-    rw [AddCommGroup.add_comm, h8] at h7; exact h7
+    rw [add_comm, h8] at h7; exact h7
   -- RS(ξ) - RS(ξ') ≤ C*(b-a)
   · have h7 := add_left_le (-(RiemannSum f Δ ξ')) (RiemannSum f Δ ξ)
         (RiemannSum f Δ ξ' + C * (b - a)) h_upper
     have h8 : -(RiemannSum f Δ ξ') + (RiemannSum f Δ ξ' + C * (b - a))
         = C * (b - a) := by
-      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f Δ ξ'))
+      rw [← add_assoc, add_comm (-(RiemannSum f Δ ξ'))
           (RiemannSum f Δ ξ'), AddCommGroup.add_neg, AddCommGroup.zero_add]
-    rw [AddCommGroup.add_comm, h8] at h7; exact h7
+    rw [add_comm, h8] at h7; exact h7
 
 -- ============================================================
 -- continuous_integrable 用の細分比較補題群
@@ -86,13 +86,13 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
       have hi : i = σ := Subtype.ext hiσ
       rw [hi, min_eq_left hd, min_eq_right (le_trans hc hcd),
           min_eq_left (le_trans hcd hd), min_eq_right hc,
-          MulCommMonoid.mul_comm (f (ξ σ)) (d - Δ.points (Range.incl σ)),
-          MulCommMonoid.mul_comm (f (ξ σ)) (c - Δ.points (Range.incl σ)),
+          mul_comm (f (ξ σ)) (d - Δ.points (Range.incl σ)),
+          mul_comm (f (ξ σ)) (c - Δ.points (Range.incl σ)),
           mul_sub_mul,
           show d - Δ.points (Range.incl σ) - (c - Δ.points (Range.incl σ)) = d - c from by
             show d + -Δ.points (Range.incl σ) - (c + -Δ.points (Range.incl σ)) = d - c
             rw [add_sub_add, sub_self, add_zero],
-          MulCommMonoid.mul_comm]
+          mul_comm]
     · rw [if_neg hiσ]
       by_cases hlt : i.val < σ.val
       · -- 小区間 i は [P,Q] の左側
@@ -114,7 +114,7 @@ private theorem stepAnti_inc (f : Real → Real) (n : Nat) (a b : Real)
         rw [min_eq_left h2, min_eq_left h1, min_eq_left h2c, min_eq_left h1c,
             sub_self d, sub_self c,
             show f (ξ i) * (0 : Real) = 0 from by
-              rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
+              rw [mul_comm]; exact zero_mul' _,
             sub_self]
   calc stepAnti f n a b Δ ξ d - stepAnti f n a b Δ ξ c
       = Summation n (fun i =>
@@ -147,7 +147,7 @@ theorem rs_refine_eq (f : Real → Real) (a b : Real)
       intro i
       rw [min_eq_left (Partition.left_le_point Δ (Range.addone i)),
           min_eq_left (Partition.left_le_point Δ (Range.incl i)), sub_self,
-          MulCommMonoid.mul_comm]
+          mul_comm]
       exact zero_mul' _
     calc stepAnti f n a b Δ ξ a
         = Summation n (fun _ => (0 : Real)) := summation_congr n _ _ hz
@@ -287,10 +287,10 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     apply le_trans hbdp
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
-          (MulCommMonoid.mul_assoc _ _ _).symm]
+          (mul_assoc _ _ _).symm]
     apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
       (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
-    rw [← mul_div_assoc, MulCommMonoid.mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
+    rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
         mul_div_cancel θ _ hK_ne]
     exact le_refl θ
   -- 三角不等式で合成

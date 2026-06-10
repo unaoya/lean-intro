@@ -7,7 +7,7 @@ noncomputable section
 -- ============================================================
 
 private theorem add_lt_add_right' {x y : Real} (h : x < y) (c : Real) : x + c < y + c := by
-  rw [AddCommGroup.add_comm x c, AddCommGroup.add_comm y c]
+  rw [add_comm x c, add_comm y c]
   exact add_left_lt c x y h
 
 -- [a,a] 上の積分値は 0
@@ -182,7 +182,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
               ⟨kv + j.val + 1, by have := j.property; omega⟩) := rfl
       have hsplit_sum : RiemannSum f Δ' ξ' =
           RiemannSum f ΔL ξL + RiemannSum f ΔR ξR := by
-        rw [e1, e2, e3, e4, AddCommGroup.add_assoc]
+        rw [e1, e2, e3, e4, add_assoc]
       -- 挿入誤差の評価
       have hδ₃_nn : (0 : Real) ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
         Real.le_of_lt (pos_div_pos _ _ (pos_half ε hε) hK_pos)
@@ -199,7 +199,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
           _ ≤ (2 * (M₁ + M₂) + 1) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
               nonneg_mul_nonneg _ _ _ hδ₃_nn (Real.le_of_lt hx1)
           _ = ε / 2 := by
-              rw [MulCommMonoid.mul_comm]
+              rw [mul_comm]
               exact div_mul_cancel' (ε / 2) _ hK_ne
       -- 仕上げ
       have hA : (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs < ε / 2 := by

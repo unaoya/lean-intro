@@ -22,8 +22,8 @@ theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S 
     rw [AddCommGroup.add_neg] at h1
     rw [show Real.sup S hne hbdd - γ + -(Real.sup S hne hbdd) = -γ from by
           show Real.sup S hne hbdd + -γ + -(Real.sup S hne hbdd) = -γ
-          rw [AddCommGroup.add_comm (Real.sup S hne hbdd) (-γ),
-              AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
+          rw [add_comm (Real.sup S hne hbdd) (-γ),
+              add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
     have h2 : γ ≤ 0 :=
       calc γ = 0 + γ := (AddCommGroup.zero_add γ).symm
         _ ≤ -γ + γ := LinearOrderedField.add_le_add 0 (-γ) γ h1

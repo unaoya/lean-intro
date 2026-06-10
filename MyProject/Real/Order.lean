@@ -43,7 +43,7 @@ theorem ne_le_lt (a b : Real) : ¬a ≤ b → b < a := by
 theorem add_left_le (a b c : Real) : b ≤ c → a + b ≤ a + c := by
   intro h
   have h1 := LinearOrderedField.add_le_add b c a h
-  rw [AddCommGroup.add_comm b a, AddCommGroup.add_comm c a] at h1; exact h1
+  rw [add_comm b a, add_comm c a] at h1; exact h1
 
 theorem add_left_lt (a b c : Real) : b < c → a + b < a + c := by
   intro ⟨hle, hne⟩
@@ -58,7 +58,7 @@ theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by
     have h1 := LinearOrderedField.add_le_add (0 : Real) (b + -a) a h
     rw [zero_add'] at h1
     rw [show b + -a + a = b from by
-      calc b + -a + a = b + (-a + a) := AddCommGroup.add_assoc _ _ _
+      calc b + -a + a = b + (-a + a) := add_assoc _ _ _
         _ = b + 0 := by rw [neg_add']
         _ = b := add_zero' _] at h1
     exact h1
@@ -78,12 +78,12 @@ theorem neg_neg_pos (a : Real) : a < 0 → 0 < -a := by
 theorem neg_le_neg (a b : Real) (h : a ≤ b) : -b ≤ -a := by
   have h1 := LinearOrderedField.add_le_add a b (-a + -b) h
   rw [show a + (-a + -b) = -b from by
-      calc a + (-a + -b) = (a + -a) + -b := (AddCommGroup.add_assoc _ _ _).symm
+      calc a + (-a + -b) = (a + -a) + -b := (add_assoc _ _ _).symm
         _ = 0 + -b := by rw [add_neg']
         _ = -b := zero_add' _,
     show b + (-a + -b) = -a from by
-      calc b + (-a + -b) = b + (-b + -a) := by rw [AddCommGroup.add_comm (-a) (-b)]
-        _ = (b + -b) + -a := (AddCommGroup.add_assoc _ _ _).symm
+      calc b + (-a + -b) = b + (-b + -a) := by rw [add_comm (-a) (-b)]
+        _ = (b + -b) + -a := (add_assoc _ _ _).symm
         _ = 0 + -a := by rw [add_neg']
         _ = -a := zero_add' _] at h1
   exact h1
@@ -102,8 +102,8 @@ theorem pos_iff_lt (a b : Real) : a < b ↔ 0 < b - a := by
         have heq : b + -a = (0 : Real) := h.symm
         calc a = a + 0 := (add_zero' a).symm
           _ = a + (b + -a) := by rw [heq]
-          _ = a + (-a + b) := by rw [AddCommGroup.add_comm b (-a)]
-          _ = (a + -a) + b := (AddCommGroup.add_assoc _ _ _).symm
+          _ = a + (-a + b) := by rw [add_comm b (-a)]
+          _ = (a + -a) + b := (add_assoc _ _ _).symm
           _ = 0 + b := by rw [add_neg']
           _ = b := zero_add' _)⟩
   · intro ⟨hle, hne⟩
@@ -112,7 +112,7 @@ theorem pos_iff_lt (a b : Real) : a < b ↔ 0 < b - a := by
 theorem lt_add_lt (a b c d : Real) : a < b → c < d → a + c < b + d := by
   intro hab hcd
   exact lt_trans (a + c) (a + d) (b + d) (add_left_lt a c d hcd)
-    (by rw [AddCommGroup.add_comm a d, AddCommGroup.add_comm b d]; exact add_left_lt d a b hab)
+    (by rw [add_comm a d, add_comm b d]; exact add_left_lt d a b hab)
 
 -- ============================================================
 -- §8. Abs
@@ -159,9 +159,9 @@ theorem neg_le_swap {a b : Real} (h : -a ≤ b) : -b ≤ a := by
   have h2 := add_left_le (-b) AddCommGroup.zero (a + b) h1
   rw [AddCommGroup.add_zero] at h2
   have h3 : -b + (a + b) = a := by
-    calc -b + (a + b) = (-b + a) + b := (AddCommGroup.add_assoc _ _ _).symm
-      _ = (a + -b) + b := by rw [AddCommGroup.add_comm (-b) a]
-      _ = a + (-b + b) := AddCommGroup.add_assoc _ _ _
+    calc -b + (a + b) = (-b + a) + b := (add_assoc _ _ _).symm
+      _ = (a + -b) + b := by rw [add_comm (-b) a]
+      _ = a + (-b + b) := add_assoc _ _ _
       _ = a + AddCommGroup.zero := by rw [AddCommGroup.neg_add]
       _ = a := AddCommGroup.add_zero _
   rw [h3] at h2; exact h2
@@ -169,26 +169,26 @@ theorem neg_le_swap {a b : Real} (h : -a ≤ b) : -b ≤ a := by
 theorem sub_lt_swap {a b c : Real} (h : a - b < c) : a - c < b := by
   have h1 := add_left_lt (b - c) (a - b) c h
   rw [show (b - c) + (a - b) = a - c from (telescope_2 c a b).symm,
-      show (b - c) + c = b from by rw [AddCommGroup.add_comm]; exact add_sub_cancel' c b] at h1
+      show (b - c) + c = b from by rw [add_comm]; exact add_sub_cancel' c b] at h1
   exact h1
 
 theorem sub_le_swap {a b c : Real} (h : a - b ≤ c) : a - c ≤ b := by
   have h1 := LinearOrderedField.add_le_add (a - b) c (b - c) h
   rw [show a - b + (b - c) = a - c from by
-        rw [AddCommGroup.add_comm]; exact (telescope_2 c a b).symm,
+        rw [add_comm]; exact (telescope_2 c a b).symm,
       show c + (b - c) = b from add_sub_cancel' c b] at h1
   exact h1
 
 theorem le_add_of_sub_le {A B C : Real} (h : A - B ≤ C) : A ≤ B + C := by
   have h1 := LinearOrderedField.add_le_add (A - B) C B h
-  rw [AddCommGroup.add_comm (A - B) B, add_sub_cancel' B A,
-      AddCommGroup.add_comm C B] at h1
+  rw [add_comm (A - B) B, add_sub_cancel' B A,
+      add_comm C B] at h1
   exact h1
 
 theorem sub_le_of_le_add {A B C : Real} (h : A ≤ B + C) : A - B ≤ C := by
   have h1 := LinearOrderedField.add_le_add A (B + C) (-B) h
   rw [show B + C + -B = C from by
-        rw [AddCommGroup.add_comm B C, AddCommGroup.add_assoc, AddCommGroup.add_neg,
+        rw [add_comm B C, add_assoc, AddCommGroup.add_neg,
             AddCommGroup.add_zero]] at h1
   exact h1
 
@@ -198,5 +198,5 @@ theorem le_of_add_nonneg_eq {a b c : Real} (h : a + b = c) (hb : 0 ≤ b) : a �
     _ = c := h
 
 theorem le_of_nonneg_add_eq {a b c : Real} (h : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
-  rw [AddCommGroup.add_comm] at h
+  rw [add_comm] at h
   exact le_of_add_nonneg_eq h ha

@@ -29,8 +29,8 @@ def limit' (f : Real → Real) (a : Real) {l : Real} (_hf : IsLimAt f l a) : Rea
 -- Helper: sub_eq_zero_iff
 private theorem sub_eq_zero_imp (a b : Real) (h : a - b = 0) : a = b := by
   have h1 : a + -b + b = (0 : Real) + b := congrArg (· + b) h
-  rw [AddCommGroup.add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero] at h1
-  rw [h1, AddCommGroup.add_comm, add_zero]
+  rw [add_assoc, AddCommGroup.neg_add, AddCommGroup.add_zero] at h1
+  rw [h1, add_comm, add_zero]
 
 -- Helper: abs is positive when argument is nonzero
 private theorem abs_pos_of_ne {x : Real} (h : x ≠ 0) : 0 < abs x := by
@@ -89,7 +89,7 @@ theorem limit_unique (f : Real → Real) (l₁ l₂ : Real) (a : Real)
       have : l₁ - f (a + min δ₁ δ₂ / 2) = -(f (a + min δ₁ δ₂ / 2) - l₁) := by
         show l₁ + -(f (a + min δ₁ δ₂ / 2)) = -(f (a + min δ₁ δ₂ / 2) + -l₁)
         rw [neg_add_distrib (f (a + min δ₁ δ₂ / 2)) (-l₁), neg_neg l₁,
-            AddCommGroup.add_comm l₁ (-(f (a + min δ₁ δ₂ / 2)))]
+            add_comm l₁ (-(f (a + min δ₁ δ₂ / 2)))]
       rw [this, abs_neg]
     -- triangle: |l₁ - l₂| ≤ |f x - l₂| + |l₁ - f x|
     have htri : abs (l₁ - l₂) ≤ abs (f (a + min δ₁ δ₂ / 2) - l₂) + abs (l₁ - f (a + min δ₁ δ₂ / 2)) := by

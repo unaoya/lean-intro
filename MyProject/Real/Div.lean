@@ -27,10 +27,10 @@ theorem mul_right_lt (a b c : Real) : 0 < c → a < b → a * c < b * c := by
   · intro heq; apply hne
     have hcne : c ≠ (0 : Real) := hnc.symm
     calc a = a * c * Field.inv c := by
-          rw [MulCommMonoid.mul_assoc,
+          rw [mul_assoc,
               show c * Field.inv c = (1 : Real) from Field.mul_inv c hcne, mul_one_b]
       _ = b * c * Field.inv c := by rw [heq]
-      _ = b := by rw [MulCommMonoid.mul_assoc,
+      _ = b := by rw [mul_assoc,
               show c * Field.inv c = (1 : Real) from Field.mul_inv c hcne, mul_one_b]
 
 theorem zero_lt_one : (0 : Real) < 1 := by
@@ -92,18 +92,18 @@ theorem pos_mul_pos (a b : Real) : 0 < a → 0 < b → 0 < a * b := by
     ha.2 (by
       calc (0 : Real) = 0 * Field.inv b := (zero_mul_r _).symm
         _ = (a * b) * Field.inv b := by rw [h]
-        _ = a * (b * Field.inv b) := MulCommMonoid.mul_assoc _ _ _
+        _ = a * (b * Field.inv b) := mul_assoc _ _ _
         _ = a * 1 := by rw [show b * Field.inv b = (1 : Real) from Field.mul_inv b hb.2.symm]
         _ = a := mul_one_b a)⟩
 
 theorem mul_div_cancel (a b : Real) (hb : b ≠ (0 : Real)) : a * b / b = a := by
   show a * b * Field.inv b = a
-  rw [MulCommMonoid.mul_assoc, show b * Field.inv b = (1 : Real) from Field.mul_inv b hb, mul_one_b]
+  rw [mul_assoc, show b * Field.inv b = (1 : Real) from Field.mul_inv b hb, mul_one_b]
 
 theorem mul_div_cancel' (a b : Real) (ha : a ≠ (0 : Real)) : a * b / a = b := by
   show a * b * Field.inv a = b
-  calc a * b * Field.inv a = b * a * Field.inv a := by rw [MulCommMonoid.mul_comm a b]
-    _ = b * (a * Field.inv a) := MulCommMonoid.mul_assoc b a (Field.inv a)
+  calc a * b * Field.inv a = b * a * Field.inv a := by rw [mul_comm a b]
+    _ = b * (a * Field.inv a) := mul_assoc b a (Field.inv a)
     _ = b * 1 := by rw [show a * Field.inv a = (1 : Real) from Field.mul_inv a ha]
     _ = b := mul_one_b b
 
@@ -154,36 +154,36 @@ theorem div_lt_iff (a b c : Real) (bpos : 0 < b) (cpos : 0 < c) : a / b < c ↔ 
   · intro h
     -- a * inv b < c → (a * inv b) * b < c * b → a < c * b
     have h1 := mul_right_lt (a * Field.inv b) c b bpos h
-    rw [MulCommMonoid.mul_assoc, show Field.inv b * b = (1 : Real) from Field.inv_mul b hbne,
+    rw [mul_assoc, show Field.inv b * b = (1 : Real) from Field.inv_mul b hbne,
         mul_one_b] at h1
     -- a < c * b → a * inv c < c * b * inv c = b
     have h2 := mul_right_lt a (c * b) (Field.inv c) (pos_inv c cpos) h1
-    rw [show c * b = b * c from MulCommMonoid.mul_comm c b,
-        MulCommMonoid.mul_assoc, show c * Field.inv c = (1 : Real) from Field.mul_inv c hcne,
+    rw [show c * b = b * c from mul_comm c b,
+        mul_assoc, show c * Field.inv c = (1 : Real) from Field.mul_inv c hcne,
         mul_one_b] at h2
     exact h2
   · intro h
     have h1 := mul_right_lt (a * Field.inv c) b c cpos h
-    rw [MulCommMonoid.mul_assoc, show Field.inv c * c = (1 : Real) from Field.inv_mul c hcne,
+    rw [mul_assoc, show Field.inv c * c = (1 : Real) from Field.inv_mul c hcne,
         mul_one_b] at h1
     have h2 := mul_right_lt a (b * c) (Field.inv b) (pos_inv b bpos) h1
-    rw [show b * c = c * b from MulCommMonoid.mul_comm b c,
-        MulCommMonoid.mul_assoc, show b * Field.inv b = (1 : Real) from Field.mul_inv b hbne,
+    rw [show b * c = c * b from mul_comm b c,
+        mul_assoc, show b * Field.inv b = (1 : Real) from Field.mul_inv b hbne,
         mul_one_b] at h2
     exact h2
 
 -- 乗法・除法
 theorem mul_le_mul_left (c x y : Real) (hc : 0 ≤ c) (h : x ≤ y) : c * x ≤ c * y := by
-  rw [MulCommMonoid.mul_comm c x, MulCommMonoid.mul_comm c y]
+  rw [mul_comm c x, mul_comm c y]
   exact nonneg_mul_nonneg x y c hc h
 
 theorem mul_div_assoc (a b c : Real) : a * b / c = a * (b / c) := by
   show a * b * Field.inv c = a * (b * Field.inv c)
-  exact MulCommMonoid.mul_assoc a b (Field.inv c)
+  exact mul_assoc a b (Field.inv c)
 
 theorem div_mul_cancel' (a b : Real) (hb : b ≠ 0) : a / b * b = a := by
   show a * Field.inv b * b = a
-  rw [MulCommMonoid.mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]
+  rw [mul_assoc, Field.inv_mul b hb, MulCommMonoid.mul_one]
 
 theorem div_add_div (a b c : Real) : a / c + b / c = (a + b) / c := by
   show a * Field.inv c + b * Field.inv c = (a + b) * Field.inv c

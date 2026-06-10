@@ -319,7 +319,7 @@ theorem insertPoint_length_split {n : Nat} {a b : Real} (c : Real) (Δ : Partiti
     exact insertPoint_pt_mid c Δ k hL hR
   simp only [length]; rw [h1, h2, h3, h4]
   rw [← add_sub_add c (Δ.points (addone k)) (Δ.points (incl k)) c,
-      show Δ.points (incl k) + c = c + Δ.points (incl k) from AddCommGroup.add_comm _ _]
+      show Δ.points (incl k) + c = c + Δ.points (incl k) from add_comm _ _]
   exact add_sub_add' c (Δ.points (addone k)) (Δ.points (incl k))
 
 theorem insertPoint_length_high {n : Nat} {a b : Real} (c : Real) (Δ : Partition n a b)

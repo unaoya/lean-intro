@@ -9,7 +9,7 @@ open Real Classical
 
 private theorem neg_x_sub_x_add (x h : Real) : x - (x + h) = -h := by
   show x + -(x + h) = -h
-  rw [neg_add_distrib, ← AddCommGroup.add_assoc, AddCommGroup.add_neg, AddCommGroup.zero_add]
+  rw [neg_add_distrib, ← add_assoc, AddCommGroup.add_neg, AddCommGroup.zero_add]
 
 -- ============================================================
 -- 微積分学の基本定理

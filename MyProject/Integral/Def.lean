@@ -180,7 +180,7 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
     unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
   rw [hRS, const_riemann_sum, sub_self,
       show f a * (0 : Real) = 0 from by
-        rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
+        rw [mul_comm]; exact zero_mul' _,
       sub_self, abs_zero]
   exact hε
 
