@@ -16,6 +16,8 @@ private theorem neg_x_sub_x_add (x h : Real) : x - (x + h) = -h := by
 -- F(x) = ∫ₐˣ f（向き付き積分）は任意の点 x で微分可能で F'(x) = f(x)
 -- ============================================================
 
+/-- 微積分学の基本定理：連続関数 f の不定積分 F(x) = ∫ₐˣ f（向き付き積分）は
+任意の点 x で微分可能で F′(x) = f(x)。基点 a と x の位置関係に制約はない。 -/
 theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
     let F := fun x ↦ (OIntegral f a x); HasDerivAt F (f x) x := by
   let F := fun x ↦ (OIntegral f a x)

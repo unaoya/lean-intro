@@ -6,7 +6,8 @@ noncomputable section
 -- 向き付き積分
 -- ============================================================
 
--- 向き付き積分の定義：a > b のときは符号を反転する
+/-- 向き付き積分：a > b のときは符号を反転する。
+区間の加法性 oint_add_integral / oint_sub_interval が a b c の順序によらず成立する。 -/
 noncomputable def OIntegral (f : Real → Real) (a b : Real) : Real :=
   if a ≤ b then Integral f a b else -(Integral f b a)
 

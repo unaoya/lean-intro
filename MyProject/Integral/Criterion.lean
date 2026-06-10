@@ -1,9 +1,8 @@
 import MyProject.Integral.Def
 
--- コーシー型判定条件による可積分性：
--- 「十分細かい任意の分割を固定すると、さらに細かい任意の分割の RS が ε-近傍に入る」
--- なら可積分（積分値は sup で構成する）
-
+/-- コーシー型判定条件による可積分性：
+「十分細かい任意の分割 P を固定すると、さらに細かい任意の分割 P' のリーマン和が
+P のリーマン和の ε-近傍に入る」なら可積分（積分値は sup で構成する）。 -/
 theorem integrable_of_cauchy (g : Real → Real) (a b : Real) (hab : a ≤ b)
     (M : Real) (hM : ∀ t, InInterval a b t → (g t).abs ≤ M)
     (hcauchy : ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧

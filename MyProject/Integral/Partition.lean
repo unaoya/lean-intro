@@ -5,7 +5,7 @@ noncomputable section
 
 open Real Classical Range
 
--- 分割を定義
+/-- 区間 [a, b] の n 分割：単調非減少な分点列 points で両端が a, b。 -/
 structure Partition (n : Nat) (a b : Real) where
   points : Range n.succ → Real
   increase : ∀ i : Range n, points (incl i) ≤ points (addone i)

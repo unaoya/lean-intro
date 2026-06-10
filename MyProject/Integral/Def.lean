@@ -4,7 +4,8 @@ noncomputable section
 
 open Real Classical
 
--- 積分の定義
+/-- リーマン積分の定義：任意の ε > 0 に対し δ > 0 があって、
+diam < δ の任意のタグ付き分割のリーマン和が i の ε-近傍に入る。 -/
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
   ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ P : TaggedPartition a b,
     Partition.diam P.Δ < δ → abs (RiemannSum f P.Δ P.ξ - i) < ε
@@ -150,12 +151,13 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
   rw [← sub_zero_eq]
   exact lt_epsilon_zero _ this
 
+/-- 可積分性：積分値が存在すること。 -/
 def IsIntegrable (f : Real → Real) (a b : Real) : Prop :=
   ∃ i, IsIntegral f a b i
 
--- 向きなし積分。a ≤ b かつ可積分のときに限り積分値を返し、それ以外は 0。
--- （b < a では分割が存在せず IsIntegrable が空虚に真になるため、
---   条件に a ≤ b を含めて不定値を排除している。向き付きは Oriented.lean の OIntegral。）
+/-- 向きなし積分。a ≤ b かつ可積分のときに限り積分値を返し、それ以外は 0。
+（b < a では分割が存在せず IsIntegrable が空虚に真になるため、
+条件に a ≤ b を含めて不定値を排除している。向き付きは Oriented.lean の OIntegral。） -/
 def Integral (f : Real → Real) (a b : Real) : Real :=
   dite (a ≤ b ∧ IsIntegrable f a b) (λ h => Classical.choose h.2) (λ _ => 0)
 
