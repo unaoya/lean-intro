@@ -6,71 +6,113 @@ open Real Classical
 
 -- 積分の線形性
 
--- 極限の線形性を使いたい
-
-theorem additive_integral (f g : Real → Real) (a b : Real) :
-  Integral (fun t ↦ f t + g t) a b = Integral f a b + Integral g a b := by
-  rw [← IsIntegral_iff]
-  have hf : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
-  have hg : IsIntegral g a b (Integral g a b) := by rw [IsIntegral_iff]
-  intro ε hε
-  have hε2 : ε / 2 > 0 := by apply pos_half; exact hε
-  rcases hf (ε / 2) hε2 with ⟨δf, hδf⟩
-  rcases hg (ε / 2) hε2 with ⟨δg, hδg⟩
-  apply Exists.intro (min δf δg)
-  constructor
-  · apply min_pos; exact hδf.1; exact hδg.1
-  · intros n Δ ξ h h'
-    rw [additive_riemann_sum]
-    rw [add_sub_add]
-    have hf' := hδf.2 n Δ ξ h (lt_le_trans _ _ _ h' (min_left_le δf δg))
-    have hg' := hδg.2 n Δ ξ h (lt_le_trans _ _ _ h' (min_right_le δf δg))
-    apply le_lt_trans
-    apply abs_triangle
-    rw [← half_add ε]
-    apply lt_add_lt
-    exact hf'
-    exact hg'
-
-theorem neg_integral (f : Real → Real) (a b : Real) :
-  Integral (fun t ↦ -f t) a b = -Integral f a b := by
-  rw [← IsIntegral_iff]
-  have : IsIntegral f a b (Integral f a b) := by rw [IsIntegral_iff]
-  intro ε hε
-  rcases this ε hε with ⟨δ, hδ⟩
-  apply Exists.intro δ
-  constructor
-  · exact hδ.1
-  · intro n Δ ξ h h'
-    rw [neg_riemann_sum]
-    rw [neg_sub_neg_abs]
-    exact hδ.2 n Δ ξ h h'
-
-theorem sub_integral (f g : Real → Real) (a b : Real) :
-  Integral (fun t ↦ f t - g t) a b = Integral f a b - Integral g a b := by
-  rw [← add_neg_sub]
-  rw [← neg_integral]
-  rw [← additive_integral]
-  apply integral_congr
-  intro x
-  rw [add_neg_sub]
-
+-- ======================================================
+-- 1. add_integrable
+-- ======================================================
 theorem add_integrable (f g : Real → Real) (a b : Real)
     (hf : IsIntegrable f a b)
     (hg : IsIntegrable g a b) :
     IsIntegrable (fun x ↦ f x + g x) a b := by
-  sorry
+  rcases hf with ⟨if_, hif⟩
+  rcases hg with ⟨ig, hig⟩
+  refine ⟨if_ + ig, fun ε hε => ?_⟩
+  rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
+  rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
+  refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
+  have hdf : Partition.diam n a b Δ < δf :=
+    lt_le_trans _ _ _ hd (min_left_le δf δg)
+  have hdg : Partition.diam n a b Δ < δg :=
+    lt_le_trans _ _ _ hd (min_right_le δf δg)
+  rw [additive_riemann_sum, add_sub_add]
+  calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))
+      ≤ abs (RiemannSum f a b n Δ ξ - if_) + abs (RiemannSum g a b n Δ ξ - ig) :=
+        abs_triangle _ _
+    _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
+    _ = ε := half_add ε
 
-theorem neg_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
-    (h'' : IsIntegrable f a b) : IsIntegrable (fun x ↦ -(f x)) a b := by
-  sorry
+-- ======================================================
+-- 2. neg_integrable (no a ≤ b hypothesis needed)
+-- ======================================================
+theorem neg_integrable (f : Real → Real) (a b : Real)
+    (hf : IsIntegrable f a b) : IsIntegrable (fun x ↦ -(f x)) a b := by
+  rcases hf with ⟨i, hi⟩
+  refine ⟨-i, fun ε hε => ?_⟩
+  rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
+  refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
+  rw [neg_riemann_sum]
+  have : -RiemannSum f a b n Δ ξ - -i = -(RiemannSum f a b n Δ ξ - i) := by
+    show -RiemannSum f a b n Δ ξ + -(-i) = -(RiemannSum f a b n Δ ξ + -i)
+    rw [neg_add_distrib, neg_neg]
+  rw [this, abs_neg]
+  exact hδ n Δ ξ hr hd
 
+-- ======================================================
+-- 3. integrable_sub
+-- ======================================================
 theorem integrable_sub (f g : Real → Real) (a b : Real)
     (hf : IsIntegrable f a b)
     (hg : IsIntegrable g a b) :
     IsIntegrable (fun x ↦ f x - g x) a b := by
-  sorry
+  have hng := neg_integrable g a b hg
+  have := add_integrable f (fun x ↦ -g x) a b hf hng
+  exact this
 
-theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
-    (h'' : IsIntegrable f a b) : IsIntegrable (fun x ↦ abs (f x)) a b := by
-  sorry
+-- ======================================================
+-- 4. additive_integral (with integrability hypotheses)
+-- ======================================================
+theorem additive_integral (f g : Real → Real) (a b : Real)
+    (hab : a ≤ b) (hf : IsIntegrable f a b) (hg : IsIntegrable g a b) :
+    Integral (fun t ↦ f t + g t) a b = Integral f a b + Integral g a b := by
+  rcases hf with ⟨if_, hif⟩
+  rcases hg with ⟨ig, hig⟩
+  have hfg : IsIntegral (fun t ↦ f t + g t) a b (if_ + ig) := by
+    intro ε hε
+    rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
+    rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
+    refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
+    have hdf : Partition.diam n a b Δ < δf :=
+      lt_le_trans _ _ _ hd (min_left_le δf δg)
+    have hdg : Partition.diam n a b Δ < δg :=
+      lt_le_trans _ _ _ hd (min_right_le δf δg)
+    rw [additive_riemann_sum, add_sub_add]
+    calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))
+        ≤ abs (RiemannSum f a b n Δ ξ - if_) + abs (RiemannSum g a b n Δ ξ - ig) :=
+          abs_triangle _ _
+      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
+      _ = ε := half_add ε
+  rw [IsIntegral_iff _ _ _ _ hab hfg, IsIntegral_iff _ _ _ _ hab hif, IsIntegral_iff _ _ _ _ hab hig]
+
+-- ======================================================
+-- 5. neg_integral (with integrability hypothesis)
+-- ======================================================
+theorem neg_integral (f : Real → Real) (a b : Real)
+    (hab : a ≤ b) (hf : IsIntegrable f a b) :
+    Integral (fun t ↦ -f t) a b = -Integral f a b := by
+  rcases hf with ⟨i, hi⟩
+  have hni : IsIntegral (fun t ↦ -f t) a b (-i) := by
+    intro ε hε
+    rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
+    refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
+    rw [neg_riemann_sum]
+    have : -RiemannSum f a b n Δ ξ - -i = -(RiemannSum f a b n Δ ξ - i) := by
+      show -RiemannSum f a b n Δ ξ + -(-i) = -(RiemannSum f a b n Δ ξ + -i)
+      rw [neg_add_distrib, neg_neg]
+    rw [this, abs_neg]
+    exact hδ n Δ ξ hr hd
+  rw [IsIntegral_iff _ _ _ _ hab hni, IsIntegral_iff _ _ _ _ hab hi]
+
+-- ======================================================
+-- 6. sub_integral (with integrability hypotheses)
+-- ======================================================
+theorem sub_integral (f g : Real → Real) (a b : Real)
+    (hab : a ≤ b) (hf : IsIntegrable f a b) (hg : IsIntegrable g a b) :
+    Integral (fun t ↦ f t - g t) a b = Integral f a b - Integral g a b := by
+  rw [← add_neg_sub]
+  rw [← neg_integral g a b hab hg]
+  rw [← additive_integral f (fun t ↦ -g t) a b hab hf (neg_integrable g a b hg)]
+  apply integral_congr
+  · exact hab
+  · intro x
+    rw [add_neg_sub]
+
+-- abs_integrable は補題の依存関係の都合で Integral.lean に移動した

@@ -97,19 +97,46 @@ theorem point_le_right (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range 
     rw [← this]
     exact hP j
 
+-- 分点の単調性
+theorem points_mono (n : Nat) (a b : Real) (Δ : Partition n a b)
+    (i j : Range n.succ) (hij : i.val ≤ j.val) : Δ.points i ≤ Δ.points j := by
+  obtain ⟨d, hd⟩ : ∃ d, j.val = i.val + d := ⟨j.val - i.val, by omega⟩
+  clear hij
+  revert j
+  induction d with
+  | zero =>
+    intro j hd
+    rw [show i = j from Subtype.ext (by omega)]
+    exact le_refl _
+  | succ d ih =>
+    intro j hd
+    have hd' : i.val + d < n := by have := j.property; omega
+    have hstep := Δ.increase ⟨i.val + d, hd'⟩
+    rw [show (addone (⟨i.val + d, hd'⟩ : Range n) : Range n.succ) = j from
+          Subtype.ext (by simp only [addone_val]; omega)] at hstep
+    refine le_trans ?_ hstep
+    rw [show (incl (⟨i.val + d, hd'⟩ : Range n) : Range n.succ) =
+          ⟨i.val + d, Nat.lt_succ_of_lt hd'⟩ from Subtype.ext (by simp only [incl_val])]
+    exact ih ⟨i.val + d, Nat.lt_succ_of_lt hd'⟩ rfl
+
 theorem points_in_interval (n : Nat) (a b : Real) (Δ : Partition n a b) (i : Range n.succ) :
     InInterval a b (Δ.points i) := by
-  have := Δ.left_le_right n a b
   dsimp [InInterval]
-  rw [if_pos this]
-  constructor
-  · exact Δ.left_le_point i
-  · exact Δ.point_le_right i
+  rw [if_pos (Δ.left_le_right n a b)]
+  exact ⟨Δ.left_le_point i, Δ.point_le_right i⟩
 
 -- 代表点を定義
 def IsRepr (a b : Real) (n : Nat) (Δ : Partition n a b)
   (ξ : Range n → Real) : Prop :=
   ∀ i : Range n, InInterval (Δ.points i.incl) (Δ.points i.addone) (ξ i)
+
+theorem le_isrepr (a b : Real) (n : Nat) (Δ : Partition n a b)
+    (ξ : Range n → Real) (h : ∀ i, (Δ.points i.incl) ≤ ξ i ∧ ξ i ≤ (Δ.points i.addone)) :
+    IsRepr a b n Δ ξ := by
+  intro i
+  dsimp [InInterval]
+  rw [if_pos (Δ.increase i)]
+  exact h i
 
 theorem repr_in_interval (a b : Real) (n : Nat) (Δ : Partition n a b)
   (ξ : Range n → Real) (h : IsRepr a b n Δ ξ) :
@@ -140,5 +167,170 @@ theorem length_sum (n : Nat) (a b : Real) (Δ : Partition n a b) :
 
 def diam (n : Nat) (a b : Real) (Δ : Partition n a b) : Real :=
   fmax' n Δ.length
+
+-- x ∈ [a,b] なら x を含む小区間が存在する
+theorem find_interval (n : Nat) (a b x : Real) (Δ : Partition n a b)
+    (hn : 0 < n) (hx : InInterval a b x) :
+    ∃ k : Range n, Δ.points (incl k) ≤ x ∧ x ≤ Δ.points (addone k) := by
+  have hab := Δ.left_le_right n a b
+  have hxa : a ≤ x := by dsimp [InInterval] at hx; rw [if_pos hab] at hx; exact hx.1
+  have hxb : x ≤ b := by dsimp [InInterval] at hx; rw [if_pos hab] at hx; exact hx.2
+  -- p(i) := i < n ∧ x ≤ Δ.points ⟨i+1, ⟩
+  let p : Nat → Prop := fun i =>
+    ∃ h : i < n, x ≤ Δ.points ⟨i + 1, Nat.succ_lt_succ h⟩
+  -- p(n-1) holds since x ≤ b = Δ.points ⟨n⟩
+  have hp : ∃ i, p i := by
+    have hn' : n - 1 < n := Nat.pred_lt (Nat.not_eq_zero_of_lt hn)
+    have heq : n - 1 + 1 = n := Nat.succ_pred_eq_of_pos hn
+    refine ⟨n - 1, hn', ?_⟩
+    have : Δ.points ⟨n - 1 + 1, Nat.succ_lt_succ hn'⟩ = Δ.points ⟨n, by simp⟩ := by
+      congr 1; exact Subtype.ext heq
+    rw [this, Δ.right]; exact hxb
+  -- 最小の k を取得
+  rcases has_min p hp with ⟨k, ⟨hkn, hkle⟩, hmin⟩
+  refine ⟨⟨k, hkn⟩, ?_, hkle⟩
+  -- Δ.points (incl ⟨k, hkn⟩) ≤ x を示す
+  -- incl ⟨k, hkn⟩ = ⟨k, Nat.lt_succ_of_lt hkn⟩
+  show Δ.points ⟨k, Nat.lt_succ_of_lt hkn⟩ ≤ x
+  cases Classical.em (k = 0) with
+  | inl hk0 =>
+    -- k = 0: Δ.points ⟨0, ⟩ = a ≤ x
+    subst hk0; rw [Δ.left]; exact hxa
+  | inr hk_ne =>
+    -- k > 0: ¬p(k-1) なので x ≤ Δ.points ⟨k, ⟩ は偽
+    have hk_pos : 0 < k := Nat.zero_lt_of_ne_zero hk_ne
+    have not_pk : ¬ p (k - 1) := by
+      intro hpk; exact hmin (k - 1) hpk (Nat.pred_lt hk_ne)
+    -- ¬p(k-1): k-1 < n だが x ≤ Δ.points ⟨k, ⟩ が偽
+    have hk_lt_ns : k < n.succ := Nat.lt_succ_of_lt hkn
+    have hkm1_lt : k - 1 < n := Nat.lt_of_lt_of_le (Nat.pred_lt hk_ne) (Nat.le_of_lt hkn)
+    have heq : k - 1 + 1 = k := Nat.succ_pred_eq_of_pos hk_pos
+    have : ¬ (x ≤ Δ.points ⟨k - 1 + 1, Nat.succ_lt_succ hkm1_lt⟩) := by
+      intro hle; exact not_pk ⟨hkm1_lt, hle⟩
+    have : ¬ (x ≤ Δ.points ⟨k, hk_lt_ns⟩) := by
+      rwa [show (⟨k - 1 + 1, Nat.succ_lt_succ hkm1_lt⟩ : Range n.succ) =
+           ⟨k, hk_lt_ns⟩ from Subtype.ext heq] at this
+    cases LinearOrderedField.le_total x (Δ.points ⟨k, hk_lt_ns⟩) with
+    | inl hle => exact absurd hle this
+    | inr hge => exact hge
+
+-- 分割に点を挿入
+def insertPoint (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
+    Partition (n + 1) a b where
+  points := fun ⟨i, hi⟩ =>
+    have hk : k.val < n := k.property
+    if h₁ : i ≤ k.val then Δ.points ⟨i, by omega⟩
+    else if h₂ : i = k.val + 1 then c
+    else Δ.points ⟨i - 1, by omega⟩
+  increase := by
+    intro ⟨i, hi⟩
+    have hk : k.val < n := k.property
+    dsimp [incl, addone]
+    by_cases h1 : i + 1 ≤ k.val
+    · -- Case 1: both i and i+1 ≤ k.val
+      rw [dif_pos (show i ≤ k.val from by omega), dif_pos h1]
+      exact Δ.increase ⟨i, by omega⟩
+    · by_cases h2 : i ≤ k.val
+      · -- Case 2: i = k.val
+        have hik : i = k.val := by omega
+        subst hik
+        rw [dif_pos h2, dif_neg h1, if_pos rfl]
+        exact hL
+      · by_cases h3 : i = k.val + 1
+        · -- Case 3: i = k.val + 1
+          subst h3
+          rw [dif_neg h2, if_pos rfl,
+              dif_neg h1, if_neg (show ¬(k.val + 1 + 1 = k.val + 1) from by omega)]
+          exact hR
+        · -- Case 4: i > k.val + 1
+          rw [dif_neg h2, if_neg h3,
+              dif_neg h1, if_neg (show ¬(i + 1 = k.val + 1) from by omega)]
+          have h_incr := Δ.increase ⟨i - 1, by omega⟩
+          have h_eq : (addone (⟨i - 1, by omega⟩ : Range n) : Range n.succ) =
+                      ⟨i, by omega⟩ := Subtype.ext (show (i - 1) + 1 = i from by omega)
+          rw [h_eq] at h_incr
+          exact h_incr
+  left := by
+    dsimp only []
+    rw [dif_pos (Nat.zero_le k.val)]
+    exact Δ.left
+  right := by
+    have hk : k.val < n := k.property
+    dsimp only []
+    rw [dif_neg (show ¬(n + 1 ≤ k.val) from by omega),
+        dif_neg (show ¬(n + 1 = k.val + 1) from by omega)]
+    exact Δ.right
+
+-- insertPoint の点アクセス補題
+theorem insertPoint_pt_le (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k))
+    (i : Range (n + 2)) (hi : i.val ≤ k.val) :
+    (Δ.insertPoint n a b c k hL hR).points i =
+    Δ.points ⟨i.val, by have := k.property; omega⟩ := by
+  obtain ⟨i_val, i_prop⟩ := i
+  simp only [insertPoint]
+  exact dif_pos hi
+
+theorem insertPoint_pt_mid (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
+    (Δ.insertPoint n a b c k hL hR).points ⟨k.val + 1, by have := k.property; omega⟩ = c := by
+  simp only [insertPoint]
+  exact (dif_neg (show ¬(k.val + 1 ≤ k.val) from by omega)).trans (dif_pos trivial)
+
+theorem insertPoint_pt_gt (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k))
+    (i : Range (n + 2)) (hi : k.val + 1 < i.val) :
+    (Δ.insertPoint n a b c k hL hR).points i =
+    Δ.points ⟨i.val - 1, by have := i.property; have := k.property; omega⟩ := by
+  obtain ⟨i_val, i_prop⟩ := i
+  have hi' : k.val + 1 < i_val := hi
+  simp only [insertPoint]
+  exact (dif_neg (by omega)).trans (dif_neg (by omega))
+
+-- insertPoint の length 補題
+theorem insertPoint_length_low (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k))
+    (i : Range (n + 1)) (hi : i.val < k.val) :
+    (Δ.insertPoint n a b c k hL hR).length i =
+    Δ.length ⟨i.val, by have := k.property; omega⟩ := by
+  simp only [length]
+  rw [insertPoint_pt_le n a b c Δ k hL hR (addone i) (by simp [addone_val]; omega),
+      insertPoint_pt_le n a b c Δ k hL hR (incl i) (by simp [incl_val]; omega)]
+  congr 1
+
+theorem insertPoint_length_split (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
+    (Δ.insertPoint n a b c k hL hR).length ⟨k.val, Nat.lt_succ_of_lt k.property⟩ +
+    (Δ.insertPoint n a b c k hL hR).length ⟨k.val + 1, Nat.succ_lt_succ k.property⟩ =
+    Δ.length k := by
+  let Δ' := Δ.insertPoint n a b c k hL hR
+  have h1 : Δ'.points (addone ⟨k.val, Nat.lt_succ_of_lt k.property⟩) = c := by
+    rw [show (addone ⟨k.val, Nat.lt_succ_of_lt k.property⟩ : Range (n + 2)) =
+          ⟨k.val + 1, by have := k.property; omega⟩ from Subtype.ext (by simp [addone_val])]
+    exact insertPoint_pt_mid n a b c Δ k hL hR
+  have h2 : Δ'.points (incl ⟨k.val, Nat.lt_succ_of_lt k.property⟩) = Δ.points (incl k) :=
+    insertPoint_pt_le n a b c Δ k hL hR _ (by simp [incl_val])
+  have h3 : Δ'.points (addone ⟨k.val + 1, Nat.succ_lt_succ k.property⟩) = Δ.points (addone k) :=
+    insertPoint_pt_gt n a b c Δ k hL hR _ (by simp [addone_val])
+  have h4 : Δ'.points (incl ⟨k.val + 1, Nat.succ_lt_succ k.property⟩) = c := by
+    rw [show (incl ⟨k.val + 1, Nat.succ_lt_succ k.property⟩ : Range (n + 2)) =
+          ⟨k.val + 1, by have := k.property; omega⟩ from Subtype.ext (by simp [incl_val])]
+    exact insertPoint_pt_mid n a b c Δ k hL hR
+  simp only [length]; rw [h1, h2, h3, h4]
+  rw [← add_sub_add c (Δ.points (addone k)) (Δ.points (incl k)) c,
+      show Δ.points (incl k) + c = c + Δ.points (incl k) from AddCommGroup.add_comm _ _]
+  exact add_sub_add' c (Δ.points (addone k)) (Δ.points (incl k))
+
+theorem insertPoint_length_high (n : Nat) (a b c : Real) (Δ : Partition n a b)
+    (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k))
+    (i : Range (n + 1)) (hi : k.val + 1 < i.val) :
+    (Δ.insertPoint n a b c k hL hR).length i =
+    Δ.length ⟨i.val - 1, by have := i.property; have := k.property; omega⟩ := by
+  simp only [length]
+  rw [insertPoint_pt_gt n a b c Δ k hL hR (addone i) (by simp [addone_val]; omega),
+      insertPoint_pt_gt n a b c Δ k hL hR (incl i) (by simp [incl_val]; omega)]
+  congr 1
+  · congr 1; exact Subtype.ext (by simp [addone_val]; omega)
 
 end Partition

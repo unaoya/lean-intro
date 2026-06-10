@@ -53,6 +53,8 @@ theorem induction (n : Nat) (P : Range n → Prop)
 def gt {n : Nat} : Range n → Range n → Prop :=
   fun i j => j < i
 
+-- Range n 上の命題に対し、それを満たすものが非空なら最大および最小があること
+
 
 end Range
 
@@ -90,11 +92,15 @@ theorem sumation_zero (f : Range 0 → α) : Sumation 0 f = 0 := rfl
 theorem sumation_succ (n : Nat) (f : Range n.succ → α) :
   Sumation n.succ f = Sumation n (res n n.succ (Nat.le_succ n) f) + f ⟨n, Nat.lt_add_one n⟩ := rfl
 
-variable [HMul Nat α α]
+def natMul : Nat → α → α
+  | 0, _ => 0
+  | Nat.succ n, a => natMul n a + a
 
-theorem zero_mul (a : α) : 0 * a = 0 := by sorry
+instance : HMul Nat α α := ⟨natMul⟩
 
-theorem succ_mul (n : Nat) (a : α) : n.succ * a = n * a + a := by sorry
+theorem zero_mul (a : α) : (0 : Nat) * a = (0 : α) := rfl
+
+theorem succ_mul (n : Nat) (a : α) : n.succ * a = n * a + a := rfl
 
 theorem sum_const (n : Nat) (a : α) : Sumation n (fun _ => a) = n * a :=
   match n with

@@ -1,48 +1,8 @@
-import MyProject.Integral.Partition
-import MyProject.Limit
+import MyProject.Integral.RiemannSum
 
 noncomputable section
 
 open Real Classical
-
--- リーマン和の定義
-def RiemannSum (f : Real → Real) (a b : Real) (n : Nat)
-  (Δ : Partition n a b) (ξ : Range n → Real) : Real :=
-    Sumation n (fun i ↦ f (ξ i) * Δ.length i)
-
-theorem const_riemann_sum (c a b : Real) (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun _ ↦ c) a b n Δ ξ = c * (b - a) := by
-  rw [RiemannSum]
-  rw [summation_smul]
-  rw [Partition.length_sum]
-
-theorem additive_riemann_sum (f g : Real → Real) (a b : Real) (n : Nat)
-  (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun t ↦ f t + g t) a b n Δ ξ = RiemannSum f a b n Δ ξ + RiemannSum g a b n Δ ξ := by
-  rw [RiemannSum, RiemannSum, RiemannSum]
-  rw [← addtive_summation]
-  rw [summation_congr]
-  intro i
-  rw [add_mul]
-
-theorem neg_riemann_sum (f : Real → Real) (a b : Real) (n : Nat)
-  (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun t ↦ -f t) a b n Δ ξ = -RiemannSum f a b n Δ ξ := by
-  rw [RiemannSum, RiemannSum, neg_summation]
-  apply summation_congr
-  intro i
-  rw [neg_mul]
-
-theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
-    (Δ : Partition n a b) (ξ : Range n → Real)
-    (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr a b n ξ) :
-    0 ≤ RiemannSum f a b n Δ ξ := by
-  apply sumation_nonneg
-  intro i
-  apply mul_nonneg
-  · apply h' (ξ i)
-    exact Δ.repr_in_interval a b n ξ h i
-  · apply Δ.length_nonneg n a b i
 
 -- 積分の定義
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
@@ -50,17 +10,182 @@ def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
     Δ.IsRepr a b n ξ → (Partition.diam n a b Δ) < δ →
     abs (RiemannSum f a b n Δ ξ - i) < ε
 
+theorem sub_zero_eq (x y : Real) : x - y = 0 ↔ x = y := by
+  constructor
+  · intro h
+    have := (add_sub_cancel' y x).symm
+    rw [h, add_zero] at this
+    exact this
+  · intro h
+    rw [h, sub_self]
+
+theorem lt_epsilon_zero (x : Real) (h : ∀ ε, 0 < ε → x.abs < ε) : x = 0 := by
+  cases Classical.em (x = 0) with
+  | inl heq => exact heq
+  | inr hne =>
+    exfalso
+    have hpos : 0 < x.abs := by
+      constructor
+      · exact abs_nonneg
+      · intro heq
+        exact hne (by
+          have h1 := le_abs x
+          have h2 := neg_le_abs x
+          rw [← heq] at h1 h2
+          have h3 := neg_neg_nonneg _ h2
+          rw [neg_neg] at h3
+          exact LinearOrderedField.le_asymm _ _ h1 h3)
+    exact (lt_neq _ _ (h x.abs hpos)) rfl
+
+-- Helper: 0 ≤ (n : Real) for Nat n
+private theorem my_cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
+  cases n with
+  | zero => exact le_refl 0
+  | succ m => exact Real.le_of_lt (cast_lt 0 (m + 1) (Nat.zero_lt_succ m))
+
+-- Helper: (n : Real) ≤ (n + 1 : Real)
+private theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
+  Real.le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
+
+-- Helper: -(a - b) = b - a
+private theorem neg_sub' (a b : Real) : -(a - b) = b - a := by
+  show -(a + -b) = b + -a
+  rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
+
+-- Helper: m ≠ 0 when 0 ≤ x < (m : Real)
+private theorem nat_ne_zero_of_nonneg_lt (x : Real) (m : Nat) (hx : 0 ≤ x) (hlt : x < (m : Real)) :
+    m ≠ 0 := by
+  intro hm; subst hm; exact (le_lt_trans hx hlt).2 rfl
+
+-- Equal partition: points i = a + i * (b-a) / m
+def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) : Partition m a b where
+  points := fun i => a + (i.val : Real) * (b - a) / (m : Real)
+  increase := by
+    intro i
+    apply add_left_le
+    apply div_right_le
+    · exact my_cast_nonneg m
+    · exact nonneg_mul_nonneg _ _ _ ((nonneg_iff_le a b).mp hab) (cast_le_succ i.val)
+  left := by
+    show a + (0 : Real) * (b - a) / (m : Real) = a
+    rw [zero_mul', zero_div, add_zero]
+  right := by
+    show a + (m : Real) * (b - a) / (m : Real) = b
+    have hm' : (m : Real) ≠ (0 : Real) := by
+      intro h; apply hm
+      cases m with
+      | zero => rfl
+      | succ n => exact absurd h (cast_lt 0 (n + 1) (Nat.zero_lt_succ n)).2.symm
+    rw [mul_div_cancel' (m : Real) (b - a) hm']
+    exact add_sub_cancel' a b
+
+-- Length of each subinterval = (b-a)/m
+theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b)
+    (i : Range m) :
+    (equalPartition m a b hm hab).length m a b i = (b - a) / (m : Real) := by
+  show (a + ((i.val + 1 : Nat) : Real) * (b - a) / (m : Real)) -
+       (a + (i.val : Real) * (b - a) / (m : Real)) = (b - a) / (m : Real)
+  rw [add_sub_add' a, div_sub_div, mul_sub_mul]
+  show (((i.val + 1 : Nat) : Real) - (i.val : Real)) * (b - a) / (m : Real) = (b - a) / (m : Real)
+  rw [show ((Nat.cast (i.val + 1) : Real)) = (i.val : Real) + 1 from cast_addone_val m i]
+  rw [add_sub_cancel (i.val : Real) 1, one_mul]
+
+-- Repr: ξ i = left endpoint of each subinterval
+def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    Range m → Real :=
+  fun i => a + (i.val : Real) * (b - a) / (m : Real)
+
+theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    (equalPartition m a b hm hab).IsRepr a b m (equalPartitionRepr m a b hm hab) := by
+  apply Partition.le_isrepr
+  intro i
+  exact ⟨le_refl _, (equalPartition m a b hm hab).increase i⟩
+
+-- Diam of equal partition < δ
+theorem equalPartition_diam_lt (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a ≤ b)
+    (hδ : 0 < δ) (hlt : (b - a) / δ < (m : Real)) :
+    Partition.diam m a b (equalPartition m a b hm hab) < δ := by
+  have hm_pos : 0 < (m : Real) := by
+    cases m with
+    | zero => exact absurd rfl hm
+    | succ n => exact cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
+  apply fmax'_lt m _ δ hδ
+  intro i
+  rw [equalPartition_length m a b hm hab i]
+  exact (div_lt_iff (b - a) δ (m : Real) hδ hm_pos).mp hlt
+
+-- 一意性
+theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
+    (hab : a ≤ b) (hi : IsIntegral f a b i) (hj : IsIntegral f a b j) : i = j := by
+  have : ∀ ε, 0 < ε → (i - j).abs < ε := by
+    intro ε hε
+    rcases hi (ε / 2) (pos_half ε hε) with ⟨δi, ⟨hδi1, hδi2⟩⟩
+    rcases hj (ε / 2) (pos_half ε hε) with ⟨δj, ⟨hδj1, hδj2⟩⟩
+    let δ := min δi δj
+    have hδ : 0 < δ := min_pos δi δj hδi1 hδj1
+    have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp hab
+    have hba_div_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
+    let m := ceil ((b - a) / δ)
+    have hm_lt : (b - a) / δ < (m : Real) := ceil_lt _
+    have hm_ne : m ≠ 0 := nat_ne_zero_of_nonneg_lt _ m hba_div_nn hm_lt
+    let Δ := equalPartition m a b hm_ne hab
+    let ξ := equalPartitionRepr m a b hm_ne hab
+    have h_repr : Δ.IsRepr a b m ξ := equalPartitionRepr_isrepr m a b hm_ne hab
+    have h_diam : Partition.diam m a b Δ < δ :=
+      equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
+    let RS := RiemannSum f a b m Δ ξ
+    have h_i : (RS - i).abs < ε / 2 :=
+      hδi2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_left_le δi δj))
+    have h_j : (RS - j).abs < ε / 2 :=
+      hδj2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_right_le δi δj))
+    calc (i - j).abs
+        = ((RS - j) + (i - RS)).abs := by rw [telescope_2 j i RS]
+      _ ≤ (RS - j).abs + (i - RS).abs := abs_triangle (RS - j) (i - RS)
+      _ = (RS - j).abs + (RS - i).abs := by
+          rw [show i - RS = -(RS - i) from (neg_sub' RS i).symm, abs_neg]
+      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ h_j h_i
+      _ = ε := half_add ε
+  rw [← sub_zero_eq]
+  exact lt_epsilon_zero _ this
+
 def IsIntegrable (f : Real → Real) (a b : Real) : Prop :=
   ∃ i, IsIntegral f a b i
 
 -- 向きなし積分。本当はa ≤ bを仮定する必要あり
 def Integral (f : Real → Real) (a b : Real) : Real :=
-  if h : IsIntegrable f a b then Classical.choose h else 0
+  dite (IsIntegrable f a b) (λ h => Classical.choose h) (λ _ => 0)
+  -- if h : IsIntegrable f a b then Classical.choose h else 0
 
-theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real) :
-  IsIntegral f a b i ↔ Integral f a b = i := by
-  sorry
+theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real)
+    (hab : a ≤ b) (h : IsIntegral f a b i) :
+    Integral f a b = i := by
+  unfold Integral
+  have h₀ : IsIntegrable f a b := ⟨i, h⟩
+  rw [dif_pos h₀]
+  exact integral_unique _ _ _ _ _ hab (Classical.choose_spec h₀) h
 
-theorem integral_congr (f g : Real → Real) (a b : Real) (h : ∀ x, f x = g x) :
+-- 逆は言えない。積分の値が0でないなら可積分は言えるが。
+
+theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : ∀ x, f x = g x) :
   Integral f a b = Integral g a b := by
-  sorry
+  have hRS : ∀ n (Δ : Partition n a b) (ξ : Range n → Real),
+      RiemannSum f a b n Δ ξ = RiemannSum g a b n Δ ξ := by
+    intro n Δ ξ
+    unfold RiemannSum
+    apply summation_congr
+    intro i; rw [h (ξ i)]
+  have hfg : ∀ i, IsIntegral f a b i → IsIntegral g a b i := fun i hi ε hε => by
+    rcases hi ε hε with ⟨δ, hδ, hh⟩
+    exact ⟨δ, hδ, fun n Δ ξ hr hd => by rw [← hRS]; exact hh n Δ ξ hr hd⟩
+  have hgf : ∀ i, IsIntegral g a b i → IsIntegral f a b i := fun i hi ε hε => by
+    rcases hi ε hε with ⟨δ, hδ, hh⟩
+    exact ⟨δ, hδ, fun n Δ ξ hr hd => by rw [hRS]; exact hh n Δ ξ hr hd⟩
+  unfold Integral
+  cases Classical.em (IsIntegrable f a b) with
+  | inl hf =>
+    have hg : IsIntegrable g a b := by rcases hf with ⟨i, hi⟩; exact ⟨i, hfg i hi⟩
+    rw [dif_pos hf, dif_pos hg]
+    exact integral_unique g a b _ _ hab (hfg _ (Classical.choose_spec hf)) (Classical.choose_spec hg)
+  | inr hf =>
+    have hg : ¬IsIntegrable g a b := fun ⟨i, hi⟩ => hf ⟨i, hgf i hi⟩
+    rw [dif_neg hf, dif_neg hg]

@@ -44,23 +44,32 @@ class NonNeg (α : Type) where
 class Abs (α : Type) where
   abs : α → α
 
+-- NatCast for LinearOrderedField (no OfNat dependency)
+section NatCastDef
+variable {α : Type} [LinearOrderedField α]
+
+noncomputable def natCastOfField : Nat → α
+  | 0 => AddCommGroup.zero
+  | 1 => MulCommMonoid.one
+  | Nat.succ (Nat.succ n) => natCastOfField (Nat.succ n) + MulCommMonoid.one
+
+noncomputable instance instNatCastLOF : NatCast α := ⟨natCastOfField⟩
+end NatCastDef
+
 variable {α : Type} [LinearOrderedField α] [OfNat α 0]
 
 instance : NonNeg α := ⟨fun a => 0 ≤ a⟩
 
-instance (a : α) : Decidable (NonNeg.nonneg a) := sorry
+noncomputable instance (a : α) : Decidable (NonNeg.nonneg a) := Classical.propDecidable _
 
 instance : LT α := ⟨fun a b => a ≤ b ∧ a ≠ b⟩
 
--- instance (n : Nat) : OfNat α n :=
---   match n with
---   | Nat.zero => AddCommGroup.zero
---   | Nat.succ n => ofNat n + 1
+noncomputable instance : DecidableRel (LE.le : α → α → Prop) := fun _ _ => Classical.propDecidable _
 
-instance : NatCast α := sorry
+noncomputable instance : Min α := ⟨fun a b => if a ≤ b then a else b⟩
 
-instance : Min α := sorry
+noncomputable instance : Max α := ⟨fun a b => if a ≤ b then b else a⟩
 
-instance : Abs α := ⟨fun a => min a (-a)⟩
+noncomputable instance : Abs α := ⟨fun a => max a (-a)⟩
 
 class CompletLinearOrderedField (α : Type) extends LinearOrderedField α where
