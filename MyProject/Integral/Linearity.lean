@@ -24,8 +24,8 @@ theorem add_integrable (f g : Real → Real) (a b : Real)
   have hdg : Partition.diam Δ < δg :=
     lt_le_trans _ _ _ hd (min_right_le δf δg)
   rw [additive_riemann_sum, add_sub_add]
-  calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))
-      ≤ abs (RiemannSum f a b n Δ ξ - if_) + abs (RiemannSum g a b n Δ ξ - ig) :=
+  calc abs (RiemannSum f Δ ξ - if_ + (RiemannSum g Δ ξ - ig))
+      ≤ abs (RiemannSum f Δ ξ - if_) + abs (RiemannSum g Δ ξ - ig) :=
         abs_triangle _ _
     _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
     _ = ε := half_add ε
@@ -40,8 +40,8 @@ theorem neg_integrable (f : Real → Real) (a b : Real)
   rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
   refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
   rw [neg_riemann_sum]
-  have : -RiemannSum f a b n Δ ξ - -i = -(RiemannSum f a b n Δ ξ - i) := by
-    show -RiemannSum f a b n Δ ξ + -(-i) = -(RiemannSum f a b n Δ ξ + -i)
+  have : -RiemannSum f Δ ξ - -i = -(RiemannSum f Δ ξ - i) := by
+    show -RiemannSum f Δ ξ + -(-i) = -(RiemannSum f Δ ξ + -i)
     rw [neg_add_distrib, neg_neg]
   rw [this, abs_neg]
   exact hδ n Δ ξ hr hd
@@ -75,8 +75,8 @@ theorem additive_integral (f g : Real → Real) (a b : Real)
     have hdg : Partition.diam Δ < δg :=
       lt_le_trans _ _ _ hd (min_right_le δf δg)
     rw [additive_riemann_sum, add_sub_add]
-    calc abs (RiemannSum f a b n Δ ξ - if_ + (RiemannSum g a b n Δ ξ - ig))
-        ≤ abs (RiemannSum f a b n Δ ξ - if_) + abs (RiemannSum g a b n Δ ξ - ig) :=
+    calc abs (RiemannSum f Δ ξ - if_ + (RiemannSum g Δ ξ - ig))
+        ≤ abs (RiemannSum f Δ ξ - if_) + abs (RiemannSum g Δ ξ - ig) :=
           abs_triangle _ _
       _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
       _ = ε := half_add ε
@@ -94,8 +94,8 @@ theorem neg_integral (f : Real → Real) (a b : Real)
     rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
     refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
     rw [neg_riemann_sum]
-    have : -RiemannSum f a b n Δ ξ - -i = -(RiemannSum f a b n Δ ξ - i) := by
-      show -RiemannSum f a b n Δ ξ + -(-i) = -(RiemannSum f a b n Δ ξ + -i)
+    have : -RiemannSum f Δ ξ - -i = -(RiemannSum f Δ ξ - i) := by
+      show -RiemannSum f Δ ξ + -(-i) = -(RiemannSum f Δ ξ + -i)
       rw [neg_add_distrib, neg_neg]
     rw [this, abs_neg]
     exact hδ n Δ ξ hr hd

@@ -62,7 +62,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
       · rw [show ξ' i = ξ i from if_neg hi]
         exact hr_bounds i
     -- 一点だけ代表点を変えた RS の差 = (f x - f (ξ k)) * length k
-    have hdiff : RiemannSum f a b m Δ ξ' - RiemannSum f a b m Δ ξ =
+    have hdiff : RiemannSum f Δ ξ' - RiemannSum f Δ ξ =
         (f x - f (ξ k)) * Partition.length Δ k := by
       show Summation m (fun i => f (ξ' i) * Partition.length Δ i) -
           Summation m (fun i => f (ξ i) * Partition.length Δ i) = _
@@ -78,19 +78,19 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
       rw [summation_congr m _ _ hterm, additive_summation,
           summation_one_term m k _ (fun i hne => if_neg hne),
           if_pos (show k.val = k.val from rfl), add_sub_cancel]
-    have hRS : (RiemannSum f a b m Δ ξ - I).abs < 1 := hbound m Δ ξ h_repr h_diam
-    have hRS' : (RiemannSum f a b m Δ ξ' - I).abs < 1 := hbound m Δ ξ' h_repr' h_diam
+    have hRS : (RiemannSum f Δ ξ - I).abs < 1 := hbound m Δ ξ h_repr h_diam
+    have hRS' : (RiemannSum f Δ ξ' - I).abs < 1 := hbound m Δ ξ' h_repr' h_diam
     have h2 : ((f x - f (ξ k)) * Partition.length Δ k).abs < 2 := by
       rw [← hdiff]
-      have hns : I - RiemannSum f a b m Δ ξ = -(RiemannSum f a b m Δ ξ - I) := by
-        show I + -RiemannSum f a b m Δ ξ = -(RiemannSum f a b m Δ ξ + -I)
+      have hns : I - RiemannSum f Δ ξ = -(RiemannSum f Δ ξ - I) := by
+        show I + -RiemannSum f Δ ξ = -(RiemannSum f Δ ξ + -I)
         rw [neg_add_distrib, neg_neg, AddCommGroup.add_comm]
-      calc (RiemannSum f a b m Δ ξ' - RiemannSum f a b m Δ ξ).abs
-          = ((I - RiemannSum f a b m Δ ξ) + (RiemannSum f a b m Δ ξ' - I)).abs := by
-            rw [telescope_2 (RiemannSum f a b m Δ ξ) (RiemannSum f a b m Δ ξ') I]
-        _ ≤ (I - RiemannSum f a b m Δ ξ).abs + (RiemannSum f a b m Δ ξ' - I).abs :=
+      calc (RiemannSum f Δ ξ' - RiemannSum f Δ ξ).abs
+          = ((I - RiemannSum f Δ ξ) + (RiemannSum f Δ ξ' - I)).abs := by
+            rw [telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ ξ') I]
+        _ ≤ (I - RiemannSum f Δ ξ).abs + (RiemannSum f Δ ξ' - I).abs :=
             abs_triangle _ _
-        _ = (RiemannSum f a b m Δ ξ - I).abs + (RiemannSum f a b m Δ ξ' - I).abs := by
+        _ = (RiemannSum f Δ ξ - I).abs + (RiemannSum f Δ ξ' - I).abs := by
             rw [hns, abs_neg]
         _ < 1 + 1 := lt_add_lt _ _ _ _ hRS hRS'
         _ = 2 := rfl
@@ -136,7 +136,7 @@ private theorem isintegral_self_zero (f : Real → Real) (a i : Real)
     fun i => absurd i.property (Nat.not_lt_zero _)
   have hd0 : Partition.diam Δ0 < δ := hδ_pos
   have hclose := hδ 0 Δ0 (fun _ => a) hr0 hd0
-  rw [show RiemannSum f a a 0 Δ0 (fun _ => a) - i = -i from by
+  rw [show RiemannSum f Δ0 (fun _ => a) - i = -i from by
         show Summation 0 (fun q => f a * Partition.length Δ0 q) - i = -i
         rw [summation_zero]
         exact AddCommGroup.zero_add (-i)] at hclose
@@ -210,7 +210,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         dsimp [InInterval]; rw [if_pos hac_le]; exact ⟨hab_le, hbc_le⟩
       obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ b hn hb_in
       obtain ⟨ξ', hr', hbd'⟩ :=
-        rs_insert_bound f a c b (M₁ + M₂) hM hM_nn n Δ ξ hr k hkL hkR
+        rs_insert_bound f b (M₁ + M₂) hM hM_nn Δ ξ hr k hkL hkR
       obtain ⟨kv, hkv⟩ := k
       obtain ⟨d, hd_eq⟩ : ∃ d, n = kv + d + 1 := ⟨n - kv - 1, by omega⟩
       subst hd_eq
@@ -275,7 +275,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       have hL_close := hδ₁ (kv + 1) ΔL ξL hrL hdiamL
       have hR_close := hδ₂ (d + 1) ΔR ξR hrR hdiamR
       -- RS の分割恒等式
-      have e1 : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
+      have e1 : RiemannSum f Δ' ξ' =
           Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
             Partition.length Δ'
               ⟨i.val, by have := i.property; omega⟩) +
@@ -296,7 +296,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
           (fun j => f (ξ' ⟨kv + j.val, by have := j.property; omega⟩) *
             Partition.length Δ'
               ⟨kv + j.val, by have := j.property; omega⟩)
-      have e3 : RiemannSum f a b (kv + 1) ΔL ξL =
+      have e3 : RiemannSum f ΔL ξL =
           Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *
             Partition.length Δ'
               ⟨i.val, by have := i.property; omega⟩) +
@@ -304,18 +304,18 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
             Partition.length Δ' ⟨kv, by omega⟩ :=
         summation_succ kv
           (fun i => f (ξL i) * Partition.length ΔL i)
-      have e4 : RiemannSum f b c (d + 1) ΔR ξR =
+      have e4 : RiemannSum f ΔR ξR =
           Summation (d + 1) (fun j => f (ξ' ⟨kv + j.val + 1, by have := j.property; omega⟩) *
             Partition.length Δ'
               ⟨kv + j.val + 1, by have := j.property; omega⟩) := rfl
-      have hsplit_sum : RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
-          RiemannSum f a b (kv + 1) ΔL ξL + RiemannSum f b c (d + 1) ΔR ξR := by
+      have hsplit_sum : RiemannSum f Δ' ξ' =
+          RiemannSum f ΔL ξL + RiemannSum f ΔR ξR := by
         rw [e1, e2, e3, e4, AddCommGroup.add_assoc]
       -- 挿入誤差の評価
       have hδ₃_nn : (0 : Real) ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
         Real.le_of_lt (pos_div_pos _ _ (pos_half ε hε) hK_pos)
-      have hsplit_term : (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' -
-          RiemannSum f a c (kv + d + 1) Δ ξ).abs ≤ ε / 2 := by
+      have hsplit_term : (RiemannSum f Δ' ξ' -
+          RiemannSum f Δ ξ).abs ≤ ε / 2 := by
         apply le_trans hbd'
         have h1 : Partition.length Δ ⟨kv, hkv⟩ ≤
             Partition.diam Δ := le_fmax' _ _ _
@@ -330,29 +330,29 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
               rw [MulCommMonoid.mul_comm]
               exact div_mul_cancel' (ε / 2) _ hK_ne
       -- 仕上げ
-      have hA : (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs < ε / 2 := by
+      have hA : (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs < ε / 2 := by
         rw [hsplit_sum, add_sub_add]
         apply le_lt_trans (abs_triangle _ _)
         rw [show ε / 2 = ε / 2 / 2 + ε / 2 / 2 from (half_add (ε / 2)).symm]
         exact lt_add_lt _ _ _ _ hL_close hR_close
-      calc (RiemannSum f a c (kv + d + 1) Δ ξ - (I₁ + I₂)).abs
-          = ((RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)) +
-             (RiemannSum f a c (kv + d + 1) Δ ξ -
-              RiemannSum f a c (kv + d + 1 + 1) Δ' ξ')).abs := by
-            rw [telescope_2 (I₁ + I₂) (RiemannSum f a c (kv + d + 1) Δ ξ)
-                (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ')]
-        _ ≤ (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs +
-            (RiemannSum f a c (kv + d + 1) Δ ξ -
-             RiemannSum f a c (kv + d + 1 + 1) Δ' ξ').abs := abs_triangle _ _
-        _ = (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs +
-            (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' -
-             RiemannSum f a c (kv + d + 1) Δ ξ).abs := by
-            rw [show RiemannSum f a c (kv + d + 1) Δ ξ -
-                  RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' =
-                  -(RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' -
-                    RiemannSum f a c (kv + d + 1) Δ ξ) from
+      calc (RiemannSum f Δ ξ - (I₁ + I₂)).abs
+          = ((RiemannSum f Δ' ξ' - (I₁ + I₂)) +
+             (RiemannSum f Δ ξ -
+              RiemannSum f Δ' ξ')).abs := by
+            rw [telescope_2 (I₁ + I₂) (RiemannSum f Δ ξ)
+                (RiemannSum f Δ' ξ')]
+        _ ≤ (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs +
+            (RiemannSum f Δ ξ -
+             RiemannSum f Δ' ξ').abs := abs_triangle _ _
+        _ = (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs +
+            (RiemannSum f Δ' ξ' -
+             RiemannSum f Δ ξ).abs := by
+            rw [show RiemannSum f Δ ξ -
+                  RiemannSum f Δ' ξ' =
+                  -(RiemannSum f Δ' ξ' -
+                    RiemannSum f Δ ξ) from
                   (neg_sub _ _).symm, abs_neg]
-        _ ≤ (RiemannSum f a c (kv + d + 1 + 1) Δ' ξ' - (I₁ + I₂)).abs + ε / 2 :=
+        _ ≤ (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs + ε / 2 :=
             add_left_le _ _ _ hsplit_term
         _ < ε / 2 + ε / 2 := add_lt_add_right' hA (ε / 2)
         _ = ε := half_add ε

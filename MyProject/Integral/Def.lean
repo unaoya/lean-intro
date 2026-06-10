@@ -8,7 +8,7 @@ open Real Classical
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
   ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ n : Nat, ∀ Δ : Partition n a b, ∀ ξ : Range n → Real,
     Δ.IsRepr ξ → (Partition.diam Δ) < δ →
-    abs (RiemannSum f a b n Δ ξ - i) < ε
+    abs (RiemannSum f Δ ξ - i) < ε
 
 theorem sub_zero_eq (x y : Real) : x - y = 0 ↔ x = y := by
   constructor
@@ -129,7 +129,7 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     have h_repr : Δ.IsRepr ξ := equalPartitionRepr_isrepr m a b hm_ne hab
     have h_diam : Partition.diam Δ < δ :=
       equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
-    let RS := RiemannSum f a b m Δ ξ
+    let RS := RiemannSum f Δ ξ
     have h_i : (RS - i).abs < ε / 2 :=
       hδi2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_left_le δi δj))
     have h_j : (RS - j).abs < ε / 2 :=
@@ -165,7 +165,7 @@ theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real)
 theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : ∀ x, f x = g x) :
   Integral f a b = Integral g a b := by
   have hRS : ∀ n (Δ : Partition n a b) (ξ : Range n → Real),
-      RiemannSum f a b n Δ ξ = RiemannSum g a b n Δ ξ := by
+      RiemannSum f Δ ξ = RiemannSum g Δ ξ := by
     intro n Δ ξ
     unfold RiemannSum
     apply summation_congr

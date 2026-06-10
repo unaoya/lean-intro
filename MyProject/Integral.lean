@@ -388,7 +388,7 @@ private theorem continuous_bounded (f : Real → Real) (a b : Real)
 private theorem same_partition_bound (f : Real → Real) (a b C : Real)
     (n : Nat) (Δ : Partition n a b) (ξ ξ' : Range n → Real)
     (hclose : ∀ i, (f (ξ i) - f (ξ' i)).abs ≤ C) :
-    (RiemannSum f a b n Δ ξ - RiemannSum f a b n Δ ξ').abs ≤ C * (b - a) := by
+    (RiemannSum f Δ ξ - RiemannSum f Δ ξ').abs ≤ C * (b - a) := by
   -- Step 1: for each i, f(ξ_i)*len_i ≤ f(ξ'_i)*len_i + C*len_i
   have h_term : ∀ i : Range n,
       f (ξ i) * Δ.length i ≤ f (ξ' i) * Δ.length i + C * Δ.length i := by
@@ -400,7 +400,7 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
     have h4 := nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i) h1
     rw [add_mul] at h4; exact h4
   -- Step 2: sum gives RS(ξ) ≤ RS(ξ') + C*(b-a)
-  have h_upper : RiemannSum f a b n Δ ξ ≤ RiemannSum f a b n Δ ξ' + C * (b - a) := by
+  have h_upper : RiemannSum f Δ ξ ≤ RiemannSum f Δ ξ' + C * (b - a) := by
     have h5 := summation_le n _ _ h_term
     rw [additive_summation, summation_smul, Partition.length_sum] at h5
     exact h5
@@ -417,51 +417,28 @@ private theorem same_partition_bound (f : Real → Real) (a b C : Real)
       rw [add_sub_cancel' (f (ξ i)) (f (ξ' i))] at h4; exact h4
     have h5 := nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i) h1
     rw [add_mul] at h5; exact h5
-  have h_lower : RiemannSum f a b n Δ ξ' ≤ RiemannSum f a b n Δ ξ + C * (b - a) := by
+  have h_lower : RiemannSum f Δ ξ' ≤ RiemannSum f Δ ξ + C * (b - a) := by
     have h6 := summation_le n _ _ h_term'
     rw [additive_summation, summation_smul, Partition.length_sum] at h6; exact h6
   -- Step 4: combine using abs_le
   apply abs_le
   -- -(RS(ξ) - RS(ξ')) ≤ C*(b-a), i.e., RS(ξ') - RS(ξ) ≤ C*(b-a)
-  · rw [neg_sub (RiemannSum f a b n Δ ξ) (RiemannSum f a b n Δ ξ')]
-    have h7 := add_left_le (-(RiemannSum f a b n Δ ξ)) (RiemannSum f a b n Δ ξ')
-        (RiemannSum f a b n Δ ξ + C * (b - a)) h_lower
-    have h8 : -(RiemannSum f a b n Δ ξ) + (RiemannSum f a b n Δ ξ + C * (b - a))
+  · rw [neg_sub (RiemannSum f Δ ξ) (RiemannSum f Δ ξ')]
+    have h7 := add_left_le (-(RiemannSum f Δ ξ)) (RiemannSum f Δ ξ')
+        (RiemannSum f Δ ξ + C * (b - a)) h_lower
+    have h8 : -(RiemannSum f Δ ξ) + (RiemannSum f Δ ξ + C * (b - a))
         = C * (b - a) := by
-      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f a b n Δ ξ))
-          (RiemannSum f a b n Δ ξ), AddCommGroup.add_neg, AddCommGroup.zero_add]
+      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f Δ ξ))
+          (RiemannSum f Δ ξ), AddCommGroup.add_neg, AddCommGroup.zero_add]
     rw [AddCommGroup.add_comm, h8] at h7; exact h7
   -- RS(ξ) - RS(ξ') ≤ C*(b-a)
-  · have h7 := add_left_le (-(RiemannSum f a b n Δ ξ')) (RiemannSum f a b n Δ ξ)
-        (RiemannSum f a b n Δ ξ' + C * (b - a)) h_upper
-    have h8 : -(RiemannSum f a b n Δ ξ') + (RiemannSum f a b n Δ ξ' + C * (b - a))
+  · have h7 := add_left_le (-(RiemannSum f Δ ξ')) (RiemannSum f Δ ξ)
+        (RiemannSum f Δ ξ' + C * (b - a)) h_upper
+    have h8 : -(RiemannSum f Δ ξ') + (RiemannSum f Δ ξ' + C * (b - a))
         = C * (b - a) := by
-      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f a b n Δ ξ'))
-          (RiemannSum f a b n Δ ξ'), AddCommGroup.add_neg, AddCommGroup.zero_add]
+      rw [← AddCommGroup.add_assoc, AddCommGroup.add_comm (-(RiemannSum f Δ ξ'))
+          (RiemannSum f Δ ξ'), AddCommGroup.add_neg, AddCommGroup.zero_add]
     rw [AddCommGroup.add_comm, h8] at h7; exact h7
-
--- Helper: |RS(f)| ≤ M*(b-a) when |f| ≤ M on [a,b]
-private theorem rs_abs_bound (f : Real → Real) (a b M : Real)
-    (hbound : ∀ t, InInterval a b t → (f t).abs ≤ M)
-    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
-    (hr : Δ.IsRepr ξ) :
-    (RiemannSum f a b n Δ ξ).abs ≤ M * (b - a) := by
-  apply abs_le
-  · -- -(RS f) ≤ M*(b-a)
-    have h0 : -(RiemannSum f a b n Δ ξ) = RiemannSum (fun t => -f t) a b n Δ ξ :=
-      (neg_riemann_sum f a b n Δ ξ).symm
-    rw [h0]
-    have h1 : RiemannSum (fun t => -f t) a b n Δ ξ ≤ RiemannSum (fun _ => M) a b n Δ ξ := by
-      apply summation_le; intro i
-      apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i)
-      exact le_trans (neg_le_abs _) (hbound (ξ i) (Δ.repr_in_interval ξ hr i))
-    rw [const_riemann_sum] at h1; exact h1
-  · -- RS f ≤ M*(b-a)
-    have h1 : RiemannSum f a b n Δ ξ ≤ RiemannSum (fun _ => M) a b n Δ ξ := by
-      apply summation_le; intro i
-      apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i)
-      exact le_trans (le_abs _) (hbound (ξ i) (Δ.repr_in_interval ξ hr i))
-    rw [const_riemann_sum] at h1; exact h1
 
 -- ============================================================
 -- continuous_integrable 用の細分比較補題群
@@ -537,8 +514,8 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
     (hσ : ∀ j : Range N,
       Δ.points (Range.incl (σ j)) ≤ Δ'.points (Range.incl j) ∧
       Δ'.points (Range.addone j) ≤ Δ.points (Range.addone (σ j))) :
-    RiemannSum f a b N Δ' (fun j => ξ (σ j)) = RiemannSum f a b n Δ ξ := by
-  have hGb : stepAnti f n a b Δ ξ b = RiemannSum f a b n Δ ξ := by
+    RiemannSum f Δ' (fun j => ξ (σ j)) = RiemannSum f Δ ξ := by
+  have hGb : stepAnti f n a b Δ ξ b = RiemannSum f Δ ξ := by
     apply summation_congr
     intro i
     rw [min_eq_right (Partition.point_le_right Δ (Range.addone i)),
@@ -561,7 +538,7 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
       stepAnti f n a b Δ ξ (Δ'.points (Range.incl j)) := fun j =>
     (stepAnti_inc f n a b Δ ξ (σ j) (Δ'.points (Range.incl j)) (Δ'.points (Range.addone j))
       (hσ j).1 (Δ'.increase j) (hσ j).2).symm
-  calc RiemannSum f a b N Δ' (fun j => ξ (σ j))
+  calc RiemannSum f Δ' (fun j => ξ (σ j))
       = Summation N (fun j => stepAnti f n a b Δ ξ (Δ'.points (Range.addone j)) -
                              stepAnti f n a b Δ ξ (Δ'.points (Range.incl j))) :=
         summation_congr N _ _ hjterm
@@ -569,8 +546,8 @@ private theorem rs_refine_eq (f : Real → Real) (a b : Real)
         stepAnti f n a b Δ ξ (Δ'.points ⟨0, Nat.zero_lt_succ N⟩) :=
         telescope_sum N (fun r => stepAnti f n a b Δ ξ (Δ'.points r))
     _ = stepAnti f n a b Δ ξ b - stepAnti f n a b Δ ξ a := by rw [Δ'.right, Δ'.left]
-    _ = RiemannSum f a b n Δ ξ - 0 := by rw [hGb, hGa]
-    _ = RiemannSum f a b n Δ ξ := sub_zero _
+    _ = RiemannSum f Δ ξ - 0 := by rw [hGb, hGa]
+    _ = RiemannSum f Δ ξ := sub_zero _
 
 -- Δ の全分点が Δ'' の分点に含まれるなら、Δ'' の各小区間は Δ のある小区間に含まれる
 private theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
@@ -632,7 +609,7 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
     (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δuc) :
     ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
       Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
-      (RiemannSum f a b n' Δ' ξ' - RiemannSum f a b n Δ ξ).abs ≤ ε' * (b - a) + θ := by
+      (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs ≤ ε' * (b - a) + θ := by
   have hab_le : a ≤ b := hab.1
   have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
   have h2M_pos : (0 : Real) < 2 * M := pos_mul_pos 2 M zero_lt_two hM_pos
@@ -647,7 +624,7 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
     | succ m => exact Nat.zero_lt_succ m
   -- Δ の全分点を Δ' に挿入
   obtain ⟨Δp, ξp, hrp, hlenp, hptsp, hbdp⟩ :=
-    rs_multi_insert_bound f a b M hM (Real.le_of_lt hM_pos) n' hn' Δ' ξ' hr'
+    rs_multi_insert_bound f M hM (Real.le_of_lt hM_pos) hn' Δ' ξ' hr'
       (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
       (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
   have hpts_all : ∀ i : Range n.succ,
@@ -665,7 +642,7 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
       Δp.points (Range.addone j) ≤ Δ.points (Range.addone (Classical.choose (hσex j))) :=
     fun j => Classical.choose_spec (hσex j)
   -- 細分比較：|RS(Δp) − RS(Δ)| ≤ ε'(b−a)
-  have hRCL : (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n Δ ξ).abs ≤
+  have hRCL : (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs ≤
       ε' * (b - a) := by
     rw [← rs_refine_eq f a b n Δ ξ (n' + (n + 1)) Δp (fun j => Classical.choose (hσex j)) hσ]
     apply same_partition_bound
@@ -687,7 +664,7 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
       exact le_lt_trans
         (le_trans habs (le_fmax' n (Partition.length Δ) (Classical.choose (hσex j)))) hd
   -- 挿入誤差 ≤ θ
-  have hins : (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n' Δ' ξ').abs ≤ θ := by
+  have hins : (RiemannSum f Δp ξp - RiemannSum f Δ' ξ').abs ≤ θ := by
     apply le_trans hbdp
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
@@ -698,18 +675,18 @@ private theorem rs_compare (f : Real → Real) (a b M : Real)
         mul_div_cancel θ _ hK_ne]
     exact le_refl θ
   -- 三角不等式で合成
-  calc (RiemannSum f a b n' Δ' ξ' - RiemannSum f a b n Δ ξ).abs
-      = ((RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n Δ ξ) +
-         (RiemannSum f a b n' Δ' ξ' - RiemannSum f a b (n' + (n + 1)) Δp ξp)).abs := by
-        rw [telescope_2 (RiemannSum f a b n Δ ξ) (RiemannSum f a b n' Δ' ξ')
-            (RiemannSum f a b (n' + (n + 1)) Δp ξp)]
-    _ ≤ (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n Δ ξ).abs +
-        (RiemannSum f a b n' Δ' ξ' - RiemannSum f a b (n' + (n + 1)) Δp ξp).abs :=
+  calc (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs
+      = ((RiemannSum f Δp ξp - RiemannSum f Δ ξ) +
+         (RiemannSum f Δ' ξ' - RiemannSum f Δp ξp)).abs := by
+        rw [telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ' ξ')
+            (RiemannSum f Δp ξp)]
+    _ ≤ (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs +
+        (RiemannSum f Δ' ξ' - RiemannSum f Δp ξp).abs :=
         abs_triangle _ _
-    _ = (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n Δ ξ).abs +
-        (RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n' Δ' ξ').abs := by
-        rw [show RiemannSum f a b n' Δ' ξ' - RiemannSum f a b (n' + (n + 1)) Δp ξp =
-              -(RiemannSum f a b (n' + (n + 1)) Δp ξp - RiemannSum f a b n' Δ' ξ') from
+    _ = (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs +
+        (RiemannSum f Δp ξp - RiemannSum f Δ' ξ').abs := by
+        rw [show RiemannSum f Δ' ξ' - RiemannSum f Δp ξp =
+              -(RiemannSum f Δp ξp - RiemannSum f Δ' ξ') from
               (neg_sub _ _).symm, abs_neg]
     _ ≤ ε' * (b - a) + θ :=
         le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
@@ -731,13 +708,13 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     (δf : Real) (hδf_pos : 0 < δf)
     (hδf : ∀ (k : Nat) (Δk : Partition k a b) (ξk : Range k → Real),
       Δk.IsRepr ξk → Partition.diam Δk < δf →
-      (RiemannSum f a b k Δk ξk - If).abs < ε')
+      (RiemannSum f Δk ξk - If).abs < ε')
     (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δf) :
     ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
       Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
-      (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-       RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs ≤ (ε' + ε') + θ := by
+      (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+       RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ (ε' + ε') + θ := by
   have hab_le : a ≤ b := hab.1
   have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab
   have hba_ne : b - a ≠ 0 := fun h0 => hba_pos.2 h0.symm
@@ -838,8 +815,8 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     have hRHS : Summation n (fun i => ((f (Classical.choose (hu i)) -
         f (Classical.choose (hv i))) + (γ / 2 / (b - a) + γ / 2 / (b - a))) *
         Partition.length Δ i) =
-        (RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
-         RiemannSum f a b n Δ (fun i => Classical.choose (hv i))) + γ := by
+        (RiemannSum f Δ (fun i => Classical.choose (hu i)) -
+         RiemannSum f Δ (fun i => Classical.choose (hv i))) + γ := by
       calc Summation n (fun i => ((f (Classical.choose (hu i)) -
               f (Classical.choose (hv i))) + (γ / 2 / (b - a) + γ / 2 / (b - a))) *
               Partition.length Δ i)
@@ -851,8 +828,8 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
               f (Classical.choose (hv i))) * Partition.length Δ i) +
             Summation n (fun i => (γ / 2 / (b - a) + γ / 2 / (b - a)) *
               Partition.length Δ i) := additive_summation n _ _
-        _ = (RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
-             RiemannSum f a b n Δ (fun i => Classical.choose (hv i))) + γ := by
+        _ = (RiemannSum f Δ (fun i => Classical.choose (hu i)) -
+             RiemannSum f Δ (fun i => Classical.choose (hv i))) + γ := by
             rw [summation_smul, Partition.length_sum]
             congr 1
             · calc Summation n (fun i => (f (Classical.choose (hu i)) -
@@ -861,26 +838,26 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
                       f (Classical.choose (hu i)) * Partition.length Δ i -
                       f (Classical.choose (hv i)) * Partition.length Δ i) :=
                     summation_congr n _ _ (fun i => (mul_sub_mul _ _ _).symm)
-                _ = RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
-                    RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) :=
+                _ = RiemannSum f Δ (fun i => Classical.choose (hu i)) -
+                    RiemannSum f Δ (fun i => Classical.choose (hv i)) :=
                     (sub_summation n _ _).symm
             · rw [add_mul, div_mul_cancel' (γ / 2) (b - a) hba_ne, half_add]
     rw [hRHS] at hsum
     -- RS の差を If 経由で評価
     have hu_close := hδf n Δ (fun i => Classical.choose (hu i)) hu_repr hd
     have hv_close := hδf n Δ (fun i => Classical.choose (hv i)) hv_repr hd
-    have hdiff : RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
-        RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) ≤ ε' + ε' := by
-      have heq : RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) -
-          RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) =
-          (If - RiemannSum f a b n Δ (fun i => Classical.choose (hv i))) +
-          (RiemannSum f a b n Δ (fun i => Classical.choose (hu i)) - If) :=
+    have hdiff : RiemannSum f Δ (fun i => Classical.choose (hu i)) -
+        RiemannSum f Δ (fun i => Classical.choose (hv i)) ≤ ε' + ε' := by
+      have heq : RiemannSum f Δ (fun i => Classical.choose (hu i)) -
+          RiemannSum f Δ (fun i => Classical.choose (hv i)) =
+          (If - RiemannSum f Δ (fun i => Classical.choose (hv i))) +
+          (RiemannSum f Δ (fun i => Classical.choose (hu i)) - If) :=
         telescope_2 _ _ _
       rw [heq]
       apply Real.le_of_lt
       apply lt_add_lt
-      · rw [show If - RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) =
-              -(RiemannSum f a b n Δ (fun i => Classical.choose (hv i)) - If) from
+      · rw [show If - RiemannSum f Δ (fun i => Classical.choose (hv i)) =
+              -(RiemannSum f Δ (fun i => Classical.choose (hv i)) - If) from
               (neg_sub _ _).symm]
         exact le_lt_trans (le_abs _) (by rw [abs_neg]; exact hv_close)
       · exact le_lt_trans (le_abs _) hu_close
@@ -902,8 +879,8 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     rw [nonneg_abs abs_nonneg]
     exact hM t ht
   obtain ⟨Δp, ξp, hrp, hlenp, hptsp, hbdp⟩ :=
-    rs_multi_insert_bound (fun x => (f x).abs) a b M hMg (Real.le_of_lt hM_pos)
-      n' hn' Δ' ξ' hr' (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
+    rs_multi_insert_bound (fun x => (f x).abs) M hMg (Real.le_of_lt hM_pos)
+      hn' Δ' ξ' hr' (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
       (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
   have hpts_all : ∀ i : Range n.succ,
       ∃ q : Range (n' + (n + 1)).succ, Δp.points q = Δ.points i := by
@@ -920,18 +897,18 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       Δp.points (Range.addone j) ≤ Δ.points (Range.addone (Classical.choose (hσex j))) :=
     fun j => Classical.choose_spec (hσex j)
   -- 細分比較：|RS_g(Δp) − RS_g(Δ)| ≤ ε' + ε'
-  have hRCL : (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-      RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs ≤ ε' + ε' := by
+  have hRCL : (RiemannSum (fun x => (f x).abs) Δp ξp -
+      RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ ε' + ε' := by
     rw [← rs_refine_eq (fun x => (f x).abs) a b n Δ ξ (n' + (n + 1)) Δp
         (fun j => Classical.choose (hσex j)) hσ]
-    have hsub : RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-        RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp
+    have hsub : RiemannSum (fun x => (f x).abs) Δp ξp -
+        RiemannSum (fun x => (f x).abs) Δp
           (fun j => ξ (Classical.choose (hσex j))) =
         Summation (n' + (n + 1)) (fun j =>
           ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
           Partition.length Δp j) := by
-      calc RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-            RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp
+      calc RiemannSum (fun x => (f x).abs) Δp ξp -
+            RiemannSum (fun x => (f x).abs) Δp
               (fun j => ξ (Classical.choose (hσex j)))
           = Summation (n' + (n + 1)) (fun j =>
               (f (ξp j)).abs * Partition.length Δp j -
@@ -975,8 +952,8 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
             (fun j => Classical.choose (hσex j)) hσ
       _ ≤ ε' + ε' := hosc_sum
   -- 挿入誤差 ≤ θ
-  have hins : (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-      RiemannSum (fun x => (f x).abs) a b n' Δ' ξ').abs ≤ θ := by
+  have hins : (RiemannSum (fun x => (f x).abs) Δp ξp -
+      RiemannSum (fun x => (f x).abs) Δ' ξ').abs ≤ θ := by
     apply le_trans hbdp
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
@@ -987,28 +964,28 @@ private theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
         mul_div_cancel θ _ hK_ne]
     exact le_refl θ
   -- 三角不等式で合成
-  calc (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-        RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs
-      = ((RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-          RiemannSum (fun x => (f x).abs) a b n Δ ξ) +
-         (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-          RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp)).abs := by
-        rw [telescope_2 (RiemannSum (fun x => (f x).abs) a b n Δ ξ)
-            (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ')
-            (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp)]
-    _ ≤ (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-         RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs +
-        (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-         RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp).abs :=
+  calc (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+        RiemannSum (fun x => (f x).abs) Δ ξ).abs
+      = ((RiemannSum (fun x => (f x).abs) Δp ξp -
+          RiemannSum (fun x => (f x).abs) Δ ξ) +
+         (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+          RiemannSum (fun x => (f x).abs) Δp ξp)).abs := by
+        rw [telescope_2 (RiemannSum (fun x => (f x).abs) Δ ξ)
+            (RiemannSum (fun x => (f x).abs) Δ' ξ')
+            (RiemannSum (fun x => (f x).abs) Δp ξp)]
+    _ ≤ (RiemannSum (fun x => (f x).abs) Δp ξp -
+         RiemannSum (fun x => (f x).abs) Δ ξ).abs +
+        (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+         RiemannSum (fun x => (f x).abs) Δp ξp).abs :=
         abs_triangle _ _
-    _ = (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-         RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs +
-        (RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-         RiemannSum (fun x => (f x).abs) a b n' Δ' ξ').abs := by
-        rw [show RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-              RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp =
-              -(RiemannSum (fun x => (f x).abs) a b (n' + (n + 1)) Δp ξp -
-                RiemannSum (fun x => (f x).abs) a b n' Δ' ξ') from
+    _ = (RiemannSum (fun x => (f x).abs) Δp ξp -
+         RiemannSum (fun x => (f x).abs) Δ ξ).abs +
+        (RiemannSum (fun x => (f x).abs) Δp ξp -
+         RiemannSum (fun x => (f x).abs) Δ' ξ').abs := by
+        rw [show RiemannSum (fun x => (f x).abs) Δ' ξ' -
+              RiemannSum (fun x => (f x).abs) Δp ξp =
+              -(RiemannSum (fun x => (f x).abs) Δp ξp -
+                RiemannSum (fun x => (f x).abs) Δ' ξ') from
               (neg_sub _ _).symm, abs_neg]
     _ ≤ (ε' + ε') + θ :=
         le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
@@ -1034,7 +1011,7 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
           dsimp [InInterval] at hi
           rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
           exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
-        have hRS : RiemannSum f a a n Δ ξ = RiemannSum (fun _ => f a) a a n Δ ξ := by
+        have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
           unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
         rw [hRS, const_riemann_sum, sub_self,
             show f a * (0 : Real) = 0 from by rw [MulCommMonoid.mul_comm]; exact zero_mul' _,
@@ -1049,13 +1026,13 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
       -- Define S = { y | ∃ δ > 0, ∀ RS with mesh < δ, y ≤ RS }
       let S : Real → Prop := fun y =>
         ∃ δ, 0 < δ ∧ ∀ n (Δ : Partition n a x) (ξ : Range n → Real),
-          Δ.IsRepr ξ → Partition.diam Δ < δ → y ≤ RiemannSum f a x n Δ ξ
+          Δ.IsRepr ξ → Partition.diam Δ < δ → y ≤ RiemannSum f Δ ξ
       -- S is nonempty: -(M*(x-a)) ∈ S
       have hS_ne : ∃ y, S y := by
         refine ⟨-(M * (x - a)), 1, zero_lt_one, fun n Δ ξ hr _ => ?_⟩
-        have h_rs := rs_abs_bound f a x M hM_bound n Δ ξ hr
+        have h_rs := rs_abs_bound f M hM_bound Δ ξ hr
         -- |RS| ≤ M*(x-a) → -(M*(x-a)) ≤ RS via neg_le_swap
-        have h1 : -(RiemannSum f a x n Δ ξ) ≤ M * (x - a) :=
+        have h1 : -(RiemannSum f Δ ξ) ≤ M * (x - a) :=
           le_trans (neg_le_abs _) h_rs
         exact neg_le_swap h1
       -- S is bounded above: M*(x-a) is an upper bound
@@ -1073,7 +1050,7 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
         have h_repr := equalPartitionRepr_isrepr m a x hm_ne hab
         have h_diam := equalPartition_diam_lt m a x δ hm_ne hab hδ hm_lt
         have h_le := hy m Δ ξ h_repr h_diam
-        exact le_trans h_le (le_trans (le_abs _) (rs_abs_bound f a x M hM_bound m Δ ξ h_repr))
+        exact le_trans h_le (le_trans (le_abs _) (rs_abs_bound f M hM_bound Δ ξ h_repr))
       -- Define I = sup S
       let I := Real.sup S hS_ne hS_bdd
       refine ⟨I, fun ε hε => ?_⟩
@@ -1101,26 +1078,26 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
             MulCommMonoid.mul_comm (x - a) (ε / 2), mul_div_cancel _ _ hxa_ne]
       have hbound : ∀ (n' : Nat) (Δ' : Partition n' a x) (ξ' : Range n' → Real),
           Partition.IsRepr Δ' ξ' → Partition.diam Δ' < δ' →
-          (RiemannSum f a x n' Δ' ξ' - RiemannSum f a x n Δ ξ).abs ≤
+          (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs ≤
             ε / 2 + ε / 2 / 2 := by
         intro n' Δ' ξ' hr' hd'
         have h := hcomp n' Δ' ξ' hr' hd'
         rwa [hdmc] at h
       -- 下から：RS − (ε/2 + ε/4) ∈ S
-      have hmem : S (RiemannSum f a x n Δ ξ - (ε / 2 + ε / 2 / 2)) := by
+      have hmem : S (RiemannSum f Δ ξ - (ε / 2 + ε / 2 / 2)) := by
         refine ⟨δ', hδ'_pos, fun n' Δ' ξ' hr' hd' => ?_⟩
         have h := hbound n' Δ' ξ' hr' hd'
-        have h2 : RiemannSum f a x n Δ ξ - RiemannSum f a x n' Δ' ξ' ≤
+        have h2 : RiemannSum f Δ ξ - RiemannSum f Δ' ξ' ≤
             ε / 2 + ε / 2 / 2 := by
           apply le_trans (le_abs _)
-          rw [show RiemannSum f a x n Δ ξ - RiemannSum f a x n' Δ' ξ' =
-                -(RiemannSum f a x n' Δ' ξ' - RiemannSum f a x n Δ ξ) from
+          rw [show RiemannSum f Δ ξ - RiemannSum f Δ' ξ' =
+                -(RiemannSum f Δ' ξ' - RiemannSum f Δ ξ) from
                 (neg_sub _ _).symm, abs_neg]
           exact h
         exact sub_le_swap h2
       have h_lower := Real.sup_ub S hS_ne hS_bdd _ hmem
       -- 上から：I ≤ RS + (ε/2 + ε/4)
-      have h_upper : I ≤ RiemannSum f a x n Δ ξ + (ε / 2 + ε / 2 / 2) := by
+      have h_upper : I ≤ RiemannSum f Δ ξ + (ε / 2 + ε / 2 / 2) := by
         apply Real.sup_lub S hS_ne hS_bdd
         intro y hy
         obtain ⟨δy, hδy_pos, hy_le⟩ := hy
@@ -1146,7 +1123,7 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
         have h3 := le_add_of_sub_le (le_trans (le_abs _) h2)
         exact le_trans h1 h3
       -- |RS − I| ≤ 3ε/4 < ε
-      have habs : (RiemannSum f a x n Δ ξ - I).abs ≤ ε / 2 + ε / 2 / 2 := by
+      have habs : (RiemannSum f Δ ξ - I).abs ≤ ε / 2 + ε / 2 / 2 := by
         apply abs_le
         · rw [neg_sub]
           exact sub_le_of_le_add h_upper
@@ -1174,8 +1151,8 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
         dsimp [InInterval] at hi
         rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
         exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
-      have hRS : RiemannSum (fun x => (f x).abs) a a n Δ ξ =
-          RiemannSum (fun _ => (f a).abs) a a n Δ ξ := by
+      have hRS : RiemannSum (fun x => (f x).abs) Δ ξ =
+          RiemannSum (fun _ => (f a).abs) Δ ξ := by
         unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
       rw [hRS, const_riemann_sum, sub_self,
           show (f a).abs * (0 : Real) = 0 from by
@@ -1206,10 +1183,10 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     let S : Real → Prop := fun y =>
       ∃ δ, 0 < δ ∧ ∀ n (Δ : Partition n a b) (ξ : Range n → Real),
         Δ.IsRepr ξ → Partition.diam Δ < δ →
-        y ≤ RiemannSum (fun x => (f x).abs) a b n Δ ξ
+        y ≤ RiemannSum (fun x => (f x).abs) Δ ξ
     have hS_ne : ∃ y, S y :=
       ⟨0, 1, zero_lt_one, fun n Δ ξ hr _ =>
-        RiemannSum_nonneg _ a b n Δ ξ (fun x _ => abs_nonneg) hr⟩
+        RiemannSum_nonneg _ Δ ξ (fun x _ => abs_nonneg) hr⟩
     have hS_bdd : ∃ ub, ∀ y, S y → y ≤ ub := by
       refine ⟨(M₀ + 1) * (b - a), fun y hy => ?_⟩
       obtain ⟨δ, hδ, hy_le⟩ := hy
@@ -1222,7 +1199,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
       have h_diam := equalPartition_diam_lt (ceil ((b - a) / δ)) a b δ hm_ne h hδ hm_lt
       have h_le := hy_le _ _ _ h_repr h_diam
       exact le_trans h_le (le_trans (le_abs _)
-        (rs_abs_bound (fun x => (f x).abs) a b (M₀ + 1) hMg _ _ _ h_repr))
+        (rs_abs_bound (fun x => (f x).abs) (M₀ + 1) hMg _ _ h_repr))
     refine ⟨Real.sup S hS_ne hS_bdd, fun ε hε => ?_⟩
     have hε8 : 0 < ε / 2 / 2 / 2 := pos_half _ (pos_half _ (pos_half ε hε))
     obtain ⟨δf, hδf_pos, hδf⟩ := hIf (ε / 2 / 2 / 2) hε8
@@ -1233,29 +1210,29 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
       δf hδf_pos hδf n Δ ξ hr hd
     have hbound : ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
         Partition.IsRepr Δ' ξ' → Partition.diam Δ' < δ' →
-        (RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-         RiemannSum (fun x => (f x).abs) a b n Δ ξ).abs ≤ ε / 2 := by
+        (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+         RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ ε / 2 := by
       intro n' Δ' ξ' hr' hd'
       have h1 := hcomp n' Δ' ξ' hr' hd'
       rwa [half_add (ε / 2 / 2), half_add (ε / 2)] at h1
     -- 下から：RS − ε/2 ∈ S
-    have hmem : S (RiemannSum (fun x => (f x).abs) a b n Δ ξ - ε / 2) := by
+    have hmem : S (RiemannSum (fun x => (f x).abs) Δ ξ - ε / 2) := by
       refine ⟨δ', hδ'_pos, fun n' Δ' ξ' hr' hd' => ?_⟩
       have h1 := hbound n' Δ' ξ' hr' hd'
-      have h2 : RiemannSum (fun x => (f x).abs) a b n Δ ξ -
-          RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' ≤ ε / 2 := by
+      have h2 : RiemannSum (fun x => (f x).abs) Δ ξ -
+          RiemannSum (fun x => (f x).abs) Δ' ξ' ≤ ε / 2 := by
         apply le_trans (le_abs _)
-        rw [show RiemannSum (fun x => (f x).abs) a b n Δ ξ -
-              RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' =
-              -(RiemannSum (fun x => (f x).abs) a b n' Δ' ξ' -
-                RiemannSum (fun x => (f x).abs) a b n Δ ξ) from
+        rw [show RiemannSum (fun x => (f x).abs) Δ ξ -
+              RiemannSum (fun x => (f x).abs) Δ' ξ' =
+              -(RiemannSum (fun x => (f x).abs) Δ' ξ' -
+                RiemannSum (fun x => (f x).abs) Δ ξ) from
               (neg_sub _ _).symm, abs_neg]
         exact h1
       exact sub_le_swap h2
     have h_lower := Real.sup_ub S hS_ne hS_bdd _ hmem
     -- 上から：sup ≤ RS + ε/2
     have h_upper : Real.sup S hS_ne hS_bdd ≤
-        RiemannSum (fun x => (f x).abs) a b n Δ ξ + ε / 2 := by
+        RiemannSum (fun x => (f x).abs) Δ ξ + ε / 2 := by
       apply Real.sup_lub S hS_ne hS_bdd
       intro y hy
       obtain ⟨δy, hδy_pos, hy_le⟩ := hy
@@ -1272,7 +1249,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
       have h1 := hy_le _ _ _ hEr (lt_le_trans _ _ _ hEd (min_left_le δy δ'))
       have h2 := hbound _ _ _ hEr (lt_le_trans _ _ _ hEd (min_right_le δy δ'))
       exact le_trans h1 (le_add_of_sub_le (le_trans (le_abs _) h2))
-    have habs : (RiemannSum (fun x => (f x).abs) a b n Δ ξ -
+    have habs : (RiemannSum (fun x => (f x).abs) Δ ξ -
         Real.sup S hS_ne hS_bdd).abs ≤ ε / 2 := by
       apply abs_le
       · rw [neg_sub]
@@ -1336,7 +1313,7 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
     dsimp [InInterval] at hi
     rw [hpts (Range.incl i), hpts (Range.addone i), if_pos (le_refl a)] at hi
     exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
-  have hRS : RiemannSum f a a n Δ ξ = RiemannSum (fun _ => f a) a a n Δ ξ := by
+  have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
     unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
   rw [hRS, const_riemann_sum, sub_self,
       show f a * (0 : Real) = 0 from by

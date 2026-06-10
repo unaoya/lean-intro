@@ -64,7 +64,7 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       have hr : Δ.IsRepr ξ := fun i => absurd i.property (Nat.not_lt_zero _)
       have hd : Partition.diam Δ < δ := by show fmax' 0 _ < δ; exact hδ
       have hRS := hh 0 Δ ξ hr hd
-      have hRS0 : RiemannSum f a a 0 Δ ξ = 0 := rfl
+      have hRS0 : RiemannSum f Δ ξ = 0 := rfl
       rw [hRS0] at hRS
       have h0I : ((0 : Real) - I) = -I := by
         show (0 : Real) + -I = -I
@@ -110,14 +110,14 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
             add_sub_cancel (i.val : Real) 1, one_mul]
         exact (div_lt_iff (b - a) δ (m : Real) hδ hm_pos).mp hm_lt
       have habs := hh m Δ ξ hr hd
-      have hRS_nn : 0 ≤ RiemannSum f a b m Δ ξ :=
-        RiemannSum_nonneg f a b m Δ ξ fnn hr
-      have h1 : RiemannSum f a b m Δ ξ - I < -I :=
+      have hRS_nn : 0 ≤ RiemannSum f Δ ξ :=
+        RiemannSum_nonneg f Δ ξ fnn hr
+      have h1 : RiemannSum f Δ ξ - I < -I :=
         le_lt_trans (le_abs _) habs
-      have h2 : RiemannSum f a b m Δ ξ < 0 := by
-        have := add_left_lt I (RiemannSum f a b m Δ ξ - I) (-I) h1
-        rw [show I + (RiemannSum f a b m Δ ξ - I) = RiemannSum f a b m Δ ξ from
-            add_sub_cancel' I (RiemannSum f a b m Δ ξ),
+      have h2 : RiemannSum f Δ ξ < 0 := by
+        have := add_left_lt I (RiemannSum f Δ ξ - I) (-I) h1
+        rw [show I + (RiemannSum f Δ ξ - I) = RiemannSum f Δ ξ from
+            add_sub_cancel' I (RiemannSum f Δ ξ),
             show I + -I = (0 : Real) from sub_self I] at this
         exact this
       exact h2.2 (LinearOrderedField.le_asymm _ _ h2.1 hRS_nn)

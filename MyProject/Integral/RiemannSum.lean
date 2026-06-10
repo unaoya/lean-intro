@@ -6,48 +6,71 @@ noncomputable section
 open Real Classical Range
 
 -- リーマン和の定義
-def RiemannSum (f : Real → Real) (a b : Real) (n : Nat)
+def RiemannSum (f : Real → Real) {n : Nat} {a b : Real}
   (Δ : Partition n a b) (ξ : Range n → Real) : Real :=
     Summation n (fun i ↦ f (ξ i) * Δ.length i)
 
-theorem const_riemann_sum (c a b : Real) (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun _ ↦ c) a b n Δ ξ = c * (b - a) := by
+theorem const_riemann_sum (c : Real) {n : Nat} {a b : Real} (Δ : Partition n a b) (ξ : Range n → Real) :
+  RiemannSum (fun _ ↦ c) Δ ξ = c * (b - a) := by
   rw [RiemannSum, summation_smul, Partition.length_sum]
 
-theorem additive_riemann_sum (f g : Real → Real) (a b : Real) (n : Nat)
+theorem additive_riemann_sum (f g : Real → Real) {n : Nat} {a b : Real}
   (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun t ↦ f t + g t) a b n Δ ξ = RiemannSum f a b n Δ ξ + RiemannSum g a b n Δ ξ := by
+  RiemannSum (fun t ↦ f t + g t) Δ ξ = RiemannSum f Δ ξ + RiemannSum g Δ ξ := by
   rw [RiemannSum, RiemannSum, RiemannSum, ← additive_summation, summation_congr]
   intro i
   rw [add_mul]
 
-theorem neg_riemann_sum (f : Real → Real) (a b : Real) (n : Nat)
+theorem neg_riemann_sum (f : Real → Real) {n : Nat} {a b : Real}
   (Δ : Partition n a b) (ξ : Range n → Real) :
-  RiemannSum (fun t ↦ -f t) a b n Δ ξ = -RiemannSum f a b n Δ ξ := by
+  RiemannSum (fun t ↦ -f t) Δ ξ = -RiemannSum f Δ ξ := by
   rw [RiemannSum, RiemannSum, neg_summation]
   apply summation_congr
   intro i
   rw [neg_mul]
 
-theorem RiemannSum_nonneg (f : Real → Real) (a b : Real) (n : Nat)
+theorem RiemannSum_nonneg (f : Real → Real) {n : Nat} {a b : Real}
     (Δ : Partition n a b) (ξ : Range n → Real)
     (h' : ∀ x, InInterval a b x → 0 ≤ f x) (h : Δ.IsRepr ξ) :
-    0 ≤ RiemannSum f a b n Δ ξ := by
+    0 ≤ RiemannSum f Δ ξ := by
   apply summation_nonneg
   intro i
   apply mul_nonneg
   · apply h' (ξ i) (Δ.repr_in_interval ξ h i)
   · apply Δ.length_nonneg i
 
+-- Helper: |RS(f)| ≤ M*(b-a) when |f| ≤ M on [a,b]
+theorem rs_abs_bound (f : Real → Real) (M : Real) {n : Nat} {a b : Real}
+    (hbound : ∀ t, InInterval a b t → (f t).abs ≤ M)
+    (Δ : Partition n a b) (ξ : Range n → Real)
+    (hr : Δ.IsRepr ξ) :
+    (RiemannSum f Δ ξ).abs ≤ M * (b - a) := by
+  apply abs_le
+  · -- -(RS f) ≤ M*(b-a)
+    have h0 : -(RiemannSum f Δ ξ) = RiemannSum (fun t => -f t) Δ ξ :=
+      (neg_riemann_sum f Δ ξ).symm
+    rw [h0]
+    have h1 : RiemannSum (fun t => -f t) Δ ξ ≤ RiemannSum (fun _ => M) Δ ξ := by
+      apply summation_le; intro i
+      apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i)
+      exact le_trans (neg_le_abs _) (hbound (ξ i) (Δ.repr_in_interval ξ hr i))
+    rw [const_riemann_sum] at h1; exact h1
+  · -- RS f ≤ M*(b-a)
+    have h1 : RiemannSum f Δ ξ ≤ RiemannSum (fun _ => M) Δ ξ := by
+      apply summation_le; intro i
+      apply nonneg_mul_nonneg _ _ _ (Δ.length_nonneg i)
+      exact le_trans (le_abs _) (hbound (ξ i) (Δ.repr_in_interval ξ hr i))
+    rw [const_riemann_sum] at h1; exact h1
+
 -- 分割に点を挿入した時の RS の差のバウンド
-theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
+theorem rs_insert_bound (f : Real → Real) {a b : Real} (c M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
-    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real) (hr : Δ.IsRepr ξ)
+    {n : Nat} (Δ : Partition n a b) (ξ : Range n → Real) (hr : Δ.IsRepr ξ)
     (k : Range n) (hL : Δ.points (incl k) ≤ c) (hR : c ≤ Δ.points (addone k)) :
     ∃ (ξ' : Range (n + 1) → Real),
       (Δ.insertPoint c k hL hR).IsRepr ξ' ∧
-      (RiemannSum f a b (n + 1) (Δ.insertPoint c k hL hR) ξ' -
-       RiemannSum f a b n Δ ξ).abs ≤ 2 * M * Partition.length Δ k := by
+      (RiemannSum f (Δ.insertPoint c k hL hR) ξ' -
+       RiemannSum f Δ ξ).abs ≤ 2 * M * Partition.length Δ k := by
   let Δ' := Δ.insertPoint c k hL hR
   -- repr: c for split intervals, original elsewhere
   let ξ' : Range (n + 1) → Real := fun i =>
@@ -112,7 +135,7 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
           rw [h_pt]; exact hb.2
   case bound =>
     -- Key identity: RS' - RS = (f(c) - f(ξ(k))) * Δ.length(k)
-    have hDiff : RiemannSum f a b (n + 1) Δ' ξ' - RiemannSum f a b n Δ ξ =
+    have hDiff : RiemannSum f Δ' ξ' - RiemannSum f Δ ξ =
         (f c - f (ξ k)) * Δ.length k := by
       rw [RiemannSum, RiemannSum]
       -- Collapsed n-term function matching the (n+1)-term RS'
@@ -187,23 +210,23 @@ theorem rs_insert_bound (f : Real → Real) (a b c M : Real)
     exact le_trans (LinearOrderedField.add_le_add _ _ _ hfc) (add_left_le _ _ _ hfξ)
 
 -- m 点挿入で RS の差を制御
-theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
+theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_nn : 0 ≤ M)
-    (n : Nat) (hn : 0 < n) (Δ : Partition n a b)
+    {n : Nat} (hn : 0 < n) (Δ : Partition n a b)
     (ξ : Range n → Real) (hr : Δ.IsRepr ξ) :
     ∀ (m : Nat) (cs : Range m → Real) (hcs : ∀ j, InInterval a b (cs j)),
     ∃ (Δ' : Partition (n + m) a b) (ξ' : Range (n + m) → Real),
       Δ'.IsRepr ξ' ∧
       (∀ i : Range (n + m), Δ'.length i ≤ Δ.diam) ∧
       (∀ j : Range m, ∃ p : Range (n + m + 1), Δ'.points p = cs j) ∧
-      (RiemannSum f a b (n + m) Δ' ξ' - RiemannSum f a b n Δ ξ).abs ≤
+      (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs ≤
         Real.ofNat m * (2 * M * Δ.diam) := by
   intro m; induction m with
   | zero =>
     intro cs hcs
     exact ⟨Δ, ξ, hr, fun i => le_fmax' n Δ.length i,
       fun j => absurd j.property (Nat.not_lt_zero _), by
-      show (RiemannSum f a b n Δ ξ - RiemannSum f a b n Δ ξ).abs ≤
+      show (RiemannSum f Δ ξ - RiemannSum f Δ ξ).abs ≤
         0 * (2 * M * Partition.diam Δ)
       rw [sub_self, abs_zero, zero_mul']; exact le_refl 0⟩
   | succ m ih =>
@@ -217,7 +240,7 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
     let c := cs ⟨m, Nat.lt_succ_self m⟩
     have hc_in := hcs ⟨m, Nat.lt_succ_self m⟩
     obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ₁ c (by omega) hc_in
-    obtain ⟨ξ₂, hr₂, hbd₂⟩ := rs_insert_bound f a b c M hM hM_nn (n + m) Δ₁ ξ₁ hr₁ k hkL hkR
+    obtain ⟨ξ₂, hr₂, hbd₂⟩ := rs_insert_bound f c M hM hM_nn Δ₁ ξ₁ hr₁ k hkL hkR
     let Δ₂ := Δ₁.insertPoint c k hkL hkR
     refine ⟨Δ₂, ξ₂, hr₂, ?_, ?_, ?_⟩
     · -- ∀ i, Δ₂.length i ≤ Δ.diam
@@ -268,28 +291,28 @@ theorem rs_multi_insert_bound (f : Real → Real) (a b M : Real)
       have h2M_nn : 0 ≤ 2 * M := mul_nonneg 2 M
         (le_trans zero_lt_one.1 (by calc (1 : Real) = 1 + 0 := (add_zero 1).symm
           _ ≤ 1 + 1 := add_left_le 1 0 1 zero_lt_one.1)) hM_nn
-      have h_single : (RiemannSum f a b (n + m + 1) Δ₂ ξ₂ -
-          RiemannSum f a b (n + m) Δ₁ ξ₁).abs ≤ 2 * M * Δ.diam := by
+      have h_single : (RiemannSum f Δ₂ ξ₂ -
+          RiemannSum f Δ₁ ξ₁).abs ≤ 2 * M * Δ.diam := by
         apply le_trans hbd₂
         rw [show 2 * M * Δ₁.length k = Δ₁.length k * (2 * M) from MulCommMonoid.mul_comm _ _,
             show 2 * M * Δ.diam = Δ.diam * (2 * M) from MulCommMonoid.mul_comm _ _]
         exact nonneg_mul_nonneg _ _ _ h2M_nn (hlen₁ k)
       -- Triangle: |RS₂ - RS₀| ≤ |RS₁ - RS₀| + |RS₂ - RS₁|
       let K := 2 * M * Δ.diam
-      have hdecomp : RiemannSum f a b (n + m + 1) Δ₂ ξ₂ - RiemannSum f a b n Δ ξ =
-          (RiemannSum f a b (n + m) Δ₁ ξ₁ - RiemannSum f a b n Δ ξ) +
-          (RiemannSum f a b (n + m + 1) Δ₂ ξ₂ - RiemannSum f a b (n + m) Δ₁ ξ₁) :=
-        telescope_2 (RiemannSum f a b n Δ ξ) (RiemannSum f a b (n + m + 1) Δ₂ ξ₂)
-          (RiemannSum f a b (n + m) Δ₁ ξ₁)
+      have hdecomp : RiemannSum f Δ₂ ξ₂ - RiemannSum f Δ ξ =
+          (RiemannSum f Δ₁ ξ₁ - RiemannSum f Δ ξ) +
+          (RiemannSum f Δ₂ ξ₂ - RiemannSum f Δ₁ ξ₁) :=
+        telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ₂ ξ₂)
+          (RiemannSum f Δ₁ ξ₁)
       -- |RS₂ - RS₀| ≤ |RS₁ - RS₀| + |RS₂ - RS₁| ≤ m*K + K = (m+1)*K
-      have hsum_le : (RiemannSum f a b (n + m) Δ₁ ξ₁ - RiemannSum f a b n Δ ξ).abs +
-          (RiemannSum f a b (n + m + 1) Δ₂ ξ₂ - RiemannSum f a b (n + m) Δ₁ ξ₁).abs ≤
+      have hsum_le : (RiemannSum f Δ₁ ξ₁ - RiemannSum f Δ ξ).abs +
+          (RiemannSum f Δ₂ ξ₂ - RiemannSum f Δ₁ ξ₁).abs ≤
           Real.ofNat (m + 1) * K := by
         have hstep : Real.ofNat m * K + K = Real.ofNat (m + 1) * K := by
           rw [succ_ofNat, add_mul, one_mul]
         rw [← hstep]
         exact le_trans (LinearOrderedField.add_le_add _ _ _ hbd₁) (add_left_le _ _ _ h_single)
-      show (RiemannSum f a b (n + m + 1) Δ₂ ξ₂ - RiemannSum f a b n Δ ξ).abs ≤
+      show (RiemannSum f Δ₂ ξ₂ - RiemannSum f Δ ξ).abs ≤
           Real.ofNat (m + 1) * (2 * M * Partition.diam Δ)
       rw [hdecomp]
       exact le_trans (abs_triangle _ _) hsum_le
