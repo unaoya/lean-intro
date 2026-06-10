@@ -12,14 +12,12 @@ private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p +
 theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_pos : 0 < M)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δf : Real)
-    (hδf : ∀ (k : Nat) (Δk : Partition k a b) (ξk : Range k → Real),
-      Δk.IsRepr ξk → Partition.diam Δk < δf →
-      (RiemannSum f Δk ξk - If).abs < ε')
+    (hδf : ∀ P : TaggedPartition a b, Partition.diam P.Δ < δf →
+      (RiemannSum f P.Δ P.ξ - If).abs < ε')
     (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δf) :
-    ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
-      Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
-      (RiemannSum (fun x => (f x).abs) Δ' ξ' -
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
+      (RiemannSum (fun x => (f x).abs) P'.Δ P'.ξ -
        RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ (ε' + ε') + θ := by
   have hab_le : a ≤ b := hab.1
   have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab
@@ -149,8 +147,8 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
             · rw [add_mul, div_mul_cancel' (γ / 2) (b - a) hba_ne, half_add]
     rw [hRHS] at hsum
     -- RS の差を If 経由で評価
-    have hu_close := hδf n Δ (fun i => Classical.choose (hu i)) hu_repr hd
-    have hv_close := hδf n Δ (fun i => Classical.choose (hv i)) hv_repr hd
+    have hu_close := hδf ⟨n, Δ, fun i => Classical.choose (hu i), hu_repr⟩ hd
+    have hv_close := hδf ⟨n, Δ, fun i => Classical.choose (hv i), hv_repr⟩ hd
     have hdiff : RiemannSum f Δ (fun i => Classical.choose (hu i)) -
         RiemannSum f Δ (fun i => Classical.choose (hv i)) ≤ ε' + ε' := by
       have heq : RiemannSum f Δ (fun i => Classical.choose (hu i)) -

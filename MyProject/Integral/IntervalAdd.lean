@@ -70,7 +70,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       refine ⟨min (min δ₁ δ₂) (ε / 2 / (2 * (M₁ + M₂) + 1)),
         min_pos _ _ (min_pos _ _ hδ₁_pos hδ₂_pos)
           (pos_div_pos _ _ (pos_half ε hε) hK_pos), ?_⟩
-      intro n Δ ξ hr hd
+      intro ⟨n, Δ, ξ, hr⟩ hd
       have hn : 0 < n := Δ.pos_of_lt hac_lt
       have hb_in : InInterval a c b := (in_interval_iff hac_le).mpr ⟨hab_le, hbc_le⟩
       obtain ⟨k, hkL, hkR⟩ := Partition.find_interval Δ b hn hb_in
@@ -114,8 +114,8 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
           (fmax'_le (d + 1) _ _ hdiam_nn
             (fun j => hlen' ⟨kv + j.val + 1, by have := j.property; omega⟩))
           (lt_le_trans _ _ _ hd (le_trans (min_left_le _ _) (min_right_le δ₁ δ₂)))
-      have hL_close := hδ₁ (kv + 1) ΔL ξL hrL hdiamL
-      have hR_close := hδ₂ (d + 1) ΔR ξR hrR hdiamR
+      have hL_close := hδ₁ ⟨kv + 1, ΔL, ξL, hrL⟩ hdiamL
+      have hR_close := hδ₂ ⟨d + 1, ΔR, ξR, hrR⟩ hdiamR
       -- RS の分割恒等式
       have e1 : RiemannSum f Δ' ξ' =
           Summation kv (fun i => f (ξ' ⟨i.val, by have := i.property; omega⟩) *

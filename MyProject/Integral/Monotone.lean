@@ -45,7 +45,7 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       let ξ : Range 0 → Real := fun i => absurd i.property (Nat.not_lt_zero _)
       have hr : Δ.IsRepr ξ := fun i => absurd i.property (Nat.not_lt_zero _)
       have hd : Partition.diam Δ < δ := by show fmax' 0 _ < δ; exact hδ
-      have hRS := hh 0 Δ ξ hr hd
+      have hRS := hh ⟨0, Δ, ξ, hr⟩ hd
       have hRS0 : RiemannSum f Δ ξ = 0 := rfl
       rw [hRS0] at hRS
       have h0I : ((0 : Real) - I) = -I := by
@@ -55,8 +55,8 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
       rw [h0I, pos_abs hε] at hRS
       exact hRS.2 rfl
     | inr hne =>
-      obtain ⟨m, Δ, ξ, hr, hd⟩ := exists_fine_partition a b δ h hδ
-      have habs := hh m Δ ξ hr hd
+      obtain ⟨⟨m, Δ, ξ, hr⟩, hd⟩ := exists_fine_partition a b δ h hδ
+      have habs := hh ⟨m, Δ, ξ, hr⟩ hd
       have hRS_nn : 0 ≤ RiemannSum f Δ ξ :=
         RiemannSum_nonneg f Δ ξ fnn hr
       have h1 : RiemannSum f Δ ξ - I < -I :=

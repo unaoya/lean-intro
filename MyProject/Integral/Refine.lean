@@ -197,15 +197,14 @@ theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
       (∀ j, Δ.points (Range.incl (σ j)) ≤ Δp.points (Range.incl j) ∧
             Δp.points (Range.addone j) ≤ Δ.points (Range.addone (σ j))) →
       (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs ≤ B) :
-    ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
-      Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
-      (RiemannSum g Δ' ξ' - RiemannSum g Δ ξ).abs ≤ B + θ := by
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
+      (RiemannSum g P'.Δ P'.ξ - RiemannSum g Δ ξ).abs ≤ B + θ := by
   have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
   have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
     pos_mul_pos _ _ hofn_pos (pos_mul_pos 2 M zero_lt_two hM_pos)
   have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
   refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
-  intro n' Δ' ξ' hr' hd'
+  intro ⟨n', Δ', ξ', hr'⟩ hd'
   have hn' : 0 < n' := Δ'.pos_of_lt hab
   -- Δ の全分点を Δ' に挿入
   obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
@@ -251,9 +250,8 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
       (f s - f t).abs < ε')
     (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δuc) :
-    ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
-      Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
-      (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs ≤ ε' * (b - a) + θ := by
+    ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
+      (RiemannSum f P'.Δ P'.ξ - RiemannSum f Δ ξ).abs ≤ ε' * (b - a) + θ := by
   apply rs_refine_compare f M hM hM_pos hab Δ ξ (ε' * (b - a)) θ hθ
   intro N Δp ξp hrp σ hσ
   rw [← rs_refine_eq f a b n Δ ξ N Δp σ hσ]

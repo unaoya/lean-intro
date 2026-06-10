@@ -364,3 +364,11 @@ theorem insertPoint_length_le_diam {n : Nat} {a b : Real} (c : Real) (Δ : Parti
           (le_fmax' _ _ k)
 
 end Partition
+
+-- タグ付き分割：分割と代表点列（IsRepr）の組。
+-- 積分の定義などで「∀ n Δ ξ, IsRepr → …」の 4 つ組を 1 変数に束ねる。
+structure TaggedPartition (a b : Real) where
+  n : Nat
+  Δ : Partition n a b
+  ξ : Range n → Real
+  repr : Δ.IsRepr ξ

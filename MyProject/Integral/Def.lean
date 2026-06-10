@@ -6,9 +6,8 @@ open Real Classical
 
 -- 積分の定義
 def IsIntegral (f : Real → Real) (a b : Real) (i : Real) : Prop :=
-  ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ n : Nat, ∀ Δ : Partition n a b, ∀ ξ : Range n → Real,
-    Δ.IsRepr ξ → (Partition.diam Δ) < δ →
-    abs (RiemannSum f Δ ξ - i) < ε
+  ∀ (ε : Real), 0 < ε → ∃ (δ : Real), 0 < δ ∧ ∀ P : TaggedPartition a b,
+    Partition.diam P.Δ < δ → abs (RiemannSum f P.Δ P.ξ - i) < ε
 
 theorem sub_zero_eq (x y : Real) : x - y = 0 ↔ x = y := by
   constructor
@@ -118,16 +117,15 @@ theorem equalPartition_diam_lt (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a
 
 -- 任意の細かさの等分割の存在
 theorem exists_fine_partition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
-    ∃ (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real),
-      Δ.IsRepr ξ ∧ Partition.diam Δ < δ := by
+    ∃ P : TaggedPartition a b, Partition.diam P.Δ < δ := by
   have hba_nn : 0 ≤ b - a := (nonneg_iff_le a b).mp hab
   have hba_div_nn : 0 ≤ (b - a) / δ := nonneg_div_nonneg (b - a) δ hba_nn hδ
   have hm_lt : (b - a) / δ < ((ceil ((b - a) / δ)) : Real) := ceil_lt _
   have hm_ne : ceil ((b - a) / δ) ≠ 0 :=
     nat_ne_zero_of_nonneg_lt _ _ hba_div_nn hm_lt
-  exact ⟨ceil ((b - a) / δ), equalPartition _ a b hm_ne hab,
+  exact ⟨⟨ceil ((b - a) / δ), equalPartition _ a b hm_ne hab,
     equalPartitionRepr _ a b hm_ne hab,
-    equalPartitionRepr_isrepr _ a b hm_ne hab,
+    equalPartitionRepr_isrepr _ a b hm_ne hab⟩,
     equalPartition_diam_lt _ a b δ hm_ne hab hδ hm_lt⟩
 
 -- 一意性
@@ -138,12 +136,12 @@ theorem integral_unique (f : Real → Real) (a b : Real) (i j : Real)
     rcases hi (ε / 2) (pos_half ε hε) with ⟨δi, ⟨hδi1, hδi2⟩⟩
     rcases hj (ε / 2) (pos_half ε hε) with ⟨δj, ⟨hδj1, hδj2⟩⟩
     have hδ : 0 < min δi δj := min_pos δi δj hδi1 hδj1
-    obtain ⟨m, Δ, ξ, h_repr, h_diam⟩ := exists_fine_partition a b (min δi δj) hab hδ
+    obtain ⟨⟨m, Δ, ξ, h_repr⟩, h_diam⟩ := exists_fine_partition a b (min δi δj) hab hδ
     let RS := RiemannSum f Δ ξ
     have h_i : (RS - i).abs < ε / 2 :=
-      hδi2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_left_le δi δj))
+      hδi2 ⟨m, Δ, ξ, h_repr⟩ (lt_le_trans _ _ _ h_diam (min_left_le δi δj))
     have h_j : (RS - j).abs < ε / 2 :=
-      hδj2 m Δ ξ h_repr (lt_le_trans _ _ _ h_diam (min_right_le δi δj))
+      hδj2 ⟨m, Δ, ξ, h_repr⟩ (lt_le_trans _ _ _ h_diam (min_right_le δi δj))
     calc (i - j).abs
         ≤ (i - RS).abs + (RS - j).abs := abs_sub_le_add i RS j
       _ = (RS - i).abs + (RS - j).abs := by rw [abs_sub_comm i RS]
@@ -172,7 +170,7 @@ theorem IsIntegral_iff (f : Real → Real) (a b : Real) (i : Real)
 -- [a,a] 上の積分は 0
 theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := by
   intro ε hε
-  refine ⟨1, zero_lt_one, fun n Δ ξ hr _ => ?_⟩
+  refine ⟨1, zero_lt_one, fun ⟨n, Δ, ξ, hr⟩ _ => ?_⟩
   have hpts : ∀ (i : Range n.succ), Δ.points i = a :=
     fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
   have hxi : ∀ (i : Range n), ξ i = a := by
@@ -194,7 +192,7 @@ theorem integral_self (f : Real → Real) (a : Real) : Integral f a a = 0 :=
 -- b < a のときは分割が存在しないため、（特に 0 を）積分値にできる
 theorem isintegral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
     IsIntegral f a b 0 :=
-  fun _ _ => ⟨1, zero_lt_one, fun _ Δ _ _ _ => absurd Δ.left_le_right h⟩
+  fun _ _ => ⟨1, zero_lt_one, fun P _ => absurd P.Δ.left_le_right h⟩
 
 -- b < a では Integral は 0
 theorem integral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
@@ -212,10 +210,10 @@ theorem integral_congr (f g : Real → Real) (a b : Real) (hab : a ≤ b) (h : �
     intro i; rw [h (ξ i)]
   have hfg : ∀ i, IsIntegral f a b i → IsIntegral g a b i := fun i hi ε hε => by
     rcases hi ε hε with ⟨δ, hδ, hh⟩
-    exact ⟨δ, hδ, fun n Δ ξ hr hd => by rw [← hRS]; exact hh n Δ ξ hr hd⟩
+    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by rw [← hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
   have hgf : ∀ i, IsIntegral g a b i → IsIntegral f a b i := fun i hi ε hε => by
     rcases hi ε hε with ⟨δ, hδ, hh⟩
-    exact ⟨δ, hδ, fun n Δ ξ hr hd => by rw [hRS]; exact hh n Δ ξ hr hd⟩
+    exact ⟨δ, hδ, fun ⟨n, Δ, ξ, hr⟩ hd => by rw [hRS]; exact hh ⟨n, Δ, ξ, hr⟩ hd⟩
   unfold Integral
   cases Classical.em (IsIntegrable f a b) with
   | inl hf =>

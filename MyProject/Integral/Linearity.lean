@@ -18,7 +18,7 @@ theorem add_integrable (f g : Real → Real) (a b : Real)
   refine ⟨if_ + ig, fun ε hε => ?_⟩
   rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
   rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
-  refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
+  refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun ⟨n, Δ, ξ, hr⟩ hd => ?_⟩
   have hdf : Partition.diam Δ < δf :=
     lt_le_trans _ _ _ hd (min_left_le δf δg)
   have hdg : Partition.diam Δ < δg :=
@@ -27,7 +27,7 @@ theorem add_integrable (f g : Real → Real) (a b : Real)
   calc abs (RiemannSum f Δ ξ - if_ + (RiemannSum g Δ ξ - ig))
       ≤ abs (RiemannSum f Δ ξ - if_) + abs (RiemannSum g Δ ξ - ig) :=
         abs_triangle _ _
-    _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
+    _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf ⟨n, Δ, ξ, hr⟩ hdf) (hδg ⟨n, Δ, ξ, hr⟩ hdg)
     _ = ε := half_add ε
 
 -- ======================================================
@@ -38,13 +38,13 @@ theorem neg_integrable (f : Real → Real) (a b : Real)
   rcases hf with ⟨i, hi⟩
   refine ⟨-i, fun ε hε => ?_⟩
   rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
-  refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
+  refine ⟨δ, hδ_pos, fun ⟨n, Δ, ξ, hr⟩ hd => ?_⟩
   rw [neg_riemann_sum]
   have : -RiemannSum f Δ ξ - -i = -(RiemannSum f Δ ξ - i) := by
     show -RiemannSum f Δ ξ + -(-i) = -(RiemannSum f Δ ξ + -i)
     rw [neg_add_distrib, neg_neg]
   rw [this, abs_neg]
-  exact hδ n Δ ξ hr hd
+  exact hδ ⟨n, Δ, ξ, hr⟩ hd
 
 -- ======================================================
 -- 3. integrable_sub
@@ -69,7 +69,7 @@ theorem additive_integral (f g : Real → Real) (a b : Real)
     intro ε hε
     rcases hif (ε / 2) (pos_half ε hε) with ⟨δf, hδf_pos, hδf⟩
     rcases hig (ε / 2) (pos_half ε hε) with ⟨δg, hδg_pos, hδg⟩
-    refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun n Δ ξ hr hd => ?_⟩
+    refine ⟨min δf δg, min_pos δf δg hδf_pos hδg_pos, fun ⟨n, Δ, ξ, hr⟩ hd => ?_⟩
     have hdf : Partition.diam Δ < δf :=
       lt_le_trans _ _ _ hd (min_left_le δf δg)
     have hdg : Partition.diam Δ < δg :=
@@ -78,7 +78,7 @@ theorem additive_integral (f g : Real → Real) (a b : Real)
     calc abs (RiemannSum f Δ ξ - if_ + (RiemannSum g Δ ξ - ig))
         ≤ abs (RiemannSum f Δ ξ - if_) + abs (RiemannSum g Δ ξ - ig) :=
           abs_triangle _ _
-      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf n Δ ξ hr hdf) (hδg n Δ ξ hr hdg)
+      _ < ε / 2 + ε / 2 := lt_add_lt _ _ _ _ (hδf ⟨n, Δ, ξ, hr⟩ hdf) (hδg ⟨n, Δ, ξ, hr⟩ hdg)
       _ = ε := half_add ε
   rw [IsIntegral_iff _ _ _ _ hab hfg, IsIntegral_iff _ _ _ _ hab hif, IsIntegral_iff _ _ _ _ hab hig]
 
@@ -92,13 +92,13 @@ theorem neg_integral (f : Real → Real) (a b : Real)
   have hni : IsIntegral (fun t ↦ -f t) a b (-i) := by
     intro ε hε
     rcases hi ε hε with ⟨δ, hδ_pos, hδ⟩
-    refine ⟨δ, hδ_pos, fun n Δ ξ hr hd => ?_⟩
+    refine ⟨δ, hδ_pos, fun ⟨n, Δ, ξ, hr⟩ hd => ?_⟩
     rw [neg_riemann_sum]
     have : -RiemannSum f Δ ξ - -i = -(RiemannSum f Δ ξ - i) := by
       show -RiemannSum f Δ ξ + -(-i) = -(RiemannSum f Δ ξ + -i)
       rw [neg_add_distrib, neg_neg]
     rw [this, abs_neg]
-    exact hδ n Δ ξ hr hd
+    exact hδ ⟨n, Δ, ξ, hr⟩ hd
   rw [IsIntegral_iff _ _ _ _ hab hni, IsIntegral_iff _ _ _ _ hab hi]
 
 -- ======================================================

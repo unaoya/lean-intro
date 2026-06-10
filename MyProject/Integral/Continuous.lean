@@ -28,12 +28,12 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
           (pos_div_pos _ _ (pos_half ε hε) hxa_pos)
         with ⟨δ_uc, hδ_uc_pos, hδ_uc⟩
       refine ⟨δ_uc, hδ_uc_pos, ?_⟩
-      intro n Δ ξ hr hd
+      intro ⟨n, Δ, ξ, hr⟩ hd
       obtain ⟨δ', hδ'_pos, hcomp⟩ := rs_compare f a x M hM_bound hM_pos hab'
         (ε / 2 / (x - a)) (ε / 2) (pos_half ε hε) δ_uc hδ_uc n Δ ξ hr hd
       refine ⟨δ', hδ'_pos, ?_⟩
-      intro n' Δ' ξ' hr' hd'
-      have h1 := hcomp n' Δ' ξ' hr' hd'
+      intro P' hd'
+      have h1 := hcomp P' hd'
       -- ε'(x−a) + ε/2 = ε/2 + ε/2 = ε
       have hdmc : ε / 2 / (x - a) * (x - a) = ε / 2 := by
         rw [mul_comm, ← mul_div_assoc,

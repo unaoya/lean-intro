@@ -76,8 +76,8 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
       rw [summation_congr m _ _ hterm, additive_summation,
           summation_one_term m k _ (fun i hne => if_neg hne),
           if_pos (show k.val = k.val from rfl), add_sub_cancel]
-    have hRS : (RiemannSum f Δ ξ - I).abs < 1 := hbound m Δ ξ h_repr h_diam
-    have hRS' : (RiemannSum f Δ ξ' - I).abs < 1 := hbound m Δ ξ' h_repr' h_diam
+    have hRS : (RiemannSum f Δ ξ - I).abs < 1 := hbound ⟨m, Δ, ξ, h_repr⟩ h_diam
+    have hRS' : (RiemannSum f Δ ξ' - I).abs < 1 := hbound ⟨m, Δ, ξ', h_repr'⟩ h_diam
     have h2 : ((f x - f (ξ k)) * Partition.length Δ k).abs < 2 := by
       rw [← hdiff]
       calc (RiemannSum f Δ ξ' - RiemannSum f Δ ξ).abs
