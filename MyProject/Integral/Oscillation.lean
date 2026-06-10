@@ -167,120 +167,47 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
         exact le_lt_trans (le_abs _) (by rw [abs_neg]; exact hv_close)
       · exact le_lt_trans (le_abs _) hu_close
     exact le_trans hsum (LinearOrderedField.add_le_add _ _ γ hdiff)
-  -- ここから細分比較
-  have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
-  have h2M_pos : (0 : Real) < 2 * M := pos_mul_pos 2 M zero_lt_two hM_pos
-  have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
-    pos_mul_pos _ _ hofn_pos h2M_pos
-  have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
-  refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
-  intro n' Δ' ξ' hr' hd'
-  have hn' : 0 < n' := Δ'.pos_of_lt hab
+  -- ここから細分比較（共通エンベロープに振動和による核心評価を渡す）
   have hMg : ∀ t, InInterval a b t → ((fun x => (f x).abs) t).abs ≤ M := by
     intro t ht
     rw [nonneg_abs abs_nonneg]
     exact hM t ht
-  obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
-    rs_multi_insert_bound (fun x => (f x).abs) M hMg (Real.le_of_lt hM_pos)
-      hn' Δ' ξ' hr' (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
-      (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
-  have hpts_all : ∀ i : Range n.succ,
-      ∃ q : Range (n' + (n + 1)).succ, Δp.points q = Δ.points i := by
-    intro i
-    obtain ⟨q, hq⟩ := hptsp ⟨i.val, i.property⟩
-    exact ⟨q, hq⟩
-  have hn_pos : 0 < n := Δ.pos_of_lt hab
-  have hσex := refine_parent a b n (n' + (n + 1)) hn_pos Δ Δp hpts_all
-  have hσ : ∀ j : Range (n' + (n + 1)),
-      Δ.points (Range.incl (Classical.choose (hσex j))) ≤ Δp.points (Range.incl j) ∧
-      Δp.points (Range.addone j) ≤ Δ.points (Range.addone (Classical.choose (hσex j))) :=
-    fun j => Classical.choose_spec (hσex j)
-  -- 細分比較：|RS_g(Δp) − RS_g(Δ)| ≤ ε' + ε'
-  have hRCL : (RiemannSum (fun x => (f x).abs) Δp ξp -
-      RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ ε' + ε' := by
-    rw [← rs_refine_eq (fun x => (f x).abs) a b n Δ ξ (n' + (n + 1)) Δp
-        (fun j => Classical.choose (hσex j)) hσ]
-    have hsub : RiemannSum (fun x => (f x).abs) Δp ξp -
-        RiemannSum (fun x => (f x).abs) Δp
-          (fun j => ξ (Classical.choose (hσex j))) =
-        Summation (n' + (n + 1)) (fun j =>
-          ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
-          Partition.length Δp j) := by
-      calc RiemannSum (fun x => (f x).abs) Δp ξp -
-            RiemannSum (fun x => (f x).abs) Δp
-              (fun j => ξ (Classical.choose (hσex j)))
-          = Summation (n' + (n + 1)) (fun j =>
-              (f (ξp j)).abs * Partition.length Δp j -
-              (f (ξ (Classical.choose (hσex j)))).abs *
-                Partition.length Δp j) :=
-            sub_summation (n' + (n + 1))
-              (fun j => (f (ξp j)).abs * Partition.length Δp j)
-              (fun j => (f (ξ (Classical.choose (hσex j)))).abs *
-                Partition.length Δp j)
-        _ = Summation (n' + (n + 1)) (fun j =>
-              ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
-              Partition.length Δp j) :=
-            summation_congr _ _ _ (fun j => mul_sub_mul _ _ _)
-    rw [hsub]
-    have hperj : ∀ j : Range (n' + (n + 1)),
-        ((((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
-          Partition.length Δp j)).abs ≤
-        Osc (Classical.choose (hσex j)) * Partition.length Δp j := by
-      intro j
-      rw [abs_mul_nonneg (Partition.length_nonneg Δp j)]
-      apply nonneg_mul_nonneg _ _ _ (Partition.length_nonneg Δp j)
-      have hb1 := Partition.repr_bounds hrp j
-      have hb2 := Partition.repr_bounds hr (Classical.choose (hσex j))
-      exact hosc (Classical.choose (hσex j)) (ξp j) (ξ (Classical.choose (hσex j)))
-        (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
-    calc (Summation (n' + (n + 1)) (fun j =>
-            ((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
-            Partition.length Δp j)).abs
-        ≤ Summation (n' + (n + 1)) (fun j =>
-            ((((f (ξp j)).abs - (f (ξ (Classical.choose (hσex j)))).abs) *
-              Partition.length Δp j)).abs) := abs_summation_le _ _
-      _ ≤ Summation (n' + (n + 1)) (fun j =>
-            Osc (Classical.choose (hσex j)) * Partition.length Δp j) :=
-          summation_le _ _ _ hperj
-      _ = Summation n (fun i => Osc i * Partition.length Δ i) :=
-          rs_refine_eq (fun t => t) a b n Δ Osc (n' + (n + 1)) Δp
-            (fun j => Classical.choose (hσex j)) hσ
-      _ ≤ ε' + ε' := hosc_sum
-  -- 挿入誤差 ≤ θ
-  have hins : (RiemannSum (fun x => (f x).abs) Δp ξp -
-      RiemannSum (fun x => (f x).abs) Δ' ξ').abs ≤ θ := by
-    apply le_trans hbdp
-    rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
-          Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
-          (mul_assoc _ _ _).symm]
-    apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
-      (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
-    rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
-        mul_div_cancel θ _ hK_ne]
-    exact le_refl θ
-  -- 三角不等式で合成
-  calc (RiemannSum (fun x => (f x).abs) Δ' ξ' -
-        RiemannSum (fun x => (f x).abs) Δ ξ).abs
-      = ((RiemannSum (fun x => (f x).abs) Δp ξp -
-          RiemannSum (fun x => (f x).abs) Δ ξ) +
-         (RiemannSum (fun x => (f x).abs) Δ' ξ' -
-          RiemannSum (fun x => (f x).abs) Δp ξp)).abs := by
-        rw [telescope_2 (RiemannSum (fun x => (f x).abs) Δ ξ)
-            (RiemannSum (fun x => (f x).abs) Δ' ξ')
-            (RiemannSum (fun x => (f x).abs) Δp ξp)]
-    _ ≤ (RiemannSum (fun x => (f x).abs) Δp ξp -
-         RiemannSum (fun x => (f x).abs) Δ ξ).abs +
-        (RiemannSum (fun x => (f x).abs) Δ' ξ' -
-         RiemannSum (fun x => (f x).abs) Δp ξp).abs :=
-        abs_triangle _ _
-    _ = (RiemannSum (fun x => (f x).abs) Δp ξp -
-         RiemannSum (fun x => (f x).abs) Δ ξ).abs +
-        (RiemannSum (fun x => (f x).abs) Δp ξp -
-         RiemannSum (fun x => (f x).abs) Δ' ξ').abs := by
-        rw [show RiemannSum (fun x => (f x).abs) Δ' ξ' -
-              RiemannSum (fun x => (f x).abs) Δp ξp =
-              -(RiemannSum (fun x => (f x).abs) Δp ξp -
-                RiemannSum (fun x => (f x).abs) Δ' ξ') from
-              (neg_sub _ _).symm, abs_neg]
-    _ ≤ (ε' + ε') + θ :=
-        le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
+  apply rs_refine_compare (fun x => (f x).abs) M hMg hM_pos hab Δ ξ (ε' + ε') θ hθ
+  intro N Δp ξp hrp σ hσ
+  rw [← rs_refine_eq (fun x => (f x).abs) a b n Δ ξ N Δp σ hσ]
+  have hsub : RiemannSum (fun x => (f x).abs) Δp ξp -
+      RiemannSum (fun x => (f x).abs) Δp (fun j => ξ (σ j)) =
+      Summation N (fun j =>
+        ((f (ξp j)).abs - (f (ξ (σ j))).abs) * Partition.length Δp j) := by
+    calc RiemannSum (fun x => (f x).abs) Δp ξp -
+          RiemannSum (fun x => (f x).abs) Δp (fun j => ξ (σ j))
+        = Summation N (fun j =>
+            (f (ξp j)).abs * Partition.length Δp j -
+            (f (ξ (σ j))).abs * Partition.length Δp j) :=
+          sub_summation N
+            (fun j => (f (ξp j)).abs * Partition.length Δp j)
+            (fun j => (f (ξ (σ j))).abs * Partition.length Δp j)
+      _ = Summation N (fun j =>
+            ((f (ξp j)).abs - (f (ξ (σ j))).abs) * Partition.length Δp j) :=
+          summation_congr N _ _ (fun j => mul_sub_mul _ _ _)
+  rw [hsub]
+  have hperj : ∀ j : Range N,
+      ((((f (ξp j)).abs - (f (ξ (σ j))).abs) * Partition.length Δp j)).abs ≤
+      Osc (σ j) * Partition.length Δp j := by
+    intro j
+    rw [abs_mul_nonneg (Δp.length_nonneg j)]
+    apply nonneg_mul_nonneg _ _ _ (Δp.length_nonneg j)
+    have hb1 := Partition.repr_bounds hrp j
+    have hb2 := Partition.repr_bounds hr (σ j)
+    exact hosc (σ j) (ξp j) (ξ (σ j))
+      (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
+  calc (Summation N (fun j =>
+          ((f (ξp j)).abs - (f (ξ (σ j))).abs) * Partition.length Δp j)).abs
+      ≤ Summation N (fun j =>
+          ((((f (ξp j)).abs - (f (ξ (σ j))).abs) * Partition.length Δp j)).abs) :=
+        abs_summation_le _ _
+    _ ≤ Summation N (fun j => Osc (σ j) * Partition.length Δp j) :=
+        summation_le _ _ _ hperj
+    _ = Summation n (fun i => Osc i * Partition.length Δ i) :=
+        rs_refine_eq (fun t => t) a b n Δ Osc N Δp σ hσ
+    _ ≤ ε' + ε' := hosc_sum

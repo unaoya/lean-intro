@@ -186,6 +186,64 @@ theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
       exact Partition.points_mono Δ'' r (Range.incl j) hrj
 
 -- 核心補題：固定した細かい分割 Δ に対し、十分細かい任意の Δ' の RS は RS(Δ) に近い
+-- 共通エンベロープ：固定した分割 Δ の全分点を任意の細かい分割 Δ' に挿入し、
+-- 細分上の比較（hcore）と挿入誤差 θ を合成する
+theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
+    (hMg : ∀ t, InInterval a b t → (g t).abs ≤ M) (hM_pos : 0 < M)
+    (hab : a < b) {n : Nat} (Δ : Partition n a b) (ξ : Range n → Real)
+    (B θ : Real) (hθ : 0 < θ)
+    (hcore : ∀ (N : Nat) (Δp : Partition N a b) (ξp : Range N → Real),
+      Δp.IsRepr ξp → ∀ (σ : Range N → Range n),
+      (∀ j, Δ.points (Range.incl (σ j)) ≤ Δp.points (Range.incl j) ∧
+            Δp.points (Range.addone j) ≤ Δ.points (Range.addone (σ j))) →
+      (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs ≤ B) :
+    ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
+      Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
+      (RiemannSum g Δ' ξ' - RiemannSum g Δ ξ).abs ≤ B + θ := by
+  have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
+  have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
+    pos_mul_pos _ _ hofn_pos (pos_mul_pos 2 M zero_lt_two hM_pos)
+  have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
+  refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
+  intro n' Δ' ξ' hr' hd'
+  have hn' : 0 < n' := Δ'.pos_of_lt hab
+  -- Δ の全分点を Δ' に挿入
+  obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
+    rs_multi_insert_bound g M hMg (Real.le_of_lt hM_pos) hn' Δ' ξ' hr'
+      (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
+      (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
+  have hpts_all : ∀ i : Range n.succ,
+      ∃ q : Range (n' + (n + 1)).succ, Δp.points q = Δ.points i := by
+    intro i
+    obtain ⟨q, hq⟩ := hptsp ⟨i.val, i.property⟩
+    exact ⟨q, hq⟩
+  have hσex := refine_parent a b n (n' + (n + 1)) (Δ.pos_of_lt hab) Δ Δp hpts_all
+  -- 細分上の比較（核心評価）
+  have hRCL := hcore (n' + (n + 1)) Δp ξp hrp (fun j => Classical.choose (hσex j))
+    (fun j => Classical.choose_spec (hσex j))
+  -- 挿入誤差 ≤ θ
+  have hins : (RiemannSum g Δp ξp - RiemannSum g Δ' ξ').abs ≤ θ := by
+    apply le_trans hbdp
+    rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
+          Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from (mul_assoc _ _ _).symm]
+    apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
+      (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
+    rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
+        mul_div_cancel θ _ hK_ne]
+    exact le_refl θ
+  -- 三角不等式で合成
+  calc (RiemannSum g Δ' ξ' - RiemannSum g Δ ξ).abs
+      ≤ (RiemannSum g Δ' ξ' - RiemannSum g Δp ξp).abs +
+        (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs := abs_sub_le_add _ _ _
+    _ = (RiemannSum g Δp ξp - RiemannSum g Δ' ξ').abs +
+        (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs := by
+        rw [abs_sub_comm (RiemannSum g Δ' ξ')]
+    _ ≤ θ + B :=
+        le_trans (LinearOrderedField.add_le_add _ _ _ hins) (add_left_le _ _ _ hRCL)
+    _ = B + θ := add_comm θ B
+
+-- 核心補題：固定した細かい分割 Δ に対し、十分細かい任意の Δ' の RS は RS(Δ) に近い
+-- （一様連続性で細分上の比較を評価する）
 theorem rs_compare (f : Real → Real) (a b M : Real)
     (hM : ∀ t, InInterval a b t → (f t).abs ≤ M) (hM_pos : 0 < M)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δuc : Real)
@@ -196,75 +254,18 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     ∃ δ', 0 < δ' ∧ ∀ (n' : Nat) (Δ' : Partition n' a b) (ξ' : Range n' → Real),
       Δ'.IsRepr ξ' → Partition.diam Δ' < δ' →
       (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs ≤ ε' * (b - a) + θ := by
-  have hab_le : a ≤ b := hab.1
-  have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
-  have h2M_pos : (0 : Real) < 2 * M := pos_mul_pos 2 M zero_lt_two hM_pos
-  have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
-    pos_mul_pos _ _ hofn_pos h2M_pos
-  have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
-  refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
-  intro n' Δ' ξ' hr' hd'
-  have hn' : 0 < n' := Δ'.pos_of_lt hab
-  -- Δ の全分点を Δ' に挿入
-  obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
-    rs_multi_insert_bound f M hM (Real.le_of_lt hM_pos) hn' Δ' ξ' hr'
-      (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
-      (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
-  have hpts_all : ∀ i : Range n.succ,
-      ∃ q : Range (n' + (n + 1)).succ, Δp.points q = Δ.points i := by
-    intro i
-    obtain ⟨q, hq⟩ := hptsp ⟨i.val, i.property⟩
-    exact ⟨q, hq⟩
-  have hn_pos : 0 < n := Δ.pos_of_lt hab
-  have hσex := refine_parent a b n (n' + (n + 1)) hn_pos Δ Δp hpts_all
-  have hσ : ∀ j : Range (n' + (n + 1)),
-      Δ.points (Range.incl (Classical.choose (hσex j))) ≤ Δp.points (Range.incl j) ∧
-      Δp.points (Range.addone j) ≤ Δ.points (Range.addone (Classical.choose (hσex j))) :=
-    fun j => Classical.choose_spec (hσex j)
-  -- 細分比較：|RS(Δp) − RS(Δ)| ≤ ε'(b−a)
-  have hRCL : (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs ≤
-      ε' * (b - a) := by
-    rw [← rs_refine_eq f a b n Δ ξ (n' + (n + 1)) Δp (fun j => Classical.choose (hσex j)) hσ]
-    apply same_partition_bound
-    intro j
-    apply Real.le_of_lt
-    apply huc
-    · exact in_interval_pair hab_le
-        (Partition.repr_in_interval Δp ξp hrp j)
-    · exact in_interval_pair hab_le
-        (Partition.repr_in_interval Δ ξ hr (Classical.choose (hσex j)))
-    · have hb1 := hrp j
-      dsimp [Partition.IsRepr, InInterval] at hb1
-      rw [if_pos (Δp.increase j)] at hb1
-      have hb2 := Partition.repr_bounds hr (Classical.choose (hσex j))
-      have habs := abs_sub_le_of_mem
-        (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
-      exact le_lt_trans
-        (le_trans habs (le_fmax' n (Partition.length Δ) (Classical.choose (hσex j)))) hd
-  -- 挿入誤差 ≤ θ
-  have hins : (RiemannSum f Δp ξp - RiemannSum f Δ' ξ').abs ≤ θ := by
-    apply le_trans hbdp
-    rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
-          Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from
-          (mul_assoc _ _ _).symm]
-    apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
-      (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
-    rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
-        mul_div_cancel θ _ hK_ne]
-    exact le_refl θ
-  -- 三角不等式で合成
-  calc (RiemannSum f Δ' ξ' - RiemannSum f Δ ξ).abs
-      = ((RiemannSum f Δp ξp - RiemannSum f Δ ξ) +
-         (RiemannSum f Δ' ξ' - RiemannSum f Δp ξp)).abs := by
-        rw [telescope_2 (RiemannSum f Δ ξ) (RiemannSum f Δ' ξ')
-            (RiemannSum f Δp ξp)]
-    _ ≤ (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs +
-        (RiemannSum f Δ' ξ' - RiemannSum f Δp ξp).abs :=
-        abs_triangle _ _
-    _ = (RiemannSum f Δp ξp - RiemannSum f Δ ξ).abs +
-        (RiemannSum f Δp ξp - RiemannSum f Δ' ξ').abs := by
-        rw [show RiemannSum f Δ' ξ' - RiemannSum f Δp ξp =
-              -(RiemannSum f Δp ξp - RiemannSum f Δ' ξ') from
-              (neg_sub _ _).symm, abs_neg]
-    _ ≤ ε' * (b - a) + θ :=
-        le_trans (LinearOrderedField.add_le_add _ _ _ hRCL) (add_left_le _ _ _ hins)
+  apply rs_refine_compare f M hM hM_pos hab Δ ξ (ε' * (b - a)) θ hθ
+  intro N Δp ξp hrp σ hσ
+  rw [← rs_refine_eq f a b n Δ ξ N Δp σ hσ]
+  apply same_partition_bound
+  intro j
+  apply Real.le_of_lt
+  apply huc
+  · exact in_interval_pair hab.1 (Partition.repr_in_interval Δp ξp hrp j)
+  · exact in_interval_pair hab.1 (Partition.repr_in_interval Δ ξ hr (σ j))
+  · have hb1 := Partition.repr_bounds hrp j
+    have hb2 := Partition.repr_bounds hr (σ j)
+    have habs := abs_sub_le_of_mem
+      (le_trans (hσ j).1 hb1.1) (le_trans hb1.2 (hσ j).2) hb2.1 hb2.2
+    exact le_lt_trans
+      (le_trans habs (le_fmax' n (Partition.length Δ) (σ j))) hd
