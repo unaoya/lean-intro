@@ -37,9 +37,9 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     intro ε hε
     obtain ⟨δf, hδf_pos, hδf⟩ := hIf (ε / 2 / 2) (pos_half _ (pos_half ε hε))
     refine ⟨δf, hδf_pos, ?_⟩
-    intro ⟨n, Δ, ξ, hr⟩ hd
+    intro P hd
     obtain ⟨δ', hδ'_pos, hcomp⟩ := abs_rs_compare f a b (M₀ + 1) If hM hM_pos hab'
-      (ε / 2 / 2) (ε / 2) (pos_half ε hε) δf hδf n Δ ξ hr hd
+      (ε / 2 / 2) (ε / 2) (pos_half ε hε) δf hδf P hd
     refine ⟨δ', hδ'_pos, ?_⟩
     intro P' hd'
     have h1 := hcomp P' hd'

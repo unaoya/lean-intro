@@ -14,11 +14,11 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δf : Real)
     (hδf : ∀ P : TaggedPartition a b, Partition.diam P.Δ < δf →
       (RiemannSum f P.Δ P.ξ - If).abs < ε')
-    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
-    (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δf) :
+    (P : TaggedPartition a b) (hd : Partition.diam P.Δ < δf) :
     ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
       (RiemannSum (fun x => (f x).abs) P'.Δ P'.ξ -
-       RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ (ε' + ε') + θ := by
+       RiemannSum (fun x => (f x).abs) P.Δ P.ξ).abs ≤ (ε' + ε') + θ := by
+  obtain ⟨n, Δ, ξ, hr⟩ := P
   have hab_le : a ≤ b := hab.1
   have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab
   have hba_ne : b - a ≠ 0 := ne_of_gt hba_pos

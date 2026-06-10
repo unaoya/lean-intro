@@ -248,10 +248,10 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
     (hab : a < b) (ε' θ : Real) (hθ : 0 < θ) (δuc : Real)
     (huc : ∀ s t, (a ≤ s ∧ s ≤ b) → (a ≤ t ∧ t ≤ b) → (s - t).abs < δuc →
       (f s - f t).abs < ε')
-    (n : Nat) (Δ : Partition n a b) (ξ : Range n → Real)
-    (hr : Δ.IsRepr ξ) (hd : Partition.diam Δ < δuc) :
+    (P : TaggedPartition a b) (hd : Partition.diam P.Δ < δuc) :
     ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition a b, Partition.diam P'.Δ < δ' →
-      (RiemannSum f P'.Δ P'.ξ - RiemannSum f Δ ξ).abs ≤ ε' * (b - a) + θ := by
+      (RiemannSum f P'.Δ P'.ξ - RiemannSum f P.Δ P.ξ).abs ≤ ε' * (b - a) + θ := by
+  obtain ⟨n, Δ, ξ, hr⟩ := P
   apply rs_refine_compare f M hM hM_pos hab Δ ξ (ε' * (b - a)) θ hθ
   intro N Δp ξp hrp σ hσ
   rw [← rs_refine_eq f a b n Δ ξ N Δp σ hσ]
