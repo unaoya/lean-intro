@@ -69,13 +69,49 @@
 | Ch1 | **term mode の証明**: 命題=型・証明=項、`fun`、適用、`⟨⟩`、`Eq.refl` / `Eq.trans` / `congrArg` | Nat 等式・命題論理（新規演習 C01）＋実コードの `le_of_lt` / `lt_of_le_of_ne` / `ne_of_gt`（`<` が `≤ ∧ ≠` のペアである体系を活かす） |
 | Ch2 | **tactic mode の証明**: ゴール状態、intro / exact / apply / rw / calc / have / show、`by`、term↔tactic の相互変換 | Ch1 と同素材の再訪＋∀ε>0∃δ>0 型トイ命題（新規演習 C02） |
 | Ch3 | **依存型・量化子・universe**【鍵 1・2】: `∀`=Π、`∃`、`{}` / `[]` / `()` と暗黙引数、カリー化、署名の読み方、namespace / section / open、**Prop vs Type と Sort 階層** | Axioms.lean の公理 5 本の型を精読（`Real.sup` の「証明を引数に取り、型が項に依存する」署名が依存型の決定的標本） |
-| Ch4 | **class と instance**: 代数階層、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入（class は structure の特殊形、Ch7 で再訪） | Real/Algebra.lean の補題演習。コラム: NatCast 二重インスタンス事件（ダイヤモンド） |
+| Ch4 | **class と instance**（双子章・前編）: 代数階層、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入。structure との比較表の **class 側の列だけ**ここで埋める | Real/Algebra.lean の補題演習。コラム: NatCast 二重インスタンス事件（ダイヤモンド） |
 | Ch5 | **defeq と rw の構文性**: `rfl` の意味（`a + -b = a - b := rfl`）、`show` 正規化、rw が失敗するとき、calc の設計 | Real/Order・Div・Abs（half_add / abs_triangle / abs_le 等）。「なぜこの show 行があるか」型読解問題 |
 | Ch6 | **帰納型と再帰**【鍵 3】: `inductive` の一般論（And / Or / Exists / Eq も Nat も帰納型 — Ch1–2 の道具の正体）、`Subtype`（`Range n`）、構造的再帰（`Summation`）、`induction`、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等）＋ cast_nonneg / cast_lt |
-| Ch7 | **structure**: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、証明を運ぶレコード（`increase` フィールド）、Ch4 の class との関係を回収 | `Partition`、equalPartition 構成演習（フィールド穴埋め） |
+| Ch7 | **structure**（双子章・後編）: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、証明を運ぶレコード（`increase`）。Ch4 の比較表の structure 側を埋めて完成させ、「Partition を class にしてみよ」演習で差を確定 | `Partition`、equalPartition 構成演習（フィールド穴埋め）。種明かし: Ch1 の `⟨h, hne⟩`（And）も structure だった |
 | Ch8 | **第 I 部の到達点: リーマン和の定義と性質**（総合章: 暗黙引数を持つ定義の設計と、自分の定義への API 構築） | `RiemannSum` の定義＋性質 5 本（additive / neg / const / nonneg / abs_bound）。IsRepr / InInterval が動機付きで初登場 |
 
 順序の設計判断: ① 量化子は ∀=Π の必然から依存型と同じ Ch3 に置く（TPiL4 の「Quantifiers and Equality」相当）。② class（Ch4）が structure（Ch7）より先なのは TPiL4 と逆だが、Ch3 で Axioms.lean を精読する以上 class の説明を遅らせるとブラックボックスが生じ本書の理念に反する。前方参照＋Ch7 での回収で処理。③ **古典論理と choice は第 I 部に置かない**: リーマン和とその性質までは構成的に進められる（choice が要るのは積分の定義の `Classical.choose` と分割の存在定理から）。必要になる直前＝第 II 部冒頭に置く。
+
+### structure と class の扱い（双子章方式）
+
+両者は機械的にはほぼ同一（class = structure ＋ `@[class]`、instance = def ＋ `@[instance]`）なので、**「2 つの別概念」ではなく「1 つの仕組み＋値の渡し方の自動化」として正直に教える**。説明は 3 段:
+
+1. **機械的な真実**: フィールド・射影・`⟨⟩`・`extends` はすべて共通。違いは `(Δ : Partition n a b)`（明示引数・名指しで渡す）か `[LinearOrderedField Real]`（インスタンス引数・機構が探して渡す）かだけ。
+2. **設計判断の基準**: その添字（型）に対して値が**正準に 1 つ**なら class（「ℝ と言えば足し算は決まっている」という暗黙の了解の機械化）、**多数あって量化・構成・受け渡しの対象**なら structure（「[a,b] の分割全体を走る」の機械化）。読者用リトマス試験:
+
+| 問い | structure なら | class なら |
+|---|---|---|
+| `∀ x, …` と量化したいか | する（`∀ P : TaggedPartition a b, …`） | しない |
+| 使用時に名前を呼ぶか | 呼ぶ（`Δ.points`） | 現れない（`a + b`） |
+| 2 つ目の値が存在したら | 当たり前（分割は無数） | 事故（NatCast ダイヤモンド事件） |
+
+3. **反転演習で確定させる**: 「`Partition` を class にしてみよ」→ 分割を任意に走る ∀ が書けず **`IsIntegral` が定義不能になる**（積分の定義そのものが Partition = structure の理由）。逆に「`LinearOrderedField` を structure にしてみよ」→ 全補題が構造を引数に取り、`a + b` のたびに「どの + か」を指定する羽目になる。どちらも壊れたコードを数行見せ、エラーを読む演習にする。
+
+章割り上は Ch4（class 側）と Ch7（structure 側）の**双子章**とし、同じ比較表を 2 章かけて完成させる。Ch7 で「Ch1 から使っていた `And` も structure だった」（`#print And`）の種明かしを行い、Ch6 の帰納型と合わせて 3 章にまたがる伏線を回収する。
+
+### 第 I 部のストーリー（リーマン和への道）
+
+**設計の仕掛け**: ① 各章は「前章の最後に残った問い」で開く**連鎖構造**。② 章末に import 図のうち「読めるようになったファイル」を塗りつぶす**現在地マップ**（進捗を領土として見せる）。③ 第 I 部は **2 本の糸**でできていることを各章冒頭で明示する — *定義の糸*（リーマン和を**書く**ために必要: Ch1→3→4→6→7→8 前半）と*証明の糸*（性質を**示す**ために必要: Ch2→5→6 の帰納法→8 後半）。
+
+リーマン和の**記述**に必要なのは正確に 6 つ（`def`/`fun`・型の言語と暗黙引数・class が効いているという理解・帰納型と構造的再帰・Subtype・structure 宣言の読解）であり、記述に入り込む証明は「添字が範囲内にある」という Nat 不等式の項埋め（`⟨k.val, Nat.lt_trans …⟩`）のみ。この事実を第 I 部の設計根拠として序文で示す。
+
+各章のビート:
+
+- **序章（挑戦状）**: 「あなたは ε-δ を知っている。では機械に説明できるか」。`main'` の statement と `#print axioms main` の 8 行だけ見せ、3 つの鍵を予告。第 I 部の約束は控えめに「リーマン和を自分の手で定義するところまで」。
+- **Ch0**: 本文の半分はリポジトリそのもの。`main'` にカーソルを置きゴール表示を体験して閉じる——まだ読めない。読めるようになるのがこの本。
+- **Ch1**: `1 = 1` から「証明は項」。実コード初日: `<` が `≤ ∧ ≠` である体系を活かし `le_of_lt`（射影）/ `lt_of_le_of_ne`（構成）/ `ne_of_gt`（¬は関数）。引き:「項の手書きはすぐ破綻する」
+- **Ch2**: `by` とゴール状態。Ch1 と同じ定理を tactic で再証明、`exact` が両世界の橋。引き:「署名の `{}` や `[]` は何だ？」
+- **Ch3**: 署名が読めれば半分わかる。クライマックスは公理 5 本の精読 — `Real.sup` の「証明を引数に取り、型が項に依存する」署名。Prop vs Type から Sort 階層へ。引き:「`+` や `0` はどこから来た？」
+- **Ch4**: 根幹の 2 行 `axiom Real.instLOF` ＋ `instance`。リテラル `(2 : Real)` の正体。双子章前編＋ダイヤモンド事件コラム。引き: 章末演習で読者は初めて rw の失敗に遭遇する（仕組まれた挫折）。
+- **Ch5**: 等しさには 2 種類ある。`a + -b = a - b := rfl` が通るのに rw は区別する。show・calc 設計。「なぜこの show 行があるか」読解問題。引き:「Σ とは何か？」
+- **Ch6**: `#print Or` で種明かし — Ch1 から使ってきた ∧∨∃= も Nat もすべて帰納型。その目で `Range`（証明を抱えた添字）と `Summation`（構造的再帰）を読み、初の帰納法証明へ。引き:「分割をデータとしてどう表す？」
+- **Ch7**: 証明を運ぶレコード `Partition`。双子章後編（比較表完成＋反転演習）。equalPartition フィールド穴埋め。引き:「役者が揃った」
+- **Ch8**: リーマン和の定義は 1 行 — この 1 行に第 I 部の全章が映っている。後半は性質 5 本の総合演習: 望遠鏡和 `Σ length = b − a` の快感、`RiemannSum_nonneg` の反例から IsRepr が必然として登場。幕引き:「この和はどこへ向かうのか。それに答えるには値をひとつ選び取る力が要る（第 II 部、choice と極限へ）」
 
 ### 第 II 部 積分 — 定義・性質・存在（Ch9–13）
 
