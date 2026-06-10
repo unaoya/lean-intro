@@ -12,6 +12,7 @@
 - mathlib を使わない。`ring` / `linarith` / `simp` の強力版のような自動化もない。すべての補題が目の前で手作りされる——ブラックボックスゼロ。
 - その上で第 III 部において、**第 I・II 部で手作業だった証明の自動化（`my_ring` 等）を読者自身が作る**。「道具を使う」のではなく「道具を使い、最後にその道具を自作する」構成は既存教材（TPiL4 / MIL）にない本書独自の弧である。
 - 数学の説明は最小限（読者は数学既知）。紙面は Lean 固有の概念に集中する。
+- **縦糸は Lean の 3 つの鍵 — universe・依存型・帰納型。** 序章で予告し、依存型は Ch3（∀=Π としての量化子・署名読解）、universe は Ch3（Prop vs Type と Sort 階層 — 本書の全コードが Type 0 と Prop で完結することを universe 理解の教材として使う）、帰納型は Ch6（And/Or/Exists/Eq も Nat も帰納型という「正体」）で正面から扱い、Ch14（多項式 AST）で帰納型の応用として回収する。
 
 ## 2. 読者と方針（確定事項）
 
@@ -24,11 +25,12 @@
 | 本体コード | 教材都合の変更 OK（ただし公理 5 本・sorry ゼロ・FTC 主定理は不変） |
 | toolchain | 執筆前に最新安定版へ更新（現: v4.12.0-rc1） |
 | 旧資産 | Sample/・Demo/・talk/ 等は現状維持（演習は新規作成、アイデアのみ参考） |
-| 扱わないもの | universe・Monad/IO（全コードが Type 0 と Prop で完結することを序章で明言）。メタプログラミングは第 III 部で必要な範囲のみ |
+| 強調する柱 | **Lean の 3 つの鍵: universe・依存型・帰納型**（Ch3・Ch6 で正面から扱い、全章の解説で意識的に言及する） |
+| 扱わないもの | Monad/IO・universe 多相の実践（本書のコードは Type 0 と Prop で完結 — その事実自体を Ch3 の universe 解説の素材にする）。メタプログラミングは第 III 部で必要な範囲のみ |
 
 ## 3. 章立て
 
-**設計原則: 1 章 = 1 つの Lean 機能。**機械の軸が主、数学の進行は素材。第 I 部で Lean 機能を一つずつ習得し、第 II 部は統合応用として FTC に登り、第 III 部で自動化を自作する。数学の進行は本体の import 鎖（公理 → 実数補題 → 有限和 → 分割 → 積分 → FTC）と完全に整合する。
+**設計原則: 1 章 = 1 つの Lean 機能。**機械の軸が主、数学の進行は素材。第 I 部で Lean 機能を一つずつ習得し、第 II 部は統合応用として FTC に登り、第 III 部で自動化を自作する。**Lean 学習の順序を優先し、数学的順序は従とする**（結果的に import 鎖との整合はほぼ保たれている）。
 
 ### 第 I 部 Lean の機能（Ch1–8、1 章 1 概念）
 
@@ -36,13 +38,15 @@
 |---|---|---|
 | Ch0 | 環境構築・lake・`#check` / `#print` / `#print axioms` | リポジトリの歩き方 |
 | Ch1 | **term mode の証明**: 命題=型・証明=項、`fun`、適用、`⟨⟩`、`Eq.refl` / `Eq.trans` / `congrArg` | Nat 等式・命題論理（新規演習 C01） |
-| Ch2 | **tactic mode の証明**: ゴール状態、intro / exact / apply / rw / calc / have / show、`by`、term↔tactic の相互変換 | 量化子・∀ε>0∃δ>0 型トイ命題（新規演習 C02） |
-| Ch3 | **依存型と暗黙引数**: `∀`=Π、`{}` / `[]` / `()`、カリー化、署名の読み方 | Axioms.lean の公理 5 本の型を精読 |
-| Ch4 | **class と instance**: 代数階層の設計、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入 | Real/Algebra.lean の補題（add_left_cancel' / neg_neg / telescope_2 等） |
+| Ch2 | **tactic mode の証明**: ゴール状態、intro / exact / apply / rw / calc / have / show、`by`、term↔tactic の相互変換 | Ch1 と同素材の再訪＋∀ε>0∃δ>0 型トイ命題（新規演習 C02） |
+| Ch3 | **依存型・量化子・universe**【鍵 1・2】: `∀`=Π としての量化子、`∃`、`{}` / `[]` / `()` と暗黙引数、カリー化、署名の読み方、namespace / section / variable / open、**Prop vs Type と Sort 階層**（`Real : Type`・命題 : Prop の意味。本書の全コードが Type 0 と Prop に収まる事実と、mathlib の `Type*` への展望） | Axioms.lean の公理 5 本の型を精読 |
+| Ch4 | **class と instance**: 代数階層の設計、`extends`、インスタンス解決、`OfNat` と数値リテラル、`axiom`＋`instance` による実数導入。class は structure の特殊形であることを明示（詳細は Ch8 で再訪） | Real/Algebra.lean の補題（add_left_cancel' / neg_neg / telescope_2 等） |
 | Ch5 | **defeq と rw の構文性**: `rfl` の意味、`show` 正規化、rw が失敗するとき、calc の設計 | Real/Order・Div・Abs（half_add / abs_triangle / abs_le 等） |
-| Ch6 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable` | sup_near・**archimedean**（上限公理→定理、白眉その 1）・ceil |
-| Ch7 | **Subtype・再帰・帰納法**: `Range n`、構造的再帰（Summation）、`induction`、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等） |
-| Ch8 | **structure**: フィールド・射影・匿名コンストラクタ・intro-pattern 分解 | Partition / TaggedPartition、equalPartition 構成演習 |
+| Ch6 | **帰納型と再帰**【鍵 3】: `inductive` の一般論（And / Or / Exists / Eq も Nat も帰納型 — Ch1–2 で使った道具の正体）、`Subtype`（`Range n`）、構造的再帰（`Summation`）、`induction` タクティク、`omega`、`@[simp]` | Real/Summation（additive_summation / telescope_sum 等）＋ cast_nonneg / cast_lt（Nat 帰納法） |
+| Ch7 | **古典論理と choice**: `Classical.em` / `by_cases` / `absurd`、`choose` / `choose_spec`、`noncomputable`（構成的な Ch6 との対比で非構成的原理を導入） | sup_near・**archimedean**（上限公理→定理、白眉その 1）・ceil |
+| Ch8 | **structure**: フィールド・射影・匿名コンストラクタ・intro-pattern 分解、Ch4 の class との関係を回収（class = structure＋インスタンス探索） | Partition / TaggedPartition、equalPartition 構成演習 |
+
+順序の設計判断: ① 量化子は ∀=Π の必然から依存型と同じ Ch3 に置く（TPiL4 の独立章「Quantifiers and Equality」に相当）。② 帰納法（Ch6）→ choice（Ch7）の順は、Ch7 の素材（archimedean / ceil）が Nat 帰納法による cast 補題を前提とするため、および「構成的 → 非構成的」の概念順のため。③ class（Ch4）が structure（Ch8）より先なのは TPiL4 と逆だが、Ch3 で Axioms.lean を精読する以上 class の説明を遅らせるとブラックボックスが生じ本書の理念に反する。前方参照＋ Ch8 での回収で処理する。
 
 ### 第 II 部 統合応用 — FTC へ（Ch9–12、新概念は最小限）
 
@@ -51,13 +55,13 @@
 | Ch9 | choose で定義を作る（`dite` / `dif_pos`、定義の well-definedness） | RiemannSum・IsIntegral・Integral・integral_unique |
 | Ch10 | ε/2 論法の定石化（部品合成・`min δf δg` パターン） | 定数関数の積分・isintegral_add / neg・単調性 |
 | Ch11 | 大規模証明のアーキテクチャ（private・section・分割統治、誘導演習＋読解） | integrable_bounded・integrable_of_cauchy・連続⇒可積分 |
-| Ch12 | 総仕上げ（statement 中の `let`、`#print axioms` 監査の意味） | OIntegral・**main'**（calc 骨格演習）・main |
+| Ch12 | 総仕上げ（statement 中の `let`、`#print axioms` 監査の意味。コラム: 監査に現れる `propext` / `Quot.sound` / `Classical.choice` とは何か） | OIntegral・**main'**（calc 骨格演習）・main |
 
 ### 第 III 部 自動化を自作する（Ch13–14）— 本書の弧の回収
 
 | 章 | 主役の Lean 機能 | 内容 |
 |---|---|---|
-| Ch13 | **タクティクの合成**: `macro` / `macro_rules`、simp セット設計（`@[simp]` 属性の戦略、`simp only` カスタムセット）、`ac_rfl` を支える `Std.Associative` インスタンスの仕組み | 第 I・II 部で繰り返したパターン（三角不等式分解・min 分配・移項）を `real_simp` / `triangle` 等の自作タクティクに固める演習 |
+| Ch13 | **notation とタクティクの合成**: `notation` / `macro` / `macro_rules`、simp セット設計（`@[simp]` 属性の戦略、`simp only` カスタムセット）、`ac_rfl` を支える `Std.Associative` インスタンスの仕組み | `∫ x in a..b, f` 記法の自作（本体に積分記法が無いことを逆手に取る）＋第 I・II 部で繰り返したパターン（三角不等式分解・min 分配・移項）を `real_simp` / `triangle` 等の自作タクティクに固める演習 |
 | Ch14 | **proof by reflection で my_ring を作る**（白眉その 2）: 多項式 AST（帰納型の本格応用）→ 正規化関数 → 健全性定理 → `rfl` / `decide` による証明。ゴールの reify（`elab` による Expr 操作）は最小限の解説 | 自作 `my_ring` で第 I 部の手書き calc 証明を 1 行に置換してみせる。linarith は仕組みの読み物。mathlib の `ring` / `linarith` の実装思想への接続 |
 
 第 III 部の素材コード `MyProject/Tactic/`（Ch13: 合成タクティク群、Ch14: `MyRing.lean` = AST / norm / soundness ＋ reifier）は新規開発が必要（P4 の章執筆ループ内。本体ビルドに含めるが背骨の import 鎖には不干渉）。
@@ -126,7 +130,7 @@ lean_lib «Exercises» where
 
 ## 7. 既存教材との関係・参考文献
 
-- **Theorem Proving in Lean 4**（Avigad, de Moura, Kong, Ullrich）: 概念順（DTT → 命題と証明 → 量化子 → Tactics → … → 帰納型 → 構造体 → 型クラス → 公理と計算）は本書第 I 部とほぼ整合。型クラスのみ意図的に前倒し（Ch4、Axioms.lean 読解に必須）。conv は不使用のため扱わない
+- **Theorem Proving in Lean 4**（Avigad, de Moura, Kong, Ullrich）: 概念順（DTT → 命題と証明 → 量化子 → Tactics → … → 帰納型 → 構造体 → 型クラス → 公理と計算）は本書第 I 部とほぼ整合。差分は ① 型クラスの前倒し（Ch4、Axioms.lean 読解に必須）② TPiL ch6「Interacting with Lean」（namespace / section / open）は Ch3 に吸収 ③ conv は不使用のため扱わない。トピックの過不足はこの 3 点で説明できることを確認済み
 - **Mathematics in Lean**（Avigad, Massot）: 演習方式（リポジトリ clone・本文中に随時 sorry・解答同梱）を採用。ただし MIL の ring / linarith 等の自動化は本書では不使用——「MIL が自動化に任せる部分を全て手で組み、最後にその自動化を自作する」が本書の差別化
 - **The Mechanics of Proof**（Macbeth）: 制限タクティクセットで数学を教える方針が近い。序章の文献案内に含める
 - **Metaprogramming in Lean 4**（Paulino 他）: 第 III 部の「より深く」の参照先
