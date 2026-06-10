@@ -7,6 +7,38 @@ noncomputable section
 private theorem add_add_swap (p x y : Real) : (p + x) + (p + y) = (x + y) + (p + p) := by
   ac_rfl
 
+-- 小区間上の F の像は空でない
+private theorem img_ne {n : Nat} {a b : Real} (Δ : Partition n a b) (F : Real → Real) :
+    ∀ i : Range n, ∃ v, ∃ t, (Δ.points (Range.incl i) ≤ t ∧
+      t ≤ Δ.points (Range.addone i)) ∧ v = F t :=
+  fun i => ⟨F (Δ.points (Range.incl i)), Δ.points (Range.incl i),
+    ⟨le_refl _, Δ.increase i⟩, rfl⟩
+
+-- 小区間上の F の像は M で上に有界
+private theorem img_bdd {n : Nat} {a b M : Real} {Δ : Partition n a b} {F : Real → Real}
+    (hFM : ∀ (i : Range n) (t : Real), Δ.points (Range.incl i) ≤ t →
+      t ≤ Δ.points (Range.addone i) → F t ≤ M) :
+    ∀ i : Range n, ∃ B, ∀ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
+      t ≤ Δ.points (Range.addone i)) ∧ v = F t) → v ≤ B :=
+  fun i => ⟨M, fun v hv => by
+    obtain ⟨t, ⟨h1, h2⟩, hveq⟩ := hv
+    rw [hveq]
+    exact hFM i t h1 h2⟩
+
+-- sup を γ-近似する点を各小区間から選ぶ
+private theorem img_sup_near {n : Nat} {a b : Real} {Δ : Partition n a b} {F : Real → Real}
+    (hne : ∀ i : Range n, ∃ v, ∃ t, (Δ.points (Range.incl i) ≤ t ∧
+      t ≤ Δ.points (Range.addone i)) ∧ v = F t)
+    (hbdd : ∀ i : Range n, ∃ B, ∀ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
+      t ≤ Δ.points (Range.addone i)) ∧ v = F t) → v ≤ B)
+    (γ : Real) (hγ : 0 < γ) :
+    ∀ i : Range n, ∃ t, ((Δ.points (Range.incl i) ≤ t ∧
+      t ≤ Δ.points (Range.addone i)) ∧
+      Real.sup _ (hne i) (hbdd i) - γ < F t) := by
+  intro i
+  obtain ⟨v, ⟨t, ht, hveq⟩, hlt⟩ := sup_near _ (hne i) (hbdd i) _ hγ
+  exact ⟨t, ht, hveq ▸ hlt⟩
+
 -- 核心補題（|f| 版）：固定した細かい分割 Δ に対し、十分細かい任意の Δ' で
 -- |RS_{|f|}(Δ') − RS_{|f|}(Δ)| ≤ (ε' + ε') + θ
 theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
@@ -30,26 +62,14 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       ⟨le_trans (Partition.left_le_point Δ (Range.incl i)) h1,
        le_trans h2 (Partition.point_le_right Δ (Range.addone i))⟩
   -- 各小区間上の f の上限と (−f) の上限
-  have hSne : ∀ i : Range n, ∃ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
-      t ≤ Δ.points (Range.addone i)) ∧ v = f t) :=
-    fun i => ⟨f (Δ.points (Range.incl i)), Δ.points (Range.incl i),
-      ⟨le_refl _, Δ.increase i⟩, rfl⟩
+  have hSne := img_ne Δ f
   have hSbdd : ∀ i : Range n, ∃ B, ∀ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
       t ≤ Δ.points (Range.addone i)) ∧ v = f t) → v ≤ B :=
-    fun i => ⟨M, fun v hv => by
-      obtain ⟨t, ⟨h1, h2⟩, hveq⟩ := hv
-      rw [hveq]
-      exact le_trans (le_abs (f t)) (hM t (hmem_ab i t h1 h2))⟩
-  have hNne : ∀ i : Range n, ∃ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
-      t ≤ Δ.points (Range.addone i)) ∧ v = -(f t)) :=
-    fun i => ⟨-(f (Δ.points (Range.incl i))), Δ.points (Range.incl i),
-      ⟨le_refl _, Δ.increase i⟩, rfl⟩
+    img_bdd (fun i t h1 h2 => le_trans (le_abs (f t)) (hM t (hmem_ab i t h1 h2)))
+  have hNne := img_ne Δ (fun t => -(f t))
   have hNbdd : ∀ i : Range n, ∃ B, ∀ v, (∃ t, (Δ.points (Range.incl i) ≤ t ∧
       t ≤ Δ.points (Range.addone i)) ∧ v = -(f t)) → v ≤ B :=
-    fun i => ⟨M, fun v hv => by
-      obtain ⟨t, ⟨h1, h2⟩, hveq⟩ := hv
-      rw [hveq]
-      exact le_trans (neg_le_abs (f t)) (hM t (hmem_ab i t h1 h2))⟩
+    img_bdd (fun i t h1 h2 => le_trans (neg_le_abs (f t)) (hM t (hmem_ab i t h1 h2)))
   let SupF : Range n → Real := fun i =>
     Real.sup (fun v => ∃ t, (Δ.points (Range.incl i) ≤ t ∧
       t ≤ Δ.points (Range.addone i)) ∧ v = f t) (hSne i) (hSbdd i)
@@ -83,15 +103,11 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     have hγ2 : 0 < γ / 2 / (b - a) := pos_div_pos _ _ (pos_half γ hγ) hba_pos
     -- γ-近似する代表点 u, v を選ぶ
     have hu : ∀ i : Range n, ∃ t, ((Δ.points (Range.incl i) ≤ t ∧
-        t ≤ Δ.points (Range.addone i)) ∧ SupF i - γ / 2 / (b - a) < f t) := by
-      intro i
-      obtain ⟨v, ⟨t, ht, hveq⟩, hlt⟩ := sup_near _ (hSne i) (hSbdd i) _ hγ2
-      exact ⟨t, ht, hveq ▸ hlt⟩
+        t ≤ Δ.points (Range.addone i)) ∧ SupF i - γ / 2 / (b - a) < f t) :=
+      img_sup_near hSne hSbdd _ hγ2
     have hv : ∀ i : Range n, ∃ t, ((Δ.points (Range.incl i) ≤ t ∧
-        t ≤ Δ.points (Range.addone i)) ∧ SupN i - γ / 2 / (b - a) < -(f t)) := by
-      intro i
-      obtain ⟨v, ⟨t, ht, hveq⟩, hlt⟩ := sup_near _ (hNne i) (hNbdd i) _ hγ2
-      exact ⟨t, ht, hveq ▸ hlt⟩
+        t ≤ Δ.points (Range.addone i)) ∧ SupN i - γ / 2 / (b - a) < -(f t)) :=
+      img_sup_near hNne hNbdd _ hγ2
     have hu_spec := fun i => Classical.choose_spec (hu i)
     have hv_spec := fun i => Classical.choose_spec (hv i)
     have hu_repr : Δ.IsRepr (fun i => Classical.choose (hu i)) :=
