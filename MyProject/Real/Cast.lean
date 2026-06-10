@@ -55,7 +55,6 @@ theorem cast_lt (a b : Nat) : a < b → (a : Real) < b := by
   have h1 := add_left_lt (Real.ofNat a) 0 (Real.ofNat (d + 1)) hpos
   rw [add_zero'] at h1; exact h1
 
-theorem lt_cast (n m : Nat) : n < m → (n : Real) < m := cast_lt n m
 
 -- アルキメデスの性質：上限公理から導かれるため公理ではなく定理
 theorem archimedean (a : Real) : ∃ n : Nat, a < n := by
@@ -104,12 +103,7 @@ theorem pos_ceil_pos (a : Real) : 0 < a → (0 : Real) < ↑(ceil a) :=
 -- §15. Range value theorems
 -- ============================================================
 
-theorem zero_val (n : Nat) (hn : 0 < n) : (⟨0, hn⟩ : Range n).val = (0 : Real) := rfl
 
-theorem range_val (n k : Nat) (hk : k < n) : (⟨k, hk⟩ : Range n).val = (k : Real) := rfl
-
-theorem cast_one_mul (x : Real) : (Nat.cast 1) * x = x := by
-  show Real.ofNat 1 * x = x; exact one_mul_b x
 
 open Range
 
@@ -120,8 +114,6 @@ theorem cast_addone_val (n : Nat) (k : Range n) : ((addone k).val : Real) = (k.v
   show Real.ofNat (k.val + 1) = Real.ofNat k.val + 1
   exact succ_ofNat k.val
 
-theorem incl_lt_addone (n : Nat) (i : Range n) : (incl i).val < (addone i).val :=
-  Nat.lt_succ_self i.val
 
 -- ============================================================
 -- §16. InInterval

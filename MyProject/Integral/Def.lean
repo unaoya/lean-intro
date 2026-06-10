@@ -196,7 +196,7 @@ theorem isintegral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) 
     IsIntegral f a b 0 :=
   fun _ _ => ⟨1, zero_lt_one, fun P _ => absurd P.Δ.left_le_right h⟩
 
--- b < a では Integral は 0
+/-- b < a では Integral は 0（公開 API）。 -/
 theorem integral_of_not_le (f : Real → Real) {a b : Real} (h : ¬(a ≤ b)) :
     Integral f a b = 0 := dif_neg (fun hc => h hc.1)
 

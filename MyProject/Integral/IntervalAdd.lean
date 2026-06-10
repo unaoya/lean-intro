@@ -36,7 +36,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
             exact AddCommGroup.add_zero I₁]
       exact h₁
     | inr hne_bc =>
-      have hab_lt : a < b := ⟨hab_le, hne_ab⟩
+      have hab_lt : a < b := lt_of_le_of_ne hab_le hne_ab
       have hac_le : a ≤ c := le_trans hab_le hbc_le
       have hac_lt : a < c := lt_le_trans a b c hab_lt hbc_le
       -- f の有界性
@@ -189,6 +189,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         _ < ε / 2 + ε / 2 := add_left_lt _ _ _ hA
         _ = ε := half_add ε
 
+/-- 区間の連結に関する可積分性（公開 API）。 -/
 theorem interval_add_integrable (f : Real → Real) (a b c : Real)
     (hab' : a ≤ b) (hbc' : b ≤ c)
     (hab : IsIntegrable f a b) (hbc : IsIntegrable f b c) :

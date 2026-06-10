@@ -156,12 +156,6 @@ theorem abs_sub_abs_le (a b : Real) : (a.abs - b.abs).abs ≤ (a - b).abs := by
 theorem nez_of_abs_pos {x : Real} (h : 0 < x.abs) : x ≠ 0 := by
   intro heq; rw [heq, abs_zero] at h; exact h.2 rfl
 
-theorem right_le_pos_add_pos (a b : Real) : 0 ≤ a → 0 ≤ b → b ≤ (a + b).abs := by
-  intro ha _
-  exact LinearOrderedField.le_trans b (a + b) (a + b).abs
-    (by have := add_le_add_right (0 : Real) a b ha; rw [zero_add'] at this; exact this)
-    (le_abs (a + b))
-
 -- ============================================================
 -- §13. NatCast
 -- ============================================================

@@ -19,9 +19,6 @@ theorem zero {a b : Real} (Δ : Partition 0 a b) : a = b := by
   have hb : Δ.points ⟨0, by simp⟩ = b := by rw [Δ.right]
   rw [← ha, hb]
 
-theorem zero_point {a b : Real} (Δ : Partition 0 a b) :
-    Δ.points ⟨0, Nat.one_pos⟩ = a := Δ.left
-
 theorem range_one (n : Nat) (hn : n = 0) (i : Range n.succ) : i = ⟨0, Nat.zero_lt_succ n⟩ := by
   rw [ext]
   simp
@@ -43,8 +40,6 @@ theorem left_le_point {n : Nat} {a b : Real} (Δ : Partition n a b) (i : Range n
       a ≤ Δ.points y.incl := (IH y.incl (Nat.pred_lt h₀))
       _ ≤ Δ.points y.addone := Δ.increase y
       _ = Δ.points x := congrArg Δ.points (Subtype.ext_iff.2 (Nat.succ_pred_eq_of_ne_zero h₀))
-
-theorem sub_lt_self (m n : Nat) (hm : 0 < m) (hn : 0 < n) : n - m < n := Nat.sub_lt hn hm
 
 theorem left_le_right {n : Nat} {a b : Real} (Δ : Partition n a b) :
     a ≤ b := by

@@ -200,7 +200,7 @@ theorem le_of_forall_le_add {A B : Real} (h : ∀ γ, 0 < γ → A ≤ B + γ) :
     | inl heq => rw [heq]; exact le_refl B
     | inr hne =>
       exfalso
-      have hBA : B < A := ⟨hge, fun h0 => hne h0.symm⟩
+      have hBA : B < A := lt_of_le_of_ne hge (fun h0 => hne h0.symm)
       have hpos : 0 < A - B := (pos_iff_lt B A).mp hBA
       have h1 := h ((A - B) / 2) (pos_half _ hpos)
       have h2 : B + (A - B) / 2 < B + (A - B) := add_left_lt B _ _ (half_lt hpos)

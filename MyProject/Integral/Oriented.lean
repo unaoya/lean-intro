@@ -29,12 +29,14 @@ theorem OIntegral_of_ge (f : Real → Real) {a b : Real} (h : b ≤ a) :
     rw [if_neg hnab]
 
 -- 向きの反転
+/-- 向きの反転（公開 API）。 -/
 theorem OIntegral_swap (f : Real → Real) (a b : Real) :
     OIntegral f a b = -(OIntegral f b a) := by
   cases le_total a b with
   | inl h => rw [OIntegral_of_le f h, OIntegral_of_ge f h, neg_neg]
   | inr h => rw [OIntegral_of_ge f h, OIntegral_of_le f h]
 
+/-- 同一点での向き付き積分は 0（公開 API）。 -/
 theorem OIntegral_self (f : Real → Real) (a : Real) : OIntegral f a a = 0 := by
   rw [OIntegral_of_le f (le_refl a)]
   exact integral_self f a

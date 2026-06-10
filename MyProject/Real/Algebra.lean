@@ -88,8 +88,6 @@ theorem sub_self (a : Real) : a - a = 0 := add_neg' a
 
 theorem add_neg_sub (a b : Real) : a + -b = a - b := rfl
 
-theorem sub_add_neg (a b : Real) : a - b = a + -b := rfl
-
 theorem add_sub_cancel (a b : Real) : a + b - a = b := by
   calc a + b + -a = a + (b + -a) := AddCommGroup.add_assoc _ _ _
     _ = a + (-a + b) := by rw [AddCommGroup.add_comm b (-a)]

@@ -18,7 +18,7 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
       exact ⟨0, isintegral_self f a⟩
     | inr hne =>
       -- a < x: 一様連続性からコーシー型条件を導く
-      have hab' : a < x := ⟨hab, hne⟩
+      have hab' : a < x := lt_of_le_of_ne hab hne
       have hxa_pos : 0 < x - a := (pos_iff_lt a x).mp hab'
       have hxa_ne : x - a ≠ 0 := ne_of_gt hxa_pos
       rcases continuous_bounded f a x hab' hf with ⟨M, hM_pos, hM_bound⟩

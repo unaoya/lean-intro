@@ -148,7 +148,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
     | inl h => exact h
     | inr hne_cb =>
       exfalso
-      have hclt : c < b := ⟨hcb, hne_cb⟩
+      have hclt : c < b := lt_of_le_of_ne hcb hne_cb
       have hbc_pos : 0 < b - c := (pos_iff_lt c b).mp hclt
       let η := min δ' (min (δ_c / 2) ((b - c) / 2))
       have hη_pos : 0 < η :=
