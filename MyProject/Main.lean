@@ -32,7 +32,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
     -- 向き付き積分の区間差
     have hFdiff0 : F (x + h) - F x = OIntegral f x (x + h) :=
       oint_sub_interval f hint a (x + h) x
-    cases LinearOrderedField.le_total 0 h with
+    cases le_total 0 h with
     | inl hpos =>
       -- h ≥ 0 の場合
       have hxxh : x ≤ x + h := by
@@ -76,7 +76,7 @@ theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
         rw [hFdiff0, OIntegral_of_ge f hxhx]
       have hnle : ¬(x ≤ x + h) := by
         intro hle
-        have heq : x = x + h := LinearOrderedField.le_asymm x (x + h) hle hxhx
+        have heq : x = x + h := le_antisymm x (x + h) hle hxhx
         apply hne
         have h2 := add_sub_cancel x h
         rw [← heq] at h2

@@ -6,7 +6,7 @@ open Real Classical
 
 -- 順序の基本（推移律・移項・Trans インスタンス）
 
-theorem Real.le_of_lt {a b : Real} : a < b → a ≤ b := fun h => h.1
+theorem le_of_lt {a b : Real} : a < b → a ≤ b := fun h => h.1
 
 theorem le_refl (a : Real) : a ≤ a := LinearOrderedField.le_refl a
 
@@ -15,24 +15,36 @@ theorem le_trans {a b c : Real} (h₁ : a ≤ b) (h₂ : b ≤ c) : a ≤ c :=
 
 theorem lt_neq (a b : Real) : a < b → a ≠ b := fun h => h.2
 
+theorem le_antisymm (a b : Real) (h₁ : a ≤ b) (h₂ : b ≤ a) : a = b :=
+  LinearOrderedField.le_asymm a b h₁ h₂
+
+theorem le_total (a b : Real) : a ≤ b ∨ b ≤ a := LinearOrderedField.le_total a b
+
+theorem add_le_add_right (a b c : Real) (h : a ≤ b) : a + c ≤ b + c :=
+  LinearOrderedField.add_le_add a b c h
+
+theorem lt_of_le_of_ne {a b : Real} (h : a ≤ b) (hne : a ≠ b) : a < b := ⟨h, hne⟩
+
+theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
+
 theorem lt_trans (a b c : Real) : a < b → b < c → a < c := by
   intro ⟨hab, _⟩ ⟨hbc, hne_bc⟩
   exact ⟨LinearOrderedField.le_trans a b c hab hbc,
-    fun heq => hne_bc (LinearOrderedField.le_asymm b c hbc (heq ▸ hab))⟩
+    fun heq => hne_bc (le_antisymm b c hbc (heq ▸ hab))⟩
 
 theorem lt_le_trans (a b c : Real) : a < b → b ≤ c → a < c := by
   intro ⟨hab, hne⟩ hbc
   exact ⟨LinearOrderedField.le_trans a b c hab hbc,
-    fun heq => hne (LinearOrderedField.le_asymm a b hab (heq ▸ hbc))⟩
+    fun heq => hne (le_antisymm a b hab (heq ▸ hbc))⟩
 
 theorem le_lt_trans {a b c : Real} : a ≤ b → b < c → a < c := by
   intro hab ⟨hbc, hne⟩
   exact ⟨LinearOrderedField.le_trans a b c hab hbc,
-    fun heq => hne (LinearOrderedField.le_asymm b c hbc (heq ▸ hab))⟩
+    fun heq => hne (le_antisymm b c hbc (heq ▸ hab))⟩
 
 theorem ne_le_lt (a b : Real) : ¬a ≤ b → b < a := by
   intro h
-  cases LinearOrderedField.le_total a b with
+  cases le_total a b with
   | inl h' => exact absurd h' h
   | inr h' => exact ⟨h', fun heq => h (heq ▸ LinearOrderedField.le_refl a)⟩
 
@@ -42,7 +54,7 @@ theorem ne_le_lt (a b : Real) : ¬a ≤ b → b < a := by
 
 theorem add_left_le (a b c : Real) : b ≤ c → a + b ≤ a + c := by
   intro h
-  have h1 := LinearOrderedField.add_le_add b c a h
+  have h1 := add_le_add_right b c a h
   rw [add_comm b a, add_comm c a] at h1; exact h1
 
 theorem add_left_lt (a b c : Real) : b < c → a + b < a + c := by
@@ -52,10 +64,10 @@ theorem add_left_lt (a b c : Real) : b < c → a + b < a + c := by
 theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by
   constructor
   · intro h
-    have h1 := LinearOrderedField.add_le_add a b (-a) h
+    have h1 := add_le_add_right a b (-a) h
     rw [add_neg'] at h1; exact h1
   · intro h
-    have h1 := LinearOrderedField.add_le_add (0 : Real) (b + -a) a h
+    have h1 := add_le_add_right (0 : Real) (b + -a) a h
     rw [zero_add'] at h1
     rw [show b + -a + a = b from by
       calc b + -a + a = b + (-a + a) := add_assoc _ _ _
@@ -65,7 +77,7 @@ theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by
 
 theorem neg_neg_nonneg (a : Real) : a ≤ 0 → 0 ≤ -a := by
   intro h
-  have h1 := LinearOrderedField.add_le_add a (0 : Real) (-a) h
+  have h1 := add_le_add_right a (0 : Real) (-a) h
   rw [add_neg', zero_add'] at h1; exact h1
 
 theorem neg_neg_pos (a : Real) : a < 0 → 0 < -a := by
@@ -76,7 +88,7 @@ theorem neg_neg_pos (a : Real) : a < 0 → 0 < -a := by
       _ = 0 := neg_zero)⟩
 
 theorem neg_le_neg (a b : Real) (h : a ≤ b) : -b ≤ -a := by
-  have h1 := LinearOrderedField.add_le_add a b (-a + -b) h
+  have h1 := add_le_add_right a b (-a + -b) h
   rw [show a + (-a + -b) = -b from by
       calc a + (-a + -b) = (a + -a) + -b := (add_assoc _ _ _).symm
         _ = 0 + -b := by rw [add_neg']
@@ -139,7 +151,7 @@ instance : Trans (LE.le : Real → Real → Prop) Eq LE.le :=
 
 -- 順序
 theorem not_lt_imp_le {a b : Real} (h : ¬(a < b)) : b ≤ a := by
-  cases LinearOrderedField.le_total a b with
+  cases le_total a b with
   | inl hle =>
     cases Classical.em (a = b) with
     | inl heq => exact heq ▸ le_refl a
@@ -167,20 +179,20 @@ theorem sub_lt_swap {a b c : Real} (h : a - b < c) : a - c < b := by
   exact h1
 
 theorem sub_le_swap {a b c : Real} (h : a - b ≤ c) : a - c ≤ b := by
-  have h1 := LinearOrderedField.add_le_add (a - b) c (b - c) h
+  have h1 := add_le_add_right (a - b) c (b - c) h
   rw [show a - b + (b - c) = a - c from by
         rw [add_comm]; exact (telescope_2 c a b).symm,
       show c + (b - c) = b from add_sub_cancel' c b] at h1
   exact h1
 
 theorem le_add_of_sub_le {A B C : Real} (h : A - B ≤ C) : A ≤ B + C := by
-  have h1 := LinearOrderedField.add_le_add (A - B) C B h
+  have h1 := add_le_add_right (A - B) C B h
   rw [add_comm (A - B) B, add_sub_cancel' B A,
       add_comm C B] at h1
   exact h1
 
 theorem sub_le_of_le_add {A B C : Real} (h : A ≤ B + C) : A - B ≤ C := by
-  have h1 := LinearOrderedField.add_le_add A (B + C) (-B) h
+  have h1 := add_le_add_right A (B + C) (-B) h
   rw [show B + C + -B = C from by
         rw [add_comm B C, add_assoc, AddCommGroup.add_neg,
             AddCommGroup.add_zero]] at h1

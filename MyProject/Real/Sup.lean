@@ -17,7 +17,7 @@ theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S 
       (Classical.em (Real.sup S hne hbdd - γ < x)).elim
         (fun hlt => absurd ⟨x, hx, hlt⟩ hnex) not_lt_imp_le
     have hle := Real.sup_lub S hne hbdd _ hub
-    have h1 := LinearOrderedField.add_le_add (Real.sup S hne hbdd)
+    have h1 := add_le_add_right (Real.sup S hne hbdd)
       (Real.sup S hne hbdd - γ) (-(Real.sup S hne hbdd)) hle
     rw [AddCommGroup.add_neg] at h1
     rw [show Real.sup S hne hbdd - γ + -(Real.sup S hne hbdd) = -γ from by
@@ -26,9 +26,9 @@ theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S 
               add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
     have h2 : γ ≤ 0 :=
       calc γ = 0 + γ := (AddCommGroup.zero_add γ).symm
-        _ ≤ -γ + γ := LinearOrderedField.add_le_add 0 (-γ) γ h1
+        _ ≤ -γ + γ := add_le_add_right 0 (-γ) γ h1
         _ = 0 := AddCommGroup.neg_add γ
-    exact hγ.2 (LinearOrderedField.le_asymm 0 γ hγ.1 h2)
+    exact hγ.2 (le_antisymm 0 γ hγ.1 h2)
 
 #check (inferInstance : Max Real)
 

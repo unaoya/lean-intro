@@ -50,7 +50,7 @@ theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i)
     have h1 : (0 : Real) ≤ Summation n f' :=
       ih f' (fun i => h ⟨i.val, Nat.lt_of_lt_of_le i.property (Nat.le_succ n)⟩)
     have h2 := h ⟨n, Nat.lt_add_one n⟩
-    have h3 := LinearOrderedField.add_le_add (0 : Real) (Summation n f') (0 : Real) h1
+    have h3 := add_le_add_right (0 : Real) (Summation n f') (0 : Real) h1
     rw [add_zero'] at h3
     exact LinearOrderedField.le_trans _ _ _ h3 (add_left_le _ 0 _ h2)
 
@@ -66,7 +66,7 @@ theorem summation_le (n : Nat) (f g : Range n → Real) (h : ∀ i, f i ≤ g i)
       ih f' g' (fun i => h ⟨i.val, Nat.lt_of_lt_of_le i.property (Nat.le_succ n)⟩)
     have hn := h ⟨n, Nat.lt_add_one n⟩
     exact le_trans
-      (LinearOrderedField.add_le_add _ _ (f ⟨n, Nat.lt_add_one n⟩) ih')
+      (add_le_add_right _ _ (f ⟨n, Nat.lt_add_one n⟩) ih')
       (add_left_le (Summation n g') _ _ hn)
 
 -- ============================================================
@@ -182,7 +182,7 @@ theorem abs_summation_le (n : Nat) (h : Range n → Real) :
   | succ m ih =>
     rw [summation_succ m h, summation_succ m (fun i => (h i).abs)]
     apply le_trans (abs_triangle _ _)
-    exact LinearOrderedField.add_le_add _ _ _ (ih (fun i => h (Range.incl i)))
+    exact add_le_add_right _ _ _ (ih (fun i => h (Range.incl i)))
 
 theorem sub_summation (n : Nat) (F G : Range n → Real) :
     Summation n F - Summation n G = Summation n (fun i => F i - G i) := by

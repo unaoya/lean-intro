@@ -11,7 +11,7 @@ theorem cast_le (n m : Nat) : n ≤ m → (n : Real) ≤ m := by
   intro h
   rcases Nat.eq_or_lt_of_le h with heq | hlt
   · subst heq; exact le_refl _
-  · exact Real.le_of_lt (cast_lt n m hlt)
+  · exact le_of_lt (cast_lt n m hlt)
 
 theorem increse' (n : Nat) (a b : Real) (bnonneg : 0 ≤ b) :
   ∀ i : Range n, a + i.incl.val * b ≤ a + i.addone.val * b := by
@@ -67,7 +67,7 @@ theorem integral_nonneg (f : Real → Real) (a b : Real)
             add_sub_cancel' I (RiemannSum f Δ ξ),
             show I + -I = (0 : Real) from sub_self I] at this
         exact this
-      exact h2.2 (LinearOrderedField.le_asymm _ _ h2.1 hRS_nn)
+      exact h2.2 (le_antisymm _ _ h2.1 hRS_nn)
 
 theorem integral_monotone (f g : Real → Real) (a b : Real)
     (h : a ≤ b) (h' : ∀ x, InInterval a b x → f x ≤ g x)

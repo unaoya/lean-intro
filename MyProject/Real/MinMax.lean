@@ -67,7 +67,7 @@ theorem le_fmax' (n : Nat) (f : Range n → Real) (k : Range n) : f k ≤ fmax' 
       · exact ih (fpred' n f) ⟨k.val, hlt⟩
       · rename_i hcond
         exact le_trans (ih (fpred' n f) ⟨k.val, hlt⟩)
-          ((LinearOrderedField.le_total _ _).elim (absurd · hcond) id)
+          ((le_total _ _).elim (absurd · hcond) id)
 
 theorem fmax'_le (n : Nat) (f : Range n → Real) (a : Real) (ha : 0 ≤ a)
     (hf : ∀ i, f i ≤ a) : fmax' n f ≤ a := by
@@ -94,5 +94,5 @@ theorem min_eq_left {a b : Real} (h : a ≤ b) : min a b = a := by
 theorem min_eq_right {a b : Real} (h : b ≤ a) : min a b = b := by
   show (if a ≤ b then a else b) = b
   cases Classical.em (a ≤ b) with
-  | inl h' => rw [if_pos h']; exact LinearOrderedField.le_asymm a b h' h
+  | inl h' => rw [if_pos h']; exact le_antisymm a b h' h
   | inr h' => rw [if_neg h']

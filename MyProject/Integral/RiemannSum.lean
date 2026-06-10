@@ -205,7 +205,7 @@ theorem rs_insert_bound (f : Real → Real) {a b : Real} (c M : Real)
     rw [abs_neg]
     rw [show (2 : Real) * M = M + M from by
       rw [show (2 : Real) = 1 + 1 from rfl, add_mul, one_mul]]
-    exact le_trans (LinearOrderedField.add_le_add _ _ _ hfc) (add_left_le _ _ _ hfξ)
+    exact le_trans (add_le_add_right _ _ _ hfc) (add_left_le _ _ _ hfξ)
 
 -- m 点挿入で RS の差を制御
 theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
@@ -287,7 +287,7 @@ theorem rs_multi_insert_bound (f : Real → Real) {a b : Real} (M : Real)
         have hstep : Real.ofNat m * K + K = Real.ofNat (m + 1) * K := by
           rw [succ_ofNat, add_mul, one_mul]
         rw [← hstep]
-        exact le_trans (LinearOrderedField.add_le_add _ _ _ hbd₁) (add_left_le _ _ _ h_single)
+        exact le_trans (add_le_add_right _ _ _ hbd₁) (add_left_le _ _ _ h_single)
       show (RiemannSum f Δ₂ ξ₂ - RiemannSum f Δ ξ).abs ≤
           Real.ofNat (m + 1) * (2 * M * Partition.diam Δ)
       rw [hdecomp]

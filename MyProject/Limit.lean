@@ -34,14 +34,14 @@ private theorem sub_eq_zero_imp (a b : Real) (h : a - b = 0) : a = b := by
 
 -- Helper: abs is positive when argument is nonzero
 private theorem abs_pos_of_ne {x : Real} (h : x ≠ 0) : 0 < abs x := by
-  cases LinearOrderedField.le_total (0 : Real) x with
+  cases le_total (0 : Real) x with
   | inl hle =>
     have hlt : 0 < x := ⟨hle, fun heq => h heq.symm⟩
     rw [pos_abs hlt]; exact hlt
   | inr hle =>
     have hlt : x < 0 := ⟨hle, h⟩
     have hneg_pos : 0 < -x := neg_neg_pos x hlt
-    have hle2 : x ≤ -x := le_trans hle (Real.le_of_lt hneg_pos)
+    have hle2 : x ≤ -x := le_trans hle (le_of_lt hneg_pos)
     rw [show abs x = -x from by show (if x ≤ -x then -x else x) = -x; rw [if_pos hle2]]
     exact hneg_pos
 

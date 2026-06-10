@@ -20,7 +20,7 @@ theorem OIntegral_of_ge (f : Real → Real) {a b : Real} (h : b ≤ a) :
     OIntegral f a b = -(Integral f b a) := by
   cases Classical.em (a ≤ b) with
   | inl hab =>
-    have heq : a = b := LinearOrderedField.le_asymm a b hab h
+    have heq : a = b := le_antisymm a b hab h
     subst heq
     show (if a ≤ a then Integral f a a else -(Integral f a a)) = -(Integral f a a)
     rw [if_pos (le_refl a), integral_self, neg_zero]
@@ -31,7 +31,7 @@ theorem OIntegral_of_ge (f : Real → Real) {a b : Real} (h : b ≤ a) :
 -- 向きの反転
 theorem OIntegral_swap (f : Real → Real) (a b : Real) :
     OIntegral f a b = -(OIntegral f b a) := by
-  cases LinearOrderedField.le_total a b with
+  cases le_total a b with
   | inl h => rw [OIntegral_of_le f h, OIntegral_of_ge f h, neg_neg]
   | inr h => rw [OIntegral_of_ge f h, OIntegral_of_le f h]
 
@@ -43,15 +43,15 @@ theorem OIntegral_self (f : Real → Real) (a : Real) : OIntegral f a a = 0 := b
 theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u v)
     (a b c : Real) :
     OIntegral f a b + OIntegral f b c = OIntegral f a c := by
-  cases LinearOrderedField.le_total a b with
+  cases le_total a b with
   | inl hab =>
-    cases LinearOrderedField.le_total b c with
+    cases le_total b c with
     | inl hbc =>
       -- a ≤ b ≤ c
       rw [OIntegral_of_le f hab, OIntegral_of_le f hbc, OIntegral_of_le f (le_trans hab hbc)]
       exact interval_add_integral f a b c hab hbc (hint a b) (hint b c)
     | inr hcb =>
-      cases LinearOrderedField.le_total a c with
+      cases le_total a c with
       | inl hac =>
         -- a ≤ c ≤ b
         rw [OIntegral_of_le f hab, OIntegral_of_ge f hcb, OIntegral_of_le f hac,
@@ -63,9 +63,9 @@ theorem oint_add_integral (f : Real → Real) (hint : ∀ u v, IsIntegrable f u 
             ← interval_add_integral f c a b hca hab (hint c a) (hint a b), neg_add_distrib]
         exact add_neg_neg_cancel _ _
   | inr hba =>
-    cases LinearOrderedField.le_total b c with
+    cases le_total b c with
     | inl hbc =>
-      cases LinearOrderedField.le_total a c with
+      cases le_total a c with
       | inl hac =>
         -- b ≤ a ≤ c
         rw [OIntegral_of_ge f hba, OIntegral_of_le f hbc, OIntegral_of_le f hac,

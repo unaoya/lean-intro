@@ -49,7 +49,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
       have hM : ∀ t, InInterval a c t → (f t).abs ≤ M₁ + M₂ := by
         intro t ht
         have ht' := in_interval_pair hac_le ht
-        cases LinearOrderedField.le_total t b with
+        cases le_total t b with
         | inl htb =>
           apply le_trans (hM₁ t ((in_interval_iff hab_le).mpr ⟨ht'.1, htb⟩))
           exact le_of_add_nonneg_eq rfl hM₂_nn
@@ -63,7 +63,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         have h := add_left_lt (2 * (M₁ + M₂)) 0 1 zero_lt_one
         rwa [add_zero] at h
       have hK_pos : (0 : Real) < 2 * (M₁ + M₂) + 1 := le_lt_trans h2M_nn hx1
-      have hK_ne : 2 * (M₁ + M₂) + 1 ≠ 0 := fun h0 => hK_pos.2 h0.symm
+      have hK_ne : 2 * (M₁ + M₂) + 1 ≠ 0 := ne_of_gt hK_pos
       intro ε hε
       rcases h₁ (ε / 2 / 2) (pos_half _ (pos_half ε hε)) with ⟨δ₁, hδ₁_pos, hδ₁⟩
       rcases h₂ (ε / 2 / 2) (pos_half _ (pos_half ε hε)) with ⟨δ₂, hδ₂_pos, hδ₂⟩
@@ -155,19 +155,19 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
         rw [e1, e2, e3, e4, add_assoc]
       -- 挿入誤差の評価
       have hδ₃_nn : (0 : Real) ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
-        Real.le_of_lt (pos_div_pos _ _ (pos_half ε hε) hK_pos)
+        le_of_lt (pos_div_pos _ _ (pos_half ε hε) hK_pos)
       have hsplit_term : (RiemannSum f Δ' ξ' -
           RiemannSum f Δ ξ).abs ≤ ε / 2 := by
         apply le_trans hbd'
         have h1 : Partition.length Δ ⟨kv, hkv⟩ ≤
             Partition.diam Δ := le_fmax' _ _ _
         have h2 : Partition.diam Δ ≤ ε / 2 / (2 * (M₁ + M₂) + 1) :=
-          Real.le_of_lt (lt_le_trans _ _ _ hd (min_right_le _ _))
+          le_of_lt (lt_le_trans _ _ _ hd (min_right_le _ _))
         calc 2 * (M₁ + M₂) * Partition.length Δ ⟨kv, hkv⟩
             ≤ 2 * (M₁ + M₂) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
               mul_le_mul_left _ _ _ h2M_nn (le_trans h1 h2)
           _ ≤ (2 * (M₁ + M₂) + 1) * (ε / 2 / (2 * (M₁ + M₂) + 1)) :=
-              nonneg_mul_nonneg _ _ _ hδ₃_nn (Real.le_of_lt hx1)
+              nonneg_mul_nonneg _ _ _ hδ₃_nn (le_of_lt hx1)
           _ = ε / 2 := by
               rw [mul_comm]
               exact div_mul_cancel' (ε / 2) _ hK_ne
@@ -185,7 +185,7 @@ private theorem interval_add_isintegral (f : Real → Real) (a b c I₁ I₂ : R
             (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs := by
             rw [abs_sub_comm (RiemannSum f Δ ξ)]
         _ ≤ ε / 2 + (RiemannSum f Δ' ξ' - (I₁ + I₂)).abs :=
-            LinearOrderedField.add_le_add _ _ _ hsplit_term
+            add_le_add_right _ _ _ hsplit_term
         _ < ε / 2 + ε / 2 := add_left_lt _ _ _ hA
         _ = ε := half_add ε
 

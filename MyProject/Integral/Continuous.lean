@@ -20,7 +20,7 @@ theorem continuous_integrable (f : Real → Real) (a x : Real) (hf : Continuous 
       -- a < x: 一様連続性からコーシー型条件を導く
       have hab' : a < x := ⟨hab, hne⟩
       have hxa_pos : 0 < x - a := (pos_iff_lt a x).mp hab'
-      have hxa_ne : x - a ≠ 0 := fun h0 => hxa_pos.2 h0.symm
+      have hxa_ne : x - a ≠ 0 := ne_of_gt hxa_pos
       rcases continuous_bounded f a x hab' hf with ⟨M, hM_pos, hM_bound⟩
       apply integrable_of_cauchy f a x hab M hM_bound
       intro ε hε

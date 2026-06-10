@@ -34,18 +34,18 @@ theorem lt_epsilon_zero (x : Real) (h : ∀ ε, 0 < ε → x.abs < ε) : x = 0 :
           rw [← heq] at h1 h2
           have h3 := neg_neg_nonneg _ h2
           rw [neg_neg] at h3
-          exact LinearOrderedField.le_asymm _ _ h1 h3)
+          exact le_antisymm _ _ h1 h3)
     exact (lt_neq _ _ (h x.abs hpos)) rfl
 
 -- Helper: 0 ≤ (n : Real) for Nat n
 private theorem my_cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
   cases n with
   | zero => exact le_refl 0
-  | succ m => exact Real.le_of_lt (cast_lt 0 (m + 1) (Nat.zero_lt_succ m))
+  | succ m => exact le_of_lt (cast_lt 0 (m + 1) (Nat.zero_lt_succ m))
 
 -- Helper: (n : Real) ≤ (n + 1 : Real)
 private theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
-  Real.le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
+  le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
 
 
 -- Helper: m ≠ 0 when 0 ≤ x < (m : Real)
@@ -174,12 +174,12 @@ theorem isintegral_self (f : Real → Real) (a : Real) : IsIntegral f a a 0 := b
   intro ε hε
   refine ⟨1, zero_lt_one, fun ⟨n, Δ, ξ, hr⟩ _ => ?_⟩
   have hpts : ∀ (i : Range n.succ), Δ.points i = a :=
-    fun i => (LinearOrderedField.le_asymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
+    fun i => (le_antisymm _ _ (Δ.left_le_point i) (Δ.point_le_right i)).symm
   have hxi : ∀ (i : Range n), ξ i = a := by
     intro i
     have hi := Partition.repr_bounds hr i
     rw [hpts (Range.incl i), hpts (Range.addone i)] at hi
-    exact (LinearOrderedField.le_asymm _ _ hi.1 hi.2).symm
+    exact (le_antisymm _ _ hi.1 hi.2).symm
   have hRS : RiemannSum f Δ ξ = RiemannSum (fun _ => f a) Δ ξ := by
     unfold RiemannSum; apply summation_congr; intro i; rw [hxi i]
   rw [hRS, const_riemann_sum, sub_self,

@@ -21,7 +21,7 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
        RiemannSum (fun x => (f x).abs) Δ ξ).abs ≤ (ε' + ε') + θ := by
   have hab_le : a ≤ b := hab.1
   have hba_pos : 0 < b - a := (pos_iff_lt a b).mp hab
-  have hba_ne : b - a ≠ 0 := fun h0 => hba_pos.2 h0.symm
+  have hba_ne : b - a ≠ 0 := ne_of_gt hba_pos
   -- 各小区間の点は [a,b] に入る
   have hmem_ab : ∀ (i : Range n) (t : Real),
       Δ.points (Range.incl i) ≤ t → t ≤ Δ.points (Range.addone i) → InInterval a b t := by
@@ -72,9 +72,9 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
     apply le_trans (abs_sub_abs_le (f s) (f t))
     apply abs_le
     · rw [neg_sub]
-      exact le_trans (LinearOrderedField.add_le_add (f t) (SupF i) (-(f s))
+      exact le_trans (add_le_add_right (f t) (SupF i) (-(f s))
         (hF1 i t ht1 ht2)) (add_left_le (SupF i) _ _ (hF2 i s hs1 hs2))
-    · exact le_trans (LinearOrderedField.add_le_add (f s) (SupF i) (-(f t))
+    · exact le_trans (add_le_add_right (f s) (SupF i) (-(f t))
         (hF1 i s hs1 hs2)) (add_left_le (SupF i) _ _ (hF2 i t ht1 ht2))
   -- 振動和の評価：Σ Osc·len ≤ ε' + ε'
   have hosc_sum : Summation n (fun i => Osc i * Partition.length Δ i) ≤ ε' + ε' := by
@@ -105,10 +105,10 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
       intro i
       apply nonneg_mul_nonneg _ _ _ (Partition.length_nonneg Δ i)
       have h1 : SupF i ≤ γ / 2 / (b - a) + f (Classical.choose (hu i)) :=
-        le_add_of_sub_le (Real.le_of_lt (hu_spec i).2)
+        le_add_of_sub_le (le_of_lt (hu_spec i).2)
       have h2 : SupN i ≤ γ / 2 / (b - a) + -(f (Classical.choose (hv i))) :=
-        le_add_of_sub_le (Real.le_of_lt (hv_spec i).2)
-      apply le_trans (le_trans (LinearOrderedField.add_le_add _ _ (SupN i) h1)
+        le_add_of_sub_le (le_of_lt (hv_spec i).2)
+      apply le_trans (le_trans (add_le_add_right _ _ (SupN i) h1)
         (add_left_le (γ / 2 / (b - a) + f (Classical.choose (hu i))) _ _ h2))
       rw [add_add_swap (γ / 2 / (b - a)) (f (Classical.choose (hu i)))
             (-(f (Classical.choose (hv i))))]
@@ -157,14 +157,14 @@ theorem abs_rs_compare (f : Real → Real) (a b M If : Real)
           (RiemannSum f Δ (fun i => Classical.choose (hu i)) - If) :=
         telescope_2 _ _ _
       rw [heq]
-      apply Real.le_of_lt
+      apply le_of_lt
       apply lt_add_lt
       · rw [show If - RiemannSum f Δ (fun i => Classical.choose (hv i)) =
               -(RiemannSum f Δ (fun i => Classical.choose (hv i)) - If) from
               (neg_sub _ _).symm]
         exact le_lt_trans (le_abs _) (by rw [abs_neg]; exact hv_close)
       · exact le_lt_trans (le_abs _) hu_close
-    exact le_trans hsum (LinearOrderedField.add_le_add _ _ γ hdiff)
+    exact le_trans hsum (add_le_add_right _ _ γ hdiff)
   -- ここから細分比較（共通エンベロープに振動和による核心評価を渡す）
   have hMg : ∀ t, InInterval a b t → ((fun x => (f x).abs) t).abs ≤ M := by
     intro t ht

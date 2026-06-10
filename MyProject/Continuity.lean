@@ -26,8 +26,8 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
     a ≤ t ∧ t ≤ b ∧ ∃ δ, 0 < δ ∧ ∀ s₁ s₂, (a ≤ s₁ ∧ s₁ ≤ t) → (a ≤ s₂ ∧ s₂ ≤ t) →
       (s₁ - s₂).abs < δ → (f s₁ - f s₂).abs < ε
   have Sa : S a := ⟨le_refl a, hab.1, 1, zero_lt_one, fun s₁ s₂ hs₁ hs₂ _ => by
-    rw [show s₁ = a from (LinearOrderedField.le_asymm s₁ a hs₁.2 hs₁.1),
-        show s₂ = a from (LinearOrderedField.le_asymm s₂ a hs₂.2 hs₂.1),
+    rw [show s₁ = a from (le_antisymm s₁ a hs₁.2 hs₁.1),
+        show s₂ = a from (le_antisymm s₂ a hs₂.2 hs₂.1),
         sub_self, abs_zero]; exact hε⟩
   have hne : ∃ x, S x := ⟨a, Sa⟩
   have hbdd : ∃ M, ∀ x, S x → x ≤ M := ⟨b, fun x hx => hx.2.1⟩
@@ -54,11 +54,11 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
           _ = -(δ_c / 2) := by rw [AddCommGroup.add_neg, AddCommGroup.add_zero]
       rw [hsub] at h0
       have : δ_c / 2 ≤ 0 := by
-        have h1 := LinearOrderedField.add_le_add (0 : Real) (-(δ_c / 2)) (δ_c / 2) h0
+        have h1 := add_le_add_right (0 : Real) (-(δ_c / 2)) (δ_c / 2) h0
         calc δ_c / 2 = (0 : Real) + δ_c / 2 := (AddCommGroup.zero_add _).symm
           _ ≤ -(δ_c / 2) + δ_c / 2 := h1
           _ = 0 := AddCommGroup.neg_add _
-      exact (pos_half δ_c hδc_pos).2 (LinearOrderedField.le_asymm _ _ (pos_half δ_c hδc_pos).1 this)
+      exact (pos_half δ_c hδc_pos).2 (le_antisymm _ _ (pos_half δ_c hδc_pos).1 this)
   have ht₀_gt : c - δ_c / 2 < t₀ := ne_le_lt _ _ ht₀_close
   obtain ⟨δ₀, hδ₀_pos, hδ₀⟩ := ht₀S.2.2
   let δ' := min δ₀ (δ_c / 2)
@@ -177,7 +177,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
         intro s hsc hscη
         have hnn : 0 ≤ s - c := (nonneg_iff_le c s).mp hsc
         have hle : s - c ≤ η := by
-          have h1 := LinearOrderedField.add_le_add s (c + η) (-c) hscη
+          have h1 := add_le_add_right s (c + η) (-c) hscη
           rw [add_neg_cancel_η] at h1; exact h1
         rw [nonneg_abs hnn]
         exact le_trans hle hη_le_δc2
@@ -241,7 +241,7 @@ theorem continuous_unif_cont (f : Real → Real) (a b : Real)
       have hlt : c < c + η := by
         have := add_left_lt c 0 η hη_pos
         rw [add_zero c] at this; exact this
-      exact hlt.2 (LinearOrderedField.le_asymm c (c + η) hlt.1 hle_sup)
+      exact hlt.2 (le_antisymm c (c + η) hlt.1 hle_sup)
   -- Conclude
   exact ⟨δ', hδ'_pos, fun s t hs ht hdist =>
     unif_on_c s t ⟨hs.1, hcb_eq ▸ hs.2⟩ ⟨ht.1, hcb_eq ▸ ht.2⟩ hdist⟩
@@ -279,7 +279,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
     | zero =>
       intro t hat _htb htk
       rw [show ((0 : Nat) : Real) = (0 : Real) from rfl, zero_mul', add_zero] at htk
-      have heq : t = a := LinearOrderedField.le_asymm _ _ htk hat
+      have heq : t = a := le_antisymm _ _ htk hat
       subst heq; rw [sub_self, abs_zero]; exact le_refl 0
     | succ k ih =>
       intro t hat htb htk1
@@ -290,10 +290,10 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
       cases Classical.em (t ≤ a + (k : Real) * (δ / 2)) with
       | inl hle =>
         exact le_trans (ih t hat htb hle)
-          (Real.le_of_lt (cast_lt k (k + 1) (Nat.lt_succ_self k)))
+          (le_of_lt (cast_lt k (k + 1) (Nat.lt_succ_self k)))
       | inr hgt =>
         have hs_lt_t : a + (k : Real) * (δ / 2) < t := by
-          cases LinearOrderedField.le_total t (a + (k : Real) * (δ / 2)) with
+          cases le_total t (a + (k : Real) * (δ / 2)) with
           | inl h => exact absurd h hgt
           | inr h => exact ⟨h, fun heq => hgt (heq ▸ le_refl _)⟩
         have has : a ≤ a + (k : Real) * (δ / 2) := by
@@ -307,7 +307,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
         have hts_le : t - (a + (k : Real) * (δ / 2)) ≤ δ / 2 := by
           rw [hsucc, add_mul, one_mul,
               (add_assoc a ((k : Real) * (δ / 2)) (δ / 2)).symm] at htk1
-          have h := LinearOrderedField.add_le_add t _
+          have h := add_le_add_right t _
             (-(a + (k : Real) * (δ / 2))) htk1
           have hc : a + (k : Real) * (δ / 2) + δ / 2 + -(a + (k : Real) * (δ / 2)) = δ / 2 :=
             add_sub_cancel (a + (k : Real) * (δ / 2)) (δ / 2)
@@ -325,7 +325,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
         have h_lt : (f (a + (k : Real) * (δ / 2)) - f a).abs +
             (f t - f (a + (k : Real) * (δ / 2))).abs < (k : Real) + 1 :=
           le_lt_trans
-            (LinearOrderedField.add_le_add _ _
+            (add_le_add_right _ _
               (f t - f (a + (k : Real) * (δ / 2))).abs h_ih)
             (add_left_lt (k : Real) _ _ h_uc)
         rw [hsucc.symm] at h_lt
@@ -349,7 +349,7 @@ theorem continuous_bounded (f : Real → Real) (a b : Real)
         rw [add_comm] at h; exact h.symm
       rw [h1]; exact abs_triangle _ _
     exact (le_lt_trans
-      (le_trans h_split (LinearOrderedField.add_le_add _ _ _ hchain))
+      (le_trans h_split (add_le_add_right _ _ _ hchain))
       (by have h := add_left_lt ((N : Real) + (f a).abs) 0 1 zero_lt_one
           rw [add_zero] at h; exact h)).1
 

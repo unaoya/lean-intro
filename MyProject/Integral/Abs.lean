@@ -11,7 +11,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
   cases Classical.em (b ≤ a) with
   | inl hba =>
     -- a = b : RS は常に 0
-    have heq : a = b := LinearOrderedField.le_asymm a b h hba
+    have heq : a = b := le_antisymm a b h hba
     subst heq
     exact ⟨0, isintegral_self _ a⟩
   | inr hba =>
@@ -22,7 +22,7 @@ theorem abs_integrable (f : Real → Real) (a b : Real) (h : a ≤ b)
     have hM₀_nn : (0 : Real) ≤ M₀ := le_trans abs_nonneg (hM₀ a ha_in)
     have hM_pos : (0 : Real) < M₀ + 1 := by
       apply lt_le_trans 0 1 (M₀ + 1) zero_lt_one
-      have h1 := LinearOrderedField.add_le_add 0 M₀ 1 hM₀_nn
+      have h1 := add_le_add_right 0 M₀ 1 hM₀_nn
       calc (1 : Real) = 0 + 1 := (AddCommGroup.zero_add 1).symm
         _ ≤ M₀ + 1 := h1
     have hM : ∀ t, InInterval a b t → (f t).abs ≤ M₀ + 1 := by

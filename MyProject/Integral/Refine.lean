@@ -202,13 +202,13 @@ theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
   have hofn_pos : (0 : Real) < Real.ofNat (n + 1) := cast_lt 0 (n + 1) (Nat.zero_lt_succ n)
   have hK_pos : (0 : Real) < Real.ofNat (n + 1) * (2 * M) :=
     pos_mul_pos _ _ hofn_pos (pos_mul_pos 2 M zero_lt_two hM_pos)
-  have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := fun h0 => hK_pos.2 h0.symm
+  have hK_ne : Real.ofNat (n + 1) * (2 * M) ≠ 0 := ne_of_gt hK_pos
   refine ⟨θ / (Real.ofNat (n + 1) * (2 * M)), pos_div_pos _ _ hθ hK_pos, ?_⟩
   intro ⟨n', Δ', ξ', hr'⟩ hd'
   have hn' : 0 < n' := Δ'.pos_of_lt hab
   -- Δ の全分点を Δ' に挿入
   obtain ⟨Δp, ξp, hrp, _, hptsp, hbdp⟩ :=
-    rs_multi_insert_bound g M hMg (Real.le_of_lt hM_pos) hn' Δ' ξ' hr'
+    rs_multi_insert_bound g M hMg (le_of_lt hM_pos) hn' Δ' ξ' hr'
       (n + 1) (fun j => Δ.points ⟨j.val, j.property⟩)
       (fun j => Partition.points_in_interval Δ ⟨j.val, j.property⟩)
   have hpts_all : ∀ i : Range n.succ,
@@ -226,7 +226,7 @@ theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
     rw [show Real.ofNat (n + 1) * (2 * M * Partition.diam Δ') =
           Real.ofNat (n + 1) * (2 * M) * Partition.diam Δ' from (mul_assoc _ _ _).symm]
     apply le_trans (mul_le_mul_left (Real.ofNat (n + 1) * (2 * M)) _ _
-      (Real.le_of_lt hK_pos) (Real.le_of_lt hd'))
+      (le_of_lt hK_pos) (le_of_lt hd'))
     rw [← mul_div_assoc, mul_comm (Real.ofNat (n + 1) * (2 * M)) θ,
         mul_div_cancel θ _ hK_ne]
     exact le_refl θ
@@ -238,7 +238,7 @@ theorem rs_refine_compare (g : Real → Real) {a b : Real} (M : Real)
         (RiemannSum g Δp ξp - RiemannSum g Δ ξ).abs := by
         rw [abs_sub_comm (RiemannSum g Δ' ξ')]
     _ ≤ θ + B :=
-        le_trans (LinearOrderedField.add_le_add _ _ _ hins) (add_left_le _ _ _ hRCL)
+        le_trans (add_le_add_right _ _ _ hins) (add_left_le _ _ _ hRCL)
     _ = B + θ := add_comm θ B
 
 -- 核心補題：固定した細かい分割 Δ に対し、十分細かい任意の Δ' の RS は RS(Δ) に近い
@@ -257,7 +257,7 @@ theorem rs_compare (f : Real → Real) (a b M : Real)
   rw [← rs_refine_eq f a b n Δ ξ N Δp σ hσ]
   apply same_partition_bound
   intro j
-  apply Real.le_of_lt
+  apply le_of_lt
   apply huc
   · exact in_interval_pair hab.1 (Partition.repr_in_interval Δp ξp hrp j)
   · exact in_interval_pair hab.1 (Partition.repr_in_interval Δ ξ hr (σ j))

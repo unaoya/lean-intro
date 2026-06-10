@@ -19,14 +19,14 @@ theorem cast_nonneg (n : Nat) : (0 : Real) ≤ Real.ofNat n := by
   | succ m ih =>
     rw [succ_ofNat]
     calc (0 : Real) = 0 + 0 := (add_zero' 0).symm
-      _ ≤ Real.ofNat m + 0 := LinearOrderedField.add_le_add 0 (Real.ofNat m) 0 ih
+      _ ≤ Real.ofNat m + 0 := add_le_add_right 0 (Real.ofNat m) 0 ih
       _ ≤ Real.ofNat m + 1 := add_left_le _ 0 1 zero_lt_one.1
 
 theorem cast_pos_succ (n : Nat) : (0 : Real) < Real.ofNat (n + 1) := by
   rw [succ_ofNat]
   exact lt_le_trans 0 1 (Real.ofNat n + 1) zero_lt_one
     (by calc (1 : Real) = 0 + 1 := (zero_add' 1).symm
-        _ ≤ Real.ofNat n + 1 := LinearOrderedField.add_le_add 0 (Real.ofNat n) 1 (cast_nonneg n))
+        _ ≤ Real.ofNat n + 1 := add_le_add_right 0 (Real.ofNat n) 1 (cast_nonneg n))
 
 theorem cast_add (n m : Nat) : (Nat.cast : Nat → Real) n + (Nat.cast m) = (Nat.cast (n + m)) := by
   show Real.ofNat n + Real.ofNat m = Real.ofNat (n + m)

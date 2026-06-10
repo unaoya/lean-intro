@@ -14,11 +14,11 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
   cases Classical.em (b ≤ a) with
   | inl hba =>
     -- a = b : 区間は一点のみ
-    have heq : a = b := LinearOrderedField.le_asymm a b hab hba
+    have heq : a = b := le_antisymm a b hab hba
     subst heq
     refine ⟨(f a).abs, fun x hx => ?_⟩
     have hx' := in_interval_pair (le_refl a) hx
-    rw [LinearOrderedField.le_asymm x a hx'.2 hx'.1]
+    rw [le_antisymm x a hx'.2 hx'.1]
     exact le_refl _
   | inr hba =>
     have hba_pos : 0 < b - a := (pos_iff_lt a b).mp (ne_le_lt b a hba)
@@ -41,7 +41,7 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
     have h_diam : Partition.diam Δ < δ :=
       equalPartition_diam_lt m a b δ hm_ne hab hδ hm_lt
     have hL_pos : 0 < (b - a) / (m : Real) := pos_div_pos _ _ hba_pos hm_pos_r
-    have hL_ne : (b - a) / (m : Real) ≠ 0 := fun h0 => hL_pos.2 h0.symm
+    have hL_ne : (b - a) / (m : Real) ≠ 0 := ne_of_gt hL_pos
     -- 各点 x で、x を含む小区間の代表点だけ x に取り替えた代表点列と比較する
     refine ⟨2 / ((b - a) / (m : Real)) + fmax' m (fun j => (f (ξ j)).abs), ?_⟩
     intro x hx
@@ -101,6 +101,6 @@ theorem integrable_bounded (f : Real → Real) (a b : Real) (hab : a ≤ b)
               add_sub_cancel' (f (ξ k)) (f x)]
       _ ≤ (f x - f (ξ k)).abs + (f (ξ k)).abs := abs_triangle _ _
       _ ≤ 2 / ((b - a) / (m : Real)) + (f (ξ k)).abs :=
-          LinearOrderedField.add_le_add _ _ _ (Real.le_of_lt hfk)
+          add_le_add_right _ _ _ (le_of_lt hfk)
       _ ≤ 2 / ((b - a) / (m : Real)) + fmax' m (fun j => (f (ξ j)).abs) :=
           add_left_le _ _ _ (le_fmax' m (fun j => (f (ξ j)).abs) k)

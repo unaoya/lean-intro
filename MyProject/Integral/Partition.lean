@@ -208,7 +208,7 @@ theorem find_interval {n : Nat} {a b : Real} (Δ : Partition n a b) (x : Real)
     have : ¬ (x ≤ Δ.points ⟨k, hk_lt_ns⟩) := by
       rwa [show (⟨k - 1 + 1, Nat.succ_lt_succ hkm1_lt⟩ : Range n.succ) =
            ⟨k, hk_lt_ns⟩ from Subtype.ext heq] at this
-    cases LinearOrderedField.le_total x (Δ.points ⟨k, hk_lt_ns⟩) with
+    cases le_total x (Δ.points ⟨k, hk_lt_ns⟩) with
     | inl hle => exact absurd hle this
     | inr hge => exact hge
 

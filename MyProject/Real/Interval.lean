@@ -17,13 +17,13 @@ def InInterval_abs {x h t : Real} : InInterval x (x + h) t → (t - x).abs ≤ h
   · -- x ≤ x + h
     rename_i hle
     have hh : (0 : Real) ≤ h := by
-      have := LinearOrderedField.add_le_add x (x + h) (-x) hle
+      have := add_le_add_right x (x + h) (-x) hle
       rw [add_neg', show (x + h) + -x = h from add_sub_cancel x h] at this; exact this
     have htx : (0 : Real) ≤ t + -x := by
-      have := LinearOrderedField.add_le_add x t (-x) hint.1
+      have := add_le_add_right x t (-x) hint.1
       rw [add_neg'] at this; exact this
     have htxh : t + -x ≤ h := by
-      have := LinearOrderedField.add_le_add t (x + h) (-x) hint.2
+      have := add_le_add_right t (x + h) (-x) hint.2
       rw [show (x + h) + -x = h from add_sub_cancel x h] at this; exact this
     show Real.abs (t + -x) ≤ Real.abs h
     rw [nonneg_abs htx, nonneg_abs hh]; exact htxh
@@ -31,13 +31,13 @@ def InInterval_abs {x h t : Real} : InInterval x (x + h) t → (t - x).abs ≤ h
     rename_i hnle
     have hh : h ≤ 0 := by
       have hlt := ne_le_lt x (x + h) hnle
-      have := LinearOrderedField.add_le_add (x + h) x (-x) hlt.1
+      have := add_le_add_right (x + h) x (-x) hlt.1
       rw [show (x + h) + -x = h from add_sub_cancel x h, add_neg'] at this; exact this
     have htx : t + -x ≤ 0 := by
-      have := LinearOrderedField.add_le_add t x (-x) hint.2
+      have := add_le_add_right t x (-x) hint.2
       rw [add_neg'] at this; exact this
     have hhtx : h ≤ t + -x := by
-      have := LinearOrderedField.add_le_add (x + h) t (-x) hint.1
+      have := add_le_add_right (x + h) t (-x) hint.1
       rw [show (x + h) + -x = h from add_sub_cancel x h] at this; exact this
     show Real.abs (t + -x) ≤ Real.abs h
     rw [nonpos_abs htx, nonpos_abs hh]

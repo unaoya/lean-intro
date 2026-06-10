@@ -14,7 +14,7 @@ theorem nonmul_neg_le (a b c : Real) (hc : 0 ≤ c) (hab : 0 ≤ b - a) :
   rw [show b * c - a * c = b * c + -(a * c) from rfl,
       show -(a * c) = (-a) * c from (neg_mul a c).symm,
       show b * c + (-a) * c = (b + -a) * c from (CommRing.right_distrib b (-a) c).symm]
-  exact LinearOrderedField.mul_pos (b + -a) c hab hc
+  exact mul_nonneg (b + -a) c hab hc
 
 theorem nonneg_mul_nonneg (a b c : Real) (h : 0 ≤ c) : a ≤ b → a * c ≤ b * c := by
   intro hab; rw [nonneg_iff_le] at hab ⊢
@@ -34,18 +34,18 @@ theorem mul_right_lt (a b c : Real) : 0 < c → a < b → a * c < b * c := by
               show c * Field.inv c = (1 : Real) from Field.mul_inv c hcne, mul_one_b]
 
 theorem zero_lt_one : (0 : Real) < 1 := by
-  cases LinearOrderedField.le_total (0 : Real) 1 with
+  cases le_total (0 : Real) 1 with
   | inl h => exact ⟨h, fun heq => Field.nontrivial heq⟩
   | inr h =>
     have h0 : (0 : Real) ≤ -1 := neg_neg_nonneg 1 h
-    have h1 : (0 : Real) ≤ (-1) * (-1) := LinearOrderedField.mul_pos (-1) (-1) h0 h0
+    have h1 : (0 : Real) ≤ (-1) * (-1) := mul_nonneg (-1) (-1) h0 h0
     have h2 : (-1 : Real) * (-1) = 1 := by
       calc (-1 : Real) * (-1) = -(1 * (-1)) := neg_mul 1 (-1)
         _ = -(-(1 * 1)) := by rw [mul_neg]
         _ = 1 * 1 := neg_neg _
         _ = 1 := one_mul_b 1
     rw [h2] at h1
-    exact absurd (LinearOrderedField.le_asymm (0 : Real) (1 : Real) h1 h) Field.nontrivial
+    exact absurd (le_antisymm (0 : Real) (1 : Real) h1 h) Field.nontrivial
 
 theorem zero_lt_two : (0 : Real) < 2 := by
   have h1 := add_left_lt 1 0 1 zero_lt_one
@@ -61,18 +61,18 @@ theorem two_ne_zero : (2 : Real) ≠ 0 := zero_lt_two.2.symm
 theorem pos_inv (b : Real) (hb : 0 < b) : 0 < Field.inv b := by
   have hbne : b ≠ (0 : Real) := hb.2.symm
   constructor
-  · cases LinearOrderedField.le_total (0 : Real) (Field.inv b) with
+  · cases le_total (0 : Real) (Field.inv b) with
     | inl h => exact h
     | inr h =>
       exfalso
       have h0 : (0 : Real) ≤ -(Field.inv b) := neg_neg_nonneg _ h
       have h1 : (0 : Real) ≤ b * -(Field.inv b) :=
-        LinearOrderedField.mul_pos b (-(Field.inv b)) hb.1 h0
+        mul_nonneg b (-(Field.inv b)) hb.1 h0
       rw [mul_neg, show b * Field.inv b = (1 : Real) from Field.mul_inv b hbne] at h1
       have h2 : (1 : Real) ≤ 0 := by
-        have := LinearOrderedField.add_le_add (0 : Real) (-(1 : Real)) (1 : Real) h1
+        have := add_le_add_right (0 : Real) (-(1 : Real)) (1 : Real) h1
         rw [zero_add', neg_add'] at this; exact this
-      exact zero_lt_one.2 (LinearOrderedField.le_asymm (0 : Real) (1 : Real) zero_lt_one.1 h2)
+      exact zero_lt_one.2 (le_antisymm (0 : Real) (1 : Real) zero_lt_one.1 h2)
   · intro h
     exact Field.nontrivial (show (0 : Real) = 1 from by
       calc (0 : Real) = b * 0 := (mul_zero' b).symm
@@ -88,7 +88,7 @@ theorem nonneg_inv (b : Real) (hb : 0 ≤ b) (hbne : b ≠ 0) : 0 ≤ Field.inv 
 
 theorem pos_mul_pos (a b : Real) : 0 < a → 0 < b → 0 < a * b := by
   intro ha hb
-  exact ⟨LinearOrderedField.mul_pos a b ha.1 hb.1, fun h =>
+  exact ⟨mul_nonneg a b ha.1 hb.1, fun h =>
     ha.2 (by
       calc (0 : Real) = 0 * Field.inv b := (zero_mul_r _).symm
         _ = (a * b) * Field.inv b := by rw [h]
@@ -126,13 +126,13 @@ theorem pos_div_pos (a b : Real) : 0 < a → 0 < b → 0 < a / b :=
   fun ha hb => pos_mul_pos a (Field.inv b) ha (pos_inv b hb)
 
 theorem nonneg_div_nonneg (a b : Real) : 0 ≤ a → 0 < b → 0 ≤ a / b :=
-  fun ha hb => LinearOrderedField.mul_pos a (Field.inv b) ha (pos_inv b hb).1
+  fun ha hb => mul_nonneg a (Field.inv b) ha (pos_inv b hb).1
 
 theorem div_right_lt (a b c : Real) : 0 < c → a < b → a / c < b / c :=
   fun hc hab => mul_right_lt a b (Field.inv c) (pos_inv c hc) hab
 
 theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c := fun hc hab =>
-  nonneg_mul_nonneg a b (Field.inv c) (Real.le_of_lt (pos_inv c hc)) hab
+  nonneg_mul_nonneg a b (Field.inv c) (le_of_lt (pos_inv c hc)) hab
 
 -- ============================================================
 -- §7. More order
@@ -193,7 +193,7 @@ theorem half_lt {ε : Real} (hε : 0 < ε) : ε / 2 < ε := by
 
 -- ε-論法
 theorem le_of_forall_le_add {A B : Real} (h : ∀ γ, 0 < γ → A ≤ B + γ) : A ≤ B := by
-  cases LinearOrderedField.le_total A B with
+  cases le_total A B with
   | inl hle => exact hle
   | inr hge =>
     cases Classical.em (A = B) with
