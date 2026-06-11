@@ -21,7 +21,7 @@ theorem find_interval {n : Nat} {a b : Real} (Δ : Partition n a b) (x : Real)
     ∃ h : i < n, x ≤ Δ.points ⟨i + 1, Nat.succ_lt_succ h⟩
   -- p(n-1) holds since x ≤ b = Δ.points ⟨n⟩
   have hp : ∃ i, p i := by
-    have hn' : n - 1 < n := Nat.pred_lt (Nat.not_eq_zero_of_lt hn)
+    have hn' : n - 1 < n := by omega
     have heq : n - 1 + 1 = n := Nat.succ_pred_eq_of_pos hn
     refine ⟨n - 1, hn', ?_⟩
     have : Δ.points ⟨n - 1 + 1, Nat.succ_lt_succ hn'⟩ = Δ.points ⟨n, by simp⟩ := by

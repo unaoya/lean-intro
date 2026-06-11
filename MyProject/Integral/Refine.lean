@@ -147,7 +147,7 @@ theorem refine_parent (a b : Real) (n N : Nat) (hn : 0 < n)
   let p : Nat → Prop := fun i =>
     ∃ h : i < n, Δ''.points (Range.addone j) ≤ Δ.points ⟨i + 1, Nat.succ_lt_succ h⟩
   have hp : ∃ i, p i := by
-    have hn' : n - 1 < n := Nat.pred_lt (Nat.not_eq_zero_of_lt hn)
+    have hn' : n - 1 < n := by omega
     refine ⟨n - 1, hn', ?_⟩
     have heq : (⟨n - 1 + 1, Nat.succ_lt_succ hn'⟩ : Range n.succ) = ⟨n, Nat.lt_succ_self n⟩ :=
       Subtype.ext (Nat.succ_pred_eq_of_pos hn)

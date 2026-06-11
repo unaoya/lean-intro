@@ -42,7 +42,7 @@ theorem fmax'_lt (n : Nat) (f : Range n → Real) (a : Real) (ha : 0 < a) :
         cases n with
         | zero => exact absurd hi (Nat.not_lt_zero _)
         | succ m =>
-          have : i < (m + 1 + 1) := Nat.lt_of_lt_of_le hi (Nat.le_step (Nat.le_refl _))
+          have : i < (m + 1 + 1) := Nat.lt_of_lt_of_le hi (Nat.le_succ_of_le (Nat.le_refl _))
           exact hf ⟨i, Nat.lt_of_lt_of_le this (Nat.le_refl _)⟩)
     · exact hf ⟨n, Nat.lt_succ_self n⟩
 

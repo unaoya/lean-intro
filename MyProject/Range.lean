@@ -29,7 +29,7 @@ def lt {n : Nat} : Range n → Range n → Prop :=
 
 instance {n : Nat} : LT (Range n) := ⟨lt⟩
 
-instance {n : Nat} : WellFoundedRelation (Range n) where
+instance wfRel {n : Nat} : WellFoundedRelation (Range n) where
   rel := lt
   wf := InvImage.wf _ Nat.lt_wfRel.wf
 
@@ -37,7 +37,7 @@ theorem induction (n : Nat) (P : Range n → Prop)
     (IH : ∀ x, (∀ y, y < x → P y) → P x) : ∀ a, P a := by
   intro a
   apply WellFounded.induction
-  · apply Range.instWellFoundedRelation.wf
+  · apply Range.wfRel.wf
   · exact IH
 
 end Range
@@ -58,24 +58,14 @@ def Summation : (n : Nat) → (Range n → α) → α
 theorem has_min (p : Nat → Prop) (hp : ∃ n, p n) :
     ∃ a, p a ∧ ∀ x, p x → ¬(x < a) := by
   rcases hp with ⟨a, ha⟩
-  let motive (y : Nat) := p y → ∃ b, p b ∧ ∀ x, p x → ¬(x < b)
-  let (ind : ∀ n, (∀ m, m < n → motive m) → motive n) :=
-    fun n IH => (fun h => ?h)
-  have h := @Nat.strongRecOn motive a ind
-  exact h ha
-  by_cases h' : ∃ m, m < n ∧ p m
-  · rcases h' with ⟨m, hm⟩
-    have := IH m hm.1 hm.2
-    exact this
-  · have : ∀ m, m < n → ¬p m := by
-      intro m hm hpm
-      apply h'
-      exact ⟨m, hm, hpm⟩
-    apply Exists.intro n
-    constructor
-    · exact h
-    · intro x hpx hxn
-      apply this x hxn hpx
+  revert ha
+  induction a using Nat.strongRecOn with
+  | ind n IH =>
+    intro hn
+    by_cases h' : ∃ m, m < n ∧ p m
+    · rcases h' with ⟨m, hm, hpm⟩
+      exact IH m hm hpm
+    · exact ⟨n, hn, fun x hpx hxn => h' ⟨x, hxn, hpx⟩⟩
 
 noncomputable def min (p : Nat → Prop) (hp : ∃ n, p n) : Nat :=
   Classical.choose (has_min p hp)

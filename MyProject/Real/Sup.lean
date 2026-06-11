@@ -30,6 +30,3 @@ theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S 
         _ = 0 := AddCommGroup.neg_add γ
     exact hγ.2 (le_antisymm 0 γ hγ.1 h2)
 
-#check (inferInstance : Max Real)
-
-#check "all done"

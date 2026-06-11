@@ -47,11 +47,7 @@ theorem left_le_right {n : Nat} {a b : Real} (Δ : Partition n a b) :
   exact Δ.left_le_point ⟨n, by simp⟩
 
 theorem sub_add_eq_sub_sub (n m : Nat) (h : m ≤ n) (h' : 0 < m) : n - m + 1 = n - (m - 1) := by
-  have h₀ : m - 1 < n := by exact Nat.sub_one_lt_of_le h' h
-  have h₁ : 0 < n - (m - 1) := by exact Nat.zero_lt_sub_of_lt h₀
-  rw [← Nat.succ_eq_add_one, ← Nat.succ_pred_eq_of_pos h₁, Nat.succ_inj']
-  simp
-  rw [Nat.sub_sub, ← Nat.pred_eq_sub_one, ← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos h']
+  omega
 
 theorem point_le_right {n : Nat} {a b : Real} (Δ : Partition n a b) (i : Range n.succ) :
   Δ.points i ≤ b := by
@@ -81,7 +77,7 @@ theorem point_le_right {n : Nat} {a b : Real} (Δ : Partition n a b) (i : Range 
             rw [← this]
             have : addone ⟨n - x.val, h₁⟩ = ⟨n - y.val, h₃⟩ := by
               simp [ext]
-              exact sub_add_eq_sub_sub n x.val (Nat.lt_succ.1 x.property) (Nat.zero_lt_of_ne_zero h₀)
+              exact sub_add_eq_sub_sub n x.val (Nat.lt_succ_iff.1 x.property) (Nat.zero_lt_of_ne_zero h₀)
             rw [← this]
             apply Δ.increase
           _ ≤ b := IH y.incl (Nat.pred_lt h₀)
