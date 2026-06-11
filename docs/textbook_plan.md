@@ -183,6 +183,23 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 設計思想の糸に追加: **表現は増やさず view を増やす／本当に切り替えるなら輸送補題が税金／その極限が reflection**。
 
+### 分割への操作の地図と FTC の真の依存（2026-06-12 記録、脱 abs ルート採用）
+
+分割への操作は 4 種しかなく、消費先は正確に特定できる:
+
+| 操作 | 実装 | 消費する定理 | 章 |
+|---|---|---|---|
+| ① 構成（n 等分） | equalPartition＋exists_fine_partition | 一意性・コーシー判定の有界性・単調性 | Ch8・Ch12–13 |
+| ② 点の挿入 | find_interval＋insertPoint＋rs_insert_bound 系 | 細分比較（③の部品） | 付録 B |
+| ③ 細分への写像 | refine_parent（σ）＋rs_refine_eq | rs_compare／abs_rs_compare → 山頂 | 付録 B |
+| ④ 分解（1 点で切る） | IntervalAdd 内の手動 ΔL/ΔR 構築 | **区間加法性** → FTC の心臓部 | 付録 B |
+
+**主線は操作フリー**（第 I 部全体・積分の定義・線形性・単調性は①のみ、しかも①は構成であって加工ではない）。操作の爆発は付録 B の 2 大機械（②③＝山頂、④＝区間加法性）に正確に封じ込められており、表現 A の選択と章構成が整合している。view（split_at）の API 化の投資先も自動的にここに決まる。
+
+**連続⇒可積分は FTC に二重に必要**: (a) F(x) = ∫ₐˣ f の Integral は「可積分でなければ 0」のジャンク設計なので、可積分性がなければ F がそもそも目的の関数でない (b) oint_sub_interval が `∀ u v, IsIntegrable f u v` を要求（Main.lean:24 の hint）。FTC の主張が Continuous f だけを仮定する以上、導出するしかない（可積分性を仮定に置く「modulo 版」なら山頂なしで述べられる——正直な代替として序文の脚注候補）。
+
+**【採用】脱 abs ルート**: 参照実装の FTC は `integral_triangle_ineq`（|∫g| ≤ ∫|g|）経由で `abs_integrable`（振動和機械）を引き込むが、**両側評価で代替できる**——区間上 −ε ≤ f t − f x ≤ ε から `integral_monotone` を 2 回で −εh ≤ ∫(f−fx) ≤ εh、最後に実数レベルの |·| に直すだけ。∫|g| は不要。**Text 版の main' はこのルートで書く**。帰結: Oscillation / Abs 系（|f| の可積分性・積分の三角不等式）は FTC の依存から完全に外れ、「美しいが経路外」の発展話題（付録 B の独立節）に降格。Text の主線は「定義・一意性／定数積分／線形性／単調性（両側）／区間加法性／連続⇒可積分／OIntegral 場合分け」で閉じる。
+
 ### structure と class の扱い（双子章方式）
 
 両者は機械的にはほぼ同一（class = structure ＋ `@[class]`、instance = def ＋ `@[instance]`）なので、**「2 つの別概念」ではなく「1 つの仕組み＋値の渡し方の自動化」として正直に教える**。説明は 3 段:
@@ -276,7 +293,7 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 ### 付録
 
 - 付録 A: 一様連続性を読む（UniformContinuity — Ch15 部品 (i) の全証明）
-- 付録 B: 細分・振動和・区間加法性（Insert / Refine / Oscillation / IntervalAdd — Ch15 部品 (iii) ほか）
+- 付録 B: 細分・区間加法性（Insert / Refine / IntervalAdd — Ch15 部品 (iii) と FTC の④分解）。独立節として振動和（Oscillation / Abs — **脱 abs ルート採用により FTC 非依存の発展話題**: |f| の可積分性・積分の三角不等式）
 - 付録 C: mathlib への橋（本書の各概念の mathlib 対応表。MIL を次の一冊として推薦）
 
 ## 4. テキスト用コードと演習の機構
