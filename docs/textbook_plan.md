@@ -48,7 +48,7 @@
 7. FTC
 ```
 
-- 段 3 の「リーマン和の性質」は後段で実際に使う 5 本に厳選: `additive_riemann_sum` / `neg_riemann_sum` / `const_riemann_sum`（望遠鏡和 `length_sum`）/ `RiemannSum_nonneg`（**IsRepr / InInterval が「タグが区間内になければ非負にならない」という反例込みの動機で初登場**）/ `rs_abs_bound`。点挿入系は付録 B。
+- 段 3 の「リーマン和の性質」は後段で実際に使う 5 本に厳選: `additive_riemann_sum` / `neg_riemann_sum` / `const_riemann_sum`（望遠鏡和 `length_sum`）/ `RiemannSum_nonneg`（**IsRepr / InInterval が「タグが区間内になければ非負にならない」という反例込みの動機で初登場**）/ `rs_bound`（両側評価。abs は第 II 部まで登場しないため）。点挿入系は付録 B。
 - 段 4 では 3 種類の ε-δ（`IsLimAt`・`Continuous`・`IsIntegral`＝網目に関するネット収束）を比較する。
 - 段 5 は段 3 との対応表が章の構造になる:
 
@@ -57,7 +57,7 @@
 | additive_riemann_sum | ε/2 論法 | isintegral_add |
 | const_riemann_sum | δ 任意 | const_has_integral |
 | RiemannSum_nonneg | 矛盾論法 | integral_nonneg |
-| rs_abs_bound | sup 構成の有界性 | integrable_of_cauchy 内部 |
+| rs_bound（両側評価） | sup 構成の有界性 | integrable_of_cauchy 内部 |
 
 - 段 6「連続⇒可積分」は難易度の異なる 4 部品に分解して扱いを変える:
   (i) 一様連続性 `continuous_unif_cont`（sup による区間帰納、308 行）= **statement 精読＋付録 A**
@@ -73,15 +73,15 @@
 | 章 | 数学の歩み | そこで必要になる Lean 機能 |
 |---|---|---|
 | Ch0 | 環境構築・リポジトリの歩き方 | lake・`#check` / `#print` / `#print axioms` |
-| Ch1 | 最初の証明（`1 = 1`、`<` の 3 兄弟） | **命題=型・証明=項**（term mode、`fun`・`⟨⟩`・射影）。**CH 対応の 6 対応表を提示**（スレッド (a) の起点） |
-| Ch2 | **実数の公理 5 本を読む** | 署名の読み方・**依存型**（`Real.sup`）・量化子・Prop vs Type・**universe**【鍵 1・2】・namespace / open。CH 表の量化子行を裏付け（∀=依存関数 Π・∃=依存和） |
-| Ch3 | `+` と `0` はどこから来るか | **class と instance**（双子章・前編）・`axiom`＋`instance`・リテラルの正体・ダイヤモンド事件コラム |
+| Ch1 | 最初の証明（`1 = 1`、論理の項証明。Real 不要） | **命題=型・証明=項**（term mode、`fun`・`⟨⟩`・射影）。**CH 対応の 6 対応表を提示**（スレッド (a) の起点） |
+| Ch2 | **実数の公理 5 本を読む** | 署名の読み方・**依存型**（`Real.sup`）・量化子・Prop vs Type・**universe**【鍵 1・2】・namespace / open。CH 表の量化子行を裏付け（∀=依存関数 Π・∃=依存和）。🪟 公理と noncomputable。締めに**最初の実数証明**: `<` の 3 兄弟（`le_of_lt`=射影・`lt_of_le_of_ne`=構成・`ne_of_gt`=¬は関数——Ch1 の論理が Real に着地する瞬間） |
+| Ch3 | `+` と `0` はどこから来るか（新ファイルなし、C02 を素材に教える章） | **class と instance**（双子章・前編）・`axiom`＋`instance`・インスタンス解決。`#check (2 : Real)` が**エラーになる**実演（failed to synthesize——機構がエラーとして見える。Ch8 で回収）・ダイヤモンド事件コラム |
 | Ch4 | 有限和 Σ を手に入れる | **帰納型**【鍵 3】・Subtype（`Range`）・構造的再帰（`Summation`）。**CH 対応のパンチライン**: ∧∨∃=False も Nat もすべて帰納型——「論理は依存関数＋帰納型で実現できる」（`#print` で確認） |
-| Ch5 | 分割を表現し、**リーマン和を定義する**（到達点①） | **structure**（双子章・後編、証明を運ぶレコード）・**notation**（Σ 記法とリーマン和の記法を「定義したらすぐ」自作する）。章末: [a,b] の **2 等分**（cast 不要）を書き始めるが `increase` が **sorry のまま残る** |
+| Ch5 | 分割を表現し、**リーマン和を定義する**（到達点①） | **structure**（双子章・後編、証明を運ぶレコード）・**notation**（Σ 記法とリーマン和の記法を「定義したらすぐ」自作する）。章末: **1 分割（trivialPartition）**——リテラルも除法も不要、なのに `increase` が書けず **sorry のまま残る** |
 | Ch6 | sorry を埋める道具 I | **tactic mode**（ゴール状態・intro / exact / apply / rw / have / show・term↔tactic の往復）。**種明かし: タクティクは証明項を書く機械**（by 証明を `#print` して生成された λ 項を見る） |
 | Ch7 | sorry を埋める道具 II | **defeq と rw の構文性**・`rfl` / `show`・calc 設計・**帰納法による証明**（summation 補題 = Ch8 への部品。cast 補題は NatCast 導入後の Ch8 で）。種明かし: **rw の正体 = `Eq.mpr`＋motive**——構文的である理由が機構レベルで腑に落ちる |
-| Ch8 | **具体例: y = x を [0,1] の n 等分で計算**（到達点②） | 総合演習 I: 2 等分の sorry を消し、**NatCast**（添字 ↑i を実数へ運ぶ埋め込み——リテラル用 OfNat との対比）を導入して一般の n 等分へ。equalPartition のフィールド証明・分点 = i/n・cast 補題・`sum_id`・**RS = (n+1)/(2n)**（左端タグとの対比） |
-| Ch9 | **後で使う性質 5 本**（到達点③） | 総合演習 II: additive / neg / const / nonneg / abs_bound。`RiemannSum_nonneg` の反例から **IsRepr** 登場 |
+| Ch8 | **具体例: y = x を [0,1] の n 等分で計算**（到達点②） | **3 段の梯子**: ① 1 分割の sorry を消す（道具の最初の獲物）② 2 等分——リテラル `2`（OfNat 物語＝Ch3 の伏線回収）と除法が初登場 ③ n 等分——**NatCast**（↑i、リテラル用 OfNat との対比）・cast 補題・`sum_id`。仕上げに **RS = (n+1)/(2n)**（左端タグとの対比）。⚠ 肥大時は 2 章に分割予約 |
+| Ch9 | **後で使う性質 5 本**（到達点③） | 総合演習 II: additive / neg / const / nonneg / **rs_bound（両側評価——abs は使わない。第 I 部の構成性を守る）**。`RiemannSum_nonneg` の反例から **IsRepr** 登場。章末の `#print axioms`: **第 I 部は古典公理ゼロ**を監査 |
 | Ch10 | 間奏: 自分の手を自動化する | **simp セット設計・`macro` / `macro_rules`**（`real_simp` / `triangle` 自作）・`ac_rfl` の種明かし（`Std.Associative`）。種明かし: **simp の正体 = 停止を期待する有向書き換え系**（セット設計＝規則の設計）。以後の演習で自作タクティク使用可 |
 | Ch11 | **発展: my_ring を作る**（飛ばしても本線に影響なし） | **proof by reflection**: 多項式 AST（帰納型【鍵 3】の応用回収）→ 正規化 → 健全性 → `rfl` / `decide`。reify（`elab`）は最小限。**Ch8 の手計算を 1 行にして見せる**。linarith は読み物、mathlib の ring / linarith に接続 |
 
@@ -120,6 +120,7 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 | 窓 | 章 |
 |---|---|
 | BHK 解釈 — 構成主義の意味論 | Ch1 |
+| 公理と noncomputable — 実行コードの無い数 | Ch2 |
 | 証明無関係性と Prop — なぜ命題の宇宙は特別か | Ch2 |
 | 自然演繹と recursor — 除去則の正体 | Ch4 |
 | カーネルと De Bruijn 基準 — 何を信じているのか | Ch6 |
@@ -152,29 +153,28 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 - **序章（挑戦状）**: 「あなたは ε-δ を知っている。では機械に説明できるか」。`main'` と `#print axioms main` の 8 行だけ見せ、3 つの鍵を予告。第 I 部の約束は「リーマン和を自分の手で定義し、計算し、性質を証明するところまで」。
 - **Ch0**: 本文の半分はリポジトリそのもの。`main'` にカーソルを置きゴール表示を体験して閉じる——まだ読めない。読めるようになるのがこの本。
-- **Ch1**: `1 = 1` から「証明は項」。CH 対応の 6 対応表を提示（以後の章で裏付けると予告）。実コード初日: `le_of_lt`（射影）/ `lt_of_le_of_ne`（構成）/ `ne_of_gt`（¬は Bot への関数）。引き:「実数とは何か。公理を読みに行こう」
-- **Ch2**: 署名が読めれば半分わかる。公理 5 本の精読 — `Real.sup` の「証明を引数に取り、型が項に依存する」署名。Prop vs Type から Sort 階層へ。引き:「`+` や `0` はどこから来た？」
+- **Ch1**: `1 = 1` から「証明は項」。CH 対応の 6 対応表を提示（以後の章で裏付けると予告）。素材は論理と Nat のみ。引き:「実数とは何か。公理を読みに行こう」
+- **Ch2**: 署名が読めれば半分わかる。公理 5 本の精読 — `Real.sup` の「証明を引数に取り、型が項に依存する」署名。Prop vs Type から Sort 階層へ。締めに最初の実数証明: `<` の 3 兄弟（`le_of_lt`=射影 / `lt_of_le_of_ne`=構成 / `ne_of_gt`=¬は関数）——Ch1 の論理が Real に着地する。引き:「`+` や `0` はどこから来た？」
 - **Ch3**: 根幹の 2 行 `axiom Real.instLOF` ＋ `instance`。リテラル `(2 : Real)` の正体。双子章前編＋ダイヤモンド事件コラム。引き:「リーマン和には Σ が要る。有限和とは何か？」
 - **Ch4**: `#print Or` で種明かし — Ch1 から使ってきた ∧∨∃= も Nat もすべて帰納型。**CH 表が完結する**:「論理は依存関数と帰納型で実現できる」。その目で `Range`（証明を抱えた添字＝依存和の実物）と `Summation`（構造的再帰）を読む。引き:「分割をデータとしてどう表す？」
-- **Ch5**: 証明を運ぶレコード `Partition`（双子章後編・反転演習）。**リーマン和の定義は 1 行** — この 1 行に前章までの全部が映っている。定義したらすぐ **Σ 記法とリーマン和の記法を自作**（notation 初登場）。章末、[a,b] の 2 等分（分点 a・(a+b)/2・b——cast 不要、除法はここが初使用）を書き始める——が、`increase` フィールドが埋まらない。**sorry が残ったまま幕**。
+- **Ch5**: 証明を運ぶレコード `Partition`（双子章後編・反転演習）。**リーマン和の定義は 1 行** — この 1 行に前章までの全部が映っている。定義したらすぐ **Σ 記法とリーマン和の記法を自作**（notation 初登場）。章末、1 分割 trivialPartition（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める——が、`increase` が添字の場合分けなしには書けない。**sorry が残ったまま幕**。
 - **Ch6**: sorry を埋めるために。`by` とゴール状態、基本タクティク、term↔tactic の往復。種明かし: by 証明を `#print` すると λ 項が出てくる——タクティクは項を書く機械。
 - **Ch7**: 等しさには 2 種類ある（`a + -b = a - b := rfl` が通るのに rw は区別する）。show・calc 設計。帰納法による証明 — summation 補題と cast 補題を獲得（Ch8 への部品）。
-- **Ch8**: **sorry が消える日**。2 等分を完成させ、**NatCast**（↑i を実数へ運ぶ埋め込み）を導入して一般の n 等分へ。分点 = i/n、cast 補題、`sum_id`、そして **RS = (n+1)/(2n)**。到達点②。
+- **Ch8**: **sorry が消える日**。1 分割 → 2 等分（リテラル `2`、Ch3 のエラーの伏線回収）→ n 等分（**NatCast**）の 3 段を登り、cast 補題・`sum_id`・**RS = (n+1)/(2n)** へ。到達点②。
 - **Ch9**: 性質 5 本の総合演習。望遠鏡和の快感、`RiemannSum_nonneg` の反例から IsRepr が必然として登場。到達点③。
 - **Ch10（間奏）**: Ch6–9 で繰り返したパターン（三角不等式分解・min 分配・移項）を道具に固める。simp セット・macro 合成・ac_rfl の種明かし。
 - **Ch11（発展）**: my_ring。Ch8 で手計算した代数が 1 行になる。第 I 部の幕引き:「和は手なずけた。この和は、分割を細かくしたときどこへ向かうのか——それに答えるには値をひとつ選び取る力が要る（第 II 部へ）」
 
 ### 第 I 部前半の Text 骨格設計（最短経路の確定、2026-06-11）
 
-リーマン和の定義（到達点①）に至る Text/ の独立ソースを、ファイル単位で確定する。**計約 160 行で到達点①に達する**:
+リーマン和の定義（到達点①）に至る Text/ の独立ソースを、ファイル単位で確定する。**計約 155 行・4 ファイルで到達点①に達する**（章とファイルは 1:1 でない——Ch3 は新ファイルを持たず C02 を素材に教える章。C06/C07 は道具章の演習集）:
 
 | Text ファイル | 内容 | 行数目安 | 章 | 強制される Lean 機能 |
 |---|---|---|---|---|
 | C01_FirstProofs.lean | 論理ウォームアップ（Real 不要。1=1、∧∨→¬ の項証明、CH 表の素材） | 〜40 | Ch1 | def / fun / ⟨⟩ / 射影 |
-| C02_Axioms.lean | 代数階層クラス（AddCommGroup→MulCommMonoid→CommRing→Field→LinearOrderedField、**同型＋命名改善**）＋`axiom Real`＋`axiom Real.instLOF`＋`instance`＋sup 公理 3 本＋OfNat 0/1・Sub・LE/LT インスタンス | 〜55 | Ch2 精読・Ch3 | 署名読解・依存型・class（読み） |
-| C03_Numerals.lean | `Real.ofNat` 再帰・`OfNat (n+2)`（リテラルの正体。**NatCast は含めない——Ch8 へ後回し**） | 〜10 | Ch3 | instance・構造的再帰の予告 |
+| C02_Axioms.lean | 代数階層クラス（AddCommGroup→MulCommMonoid→CommRing→Field→LinearOrderedField、**同型＋命名改善**）＋`axiom Real`＋`axiom Real.instLOF`＋`instance`＋sup 公理 3 本＋最小インスタンス 3 つ（**OfNat 0**=Σの基底・**Sub**=length・**LT**=≤∧≠）＋締めに `<` の 3 兄弟（最初の実数証明） | 〜60 | Ch2 精読・Ch3 素材 | 署名読解・依存型・class（読み） |
 | C04_Summation.lean | `Range`（Subtype）・`incl` / `addone`・`Summation` | 〜25 | Ch4 | 帰納型・Subtype・構造的再帰 |
-| C05_RiemannSum.lean | `structure Partition`・`length`・`RiemannSum`・Σ / RS 記法・**2 等分**の骨格（分点 a・(a+b)/2・b。フィールド sorry＝クリフハンガー） | 〜30 | Ch5 | structure・notation |
+| C05_RiemannSum.lean | `structure Partition`・`length`・`RiemannSum`・Σ / RS 記法・**1 分割（trivialPartition）**の骨格（分点 a・b のみ。リテラル・除法とも不要。フィールド sorry＝クリフハンガー） | 〜30 | Ch5 | structure・notation |
 
 設計決定:
 
@@ -182,7 +182,10 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 2. **階層は参照実装と同型＋命名改善**: 同じ 5 段 extends 連鎖（双子章・階層設計の教材価値）。ただし独立コードの利点で命名のワートを修正——誤名 `LinearOrderedField.mul_pos`（実態は nonneg）→ `mul_nonneg` 等。参照実装との差分は §4.4 の方針どおり記録する。
 3. **派生インスタンス（Min / Max / Abs / NonNeg 等）は Ch2 に含めない**: 必要になった章で読者が定義する演習に（例: Ch9 で「abs を max で定義せよ」）。需要駆動の原則と一貫。
 4. 「RS の定義に入り込む証明は添字の Nat 不等式の項埋めのみ」（2 幕構成の根拠）は、この骨格を実際にビルドすることでコードとして検証する。骨格執筆時の検証: `lake build Text` 成功（sorry は 2 等分の意図的なもののみ）＋ sup 公理をコメントアウトしても C05 がビルドできることの確認。
-5. **NatCast は Ch8 まで後回し**（2026-06-11 決定）: NatCast が要るのは「一般の n 等分の分点式 `a + ↑i·(b−a)/n`」のためだけ。リテラル用の OfNat（Ch3）と変数埋め込み用の NatCast は別機構であり、後者は需要時に導入する。これに伴い **Ch5 のクリフハンガーは cast 不要の「2 等分」**（分点 a・(a+b)/2・b——除法はここが初使用、リテラル 2 のみ）に変更。一般の n 等分・cast 補題・`sum_id` は Ch8 で NatCast 導入と同時に扱う。
+5. **数の段階導入（リテラルも NatCast も後回し）**: RS の定義に要る Real のリテラルは `0` ただ 1 つ（Σ の基底）。リテラル機構（OfNat 1・(n+2)・`Real.ofNat`）と変数埋め込み（NatCast）はすべて Ch8 へ。**Ch5 のクリフハンガーは 1 分割（trivialPartition）**——リテラルも除法も不要で、「自明の極み」の increase すら添字の場合分けなしには書けない。**Ch8 は 3 段の梯子**: 1 分割完成（Ch6–7 の道具の最初の獲物）→ 2 等分（リテラル 2＝OfNat 物語の回収・除法の初使用）→ n 等分（NatCast・cast 補題・`sum_id`）。数の導入（0 → リテラル → 埋め込み）と分割の一般化（1 → 2 → n）が並走する。Ch3 では `#check (2 : Real)` が**エラーになること**（failed to synthesize OfNat Real 2）をインスタンス解決の実演に使い、Ch8 で回収する伏線とする。
+6. **abs / max / min / diam は第 II 部へ**（第 I 部の構成性を守る）: 実数の `max` は `if a ≤ b` を要し、≤ の分岐には `Classical.propDecidable` が要る——abs を Ch9 に置くと「第 I 部は構成的」が静かに破れる。よって Ch9 の第 5 性質は**両側評価 `rs_bound`: −M(b−a) ≤ RS ∧ RS ≤ M(b−a)** に言い換える（後段の sup 構成が消費するのはこの形なので数学的損失ゼロ）。「実数の max / abs は場合分けすら noncomputable」は **Ch12 の BHK 転調の最初の具体物**として活きる。第 I 部（Ch1–9）は**古典公理ゼロ**——章ごとに `#print axioms` で構成的であることすら監査できる。
+7. **noncomputable の 2 つの源泉を区別して教える**: (i) 公理的 Real に実行コードが無いこと（Ch2 から `noncomputable` が必要になる理由——正直な表示）と (ii) 証明・分岐レベルの古典原理（propDecidable・choice、Ch12）。理論の窓に「公理と noncomputable」（Ch2）を追加。
+8. **Ch8 肥大の監視点**: 梯子 3 段＋OfNat 物語＋NatCast＋cast 補題＋`sum_id`＋RS 計算は 1 章として重い。執筆時に 2 分割（分割の梯子 / y=x の計算）の可能性を予約。
 
 ### 貫通する具体例: y = x の [0,1] n 等分（Ch8 → Ch13 をまたぐ物語）
 
@@ -201,8 +204,8 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 | 章 | 数学の歩み | Lean 機能・教材要素 |
 |---|---|---|
-| Ch12 | 選び取る力 — 分割の存在と値の取り出し | **古典論理と choice**（`Classical.em` / `by_cases` / `choose` / `noncomputable`、**構成的だった第 I 部との対比**で導入）。🪟 **BHK の転調**: `noncomputable` は計算的読みを離れた傷跡。`min`・ceil・sup_near・**archimedean**（白眉①）・exists_fine_partition。コラム＋発展演習: 杉浦流「最小の継承的集合」との同値 |
-| Ch13 | **リーマン積分の定義**＝網目の極限・well-definedness | 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）・`TaggedPartition`・`dite`＋choose・`integral_unique`。**∫ 記法を定義した直後に自作**（Ch5 の再演）。誘導演習: `IsIntegral id`（貫通具体例がここで閉じる） |
+| Ch12 | 選び取る力 — 分割の存在と値の取り出し | **古典論理と choice**（`Classical.em` / `by_cases` / `choose` / `noncomputable`、**構成的だった第 I 部との対比**で導入）。🪟 **BHK の転調**: 証明・分岐レベルで古典原理が入る（noncomputable の第 2 の源泉）。最初の具体物は **max / abs**——「実数の場合分けすら決定不能ゆえ noncomputable」（ここで初導入、Ch9 の両側評価が abs の言い換えだったことも回収）。`min`・ceil・sup_near・**archimedean**（白眉①）・exists_fine_partition。コラム＋発展演習: 杉浦流「最小の継承的集合」との同値 |
+| Ch13 | **リーマン積分の定義**＝網目の極限・well-definedness | 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）・**diam**（fmax'・max を使用——Ch12 の道具）・`TaggedPartition`・`dite`＋choose・`integral_unique`。**∫ 記法を定義した直後に自作**（Ch5 の再演）。誘導演習: `IsIntegral id`（貫通具体例がここで閉じる） |
 | Ch14 | 積分の性質 ＝ **Ch9 の 5 性質の ε/2 持ち上げ**（対応表が章の構造） | `min δf δg` 定石・isintegral_add（最純形）。演習: ε/2 定石を macro に固める（Ch10 の応用） |
 | Ch15 | **山頂: 連続 ⇒ 可積分**（4 部品分解） | 大規模証明のアーキテクチャ（private・section・import DAG）。(ii) integrable_of_cauchy 精読＋ sup 構成 4 ブロック誘導演習・(iv) continuous_integrable 完全精読・(i)(iii) は statement 精読＋付録 |
 | Ch16 | **FTC** | statement 中の `let`・`#print axioms` 監査の意味。コラム: `propext` / `Quot.sound` / `Classical.choice` とは何か |
