@@ -201,48 +201,40 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 - 付録 B: 細分・振動和・区間加法性（Insert / Refine / Oscillation / IntervalAdd — Ch15 部品 (iii) ほか）
 - 付録 C: mathlib への橋（本書の各概念の mathlib 対応表。MIL を次の一冊として推薦）
 
-## 4. 演習機構の設計
+## 4. テキスト用コードと演習の機構
 
-### 4.1 配置
+### 4.1 大原則: テキスト用ソースは独立（2026-06-11 決定）
+
+教材の Lean ソースは **`Text/` 配下に置き、`MyProject` を import しない**。教材で構築する世界（公理・Range・Summation・Partition・RiemannSum・積分…）は読者と共にゼロから書き、Text 内で自己完結させる。
+
+- **`MyProject/` の役割は「参照実装」に変わる**: FTC が本当に sorry ゼロで証明できることの保証（`#print axioms` 監査つき）であり、教材の設計・証明の出典。本文から「完全版は `MyProject/...` 参照」とリンクする。
+- 利点: 教材コードを章の進行に最適な順序・命名・粒度で書ける（参照実装の歴史的事情から自由）。教材の改良が本体を壊さない・逆も然り。
+- 旧設計の「ミラー＋上流 import のみ規則・本体=模範解答」は廃止。
+
+### 4.2 配置とビルド
 
 ```
-Exercises/
-  C01_FirstProofs.lean      -- Ch1（本体に対応物なし）
-  C02_Axioms.lean           -- Ch2（署名読解クイズ）
-  C03_Algebra.lean          -- 以降、本体ファイルのミラー
-  ...
-  C16_FTC.lean
-  Solutions/                -- C01 等、本体に対応物がない問題の解答
-Exercises.lean              -- umbrella
+Text/
+  README.md        — 構成と執筆規約
+  book/            — 原稿（mdBook、§5）
+  C01_*.lean …     — 章ごとのテキスト用ソース（演習 sorry を本文中に埋め込み）
+Text.lean          — umbrella
 ```
 
-### 4.2 核心規則（名前衝突なし・本体＝模範解答）
+lakefile（実装済み）: `lean_lib «Text»`（デフォルトビルド対象外）。通常の `lake build` は警告ゼロを維持し、教材は `lake build Text` でビルドする。読者の検証は ① VS Code で sorry を埋めて波線が消える（主経路）② `lake build Text.C05_Structure` の章単位 ③ 全完了後 `lake build Text` が sorry 警告ゼロ。
 
-**各演習ファイルは「ミラー対象の本体ファイルが import しているモジュールだけ」を import し、対象補題を同名・同文で再掲して証明を sorry 化する。**
+### 4.3 演習と解答
 
-- 名前衝突なし: 本体の同名定理は import されていないため再宣言エラーにならない
-- カンニング不能: 解こうとしている補題そのものが環境に存在しない
-- **本体ファイルがそのまま模範解答**: 解答提供コストゼロ・解答の陳腐化ゼロ。本文から「解答は `MyProject/Real/Order.lean`」とリンクするだけ
+演習は MIL 方式（本文中に随時 sorry）。模範解答は各章ファイル末尾の `namespace Solutions` または `Text/Solutions/` 配下に置く（独立方式では本体が解答を兼ねないため、解答は Text 内に明示的に持つ）。
 
-### 4.3 lakefile（sorry 警告の隔離）
+### 4.4 参照実装との整合
 
-```lean
--- @[default_target] は Calculus のまま変えない
-lean_lib «Exercises» where
-  globs := #[.andSubmodules `Exercises, .one `Exercises]
-```
-
-- 通常の `lake build` は従来どおり警告ゼロを維持。sorry 警告は `lake build Exercises` のときだけ
-- 読者の検証: ① VS Code 上で sorry を埋めて波線が消えることを確認（主経路）② 章単位 `lake build Exercises.C03_Algebra` ③ 全完了後 `lake build Exercises` が警告ゼロなら修了
-
-### 4.4 ドリフト検査
-
-`scripts/check_exercises.py`（新設）: 演習ファイルの定理シグネチャ（`:=` / `:= by` 手前まで）を本体の同名宣言とトークン列比較し、「本体を変更したのに演習を直し忘れた」を CI で検出する。
+Text のコードは MyProject の定義と意図的に同型（命名・引数順は教材都合で変えてよい）。大きな乖離が出た場合は docs/textbook_plan.md に差分の理由を記録する。機械的なドリフト検査は独立方式では不要になったが、`lake build Text` 自体が常時の検証になる。
 
 ## 5. book/ 原稿の規約
 
-- **mdBook** 構成: `book/book.toml`＋`book/src/SUMMARY.md`＋章ごとの md
-- **コード引用は手書きコピペ禁止**。本体・演習の .lean に ANCHOR コメントを入れ、`{{#include ../../MyProject/Integral/Def.lean:integral_unique}}` 方式で実ファイルから抜粋する。ビルド対象の実コードが唯一の出典となり、本体改修と原稿が自動同期する
+- **mdBook** 構成: `Text/book/book.toml`＋`Text/book/src/SUMMARY.md`＋章ごとの md（骨格は作成済み）
+- **コード引用は手書きコピペ禁止**。本体・演習の .lean に ANCHOR コメントを入れ、`{{#include ../../C05_Structure.lean:riemann_sum}}` 方式で **Text/ の実ファイル**から抜粋する。ビルド対象の実コードが唯一の出典となり、コード改修と原稿が自動同期する
 - 各章冒頭に「より深く: TPiL ch.X / MIL ch.Y」参照ボックス
 
 ## 6. 作業フェーズと完了条件
@@ -250,8 +242,8 @@ lean_lib «Exercises» where
 | フェーズ | 内容 | 完了条件 |
 |---|---|---|
 | **P1 toolchain 更新** | `lean-toolchain` を最新安定版へ。先に Range.lean の無名 `WellFoundedRelation` インスタンスに明示名を付けてから更新（自動生成名 `Range.instWellFoundedRelation` への直接参照が壊れやすいため）。コア Nat 補題のリネーム等はエラー駆動で修正 | `lake build` 警告ゼロ・`#print axioms main` が公理 5 本＋標準 3 本のまま |
-| **P2 教材向け本体改修** | ① Range.lean の `has_min` を技巧的な形から素直な `Nat.strongRecOn` 適用形へ書き直し（Ch12 の教材対象）② Integral/Def.lean の private キャスト系ヘルパー（my_cast_nonneg / cast_le_succ / nat_ne_zero_of_nonneg_lt / cast_pos_of_ne）を Real/Cast.lean へ公開移動（4.2 の規則の成立条件）③ Continuity.lean を 2 分割（Continuous 定義＋continuous_sub/const = Ch13 と、UniformContinuity.lean = 付録 A）④ 命名修正: `IsIntegral_iff` → `integral_eq_of_isIntegral`、Real/Algebra.lean のプライム混在エイリアス一本化 ⑤ 清掃: 未使用 typo クラス `CompletLinearOrderedField`、`#check` 残骸等 ⑥ 背骨の主要定義に doc comment | ビルド・公理監査グリーン |
-| **P3 演習基盤＋book 骨格** | Exercises/ 雛形＋機構実証として C03（Real/Algebra ミラー）・C07（Order/Abs ミラー）を実作＋lakefile 追記＋`scripts/check_exercises.py`＋book/ 骨格（SUMMARY.md・ch00 ドラフト・各章スタブ）＋README を教材リポジトリとして更新 | `lake build` 警告ゼロ・`lake build Exercises` は sorry 警告のみ・ドリフト検査が機能 |
+| **P2 教材向け本体改修** | ① Range.lean の `has_min` を技巧的な形から素直な `Nat.strongRecOn` 適用形へ書き直し（Ch12 の教材対象）② Integral/Def.lean の private キャスト系ヘルパー（my_cast_nonneg / cast_le_succ / nat_ne_zero_of_nonneg_lt / cast_pos_of_ne）を Real/Cast.lean へ公開移動（参照実装の可読性向上）③ Continuity.lean を 2 分割（Continuous 定義＋continuous_sub/const = Ch13 と、UniformContinuity.lean = 付録 A）④ 命名修正: `IsIntegral_iff` → `integral_eq_of_isIntegral`、Real/Algebra.lean のプライム混在エイリアス一本化 ⑤ 清掃: 未使用 typo クラス `CompletLinearOrderedField`、`#check` 残骸等 ⑥ 背骨の主要定義に doc comment | ビルド・公理監査グリーン |
+| **P3 教材基盤** | Text/ 雛形＋lakefile の `lean_lib «Text»`（実施済み 2026-06-11）。続き: 章ソースの実作開始（C01〜）・book/ 章スタブ・README を教材リポジトリとして更新 | `lake build` 警告ゼロ・`lake build Text` がビルド可能 |
 | **P4 章執筆ループ** | 章ごとに「演習作成 → 自力 1 周で難度調整 → 原稿 md 執筆（include 配線）→ ドリフト検査」。推奨順: 第 I 部の背骨 Ch3〜9 → 第 II 部 Ch12〜16 → Ch1・2 → Ch10・11（`MyProject/Tactic/` 開発含む）→ Ch0 → 付録 | 各章: 演習が sorry 以外で警告ゼロ・原稿ビルド成功 |
 | **P5 公開** | 公開先決定（Zenn / GitHub Pages）、deploy 整備、Ch0 に導線 | 公開 URL で全章閲覧可・clone から演習着手まで 10 分以内 |
 

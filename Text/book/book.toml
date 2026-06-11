@@ -1,0 +1,5 @@
+[book]
+title = "Lean で読む・書く・開ける微積分 — 公理 5 本から微積分学の基本定理へ"
+authors = ["梅崎直也"]
+language = "ja"
+src = "src"

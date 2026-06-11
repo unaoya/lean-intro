@@ -28,3 +28,7 @@ lean_lib «Calculus» where
     .one `MyProject.Continuity,
     .andSubmodules `MyProject.Integral
   ]
+
+-- 教材（Text/ 配下、MyProject 非依存・デフォルトビルド対象外）
+lean_lib «Text» where
+  globs := #[.andSubmodules `Text, .one `Text]
