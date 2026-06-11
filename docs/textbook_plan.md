@@ -77,10 +77,10 @@
 | Ch2 | **実数の公理 5 本を読む** | 署名の読み方・**依存型**（`Real.sup`）・量化子・Prop vs Type・**universe**【鍵 1・2】・namespace / open。CH 表の量化子行を裏付け（∀=依存関数 Π・∃=依存和） |
 | Ch3 | `+` と `0` はどこから来るか | **class と instance**（双子章・前編）・`axiom`＋`instance`・リテラルの正体・ダイヤモンド事件コラム |
 | Ch4 | 有限和 Σ を手に入れる | **帰納型**【鍵 3】・Subtype（`Range`）・構造的再帰（`Summation`）。**CH 対応のパンチライン**: ∧∨∃=False も Nat もすべて帰納型——「論理は依存関数＋帰納型で実現できる」（`#print` で確認） |
-| Ch5 | 分割を表現し、**リーマン和を定義する**（到達点①） | **structure**（双子章・後編、証明を運ぶレコード）・**notation**（Σ 記法とリーマン和の記法を「定義したらすぐ」自作する）。章末: equalPartition を書き始めるが `increase` が **sorry のまま残る** |
+| Ch5 | 分割を表現し、**リーマン和を定義する**（到達点①） | **structure**（双子章・後編、証明を運ぶレコード）・**notation**（Σ 記法とリーマン和の記法を「定義したらすぐ」自作する）。章末: [a,b] の **2 等分**（cast 不要）を書き始めるが `increase` が **sorry のまま残る** |
 | Ch6 | sorry を埋める道具 I | **tactic mode**（ゴール状態・intro / exact / apply / rw / have / show・term↔tactic の往復）。**種明かし: タクティクは証明項を書く機械**（by 証明を `#print` して生成された λ 項を見る） |
-| Ch7 | sorry を埋める道具 II | **defeq と rw の構文性**・`rfl` / `show`・calc 設計・**帰納法による証明**（summation 補題・cast 補題 = Ch8 への部品）。種明かし: **rw の正体 = `Eq.mpr`＋motive**——構文的である理由が機構レベルで腑に落ちる |
-| Ch8 | **具体例: y = x を [0,1] の n 等分で計算**（到達点②） | 総合演習 I: equalPartition のフィールド証明（**Ch5 の sorry がここで消える**）・分点 = i/n・`sum_id`・**RS = (n+1)/(2n)**（左端タグとの対比） |
+| Ch7 | sorry を埋める道具 II | **defeq と rw の構文性**・`rfl` / `show`・calc 設計・**帰納法による証明**（summation 補題 = Ch8 への部品。cast 補題は NatCast 導入後の Ch8 で）。種明かし: **rw の正体 = `Eq.mpr`＋motive**——構文的である理由が機構レベルで腑に落ちる |
+| Ch8 | **具体例: y = x を [0,1] の n 等分で計算**（到達点②） | 総合演習 I: 2 等分の sorry を消し、**NatCast**（添字 ↑i を実数へ運ぶ埋め込み——リテラル用 OfNat との対比）を導入して一般の n 等分へ。equalPartition のフィールド証明・分点 = i/n・cast 補題・`sum_id`・**RS = (n+1)/(2n)**（左端タグとの対比） |
 | Ch9 | **後で使う性質 5 本**（到達点③） | 総合演習 II: additive / neg / const / nonneg / abs_bound。`RiemannSum_nonneg` の反例から **IsRepr** 登場 |
 | Ch10 | 間奏: 自分の手を自動化する | **simp セット設計・`macro` / `macro_rules`**（`real_simp` / `triangle` 自作）・`ac_rfl` の種明かし（`Std.Associative`）。種明かし: **simp の正体 = 停止を期待する有向書き換え系**（セット設計＝規則の設計）。以後の演習で自作タクティク使用可 |
 | Ch11 | **発展: my_ring を作る**（飛ばしても本線に影響なし） | **proof by reflection**: 多項式 AST（帰納型【鍵 3】の応用回収）→ 正規化 → 健全性 → `rfl` / `decide`。reify（`elab`）は最小限。**Ch8 の手計算を 1 行にして見せる**。linarith は読み物、mathlib の ring / linarith に接続 |
@@ -156,32 +156,33 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 - **Ch2**: 署名が読めれば半分わかる。公理 5 本の精読 — `Real.sup` の「証明を引数に取り、型が項に依存する」署名。Prop vs Type から Sort 階層へ。引き:「`+` や `0` はどこから来た？」
 - **Ch3**: 根幹の 2 行 `axiom Real.instLOF` ＋ `instance`。リテラル `(2 : Real)` の正体。双子章前編＋ダイヤモンド事件コラム。引き:「リーマン和には Σ が要る。有限和とは何か？」
 - **Ch4**: `#print Or` で種明かし — Ch1 から使ってきた ∧∨∃= も Nat もすべて帰納型。**CH 表が完結する**:「論理は依存関数と帰納型で実現できる」。その目で `Range`（証明を抱えた添字＝依存和の実物）と `Summation`（構造的再帰）を読む。引き:「分割をデータとしてどう表す？」
-- **Ch5**: 証明を運ぶレコード `Partition`（双子章後編・反転演習）。**リーマン和の定義は 1 行** — この 1 行に前章までの全部が映っている。定義したらすぐ **Σ 記法とリーマン和の記法を自作**（notation 初登場）。章末、equalPartition を書き始める——が、`increase` フィールドが埋まらない。**sorry が残ったまま幕**。
+- **Ch5**: 証明を運ぶレコード `Partition`（双子章後編・反転演習）。**リーマン和の定義は 1 行** — この 1 行に前章までの全部が映っている。定義したらすぐ **Σ 記法とリーマン和の記法を自作**（notation 初登場）。章末、[a,b] の 2 等分（分点 a・(a+b)/2・b——cast 不要、除法はここが初使用）を書き始める——が、`increase` フィールドが埋まらない。**sorry が残ったまま幕**。
 - **Ch6**: sorry を埋めるために。`by` とゴール状態、基本タクティク、term↔tactic の往復。種明かし: by 証明を `#print` すると λ 項が出てくる——タクティクは項を書く機械。
 - **Ch7**: 等しさには 2 種類ある（`a + -b = a - b := rfl` が通るのに rw は区別する）。show・calc 設計。帰納法による証明 — summation 補題と cast 補題を獲得（Ch8 への部品）。
-- **Ch8**: **sorry が消える日**。equalPartition 完成、分点 = i/n、`sum_id`、そして **RS = (n+1)/(2n)**。到達点②。
+- **Ch8**: **sorry が消える日**。2 等分を完成させ、**NatCast**（↑i を実数へ運ぶ埋め込み）を導入して一般の n 等分へ。分点 = i/n、cast 補題、`sum_id`、そして **RS = (n+1)/(2n)**。到達点②。
 - **Ch9**: 性質 5 本の総合演習。望遠鏡和の快感、`RiemannSum_nonneg` の反例から IsRepr が必然として登場。到達点③。
 - **Ch10（間奏）**: Ch6–9 で繰り返したパターン（三角不等式分解・min 分配・移項）を道具に固める。simp セット・macro 合成・ac_rfl の種明かし。
 - **Ch11（発展）**: my_ring。Ch8 で手計算した代数が 1 行になる。第 I 部の幕引き:「和は手なずけた。この和は、分割を細かくしたときどこへ向かうのか——それに答えるには値をひとつ選び取る力が要る（第 II 部へ）」
 
 ### 第 I 部前半の Text 骨格設計（最短経路の確定、2026-06-11）
 
-リーマン和の定義（到達点①）に至る Text/ の独立ソースを、ファイル単位で確定する。**計約 165 行で到達点①に達する**:
+リーマン和の定義（到達点①）に至る Text/ の独立ソースを、ファイル単位で確定する。**計約 160 行で到達点①に達する**:
 
 | Text ファイル | 内容 | 行数目安 | 章 | 強制される Lean 機能 |
 |---|---|---|---|---|
 | C01_FirstProofs.lean | 論理ウォームアップ（Real 不要。1=1、∧∨→¬ の項証明、CH 表の素材） | 〜40 | Ch1 | def / fun / ⟨⟩ / 射影 |
 | C02_Axioms.lean | 代数階層クラス（AddCommGroup→MulCommMonoid→CommRing→Field→LinearOrderedField、**同型＋命名改善**）＋`axiom Real`＋`axiom Real.instLOF`＋`instance`＋sup 公理 3 本＋OfNat 0/1・Sub・LE/LT インスタンス | 〜55 | Ch2 精読・Ch3 | 署名読解・依存型・class（読み） |
-| C03_Numerals.lean | `Real.ofNat` 再帰・`OfNat (n+2)`・`NatCast`（リテラルの正体） | 〜15 | Ch3 | instance・構造的再帰の予告 |
+| C03_Numerals.lean | `Real.ofNat` 再帰・`OfNat (n+2)`（リテラルの正体。**NatCast は含めない——Ch8 へ後回し**） | 〜10 | Ch3 | instance・構造的再帰の予告 |
 | C04_Summation.lean | `Range`（Subtype）・`incl` / `addone`・`Summation` | 〜25 | Ch4 | 帰納型・Subtype・構造的再帰 |
-| C05_RiemannSum.lean | `structure Partition`・`length`・`RiemannSum`・Σ / RS 記法・equalPartition 骨格（フィールド sorry＝クリフハンガー） | 〜30 | Ch5 | structure・notation |
+| C05_RiemannSum.lean | `structure Partition`・`length`・`RiemannSum`・Σ / RS 記法・**2 等分**の骨格（分点 a・(a+b)/2・b。フィールド sorry＝クリフハンガー） | 〜30 | Ch5 | structure・notation |
 
 設計決定:
 
 1. **公理はフル契約**: Ch2 で 5 本全部（sup 込み）を提示する。sup は RS に不要だが依存型の決定的標本であり、「公理 5 本」が本のアイデンティティ。**最小性の実験**を演習化する:「sup 公理 3 行を消しても C05 まではコンパイルする——RS の定義が実際に使うのは + · × · − · 0 · ≤ だけ」（不要な公理を仮定しない、という形式化の感覚を養う）。
 2. **階層は参照実装と同型＋命名改善**: 同じ 5 段 extends 連鎖（双子章・階層設計の教材価値）。ただし独立コードの利点で命名のワートを修正——誤名 `LinearOrderedField.mul_pos`（実態は nonneg）→ `mul_nonneg` 等。参照実装との差分は §4.4 の方針どおり記録する。
 3. **派生インスタンス（Min / Max / Abs / NonNeg 等）は Ch2 に含めない**: 必要になった章で読者が定義する演習に（例: Ch9 で「abs を max で定義せよ」）。需要駆動の原則と一貫。
-4. 「RS の定義に入り込む証明は添字の Nat 不等式の項埋めのみ」（2 幕構成の根拠）は、この骨格を実際にビルドすることでコードとして検証する。骨格執筆時の検証: `lake build Text` 成功（sorry は equalPartition の意図的なもののみ）＋ sup 公理をコメントアウトしても C05 がビルドできることの確認。
+4. 「RS の定義に入り込む証明は添字の Nat 不等式の項埋めのみ」（2 幕構成の根拠）は、この骨格を実際にビルドすることでコードとして検証する。骨格執筆時の検証: `lake build Text` 成功（sorry は 2 等分の意図的なもののみ）＋ sup 公理をコメントアウトしても C05 がビルドできることの確認。
+5. **NatCast は Ch8 まで後回し**（2026-06-11 決定）: NatCast が要るのは「一般の n 等分の分点式 `a + ↑i·(b−a)/n`」のためだけ。リテラル用の OfNat（Ch3）と変数埋め込み用の NatCast は別機構であり、後者は需要時に導入する。これに伴い **Ch5 のクリフハンガーは cast 不要の「2 等分」**（分点 a・(a+b)/2・b——除法はここが初使用、リテラル 2 のみ）に変更。一般の n 等分・cast 補題・`sum_id` は Ch8 で NatCast 導入と同時に扱う。
 
 ### 貫通する具体例: y = x の [0,1] n 等分（Ch8 → Ch13 をまたぐ物語）
 
