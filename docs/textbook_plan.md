@@ -164,6 +164,25 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 - **Ch10（間奏）**: Ch6–9 で繰り返したパターン（三角不等式分解・min 分配・移項）を道具に固める。simp セット・macro 合成・ac_rfl の種明かし。
 - **Ch11（発展）**: my_ring。Ch8 で手計算した代数が 1 行になる。第 I 部の幕引き:「和は手なずけた。この和は、分割を細かくしたときどこへ向かうのか——それに答えるには値をひとつ選び取る力が要る（第 II 部へ）」
 
+### 第 I 部前半の Text 骨格設計（最短経路の確定、2026-06-11）
+
+リーマン和の定義（到達点①）に至る Text/ の独立ソースを、ファイル単位で確定する。**計約 165 行で到達点①に達する**:
+
+| Text ファイル | 内容 | 行数目安 | 章 | 強制される Lean 機能 |
+|---|---|---|---|---|
+| C01_FirstProofs.lean | 論理ウォームアップ（Real 不要。1=1、∧∨→¬ の項証明、CH 表の素材） | 〜40 | Ch1 | def / fun / ⟨⟩ / 射影 |
+| C02_Axioms.lean | 代数階層クラス（AddCommGroup→MulCommMonoid→CommRing→Field→LinearOrderedField、**同型＋命名改善**）＋`axiom Real`＋`axiom Real.instLOF`＋`instance`＋sup 公理 3 本＋OfNat 0/1・Sub・LE/LT インスタンス | 〜55 | Ch2 精読・Ch3 | 署名読解・依存型・class（読み） |
+| C03_Numerals.lean | `Real.ofNat` 再帰・`OfNat (n+2)`・`NatCast`（リテラルの正体） | 〜15 | Ch3 | instance・構造的再帰の予告 |
+| C04_Summation.lean | `Range`（Subtype）・`incl` / `addone`・`Summation` | 〜25 | Ch4 | 帰納型・Subtype・構造的再帰 |
+| C05_RiemannSum.lean | `structure Partition`・`length`・`RiemannSum`・Σ / RS 記法・equalPartition 骨格（フィールド sorry＝クリフハンガー） | 〜30 | Ch5 | structure・notation |
+
+設計決定:
+
+1. **公理はフル契約**: Ch2 で 5 本全部（sup 込み）を提示する。sup は RS に不要だが依存型の決定的標本であり、「公理 5 本」が本のアイデンティティ。**最小性の実験**を演習化する:「sup 公理 3 行を消しても C05 まではコンパイルする——RS の定義が実際に使うのは + · × · − · 0 · ≤ だけ」（不要な公理を仮定しない、という形式化の感覚を養う）。
+2. **階層は参照実装と同型＋命名改善**: 同じ 5 段 extends 連鎖（双子章・階層設計の教材価値）。ただし独立コードの利点で命名のワートを修正——誤名 `LinearOrderedField.mul_pos`（実態は nonneg）→ `mul_nonneg` 等。参照実装との差分は §4.4 の方針どおり記録する。
+3. **派生インスタンス（Min / Max / Abs / NonNeg 等）は Ch2 に含めない**: 必要になった章で読者が定義する演習に（例: Ch9 で「abs を max で定義せよ」）。需要駆動の原則と一貫。
+4. 「RS の定義に入り込む証明は添字の Nat 不等式の項埋めのみ」（2 幕構成の根拠）は、この骨格を実際にビルドすることでコードとして検証する。骨格執筆時の検証: `lake build Text` 成功（sorry は equalPartition の意図的なもののみ）＋ sup 公理をコメントアウトしても C05 がビルドできることの確認。
+
 ### 貫通する具体例: y = x の [0,1] n 等分（Ch8 → Ch13 をまたぐ物語）
 
 **n 等分の表現方針**: 自然数を Real の部分集合として構成する必要はない。型理論の正道は「`Nat`（帰納型）からの埋め込み」であり、本体に実装済み（`Real.ofNat` の構造的再帰・`NatCast` インスタンス・cast 補題群・`equalPartition` の分点 `a + i·(b−a)/m`）。代替案 2 つも素材として回収する:
