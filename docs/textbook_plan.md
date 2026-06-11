@@ -76,10 +76,10 @@
 | Ch1 | 最初の証明（`1 = 1`、論理の項証明。Real 不要） | **命題=型・証明=項**（term mode、`fun`・`⟨⟩`・射影）。**CH 対応の 6 対応表を提示**（スレッド (a) の起点） |
 | Ch2 | **実数の公理 5 本を読む** | 署名の読み方・**依存型**（`Real.sup`）・量化子・Prop vs Type・**universe**【鍵 1・2】・namespace / open。CH 表の量化子行を裏付け（∀=依存関数 Π・∃=依存和）。🪟 公理と noncomputable。締めに**最初の実数証明**: `<` の 3 兄弟（`le_of_lt`=射影・`lt_of_le_of_ne`=構成・`ne_of_gt`=¬は関数——Ch1 の論理が Real に着地する瞬間） |
 | Ch3 | `+` と `0` はどこから来るか（新ファイルなし、C02 を素材に教える章） | **class と instance**（双子章・前編）・`axiom`＋`instance`・インスタンス解決。`#check (2 : Real)` が**エラーになる**実演（failed to synthesize——機構がエラーとして見える。Ch8 で回収）・ダイヤモンド事件コラム |
-| Ch4 | 有限和 Σ を手に入れる | **帰納型**【鍵 3】・Subtype（`Range`）・構造的再帰（`Summation`）。**CH 対応のパンチライン**: ∧∨∃=False も Nat もすべて帰納型——「論理は依存関数＋帰納型で実現できる」（`#print` で確認）。コラム:「なぜ List でないのか」（表現の選択の論点） |
+| Ch4 | 有限和 Σ を手に入れる | **帰納型**【鍵 3】・Subtype（`Range`）・構造的再帰（`Summation`）。**CH 対応のパンチライン**: ∧∨∃=False も Nat もすべて帰納型——「論理は依存関数＋帰納型で実現できる」（`#print` で確認）。コラム:「なぜ List でないのか」（表現の選択の論点）。章末に `summation_zero` / `succ`（rfl） |
 | Ch5 | 分割を表現し、**リーマン和を定義する**（到達点①） | **structure**（双子章・後編、証明を運ぶレコード）・**notation**（Σ 記法とリーマン和の記法を「定義したらすぐ」自作する）。章末: **1 分割（trivialPartition）**——リテラルも除法も不要、なのに `increase` が書けず **sorry のまま残る** |
 | Ch6 | sorry を埋める道具 I | **tactic mode**（ゴール状態・intro / exact / apply / rw / have / show・term↔tactic の往復）。**種明かし: タクティクは証明項を書く機械**（by 証明を `#print` して生成された λ 項を見る） |
-| Ch7 | sorry を埋める道具 II | **defeq と rw の構文性**・`rfl` / `show`・calc 設計・**帰納法による証明**（summation 補題 = Ch8 への部品。cast 補題は NatCast 導入後の Ch8 で）。種明かし: **rw の正体 = `Eq.mpr`＋motive**——構文的である理由が機構レベルで腑に落ちる |
+| Ch7 | sorry を埋める道具 II | **defeq と rw の構文性**・`rfl` / `show`・calc 設計・**帰納法による証明**（Summation 補題コーパス 7 本＝添字付け替えの訓練場。cast 補題は NatCast 導入後の Ch8 で）。種明かし: **rw の正体 = `Eq.mpr`＋motive**——構文的である理由が機構レベルで腑に落ちる |
 | Ch8 | **具体例: y = x を [0,1] の n 等分で計算**（到達点②） | **3 段の梯子**: ① 1 分割の sorry を消す（道具の最初の獲物）② 2 等分——リテラル `2`（OfNat 物語＝Ch3 の伏線回収）と除法が初登場 ③ n 等分——**NatCast**（↑i、リテラル用 OfNat との対比）・cast 補題・`sum_id`。仕上げに **RS = (n+1)/(2n)**（左端タグとの対比）。⚠ 肥大時は 2 章に分割予約 |
 | Ch9 | **後で使う性質 5 本**（到達点③） | 総合演習 II: additive / neg / const / nonneg / **rs_bound（両側評価——abs は使わない。第 I 部の構成性を守る）**。`RiemannSum_nonneg` の反例から **IsRepr** 登場。章末の `#print axioms`: **第 I 部は古典公理ゼロ**を監査 |
 | Ch10 | 間奏: 自分の手を自動化する | **simp セット設計・`macro` / `macro_rules`**（`real_simp` / `triangle` 自作）・`ac_rfl` の種明かし（`Std.Associative`）。種明かし: **simp の正体 = 停止を期待する有向書き換え系**（セット設計＝規則の設計）。以後の演習で自作タクティク使用可 |
@@ -156,6 +156,20 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 要点: **Range 版の代償＝証明項つき添字の運搬、利得＝長さの静的保証と族の同期**。和の法則だけなら List が軽く、分割と組むと逆転する。
 
 この節と「公理設計の論点」は対をなし、第 I 部に設計思想の糸をもう 1 本通す: **形式化とは表現の選択であり、選択には型レベル / 値レベルの損得勘定がある**（証人はデータ・主張は Prop／長さは型へ・整合性命題は消す）。Ch4 で「なぜ List でないのか」コラムまたは本文の設計議論として扱う。
+
+### Summation 補題コーパス（第 I 部の 9 本、Ch4 / Ch7 素材、2026-06-12 確定）
+
+参照実装で下流が実際に消費する補題から逆算した、第 I 部に置く Summation の基本性質:
+
+| 群 | 補題 | 主張 | 後の用途 | 配置 |
+|---|---|---|---|---|
+| 計算規則 | `summation_zero` / `summation_succ` | Σ₀ f = 0／Σₙ₊₁ f = Σₙ(f∘incl) + f(n) | 全帰納法の基底・ステップ。**証明は rfl**（定義の等式は計算で証明される——defeq の予告編） | **Ch4 末**（タクティク不要） |
+| 線形性 | `additive_summation` / `summation_smul` / `neg_summation` | Σ(f+g)=Σf+Σg／Σ(c·f)=c·Σf／Σ(−f)=−Σf | → RS の additive / const / neg → 積分の線形性（**Σ→RS→積分の 3 層対応**） | Ch7（帰納法演習） |
+| 順序 | `summation_nonneg` / `summation_le` | 0≤f→0≤Σf／f≤g→Σf≤Σg | → RiemannSum_nonneg / rs_bound → 単調性・sup 構成 | Ch7 |
+| 横断 | `summation_congr` | (∀i, f i = g i) → Σf = Σg | ほぼ全証明で使用。**rw は束縛子の下に入れない**——その限界と congruence 補題という回避策を同時に教える（Ch7 のテーマと接続） | Ch7 |
+| ボス | `telescope_sum` | Σ(g(i+1)−g(i)) = g(n)−g(0) | → `length_sum`（Σ length = b−a、const に必須）→ Ch13 `isintegral_id` の中点望遠鏡和 → 付録 B の階段原始関数。**最初の本格的帰納法証明** | Ch7 の山場 |
+
+`sum_id`（Σi = n(n−1)/2）は cast が要るため Ch8。**意図的に第 I 部へ置かないもの**: `abs_summation_le`（abs 自体が第 II 部）・`summation_split_at` / `summation_first` 等の分割系（点挿入機械＝付録 B の部品）。`sub_summation` は additive＋neg の系として Ch9 の軽い演習に置いてよい。
 
 ### structure と class の扱い（双子章方式）
 
