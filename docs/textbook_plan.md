@@ -104,12 +104,13 @@
 
 #### Text/ 最終ファイル計画（Proto → 章の割り付け）
 
-Proto/ は試作の記録としてそのまま温存し、執筆時に章対応の C** ファイルへ整形して写す（命名・順序・コメントを章の進行に最適化）。章とファイルは 1:1 でない（Ch0/Ch3/Ch6 は新ファイルなし or 演習集）。
+Proto/ は試作の記録としてそのまま温存し、執筆時に章対応の C** ファイルへ整形して写す（命名・順序・コメントを章の進行に最適化）。章とファイルはほぼ 1:1（Ch0 のみファイルなし。C03 は実演・実験専用、C06/C07 は演習集）。
 
 | Text ファイル | 章 | 内容 | Proto 整形元 | 行数目安 |
 |---|---|---|---|---|
 | C01_FirstProofs | Ch1 | 論理ウォームアップ | 新規 | 40 |
 | C02_Axioms | Ch2–3 | 階層クラス・公理 5 本・instance・最小インスタンス・`<` の 3 兄弟 | Axioms (74) | 60 |
+| C03_Class | Ch3 | **実演・実験専用**（根幹 2 行の観察・`#check_failure (1/2 : Real)`・ダイヤモンド事件トイデモ。定義は足さない・import 連鎖の葉） | 新規（2026-06-12 決定で C03 復活） | 45 |
 | C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
 | C05_RiemannSum | Ch5 | Partition・length・RiemannSum・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 35 |
 | C06_Tactics | Ch6 | タクティク演習集（代数補題の基礎部） | Lemmas 基礎部 | 60 |
