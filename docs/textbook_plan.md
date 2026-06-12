@@ -100,6 +100,56 @@
 3. **間奏は Ch10 の 1 章のみ** — my_ring（旧 Ch11）は入口だけ本文、本体は付録/発展演習へ。
 4. 新旧対応: 旧 Ch0–9 → 新 Ch0–9（同一）、旧 Ch10+11 → 新 Ch10、旧 Ch12 → 新 Ch11、旧 Ch13 → 新 Ch12（+∫x は新 Ch14 へ）、旧 Ch15 → 新 Ch15、旧 Ch16 → 新 Ch16。v1 表の章別素材はこの対応で引き継ぐ。
 
+### 章別詳細設計 v2（2026-06-12。v1 素材の移植＋試作コードの章割り付け）
+
+#### Text/ 最終ファイル計画（Proto → 章の割り付け）
+
+Proto/ は試作の記録としてそのまま温存し、執筆時に章対応の C** ファイルへ整形して写す（命名・順序・コメントを章の進行に最適化）。章とファイルは 1:1 でない（Ch0/Ch3/Ch6 は新ファイルなし or 演習集）。
+
+| Text ファイル | 章 | 内容 | Proto 整形元 | 行数目安 |
+|---|---|---|---|---|
+| C01_FirstProofs | Ch1 | 論理ウォームアップ | 新規 | 40 |
+| C02_Axioms | Ch2–3 | 階層クラス・公理 5 本・instance・最小インスタンス・`<` の 3 兄弟 | Axioms (74) | 60 |
+| C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
+| C05_RiemannSum | Ch5 | Partition・length・RiemannSum・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 35 |
+| C06_Tactics | Ch6 | タクティク演習集（代数補題の基礎部） | Lemmas 基礎部 | 60 |
+| C07_Induction | Ch7 | Σ補題コーパス 9 本・Trans・calc 演習 | FTCCore§Σ＋InsertBound§1＋Refine§3 を再配列 | 120 |
+| C08_Numbers | Ch8 | OfNat/ofNat/NatCast・cast 補題（構成的部）・equalPartition・sum_id・RS=(n+1)/(2n) | Numerals＋Cast 前半＋EqualPartition＋Example§2 | 150 |
+| C09_Properties | Ch9 | IsRepr・tag_mem・points_mono・length_sum・const_sum・additive/neg/nonneg・両側 rs_bound | FTCCore§分割＋Criterion§両側評価 | 120 |
+| C10_Automation | Ch10 | simp セット・macro 合成・my_ring 入口 | 新規（P4 開発） | 80 |
+| C11_Archimedes | Ch11 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
+| C12_Integral | Ch12 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
+| C13_Unique | Ch13 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
+| C14_Example | Ch14 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
+| C15_Summit | Ch15 | NearLe 基本・integrable_of_cauchy・continuous_integrable・(i)(iii) の statement 集 | Criterion＋Main 前半＋InsertBound§2 | 250 |
+| C16_FTC | Ch16 | HasStraddleDeriv・ftc_core（核の部品込み）・ftc 実体化 | FTC＋FTCCore 核部＋Main 後半 | 380 |
+| 付録 A | — | 一様連続性・有界性の全文 | UnifCont (307) | 310 |
+| 付録 B | — | 挿入・細分機械の全文 | Insert＋InsertBound＋Refine (1047) | 1050 |
+
+#### 第 I 部の章詳細（v1 素材は対応章をそのまま引き継ぎ、差分のみ記す）
+
+- **Ch0–Ch8**: v1 素材庫の同番章のとおり（連鎖構造・ビート・双子章・クリフハンガー・3 段の梯子・肥大時 2 分割予約、すべて維持）。試作からの更新点:
+  - **Ch7 の種明かしに「rw の罠 2 種」を追加**（試作知見 5: 引数明示・独立補題への切り出し——実戦で遭遇した実例つき）。
+  - **Ch8 の sum_id は (1+1)·Σi = n·(n−1) 形**（リテラル 2 の演出と脱リテラル設計の両立。監査 [Real, instLOF] = 古典ゼロの実測値を章末に）。cast 補題は構成的部（succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ）のみ——sup を使う archimedean 系は Ch11 へ送る、という**分割線そのものを「公理の節約」の教材**にする。
+- **Ch9 リーマン和の性質 5 本**: additive / neg / const（望遠鏡和 length_sum 経由）/ nonneg（反例から IsRepr・tag_mem 登場）/ **両側 rs_bound**（試作の sum_le_const / const_le_sum がそのまま教材形）。points_mono（Nat 帰納法の好例・well-founded 不要）もここ。章末監査で第 I 部古典ゼロを確認。
+- **Ch10 間奏**: v1 Ch10 のとおり（simp セット・macro・ac_rfl 種明かし）＋ my_ring は「Ch8 の手計算が 1 行になる」デモと AST の入口だけ本文、実装は付録/発展演習（v1 Ch11 を圧縮）。
+
+#### 第 II 部の章詳細
+
+- **Ch11 アルキメデスと探索**（旧 Ch12 を改題・拡充）: 主役は「**∃ から値を選び取る 3 つの方法**」——(1) sup（公理が Skolem 化済み・choice 不要）→ sup_near → **archimedean（白眉①）**、(2) Nat の最小値探索 has_min（strongRecOn——choice 不要だが定義は noncomputable）→ natMin → ceil、(3) Classical.em / by_cases（命題の分岐）。素材は Cast 後半＋exists_fine_partition（equalPartition_fine 込み: 「アルキメデスが細かい分割を製造する」）。**素朴定義実験**をここで実施（max を if で定義 → 監査に choice。Ch9 の両側評価が abs の言い換えだった種明かしと、第 I 部にこれを置かなかった理由の回収）。古典順序補題（not_lt_imp_le 等）もここで初登場。コラム: 杉浦流「最小の継承的集合」との同値。
+- **Ch12 積分の定義**（旧 Ch13 前半）: TaggedPartition（∀ 量化のための束ね）・Fine の ∀ 形・**Near 統一の 3 種 ε-δ**（IsLimAt は演習・ContinuousAt・IsIntegral）・dite＋choose の Integral・∫ 記法の自作（Ch5 の再演）・**監査 3 層**（IsIntegral=古典ゼロ／Integral=+choice（choose と propDecidable の 2 箇所）／Integral'=+sup・choice フリー）。🪟「計算的読みの終わり——noncomputable という傷跡」。sup 最小性実験の対: 「Integral' だけが sup を使う」。
+- **Ch13 一意性**（旧 Ch13 後半＋旧 Ch14 の残置分）: ε/2＋ネットの非空性（アルキメデスの値段——Ch11 の exists_fine_partition がここで請求される）・**min-free 合流の exists_min2 イディオム**（試作知見 2。v1 の調和平均手筋は置き換え）・橋 integral_eq_of_isIntegral=choose の仕様書。**節「橋の応用」**: const の積分値等式を橋で 1 本導出して見せ、線形性・単調性等の持ち上げ（旧 Ch14 の対応表）は発展演習へ——**主線（FTC）はこれらを使わない**という試作の発見を明示するのが節の落ち。
+- **Ch14 直接証明: ∫x = (b²−a²)/2**（新設）: f=id は定義から直接可積分性を示せる稀有な例。中点和が望遠鏡和になる（Ch7 の telescope_sum・Ch9 の length_sum の回収）→ 任意タグとの差は各小区間 ±len/2 → ±(δ/2)(b−a)。**監査: sup なし**（「定義から直接」は完備性不要——どこで sup が要るのかの対照実験）。integral_id（橋の 2 回目）で Ch8 の (n+1)/(2n) → 1/2 と接続し、**貫通具体例が部をまたいで閉じる**。平方差 add_mul_sub 等の代数小物は my_ring（Ch10）の活躍どころ。
+- **Ch15 山頂: 連続 ⇒ 可積分**: v1 Ch15 のとおり 4 部品分解＋大規模証明のアーキテクチャ。精読配分は重量実測で確定: **(ii) integrable_of_cauchy（114 行）=本文精読＋sup 構成 4 ブロック誘導演習・(iv) continuous_integrable（82 行）=本文完全精読**（誤差配分 ε/4+ε/4 の脱リテラル処理込み）・(i) 一様連続（307 行）と (iii) 細分（1047 行）= statement 精読＋付録 A/B。**NearLe ツールキット**（trans/symm/mono/of_add——abs 三角不等式の置換、試作知見 1）は statement 読解に必要な分を本文で導入。(iii) の rmin（証明装置の min・choice の源）は Ch11 の素朴定義実験の「実戦での再会」として一言。退化区間 [u,u] の処理（全分点が潰れる）も小教材。
+- **Ch16 FTC**: ftc_core の**核の 3 部品**（const_isintegral・isintegral_le_of_le / le_isintegral_of_le=両側比較）を誘導演習で作らせてから核を本文精読——**核は完全に局所的**（hax/hxb 不使用・区間加法性も一意性も存在定理も不要、という試作の発見が章の主張）。実体化 ftc は橋 1 回（Ch13 の再演）。締めに**監査総決算**: 公理の勾配表（試作完了データの表をそのまま使う）で「どの数学がどの公理を要求したか」を一望。コラム: 「全域化の代価」・propext / Quot.sound / Classical.choice とは何か・🪟「FTC はどこまで構成的か」。
+
+#### 横断的な確定事項（v2）
+
+1. **Lemmas.lean（381 行）の分配**: 代数・順序の補題は需要駆動で C06–C09 の演習に（v1 の方針どおり）。**Classical を使う補題（not_lt_imp_le 等）は第 I 部に置けない**——分配時に監査でチェックする（試作で実証済みの分割線）。
+2. **Σ補題の最終配置**: zero/succ（Ch4・rfl）→ 線形性・順序・congr・telescope（Ch7）→ all_zero/one_term/split_term（付録 B。split_term は挿入機械の部品）。neg_summation/sub_summation は Ch9 の軽演習。
+3. **Near/NearLe の導入順**: Near は Ch12（定義と同時）、NearLe は Ch15（評価の言葉として）。第 I 部の両側評価（Ch9）は述語化せず生の不等式で書く——「同じ形が 3 回出たら述語に昇格する」という抽象化のタイミング自体を教材にする。
+4. **検証手順（執筆時）**: 各 C** ファイル完成ごとに `lake build Text`＋章末の `#print axioms` が設計どおりか確認（第 I 部=古典ゼロ、Ch12 の 3 層、Ch14 の sup なし、Ch16 の勾配表）。sup 最小性実験（コメントアウトで C05 が通る）も Ch2 演習として再現。
+
 ### 【v1 素材庫】第 I 部 リーマン和（旧 Ch0–11）
 
 3 つの到達点: **① 定義が書ける（Ch5）② 具体例が計算できる（Ch8）③ 性質 5 本が証明できる（Ch9）**。締めに自動化（Ch10 間奏・Ch11 発展）。
