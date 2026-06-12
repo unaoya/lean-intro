@@ -322,3 +322,60 @@ theorem div_right_lt (a b c : Real) : 0 < c → a < b → a / c < b / c :=
 
 theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c :=
   fun hc hab => nonneg_mul_nonneg a b (Field.inv c) (pos_inv c hc).1 hab
+
+-- ============================================================
+-- M4 追加分（ftc_core に必要な移項・比較）
+-- ============================================================
+
+instance : Trans (Eq : Real → Real → Prop) LE.le LE.le := ⟨fun h₁ h₂ => h₁ ▸ h₂⟩
+instance : Trans (LE.le : Real → Real → Prop) Eq LE.le := ⟨fun h₁ h₂ => h₂ ▸ h₁⟩
+
+theorem add_le_add' {a b c d : Real} (h₁ : a ≤ b) (h₂ : c ≤ d) : a + c ≤ b + d :=
+  le_trans (add_le_add_right a b c h₁) (add_left_le b c d h₂)
+
+theorem neg_le_neg' {a b : Real} (h : a ≤ b) : -b ≤ -a := by
+  have h1 := add_le_add_right a b (-a + -b) h
+  rw [show a + (-a + -b) = -b from by
+      rw [← add_assoc, add_neg', zero_add'],
+    show b + (-a + -b) = -a from by
+      rw [add_comm (-a) (-b), ← add_assoc, add_neg', zero_add']] at h1
+  exact h1
+
+theorem neg_lt_neg {a b : Real} (h : a < b) : -b < -a :=
+  ⟨neg_le_neg' h.1, fun e => h.2 (by
+    have e2 := congrArg (fun z => -z) e
+    simp only [] at e2
+    rw [show -(-b) = b from neg_neg b, show -(-a) = a from neg_neg a] at e2
+    exact e2.symm)⟩
+
+theorem sub_le_sub_right {a b : Real} (h : a ≤ b) (c : Real) : a - c ≤ b - c :=
+  add_le_add_right a b (-c) h
+
+theorem sub_le_sub_left {a b : Real} (h : a ≤ b) (c : Real) : c - b ≤ c - a :=
+  add_left_le c (-b) (-a) (neg_le_neg' h)
+
+theorem sub_lt_sub_left {a b : Real} (h : a < b) (c : Real) : c - b < c - a :=
+  add_left_lt c (-b) (-a) (neg_lt_neg h)
+
+theorem half_lt {ε : Real} (hε : 0 < ε) : ε / (1 + 1) < ε := by
+  have h := add_left_lt (ε / (1 + 1)) 0 (ε / (1 + 1)) (pos_half ε hε)
+  rw [add_zero'] at h
+  rw [half_add ε] at h
+  exact h
+
+theorem telescope_2 (a b c : Real) : b - a = (c - a) + (b - c) := by
+  show b + -a = (c + -a) + (b + -c)
+  symm
+  calc (c + -a) + (b + -c) = c + (-a + (b + -c)) := AddCommGroup.add_assoc _ _ _
+    _ = c + (-a + b + -c) := by rw [AddCommGroup.add_assoc (-a) b (-c)]
+    _ = c + (b + -a + -c) := by rw [AddCommGroup.add_comm (-a) b]
+    _ = c + (b + (-a + -c)) := by rw [AddCommGroup.add_assoc b (-a) (-c)]
+    _ = (c + b) + (-a + -c) := (AddCommGroup.add_assoc _ _ _).symm
+    _ = (c + b) + -(a + c) := by rw [neg_add_distrib]
+    _ = (b + c) + -(c + a) := by rw [AddCommGroup.add_comm c b, AddCommGroup.add_comm a c]
+    _ = (b + c) + (-c + -a) := by rw [neg_add_distrib]
+    _ = b + (c + (-c + -a)) := AddCommGroup.add_assoc _ _ _
+    _ = b + ((c + -c) + -a) := by rw [(AddCommGroup.add_assoc c (-c) (-a)).symm]
+    _ = b + (0 + -a) := by rw [add_neg']
+    _ = b + -a := by rw [zero_add']
+
