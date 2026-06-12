@@ -128,6 +128,7 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 | 正規化と `#reduce` — 証明の簡約 | Ch7 |
 | 決定手続きとリフレクション | Ch11 |
 | 計算的読みの終わり — noncomputable という傷跡 | Ch12 |
+| FTC はどこまで構成的か — 3 つの源泉と Bishop | Ch16 |
 
 ### 公理設計の論点（Ch2–3 の本文素材、2026-06-12 議論の記録）
 
@@ -198,7 +199,7 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 **連続⇒可積分は FTC に二重に必要**: (a) F(x) = ∫ₐˣ f の Integral は「可積分でなければ 0」のジャンク設計なので、可積分性がなければ F がそもそも目的の関数でない (b) oint_sub_interval が `∀ u v, IsIntegrable f u v` を要求（Main.lean:24 の hint）。FTC の主張が Continuous f だけを仮定する以上、導出するしかない（可積分性を仮定に置く「modulo 版」なら山頂なしで述べられる——正直な代替として序文の脚注候補）。
 
-**【採用】脱 abs ルート**: 参照実装の FTC は `integral_triangle_ineq`（|∫g| ≤ ∫|g|）経由で `abs_integrable`（振動和機械）を引き込むが、**両側評価で代替できる**——区間上 −ε ≤ f t − f x ≤ ε から `integral_monotone` を 2 回で −εh ≤ ∫(f−fx) ≤ εh、最後に実数レベルの |·| に直すだけ。∫|g| は不要。**Text 版の main' はこのルートで書く**。帰結: Oscillation / Abs 系（|f| の可積分性・積分の三角不等式）は FTC の依存から完全に外れ、「美しいが経路外」の発展話題（付録 B の独立節）に降格。Text の主線は「定義・一意性／定数積分／線形性／単調性（両側）／区間加法性／連続⇒可積分／OIntegral 場合分け」で閉じる。
+**【採用】脱 abs ルート**: 参照実装の FTC は `integral_triangle_ineq`（|∫g| ≤ ∫|g|）経由で `abs_integrable`（振動和機械）を引き込むが、**両側評価で代替できる**——区間上 −ε ≤ f t − f x ≤ ε から `integral_monotone` を 2 回で −εh ≤ ∫(f−fx) ≤ εh、最後に実数レベルの |·| に直すだけ。∫|g| は不要。**Text 版の main' はこのルートで書く**。帰結: Oscillation / Abs 系（|f| の可積分性・積分の三角不等式）は FTC の依存から完全に外れ、「美しいが経路外」の発展話題（付録 B の独立節）に降格。Text の主線は「定義・一意性／定数積分／線形性／単調性（両側）／区間加法性／連続⇒可積分／片側 FTC の組み立て」で閉じる（OIntegral はハイブリッド方針によりコラムへ）。
 
 ### 積分の定義の形式化（2026-06-12 確定）
 
@@ -217,6 +218,26 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 現行定義 (a) の choice は実は 2 箇所（choose と dite の propDecidable）——Ch13 で監査の精密化として一言。
 
 **フィルターの言葉**: 定義は ε-δ のまま、**FTC 後の発展節「フィルターで統一する」**を予約——Filter＋Tendsto を自作（50〜100 行）し、IsLimAt・Continuous・IsIntegral が同一概念の 3 インスタンスであることを同値定理 3 本の演習で示す。「3 種の ε-δ 比較」の縦糸が統一として完結し、mathlib（BoxIntegral）への橋が最短になる。
+
+### ハイブリッド方針の確定（2026-06-12）: 片側 FTC ＋徹底脱 max/abs、公理系は現状維持
+
+選択公理 3 源泉の分析を受けた決定。**完全構成的化（余推移的 <・Cauchy 完備性 lim・モジュラス付き連続性）は採らない**——公理系は現状（sup・古典）を維持し、構成的化の全分析（源泉 A/B/C・Bishop・ACω とモジュラス）は理論の窓「FTC はどこまで構成的か」で語る。
+
+**源泉 A 採用——FTC の片側化**: 全域の F を作らない。主張は「u ≤ x ≤ v を跨ぐ差分商」形（(∫ᵤᵛ f) − f(x)·(v−u) の両側評価）または左右微分の対で述べる（最終形は試作時に確定）。帰結: **OIntegral と向きの場合分けが主線から消える**——区間加法性は a ≤ u ≤ v の素直な形だけで足りる。OIntegral・全域化・HasDerivAt（全域 F 前提の微分）は Ch16 のコラム**「全域化の代価」**へ（choice が買っているのは「どんな x でも」という普遍性そのものだった、という源泉 A の分析）。
+
+**源泉 B 採用——仕様からの徹底排除**（Text の定義群は参照実装と意図的に異なる。§4.4 の方針で差分記録）:
+
+| 対象 | 旧（参照実装） | Text の形 |
+|---|---|---|
+| 細かさ | `diam Δ < δ`（fmax'・max） | **`∀ i, length Δ i < δ`**（∀ 形。diam / fmax' は主線から消滅） |
+| IsIntegral | `abs (RS − i) < ε` | **両側** `i − ε < RS ∧ RS < i + ε` |
+| IsLimAt / Continuous | `abs (x − a) < δ` 等 | **両側** `a − δ < x ∧ x < a + δ`（＋ `x ≠ a`） |
+| 評価系 | rs_abs_bound 等 | すべて両側（採用済み） |
+| ε/2 合流 | `min δf δg` | **調和平均手筋 `δf·δg/(δf+δg)`**（正かつ両方以下。min を使わない合流——それ自体を小教材に） |
+
+**「素朴に max / abs を定義するとどうなるか」は本文で記述する**（ユーザー指定、Ch12）: 読者が `max a b := if a ≤ b then b else a` を実際に書き、`Decidable (a ≤ b)` の失敗 → `Classical.propDecidable` → `noncomputable` → `#print axioms` に Classical.choice が現れる過程を観察する**実験**。「if による定義は表現の選択であり、古典性の侵入点——主線が max/abs 抜きで設計されている理由」の回収。旧設計の「Ch12 の BHK 具体物」の役割をこの実験が引き継ぐ。
+
+主線の監査目標の更新: 第 I 部は古典公理ゼロ（従来どおり）。第 II 部は choice が入る（choose・dite の propDecidable・em）が、**侵入箇所をすべて名指しできる**ことが柱 A の到達点。
 
 ### structure と class の扱い（双子章方式）
 
@@ -273,7 +294,7 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 3. **派生インスタンス（Min / Max / Abs / NonNeg 等）は Ch2 に含めない**: 必要になった章で読者が定義する演習に（例: Ch9 で「abs を max で定義せよ」）。需要駆動の原則と一貫。
 4. 「RS の定義に入り込む証明は添字の Nat 不等式の項埋めのみ」（2 幕構成の根拠）は、この骨格を実際にビルドすることでコードとして検証する。骨格執筆時の検証: `lake build Text` 成功（sorry は 2 等分の意図的なもののみ）＋ sup 公理をコメントアウトしても C05 がビルドできることの確認。
 5. **数の段階導入（リテラルも NatCast も後回し）**: RS の定義に要る Real のリテラルは `0` ただ 1 つ（Σ の基底）。リテラル機構（OfNat 1・(n+2)・`Real.ofNat`）と変数埋め込み（NatCast）はすべて Ch8 へ。**Ch5 のクリフハンガーは 1 分割（trivialPartition）**——リテラルも除法も不要で、「自明の極み」の increase すら添字の場合分けなしには書けない。**Ch8 は 3 段の梯子**: 1 分割完成（Ch6–7 の道具の最初の獲物）→ 2 等分（リテラル 2＝OfNat 物語の回収・除法の初使用）→ n 等分（NatCast・cast 補題・`sum_id`）。数の導入（0 → リテラル → 埋め込み）と分割の一般化（1 → 2 → n）が並走する。Ch3 では `#check (2 : Real)` が**エラーになること**（failed to synthesize OfNat Real 2）をインスタンス解決の実演に使い、Ch8 で回収する伏線とする。
-6. **abs / max / min / diam は第 II 部へ**（第 I 部の構成性を守る）: 実数の `max` は `if a ≤ b` を要し、≤ の分岐には `Classical.propDecidable` が要る——abs を Ch9 に置くと「第 I 部は構成的」が静かに破れる。よって Ch9 の第 5 性質は**両側評価 `rs_bound`: −M(b−a) ≤ RS ∧ RS ≤ M(b−a)** に言い換える（後段の sup 構成が消費するのはこの形なので数学的損失ゼロ）。「実数の max / abs は場合分けすら noncomputable」は **Ch12 の BHK 転調の最初の具体物**として活きる。第 I 部（Ch1–9）は**古典公理ゼロ**——章ごとに `#print axioms` で構成的であることすら監査できる。
+6. **abs / max / min / diam は第 II 部へ**（第 I 部の構成性を守る）: 実数の `max` は `if a ≤ b` を要し、≤ の分岐には `Classical.propDecidable` が要る——abs を Ch9 に置くと「第 I 部は構成的」が静かに破れる。よって Ch9 の第 5 性質は**両側評価 `rs_bound`: −M(b−a) ≤ RS ∧ RS ≤ M(b−a)** に言い換える（後段の sup 構成が消費するのはこの形なので数学的損失ゼロ）。「実数の max / abs は場合分けすら noncomputable」は **Ch12 の素朴定義実験**（ハイブリッド方針の節を参照）として活きる。第 I 部（Ch1–9）は**古典公理ゼロ**——章ごとに `#print axioms` で構成的であることすら監査できる。
 7. **noncomputable の 2 つの源泉を区別して教える**: (i) 公理的 Real に実行コードが無いこと（Ch2 から `noncomputable` が必要になる理由——正直な表示）と (ii) 証明・分岐レベルの古典原理（propDecidable・choice、Ch12）。理論の窓に「公理と noncomputable」（Ch2）を追加。
 8. **Ch8 肥大の監視点**: 梯子 3 段＋OfNat 物語＋NatCast＋cast 補題＋`sum_id`＋RS 計算は 1 章として重い。執筆時に 2 分割（分割の梯子 / y=x の計算）の可能性を予約。
 
@@ -294,11 +315,11 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 | 章 | 数学の歩み | Lean 機能・教材要素 |
 |---|---|---|
-| Ch12 | 選び取る力 — 分割の存在と値の取り出し | **古典論理と choice**（`Classical.em` / `by_cases` / `choose` / `noncomputable`、**構成的だった第 I 部との対比**で導入）。🪟 **BHK の転調**: 証明・分岐レベルで古典原理が入る（noncomputable の第 2 の源泉）。最初の具体物は **max / abs**——「実数の場合分けすら決定不能ゆえ noncomputable」（ここで初導入、Ch9 の両側評価が abs の言い換えだったことも回収）。`min`・ceil・sup_near・**archimedean**（白眉①）・exists_fine_partition。コラム＋発展演習: 杉浦流「最小の継承的集合」との同値 |
-| Ch13 | **リーマン積分の定義**＝網目の極限・well-definedness | 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral）・**diam**（fmax'・max を使用——Ch12 の道具）・`TaggedPartition`・`dite`＋choose・`integral_unique`。**∫ 記法を定義した直後に自作**（Ch5 の再演）。誘導演習: `IsIntegral id`（貫通具体例がここで閉じる） |
+| Ch12 | 選び取る力 — 分割の存在と値の取り出し | **古典論理と choice**（`Classical.em` / `by_cases` / `choose` / `noncomputable`、**構成的だった第 I 部との対比**で導入）。🪟 **BHK の転調**: 証明・分岐レベルで古典原理が入る（noncomputable の第 2 の源泉）。**素朴定義実験**: `max a b := if a ≤ b then b else a` を書いてみて、propDecidable → noncomputable → 監査に choice が現れるのを観察（主線が max/abs 抜きである理由の回収。Ch9 の両側評価が abs の言い換えだったことも）。`min`（Nat 述語の最小値）・ceil・sup_near・**archimedean**（白眉①）・exists_fine_partition。コラム＋発展演習: 杉浦流「最小の継承的集合」との同値 |
+| Ch13 | **リーマン積分の定義**＝網目の極限・well-definedness | 3 種の ε-δ 比較（IsLimAt / Continuous / IsIntegral——いずれも **abs-free の両側形**）・細かさは **∀ 形**（diam を使わない）・`TaggedPartition`・`dite`＋choose・`integral_unique`。**∫ 記法を定義した直後に自作**（Ch5 の再演）。誘導演習: `IsIntegral id`（貫通具体例がここで閉じる、両側評価で） |
 | Ch14 | 積分の性質 ＝ **Ch9 の 5 性質の ε/2 持ち上げ**（対応表が章の構造） | `min δf δg` 定石・isintegral_add（最純形）。演習: ε/2 定石を macro に固める（Ch10 の応用） |
 | Ch15 | **山頂: 連続 ⇒ 可積分**（4 部品分解） | 大規模証明のアーキテクチャ（private・section・import DAG）。(ii) integrable_of_cauchy 精読＋ sup 構成 4 ブロック誘導演習・(iv) continuous_integrable 完全精読・(i)(iii) は statement 精読＋付録 |
-| Ch16 | **FTC** | statement 中の `let`・`#print axioms` 監査の意味。コラム: `propext` / `Quot.sound` / `Classical.choice` とは何か |
+| Ch16 | **片側 FTC**（u ≤ x ≤ v 跨ぎ形 or 左右微分の対、全域 F を作らない） | `#print axioms` 監査の意味（choice の侵入箇所を全部名指しする）。コラム: **「全域化の代価」**（OIntegral・HasDerivAt——choice が買うのは普遍性、源泉 A の分析）・`propext` / `Quot.sound` / `Classical.choice` とは何か |
 
 ### 自動化の編み込み（独立の「第 III 部」は置かない）
 
