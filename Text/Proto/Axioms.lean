@@ -28,6 +28,8 @@ class CommRing (α : Type) extends AddCommGroup α, MulCommMonoid α where
 class Field (α : Type) extends CommRing α where
   inv : α → α
   mul_inv : ∀ a : α, a ≠ zero → a * inv a = one
+  inv_mul : ∀ a : α, a ≠ zero → inv a * a = one
+  nontrivial : zero ≠ one
 
 class LinearOrderedField (α : Type) extends Field α, LE α where
   le_refl : ∀ a : α, a ≤ a
