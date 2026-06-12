@@ -1,7 +1,10 @@
--- Text/C16_FTC.lean — Ch16 微積分学の基本定理
--- 片側 FTC（全域の F を作らない）: 核 ftc_core（完全に局所的——区間加法性も
--- 線形性も一意性も存在定理も不要）＋実体化（橋 1 回）＋監査総決算
-import Text.C15_Summit
+-- Text/C16_FTC.lean — 微積分学の基本定理
+-- 片側 FTC（全域の F を作らない）。仮定は数学的に正直な最小: 部分区間の可積分性＋
+-- 点 x での連続性（2026-06-12 決定: 大域連続版は置かない——存在定理（連続⇒可積分）の
+-- 機構一式は主線から外れる。Text/Proto/ に全証明を温存）。
+-- 構成: 核 ftc_core（完全に局所的——区間加法性も線形性も一意性も存在定理も不要）
+-- ＋実体化（橋 1 回）＋監査総決算
+import Text.C14_Example
 
 noncomputable section
 
@@ -48,6 +51,15 @@ theorem left_of_straddle {f : Real → Real} {a b x : Real}
 -- §2 核の部品: IsIntegral レベルの両側評価（脱 abs の単調性）
 --    定数の積分 const_isintegral は Ch13（橋の応用）で証明済み
 -- ============================================================
+
+-- 両側評価の束ね直し（Ch9 の raw 版 → TaggedPartition 版）
+theorem sum_le_const {u v : Real} (P : TaggedPartition u v) {g : Real → Real} {c : Real}
+    (hb : ∀ t, u ≤ t → t ≤ v → g t ≤ c) : P.sum g ≤ c * (v - u) :=
+  rs_le_const P.Δ P.ξ P.repr hb
+
+theorem const_le_sum {u v : Real} (P : TaggedPartition u v) {g : Real → Real} {c : Real}
+    (hb : ∀ t, u ≤ t → t ≤ v → c ≤ g t) : c * (v - u) ≤ P.sum g :=
+  const_le_rs P.Δ P.ξ P.repr hb
 
 theorem isintegral_le_of_le {f : Real → Real} {u v J c : Real} (huv : u ≤ v)
     (hJ : IsIntegral f u v J) (hb : ∀ t, u ≤ t → t ≤ v → f t ≤ c) :
@@ -129,37 +141,36 @@ theorem ftc_core (f : Real → Real) (a b x : Real) (_hax : a ≤ x) (_hxb : x �
 -- ANCHOR_END: ftc_core
 
 -- ============================================================
--- §4 実体化: 核に橋を 1 回かけて Integral 関数の定理にする
+-- §4 実体化: FTC に本当に必要な仮定は「部分区間ごとの可積分性」と
+--    「点 x での連続性」だけ——f の大域的な連続性は要らない。
+--    注: 古典的な「[a,b] で可積分なら」（1 本の IsIntegrable f a b）に弱めるには
+--    制限定理（可積分 ⇒ 部分区間でも可積分）が要る（発展課題）
 -- ============================================================
 
--- ANCHOR: ftc
-theorem ftc (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hxb : x ≤ b)
-    (hf : ∀ t, a ≤ t → t ≤ b → ContinuousAt f t) :
+-- ANCHOR: ftc_of_integrable
+theorem ftc_of_integrable (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hxb : x ≤ b)
+    (hint : ∀ u v, a ≤ u → u ≤ v → v ≤ b → IsIntegrable f u v)
+    (hx : ContinuousAt f x) :
     ∀ ε, 0 < ε → ∃ δ, 0 < δ ∧ ∀ u v, a ≤ u → u ≤ x → x ≤ v → v ≤ b →
       u < v → v - u < δ →
       Near (ε * (v - u)) (f x * (v - u)) (Integral f u v) := by
   intro ε hε
   -- 核: 連続性@x だけで跨ぎ形の評価
-  obtain ⟨δ, hδ, H⟩ := ftc_core f a b x hax hxb (hf x hax hxb) ε hε
+  obtain ⟨δ, hδ, H⟩ := ftc_core f a b x hax hxb hx ε hε
   refine ⟨δ, hδ, fun u v hau hux hxv hvb huv hδv => ?_⟩
-  -- 実体化: [u,v] 上の連続性 ⇒ 可積分 ⇒ Integral が IsIntegral の証人（橋 1 回）
-  have hint : IsIntegrable f u v :=
-    continuous_integrable f (le_of_lt huv)
-      (fun t htu htv => hf t (le_trans hau htu) (le_trans htv hvb))
-  obtain ⟨J, hJ⟩ := hint
+  -- 実体化: 仮定の可積分性から Integral が IsIntegral の証人（橋 1 回）
+  obtain ⟨J, hJ⟩ := hint u v hau (le_of_lt huv) hvb
   rw [integral_eq_of_isIntegral f u v J (le_of_lt huv) hJ]
   exact H u v J hau hux hxv hvb huv hδv hJ
--- ANCHOR_END: ftc
+-- ANCHOR_END: ftc_of_integrable
 
 -- ============================================================
 -- §5 監査総決算: 公理の勾配（どの数学がどの公理を要求したか一望する）
 -- ============================================================
 
-#print axioms sum_id                 -- [Real, instLOF] 古典論理ゼロ
-#print axioms rs_insert_bound        -- +propext, Quot.sound（choice フリー）
-#print axioms rs_multi_insert_bound  -- +choice（探索 find_interval の値段）
-#print axioms rs_refine_eq           -- +choice（rmin = 素朴 if 定義の min が源）
-#print axioms isintegral_id          -- choice あり・sup なし（完備性不要）
-#print axioms continuous_unif_cont   -- +sup, sup_ub, sup_lub（連結性論法の値段）
-#print axioms ftc_core               -- 核（一意性フリー）
-#print axioms ftc                    -- 実体化で全公理が揃う
+#print axioms sum_id              -- [Real, instLOF] 古典論理ゼロ
+#print axioms archimedean         -- sup が初稼働（上限公理から有限性）
+#print axioms isintegral_id       -- choice あり・sup なし（直接証明は完備性不要）
+#print axioms integral_unique     -- 一意性 = ε/2 ＋ 非空性（アルキメデスの値段）
+#print axioms ftc_core            -- 核（一意性フリー・完全に局所的）
+#print axioms ftc_of_integrable   -- 実体化（橋 1 回）で全公理が揃う
