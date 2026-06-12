@@ -34,9 +34,10 @@
 ## 演習
 
 - Range の操作（incl/addone の値の確認を show で）・小さい n での Summation の手計算
-- **型シグネチャの設計演習**（2026-06-12 決定の論点を演習化）:
-  - `[Add α] [OfNat α 0]` は最小の契約か？ 数学的に要るのは「二項演算とゼロの値」だけ——Real 特化版・自作 `Zero` クラス版（ゼロへの道が 2 本になるミニ・ダイヤモンドの種）を書き比べ、「core でゼロを名指しする語彙が OfNat」という Lean の慣用とのトレードオフを議論
-  - `n` を implicit にできるか？ 変えてみて何が起きるか（依存型の見せ場が消える・rw の制御）——implicit 引数は Ch2 で読み、Ch5 で初めて自分の定義に書き、Ch6 で機構を種明かしする 3 段配置への橋渡し
+- **型シグネチャの設計**（2026-06-12 決定: 本文素材）:
+  - Summation の契約は最小の `[Add α] [Zero α]`（二項演算とゼロの値）。**意味論のクラス（Zero/One）とリテラル整形の窓口（OfNat）の分離**を本文で——core には Zero/One と一方向 bridge（Zero.toOfNat0/One.toOfNat1）が mathlib から昇格して入っており、本書は公理の zero を `instance : Zero Real` で登録するだけ（C02 の ANCHOR: zero_bridge）。「bridge は一方向・値は defeq」＝**良い菱形の規律**（Ch3 の悪い菱形トイデモの回収。数の建て方の本格論は Ch8）
+  - 演習: `n` を implicit にできるか？ 変えてみて何が起きるか（依存型の見せ場が消える・rw の制御）——implicit 引数は Ch2 で読み、Ch5 で初めて自分の定義に書き、Ch6 で機構を種明かしする 3 段配置への橋渡し
+- コラム: mathlib の Σ 事情——`List.sum` は `[Add][Zero]` で足りるのに `Finset.sum` は AddCommMonoid を要求する（Finset＝順列で割った商なので well-definedness に可換性・結合性が要る）。**添字集合の表現を緩くすると代数の契約が重くなる**——「表現の選択」の糸との交差点
 
 ## 引き
 

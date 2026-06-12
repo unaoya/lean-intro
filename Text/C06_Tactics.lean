@@ -3,8 +3,9 @@
 -- 順序・不等式の補題は Ch7（C07）、古典論理を使う補題は第 II 部（C11）へ。
 import Text.C05_RiemannSum
 
--- リテラル 1（乗法単位元を呼ぶ名前。数の段階導入: 0=Ch2・1=Ch6・2 以上と NatCast=Ch8）
-noncomputable instance : OfNat Real 1 := ⟨MulCommMonoid.one⟩
+-- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由——
+-- C02 の Zero と対。数の段階導入: 0=Ch2・1=Ch6・2 以上と NatCast=Ch8）
+noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
 
 -- ============================================================
 -- 橋渡し（クラスのフィールドを使いやすい形で取り出す）

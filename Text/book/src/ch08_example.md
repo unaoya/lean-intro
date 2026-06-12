@@ -21,20 +21,26 @@
 - 変数 n の埋め込み `↑i` とリテラル用 OfNat の対比。equalPartition（分点 a + i·(b−a)/m）の increase 証明
 - 分点が i/n であることの確認（show の練習）
 
-## 8.4 cast 補題 — 構成的な部分だけ
+## 8.4 数の 2 つの建て方とダイヤモンドの規律（2026-06-12 議論）
+
+- **(i) 代数一次（採用・mathlib 式）**: 0/1 は代数のフィールドが一次、cast はその上に建てる。リテラルは 0（Ch2・Zero bridge）/1（Ch6・One bridge）/2 以上（本章・Real.ofNat）で**担当を排他分割**——mathlib `Nat.AtLeastTwo` の手作り版。重なる点は cast 0 = 0 が**構成により rfl**、cast 1 = 1 は zero_add' で命題的（succ_ofNat が rfl なのはこの建て方のおかげ）
+- **(ii) cast 一括ルート（演習: 試して壊す）**: 全リテラルを ofNat 経由にすると (1:Real) ≡ 0+1 が代数の one と defeq でない → one 系補題に橋が要り rfl が死ぬ。**ダイヤモンドの一般原則「①重なる経路は defeq に ②揃わないなら担当を排他分割」**——mathlib が AtLeastTwo を持つ理由が (ii) の失敗から分かる
+- 菱形の縦糸の完成: Ch3 悪い菱形 → Ch4 良い配線（bridge）→ 本章 排他分割 → 付録 C で mathlib 実物
+
+## 8.5 cast 補題 — 構成的な部分だけ
 
 - succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ
 - **分割線の明示**: sup を使う archimedean 系は Ch11 へ送る——「この章は古典公理ゼロで済む」という公理の節約を設計として見せる
 
-## 8.5 名物演習: sum_id
+## 8.6 名物演習: sum_id
 
 - `(1+1)·Σi = n·(n−1)` 形（リテラル 2 を使わない形がそのまま教材——なぜこの形かの議論込み）。帰納法＋cast 計算
 
-## 8.6 RS = (n+1)/(2n)
+## 8.7 RS = (n+1)/(2n)
 
 - 右端タグで (n+1)/(2n)・左端タグで (n−1)/(2n)。「n→∞ で 1/2 に見える——だが極限はまだ定義していない」（第 II 部への遠い引き）
 
-## 8.7 章末監査
+## 8.8 章末監査
 
 - `#print axioms sum_id` = [Real, instLOF]——**古典論理ゼロ**（試作実測値）
 

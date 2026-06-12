@@ -66,11 +66,16 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 -- ANCHOR_END: axioms
 
 -- ============================================================
--- 最小インスタンス 3 つ（リーマン和の記述に必要な分だけ）
+-- 最小インスタンス（リーマン和の記述に必要な分だけ）
 -- ============================================================
 
--- Σ の基底に必要な 0（リテラル 1 以上と NatCast は Ch8 まで導入しない）
-noncomputable instance : OfNat Real 0 := ⟨AddCommGroup.zero⟩
+-- ゼロの窓口クラス: core の `Zero`（mathlib から昇格）に公理の zero を登録する。
+-- リテラル 0 へは core の一方向 bridge `Zero.toOfNat0 : [Zero α] → OfNat α 0` が配線する。
+-- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形は C03 のトイデモ参照）。
+-- リテラル 1 以上と NatCast は Ch8 まで導入しない
+-- ANCHOR: zero_bridge
+noncomputable instance : Zero Real := ⟨AddCommGroup.zero⟩
+-- ANCHOR_END: zero_bridge
 
 -- length の引き算（階層にあるのは Neg。中置 a - b はここで定義）
 noncomputable instance : Sub Real := ⟨fun a b => a + -b⟩
