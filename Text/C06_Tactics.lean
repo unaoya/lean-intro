@@ -171,7 +171,7 @@ theorem telescope_2 (a b c : Real) : b - a = (c - a) + (b - c) := by
     _ = b + (0 + -a) := by rw [add_neg']
     _ = b + -a := by rw [zero_add']
 
--- (z + h) − (h + h) = z − h（誤差の半分ずらし。Ch15 が消費）
+-- (z + h) − (h + h) = z − h（誤差の半分ずらし。発展部 E5 が消費）
 theorem add_half_sub_full (z h : Real) : (z + h) - (h + h) = z - h := by
   show z + h + -(h + h) = z + -h
   rw [neg_add_distrib]

@@ -91,10 +91,11 @@
 | Ch12 | 積分の定義 | Near 統一の 3 種 ε-δ・∀ 形の細かさ・dite+choose・noncomputable・監査 3 層 |
 | Ch13 | 一意性 | ε/2＋ネットの非空性・min-free 合流（exists_min2 イディオム）・橋=choose の仕様書（橋の応用: 値の等式たち） |
 | Ch14 | 直接証明: ∫x = (b²−a²)/2 | 中点望遠鏡和・**sup なし監査**（完備性不要の発見）・y=x の物語が部をまたいで閉じる |
-| Ch15 | 山頂: 連続 ⇒ 可積分 | 大規模証明のアーキテクチャ・4 部品分解（(ii)判定+(iv)組立=本文精読、(i)一様連続+(iii)細分=statement 精読＋付録。重量実測: 細分 1047 ≫ 一様連続 307 ≫ 判定 114 ≫ 組立 82 行） |
-| Ch16 | **FTC**（核＋実体化） | ftc_core（局所・一意性フリー）→ 橋 1 回で実体化・監査総決算（公理の勾配表）・「全域化の代価」コラム |
+| Ch15 | **FTC（可積分仮定版・本編の終着）** | ftc_core（局所・一意性フリー）→ 橋 1 回で実体化 ftc_of_integrable・監査総決算（公理の勾配表）・「全域化の代価」コラム |
+| **発展部 存在定理への登山**（本編は依存しない） | 発展 1: 連続⇒可積分（判定＋組み立て・NearLe・sup 構成・大規模証明のアーキテクチャ）/ 発展 2: 一様連続性（連結性論法）/ 発展 3: 細分の機械 | コードは E1–E5（主線 import 外、C15 の後に接続） |
 
-**⚠ v2 への重大修正（2026-06-12 ユーザー決定: FTC は可積分仮定版のみ）**: 数学的に FTC が要求するのは「**部分区間ごとの可積分性＋点 x での連続性**」だけで、f の大域連続性は可積分性を製造するためにしか使っていなかった——よって**最終定理を `ftc_of_integrable`（可積分仮定版）とし、大域連続版 ftc は置かない**。帰結: 存在定理（連続⇒可積分）の機構一式が主線から外れ、章ソースから旧 C15_Summit・A_UnifCont・B1–B3（約 1850 行）を削除した（全証明は Text/Proto/ に温存。主線は C01–C14＋C16 の計 2023 行）。sum_le_const / const_le_sum は C16 §2 へ移動。**上の v2 章表のうち Ch15（山頂）と付録 A/B の扱い、および削減部分が担っていた Lean 機能（大規模証明のアーキテクチャ・sup による値の構成・NearLe 述語・連結性論法・細分機構）の説明の再配置は、次の構成議論で別途検討する**。発展課題: 制限定理（可積分 ⇒ 部分区間でも可積分）を足せば古典的な 1 本仮定（IsIntegrable f a b）に弱められる。
+**⚠ v2 への重大修正（2026-06-12 ユーザー決定: FTC は可積分仮定版のみ）**: 数学的に FTC が要求するのは「**部分区間ごとの可積分性＋点 x での連続性**」だけで、f の大域連続性は可積分性を製造するためにしか使っていなかった——よって**最終定理を `ftc_of_integrable`（可積分仮定版）とし、大域連続版 ftc は置かない**。帰結: 存在定理（連続⇒可積分）の機構一式が主線から外れ、章ソースから旧 C15_Summit・A_UnifCont・B1–B3（約 1850 行）を削除した（全証明は Text/Proto/ に温存。主線は C01–C14＋C16 の計 2023 行）。sum_le_const / const_le_sum は C16 §2 へ移動。発展課題: 制限定理（可積分 ⇒ 部分区間でも可積分）を足せば古典的な 1 本仮定（IsIntegrable f a b）に弱められる。
+**→ v3 で確定（2026-06-13 ユーザー決定）**: ① 番号を詰める——本編は第 I 部 Ch0–10＋第 II 部 Ch11–15（**FTC が Ch15・本編の終着**、C16_FTC.lean → C15_FTC.lean に改名）② 存在定理は**発展部「存在定理への登山」**（発展 1 連続⇒可積分／発展 2 一様連続性／発展 3 細分の機械）として残し、コードも E1–E5 として復活（C15 の後に接続する独立連鎖。主線は依存しない）③ 引っ越した Lean 機能の新しい持ち場——大規模証明のアーキテクチャ・NearLe 述語（昇格の実演）・statement 精読＝発展 1、sup による値の構成＝発展 1（Ch12 の Integral' が本編側の種）、連結性論法＝発展 2。付録は C（mathlib）と D（my_ring）の 2 本になり、旧付録 A/B は発展 2/3 に昇格。
 
 **v1 からの変更点と理由**:
 1. **積分の性質の章（旧 Ch14）を主線から廃止** — 試作の発見「ftc_core は加法性・線形性・一意性を一切使わない」を構成に反映。性質群は Ch13 の橋の応用（節）＋発展演習へ。
@@ -124,10 +125,10 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C12_Integral | Ch12 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
 | C13_Unique | Ch13 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
 | C14_Example | Ch14 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
-| C15_Summit | Ch15 | NearLe 基本・integrable_of_cauchy・continuous_integrable・(i)(iii) の statement 集 | Criterion＋Main 前半＋InsertBound§2 | 250 |
-| C16_FTC | Ch16 | HasStraddleDeriv・ftc_core（核の部品込み）・ftc 実体化 | FTC＋FTCCore 核部＋Main 後半 | 380 |
-| 付録 A | — | 一様連続性・有界性の全文 | UnifCont (307) | 310 |
-| 付録 B | — | 挿入・細分機械の全文 | Insert＋InsertBound＋Refine (1047) | 1050 |
+| C15_FTC | Ch15 | sum_le_const/const_le_sum・両側比較・ftc_core・**ftc_of_integrable**（可積分仮定版） | FTC＋FTCCore 核部＋Main 後半 | 190 |
+| E1–E3 | 発展 3 | 挿入・RS 挿入評価（NearLe 定義込み）・細分比較 | Insert＋InsertBound＋Refine | 1050 |
+| E4 | 発展 2 | 一様連続性・有界性の全文 | UnifCont | 310 |
+| E5 | 発展 1 | integrable_of_cauchy・continuous_integrable | Criterion＋Main 前半 | 130 |
 
 #### 第 I 部の章詳細（v1 素材は対応章をそのまま引き継ぎ、差分のみ記す）
 

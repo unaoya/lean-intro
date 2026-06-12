@@ -142,7 +142,7 @@ theorem riemann_sum_nonneg (f : Real → Real) {n : Nat} {u v : Real}
       (length_nonneg Δ i))
 
 -- ============================================================
--- §6 性質 5: 両側評価（abs を使わない。生の不等式 2 本——述語への昇格は Ch15）
+-- §6 性質 5: 両側評価（abs を使わない。生の不等式 2 本——述語 NearLe への昇格は発展部）
 -- ============================================================
 
 theorem rs_le_const {n : Nat} {u v : Real} (Δ : Partition n u v)

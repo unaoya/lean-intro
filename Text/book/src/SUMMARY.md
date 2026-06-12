@@ -22,12 +22,15 @@
 - [Ch12 リーマン積分の定義](ch12_integral.md)
 - [Ch13 一意性 — choose の仕様書](ch13_unique.md)
 - [Ch14 直接証明 — ∫x = (b²−a²)/2](ch14_integral_id.md)
-- [Ch15 山頂 — 連続なら可積分](ch15_summit.md)
-- [Ch16 微積分学の基本定理](ch16_ftc.md)
+- [Ch15 微積分学の基本定理](ch15_ftc.md)
+
+# 発展部 存在定理への登山（本編はこれに依存しない）
+
+- [発展 1 連続なら可積分](ext1_summit.md)
+- [発展 2 一様連続性を読む](ext2_unifcont.md)
+- [発展 3 細分の機械 — 挿入・σ 写像・エンベロープ](ext3_refine.md)
 
 # 付録
 
-- [付録 A 一様連続性を読む](appendix_a.md)
-- [付録 B 細分の機械 — 挿入・σ 写像・エンベロープ](appendix_b.md)
 - [付録 C mathlib への橋](appendix_c.md)
 - [付録 D my_ring を作る — proof by reflection](appendix_d.md)

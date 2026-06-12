@@ -27,7 +27,7 @@
 
 ## 9.5 章末監査 — 第 I 部の総決算
 
-- 全定理の `#print axioms` が [Real, instLOF]（＋propext/Quot.sound の説明は最小限に留め Ch16 へ）
+- 全定理の `#print axioms` が [Real, instLOF]（＋propext/Quot.sound の説明は最小限に留め Ch15 へ）
 - 第 I 部は**構成的**——その意味の予告（BHK の転調は Ch11–12 で）
 
 ## 引き
