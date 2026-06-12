@@ -200,6 +200,24 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 **【採用】脱 abs ルート**: 参照実装の FTC は `integral_triangle_ineq`（|∫g| ≤ ∫|g|）経由で `abs_integrable`（振動和機械）を引き込むが、**両側評価で代替できる**——区間上 −ε ≤ f t − f x ≤ ε から `integral_monotone` を 2 回で −εh ≤ ∫(f−fx) ≤ εh、最後に実数レベルの |·| に直すだけ。∫|g| は不要。**Text 版の main' はこのルートで書く**。帰結: Oscillation / Abs 系（|f| の可積分性・積分の三角不等式）は FTC の依存から完全に外れ、「美しいが経路外」の発展話題（付録 B の独立節）に降格。Text の主線は「定義・一意性／定数積分／線形性／単調性（両側）／区間加法性／連続⇒可積分／OIntegral 場合分け」で閉じる。
 
+### 積分の定義の形式化（2026-06-12 確定）
+
+**主定義は現行（Riemann／タグ付き ε-δ＋∃＋choose＋junk 全域化）を採用**。決め手: 杉浦の定義と一字一句対応・第 I 部資産（RS・TaggedPartition）が直行・3 つ目の ε-δ という縦糸の完成。検討した代替: Darboux（sup で値が直接書ける・山頂が軽くなるが、同値定理が要り教科書とずれる——Ch13 の対比素材）／等分割極限（題材変更、脚注）／フィルター（下記）／HK（「δ を関数にするだけ」コラム）／Newton（脚注）。
+
+**choose と sup の精密な関係（Ch13 本文級）**: 本書の `Real.sup` は関数形の公理（Skolem 化済み）なので choose 不要——だが mathlib のように実数を構成すると完備性は「∃ 上限」という*定理*になり、sSup は choose で定義される。一般原理: **公理的存在は Skolem 化の自由がある。定理的存在から値を取り出すには choose しかない——ただし証明を引数に取る関数にすれば choose 無しでデータ化できる**。
+
+**選択公理の侵入箇所の 3 層分析（Ch15 後の発展節「積分を関数として書く」として予約）**:
+
+| 層 | 実装 | 公理 |
+|---|---|---|
+| 核 | `Integral f (hab : a ≤ b) (hint : IsIntegrable f a b) := Real.sup (S f a b) …`（S = 最終的に RS の下界になる値の集合——Criterion の構成の定義への昇格。hne/hbdd は hint から証明可能） | **choice ゼロ** |
+| 全域化の皮 | junk 値 0 の dite | propDecidable（choice 由来） |
+| 向きの皮 | OIntegral の `if a ≤ x` | 同上 |
+
+現行定義 (a) の choice は実は 2 箇所（choose と dite の propDecidable）——Ch13 で監査の精密化として一言。
+
+**フィルターの言葉**: 定義は ε-δ のまま、**FTC 後の発展節「フィルターで統一する」**を予約——Filter＋Tendsto を自作（50〜100 行）し、IsLimAt・Continuous・IsIntegral が同一概念の 3 インスタンスであることを同値定理 3 本の演習で示す。「3 種の ε-δ 比較」の縦糸が統一として完結し、mathlib（BoxIntegral）への橋が最短になる。
+
 ### structure と class の扱い（双子章方式）
 
 両者は機械的にはほぼ同一（class = structure ＋ `@[class]`、instance = def ＋ `@[instance]`）なので、**「2 つの別概念」ではなく「1 つの仕組み＋値の渡し方の自動化」として正直に教える**。説明は 3 段:
