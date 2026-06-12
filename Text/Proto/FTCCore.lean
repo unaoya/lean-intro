@@ -174,7 +174,8 @@ theorem le_isintegral_of_le {f : Real → Real} {u v J c : Real} (huv : u ≤ v)
 -- 必要なのは: 連続性@x・定数積分・両側評価。存在定理も加法性も一意性も不要
 -- ============================================================
 
-theorem ftc_core (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hxb : x ≤ b)
+-- 注: hax / hxb は証明に不要（跨ぎの仮定 u ≤ x ≤ v が全てを運ぶ——核は完全に局所的）
+theorem ftc_core (f : Real → Real) (a b x : Real) (_hax : a ≤ x) (_hxb : x ≤ b)
     (hcont : ContinuousAt f x) : HasStraddleDeriv f a b x := by
   intro ε hε
   have hh : 0 < ε / (1 + 1) := pos_half ε hε
