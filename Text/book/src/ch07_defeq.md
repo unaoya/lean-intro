@@ -34,6 +34,14 @@
 
 - 最初の本格的帰納法証明。Σ(g(i+1)−g(i)) = g(n)−g(0)（→ Ch9 length_sum・Ch14 中点和の部品）
 
+## 7.7 脇道: Σ は線形形式である（2026-06-12 追加）
+
+- additive_summation と summation_mul_left の 2 本は、数学者の言葉では「有限数列のなすベクトル空間上の線形形式」という **1 つの主張**——そう言い直してみる（C07 の ANCHOR: vector_space / summation_linear）
+- `class VectorSpace (V) extends Add V, Neg V, Zero V, SMul Real V`（公理 8 本）を自作——Ch3 の class 設計の応用。`•` は core の SMul の記法
+- **関数型へのインスタンス**: Range n → Real に各点演算で instance を与える（公理の証明はすべて funext＋Real の対応補題 1 行——funext の活躍どころ）。Real 自身も Real 上のベクトル空間（• = 積）
+- `IsLinearMap` を定義し、`summation_isLinear` の証明が **corpus の 2 本をペアにするだけ**であることを見る——「概念を定義すると、すでに証明していたことが 1 つの主張に束ねられる」
+- mathlib 対応（Module・LinearMap・Finset.sum の線形性）は付録 C へ。発展演習: RiemannSum も f について線形（Ch9 の additive/neg の言い直し）・線形形式の表現（Σ の双対基底）
+
 ## 演習
 
 - コーパス 9 本のうち本文精読 3 本・残り sorry 埋め

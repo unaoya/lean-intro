@@ -338,3 +338,64 @@ theorem summation_telescope : ∀ (n : Nat) (g : Range (n + 1) → Real),
     exact (telescope_2 (g ⟨0, Nat.succ_pos (m + 1)⟩)
       (g ⟨m + 1, Nat.lt_succ_self (m + 1)⟩)
       (g ⟨m, Nat.lt_succ_of_lt (Nat.lt_succ_self m)⟩)).symm
+
+-- ============================================================
+-- 脇道: Σ は線形形式である
+--    additive_summation と summation_mul_left の 2 本は、数学者の言葉では
+--    「有限数列のなすベクトル空間 (Range n → Real) 上の線形形式」という 1 つの主張。
+--    ベクトル空間の公理と線形写像を class で自作して、そう言い直してみる
+--    （class 設計の応用・関数型へのインスタンス・funext の活躍どころ）
+-- ============================================================
+
+-- ANCHOR: vector_space
+-- Real 上のベクトル空間（• は core の SMul の記法）
+class VectorSpace (V : Type) extends Add V, Neg V, Zero V, SMul Real V where
+  add_assoc : ∀ u v w : V, (u + v) + w = u + (v + w)
+  add_comm : ∀ u v : V, u + v = v + u
+  add_zero : ∀ v : V, v + 0 = v
+  add_neg : ∀ v : V, v + -v = 0
+  one_smul : ∀ v : V, (1 : Real) • v = v
+  mul_smul : ∀ (a b : Real) (v : V), (a * b) • v = a • (b • v)
+  smul_add : ∀ (a : Real) (u v : V), a • (u + v) = a • u + a • v
+  add_smul : ∀ (a b : Real) (v : V), (a + b) • v = a • v + b • v
+
+-- 線形写像（線形形式は W = Real の場合）
+def IsLinearMap {V W : Type} [VectorSpace V] [VectorSpace W] (T : V → W) : Prop :=
+  (∀ u v : V, T (u + v) = T u + T v) ∧
+  (∀ (c : Real) (v : V), T (c • v) = c • T v)
+-- ANCHOR_END: vector_space
+
+-- Real 自身は Real 上のベクトル空間（• は単なる積）
+noncomputable instance : VectorSpace Real where
+  smul := fun c x => c * x
+  add_assoc := add_assoc
+  add_comm := add_comm
+  add_zero := add_zero'
+  add_neg := add_neg'
+  one_smul := one_mul_b
+  mul_smul := mul_assoc
+  smul_add := CommRing.left_distrib
+  add_smul := CommRing.right_distrib
+
+-- 有限数列の空間 Range n → Real（演算はすべて各点で——funext の出番）
+noncomputable instance (n : Nat) : VectorSpace (Range n → Real) where
+  add := fun f g => fun i => f i + g i
+  neg := fun f => fun i => -(f i)
+  zero := fun _ => 0
+  smul := fun c f => fun i => c * f i
+  add_assoc := fun f g h => funext fun i => add_assoc (f i) (g i) (h i)
+  add_comm := fun f g => funext fun i => add_comm (f i) (g i)
+  add_zero := fun f => funext fun i => add_zero' (f i)
+  add_neg := fun f => funext fun i => add_neg' (f i)
+  one_smul := fun f => funext fun i => one_mul_b (f i)
+  mul_smul := fun a b f => funext fun i => mul_assoc a b (f i)
+  smul_add := fun a f g => funext fun i => CommRing.left_distrib a (f i) (g i)
+  add_smul := fun a b f => funext fun i => CommRing.right_distrib a b (f i)
+
+-- ANCHOR: summation_linear
+-- Σ は線形形式（証明は corpus の 2 本がそのまま——「線形」という 1 概念に束ねられる）
+theorem summation_isLinear (n : Nat) :
+    IsLinearMap (fun f : Range n → Real => Summation n f) :=
+  ⟨fun f g => additive_summation n f g,
+   fun c f => summation_mul_left n f c⟩
+-- ANCHOR_END: summation_linear

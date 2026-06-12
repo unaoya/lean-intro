@@ -29,6 +29,19 @@ noncomputable instance : NatCast Real := ⟨Real.ofNat⟩
 -- 除法の記法（等分割の分点式のため）
 noncomputable instance : Div Real := ⟨fun a b => a * Field.inv b⟩
 
+-- defeq の観察: 「数の 2 つの建て方」の分かれ目。
+-- cast は代数の 0 と 1 から建てた（代数一次）。重なる点の等式の「強さ」が違う:
+-- cast 0 = 0 は構成により rfl（defeq）、cast 1 = 1 は命題的（証明が要る）。
+-- もし全リテラルを cast で配線したら (1 : Real) の中身は 0 + 1 になり、
+-- 公理には計算が無いので 1 と defeq にならない——rfl 証明が死ぬ（Ch7 の 2 種の等しさ）。
+-- これが mathlib の Nat.AtLeastTwo（リテラル 0/1/2 以上の担当の排他分割）の理由
+-- ANCHOR: cast_defeq
+example : Real.ofNat 0 = 0 := rfl        -- defeq（構成どおり）
+example : Real.ofNat 1 = 0 + 1 := rfl    -- 中身は 0 + 1
+#check_failure (rfl : Real.ofNat 1 = 1)  -- 0 + 1 と 1 は defeq でない（公理に計算は無い）
+theorem cast_one : ((1 : Nat) : Real) = 1 := zero_add' 1  -- 命題的にはもちろん等しい
+-- ANCHOR_END: cast_defeq
+
 -- ============================================================
 -- §2 除法の補題（中点・半分・等分の計算部品）
 -- ============================================================
