@@ -247,6 +247,41 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 **FTC は 2 段で書く**: ① **核（一意性フリー）**——「F が不定積分関数（∀ u v, u ≤ v → IsIntegral f u v (F v − F u)）なら連続点で F′ = f」を IsIntegral レベルの補題だけで証明（choose・一意性が現れない解析の本体）② **実体化（一意性をちょうど 1 回）**——F := Integral f a · が不定積分関数であることを橋で示す。解析と帳簿の分離が証明の構造として見える。
 
+### 試作の完了データ（M1–M7、2026-06-12 記録）
+
+**Text/Proto/ 全 18 ファイル・計 2979 行・sorry ゼロ・MyProject 非依存**で、公理→定義→一意性→FTC 核→4 部品→組み立て→具体例まで貫通した。ハイブリッド方針（片側 FTC・徹底脱 max/abs/min/diam・リテラル 2 不使用）は**全行程で破綻なし**。
+
+| ファイル | 行 | 内容（マイルストーン） |
+|---|---|---|
+| Axioms / Numerals / Sum / Lemmas / Cast | 74+15+29+381+138 | 公理・リテラル・Σ・補題corpus・cast（M1–M4 で漸増） |
+| Partition / EqualPartition / Integral | 59+77+47 | 定義一式（M1） |
+| Unique / FTC / FTCCore | 80+68+226 | 一意性（M2）・statement（M3）・核 ftc_core（M4） |
+| Criterion | 114 | コーシー判定・sup 構成（M5(ii)） |
+| Insert / InsertBound / Refine | 207+425+415 | 挿入幾何（M5(iii)-A）・RS 挿入評価（-B）・σ 写像とエンベロープ（-C） |
+| UnifCont | 307 | 一様連続性・有界性（M5(i)） |
+| Main | 82 | 連続⇒可積分＋FTC 実体化（M5(iv)+M6） |
+| Example | 235 | sum_id・isintegral_id・integral_id（M7） |
+
+**公理監査の物語（そのまま Ch16 の素材になる勾配）**:
+
+| 定理 | 監査 | 読み |
+|---|---|---|
+| `sum_id` | [Real, instLOF] | 帰納法と cast だけ——**古典論理ゼロ** |
+| `rs_insert_bound` | +propext, Quot.sound | 命題の等値と funext 圏のみ。**choice フリー** |
+| `rs_multi_insert_bound` | +choice | `find_interval`（has_min ＋ Classical.em の探索）の値段 |
+| `rs_refine_eq` | +choice | **rmin（素朴 if 定義の min）が源**——素朴定義実験の実例が主線の証明装置に |
+| `isintegral_id` | choice あり・**sup なし** | 「定義から直接」の可積分性は**完備性不要** |
+| `continuous_unif_cont` | +sup, sup_ub, sup_lub | **sup 公理はここで初登場**（連結性論法の値段） |
+| `ftc` / `integral_id` | 全公理 | 実体化（橋 = 一意性 = アルキメデス）で揃う |
+
+**試作で得た知見（執筆時に反映）**:
+1. **NearLe ツールキットが abs 三角不等式を完全に置換**: `NearLe c x y := x−c ≤ y ∧ y ≤ x+c` に nearle_trans / nearle_symm / nearle_mono / nearle_of_add、Near 側に near_trans / near_symm / near_mono / nearle_to_near。挿入評価の `2M` は `M+M`、累積は `m·((M+M)·δ)` の ∀-Fine 形で diam 不要。
+2. **min の不可避点は 2 箇所だけ**: ① stepAnti（細分比較の証明装置）の rmin——素朴 if 定義で choice が監査に出る（Ch12 の実験と呼応させる）② δ の合流——こちらは `exists_min2`（le_total 場合分けで「両方以下の正数」を出す）で **min 関数なしで済む**。
+3. **一様連続性は u ≤ v で成立**（参照実装の u < v より弱い仮定で通った）。有界性の鎖帰納は `NearLe k (f u) (f t)` が abs 版より素直。
+4. **誤差配分の脱リテラル**: ε/4 は `ε/(1+1)/(1+1)`、`div_mul_cancel` 等で `ε'·(v−u)+θ = ε/2 < ε` を機械的に処理できる。
+5. **rw の罠 2 種**（Ch7 のタクティク種明かし素材）: ① `rw [right_distrib]` が意図しない `(M+M)*δ` を先に潰す→**引数明示**で回避 ② `q = (q+q)/2` の書き換えが `(p+q)` 内の q も巻き込む（パターン捕獲）→**独立補題への切り出し**（half_dist_hi/lo）で回避。
+6. **構成順の差し替え**: Proto の依存順は 公理→Σ→分割→積分→一意性→FTC文→核→判定→挿入→細分→一様連続→組み立て→具体例。第 II 部の章立て（Ch13 定義 → Ch15 山頂 → Ch16 FTC）と整合し、Ch15 の 4 部品分解は (ii)判定 ≪ (iii)細分（1047 行で最重量）≫ (i)一様連続 ≫ (iv)組み立て（82 行で最軽量）という重量配分が実測できた。
+
 ### structure と class の扱い（双子章方式）
 
 両者は機械的にはほぼ同一（class = structure ＋ `@[class]`、instance = def ＋ `@[instance]`）なので、**「2 つの別概念」ではなく「1 つの仕組み＋値の渡し方の自動化」として正直に教える**。説明は 3 段:
