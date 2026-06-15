@@ -143,15 +143,15 @@
 - 引き: Ch9 へ「等式は反射で畳めた。順序（≤/<）はどう自動化するか——順序のみ／順序体の道具を比べる」
 - ⚠ mathlib の ring/abel/linarith は**無い**（unknown tactic・実測）ので全部自作。register_simp_attr も当 core で不可。全デモは実ビルドで通す（机上禁止）。「本体=模範解答・自作道具は加速装置」の運用を明記。反射の一般化（多項式正規形）と mathlib 対応は付録 C/D
 
-### Ch9 — 順序と calc（`ch09_order.md`、C09_Order）※2026-06-15 旧 C06 の順序コーパスを独立章化
+### Ch9 — 順序と calc（`ch09_order.md`、C09_Order）※2026-06-15 順序コーパス独立章化＋順序タクティク 2 方式
 - 問い: 等式は畳めた。順序の補題はどう獲得し、どう鎖にするか
-- 到達点: 順序コーパスを獲得・**`≤`/`<` 混在の calc を設計できる**（Trans）
-- 新機能: **calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1・rw は Ch7・simp は Ch8）
-- ANCHOR: （未付与——§5）
-- ▲公理から順序基本（le_refl/trans/antisymm/total・add_le_add＝1 行 term 射影・Ch3 の「公理は定理」の本格展開）・▲Trans＝calc の機構（種明かし回収）・▲加法と順序・移項の小物（両側評価の部品）・▲乗法順序（mul_nonneg・**zero_lt_one は定理**＝nontrivial・pos_inv）
-- 演習候補: 順序ドリル（nonneg_iff_le・neg_le_neg'・sub_lt_swap）・混在 calc を 1 本設計
+- 到達点: 順序コーパスを獲得・**`≤`/`<` 混在の calc を設計できる**（Trans）・**順序の自作タクティク 2 方式（mono/lin）を比較できる**
+- 新機能: **calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1・rw は Ch7・simp/反射は Ch8）・**順序タクティクの自作**（macro_rules 再帰 mono／elab lin）
+- ANCHOR: **`order_tac_demo`**（mono/lin の比較）
+- ▲公理から順序基本（le_refl/trans/antisymm/total・add_le_add＝1 行 term 射影・Ch3 の「公理は定理」の本格展開）・▲Trans＝calc の機構（種明かし回収）・▲加法と順序・移項の小物（両側評価の部品）・▲乗法順序（mul_nonneg・**zero_lt_one は定理**＝nontrivial・pos_inv）・▲**順序タクティク 2 方式**: mono（構造的・gcongr-lite・macro_rules）／lin（意味的・linarith-lite・`0≤b-a` に帰し **my_ring(D) を流用**・推移など線形結合を扱える）。構造的 vs 意味的の対比
+- 演習候補: 順序ドリル（nonneg_iff_le・neg_le_neg'・sub_lt_swap）・混在 calc を 1 本設計・mono に新しい単調性補題を足す・lin の限界（係数探索 LP は未実装）を観察
 - 引き: Ch10 へ「スカラーの代数は揃った。Σ（有限和）の性質は項数 n の帰納法が要る」
-- ⚠ 順序コーパスは等式（Ch6/7）の後・simp/my_ring（Ch8）で等式変形の段を畳める・リテラル 2 は無いので `1+1`・古典補題は第 II 部
+- ⚠ 順序コーパスは等式（Ch6/7）の後・simp/my_ring（Ch8）で等式変形の段を畳める・リテラル 2 は無いので `1+1`・古典補題は第 II 部。順序タクティクは順序コーパス＋my_ring の後に置く（依存）
 
 ### Ch10 — 帰納法（`ch10_induction.md`、C10_Induction）※2026-06-15 旧「defeq・帰納法」から defeq を Ch7 へ分離
 - 問い: スカラーの代数は揃った。Σ の性質は帰納法が要る
@@ -213,7 +213,8 @@
 - **cast は射（2026-06-15）**: ① `sum_id` は Nat の恒等式 `sum_id_nat`＝**C10_Induction**② **cast を「射」として明示**＝C11_Numbers（`IsNatHom`＋`cast_isHom`・`cast_mul`/`cast_le`・`cast_summation`＝Σ と可換。**Ch10** IsLinearMap と並ぶ「射」の述語）③ **代表点を左端・右端に取る一般化**＝C05。`equalPartitionRepr` は `leftRepr` を適用。監査例は `cast_mul`（C11・C17 とも・[Real, instLOF] 古典ゼロ）。**等分点の formula の扱いは別途検討（ユーザー留保）**
 - **C12_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C12 全宣言＋C05 の is_repr・C10 の幾何・C11 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
-- **Ch8 自動化＝反射タクティク実装済（2026-06-15）**: バニラ（simp/omega/ac_rfl）の実測検証後、**proof by reflection で `my_abel`（加法群）・`my_ring`（環）を C08_Automation に実装**（mathlib の ring/abel/linarith が無いため自作）。my_ring は my_abel を包含し、`a+b-a=b`〜`(a+b)*(c+d)=…` を一行で閉じる。**follow-up**: 既存コーパス（C07/C09/C10）の手証明を my_abel/my_ring に置換して重い章を縮小・反射の一般化（多項式正規形・Horner）は付録 D・順序タクティク（順序のみ／順序体）は次フェーズ
+- **Ch8 自動化＝反射タクティク実装済（2026-06-15）**: バニラ（simp/omega/ac_rfl）の実測検証後、**proof by reflection で `my_abel`（加法群）・`my_ring`（環）を C08_Automation に実装**（mathlib の ring/abel/linarith が無いため自作）。my_ring は my_abel を包含し、`a+b-a=b`〜`(a+b)*(c+d)=…` を一行で閉じる。**follow-up**: 既存コーパス（C07/C09/C10）の手証明を my_abel/my_ring/mono/lin に置換して重い章を縮小・反射の一般化（多項式正規形・Horner）は付録 D
+- **Ch9 順序タクティク 2 方式 実装済（2026-06-15）**: **mono**（gcongr-lite・構造的・再帰 macro_rules で単調性合同）と **lin**（linarith-lite・意味的・`0≤b-a` に帰し my_ring(D) の reifyRing/normalize を流用して差の和に正規化し非負を示す）を C09_Order に実装。lin は推移など線形結合を扱える（mono は不可）＝構造的 vs 意味的の比較。ANCHOR `order_tac_demo`。**follow-up**: lin の係数探索（LP）・`<` 版・乗法単調性（符号条件）・mono の @[gcongr] 風タグ化
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る
 - **演習の sorry 化＋Solutions 分離・`#include` 配線・mdbook 導入**: P4（今回はインライン引用で可・ANCHOR は維持し後で変換）
 - **付録 D（反射版 my_ring）**: Ch8 の入口デモの本体。前半の範囲外

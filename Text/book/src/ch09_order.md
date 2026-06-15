@@ -28,6 +28,13 @@
 - mul_nonneg・nonneg_mul_nonneg・mul_right_lt・**`zero_lt_one` は公理からの定理**（nontrivial の出番）・pos_inv・pos_mul_pos
 - リテラル 2 はまだ無いので `1 + 1` で書く（リテラル機構は Ch11）
 
+## 9.5 順序の自作タクティク — 2 方式の比較（ANCHOR `order_tac_demo`）
+
+- Ch8 で等式を反射タクティクに任せた。順序も自作する（linarith は無い）。**2 つの設計を作って比べる**:
+- **mono（順序のみ・構造的）**: 目標 `L ≤ R` の構造を下って単調性補題（add_le_add'・sub_le_sub）を適用し、葉を仮定で閉じる「gcongr-lite」。再帰 `macro_rules` で短く書ける。`f(a) ≤ f(b)` 型に強い
+- **lin（順序体・意味的）**: `a ≤ b` を `0 ≤ b−a` に帰し、**Ch8 の `my_ring`（D）の正規化を流用**して `b−a` を仮定差の和に正規化し非負を示す「linarith-lite」。**推移律 `a≤c`（from a≤b,b≤c）など線形結合**を扱える（mono は構造一致しないので不可）
+- 比較の要点: 構造的（mono）vs 意味的（lin）。**lin が代数基盤（my_ring）を再利用**するのが「順序体タクティク」の旨味。一般の係数探索（LP）は係数1の仮定和に限定（発展）。`<` 版・乗法の単調性（符号条件付き）は発展課題
+
 ## 演習
 
 - 順序ドリル（nonneg_iff_le / neg_le_neg' / sub_lt_swap 等を自分で）・混在 calc の鎖を 1 本設計

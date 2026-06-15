@@ -120,7 +120,7 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C06_Tactics | Ch6 | **タクティク入門**（by・intro/exact/apply・種明かし＝項を書く機械・カーネル/De Bruijn）＋One bridge＋公理射影＋add_left_cancel'（2026-06-15 Fine 分割） | Lemmas 基礎部 | 40 |
 | C07_Rewrite | Ch7 | **書き換えと 2 つの等しさ**（rw・defeq・rfl/show・rw の罠）＋等式/環コーパス本体（消去・ゼロ・符号・引き算の整理・telescope_2） | Lemmas 等式部 | 150 |
 | C08_Automation | Ch8 | **自動化と自作タクティク**: バニラ（simp/omega/ac_rfl＝Std インスタンス）＋**proof by reflection で my_abel（加法群）・my_ring（環）を自作**（mathlib の ring/abel/linarith は無い）。inductive Expr＋eval＋normalize＋健全性＋elab。旧 Ch10 間奏を前倒し本章化・load-bearing（2026-06-15） | 新規 | 514 |
-| C09_Order | Ch9 | **順序と calc**（順序基本＋Trans・加法と順序・移項の小物・乗法順序・zero_lt_one）＋**≤/< 混在 calc** | Lemmas 順序部 | 250 |
+| C09_Order | Ch9 | **順序と calc**（順序基本＋Trans・加法と順序・移項の小物・乗法順序・zero_lt_one）＋**≤/< 混在 calc**＋**順序タクティク 2 方式**（mono＝gcongr-lite 構造的・lin＝linarith-lite 意味的・my_ring 流用・2026-06-15） | Lemmas 順序部 | 325 |
 | C10_Induction | Ch10 | **帰納法**: Σ補題コーパス・**Partition 幾何**（points_mono 等・induction 実地）・線形脇道・**`sum_id_nat`**（Σ_{i<n} i の Nat 恒等式）（旧 C07） | FTCCore§Σ＋Refine§3 | 250 |
 | C11_Numbers | Ch11 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO）（旧 C08） | Numerals＋Cast 前半＋EqualPartition | 290 |
 | C12_Properties | Ch12 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C10・equalPartitionRepr_isrepr=C11）（旧 C09） | FTCCore§分割＋Criterion§両側評価 | 140 |

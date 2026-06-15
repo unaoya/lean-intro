@@ -246,3 +246,80 @@ theorem pos_mul_pos (a b : Real) : 0 < a → 0 < b → 0 < a * b := by
         _ = a * (b * Field.inv b) := mul_assoc _ _ _
         _ = a * 1 := by rw [show b * Field.inv b = (1 : Real) from Field.mul_inv b hb.2.symm]
         _ = a := mul_one_b a)⟩
+
+-- ============================================================
+-- §5 順序の自作タクティク（2 方式・比較）
+--    mono = 順序のみ（単調性合同・構造的）／ lin = 順序体（差を my_ring で
+--    正規化し非負を示す・意味的）。lin は推移など線形結合を扱える（mono は不可）。
+-- ============================================================
+
+-- ===== 順序のみ: mono（単調性合同）=====
+syntax "mono" : tactic
+macro_rules
+  | `(tactic| mono) => `(tactic|
+      first
+      | exact le_refl _
+      | assumption
+      | (apply add_le_add' <;> mono)
+      | (apply sub_le_sub_right <;> mono)
+      | (apply sub_le_sub_left <;> mono)
+      | (apply sub_lt_sub_left <;> mono)
+      | (apply add_lt_add_right <;> mono)
+      | (apply add_left_lt <;> mono))
+
+-- ===== 順序体: lin（差の和で非負を示す）=====
+theorem add_nonneg' {x y : Real} (hx : 0 ≤ x) (hy : 0 ≤ y) : 0 ≤ x + y := by
+  have h := add_le_add' hx hy
+  rwa [add_zero'] at h
+
+open Lean Lean.Meta Lean.Elab Lean.Elab.Tactic in
+elab "lin" : tactic => do
+  let goal ← getMainGoal
+  goal.withContext do
+    let ty ← goal.getType
+    let (a, b) ← match ty.getAppFnArgs with
+      | (``LE.le, #[_, _, a, b]) => pure (a, b)
+      | _ => throwError "lin: 目標が a ≤ b でない"
+    let realTy := mkConst ``Real
+    let zeroExpr ← elabTerm (← `((0 : Real))) (some realTy)
+    let oneExpr  ← elabTerm (← `((1 : Real))) (some realTy)
+    let mut diffNn : Array (Expr × Expr) := #[]
+    for decl in (← getLCtx) do
+      if decl.isImplementationDetail then continue
+      match (← instantiateMVars decl.type).getAppFnArgs with
+      | (``LE.le, #[_, _, x, y]) =>
+          let iff ← mkAppM ``nonneg_iff_le #[x, y]
+          let nn ← mkAppM ``Iff.mp #[iff, decl.toExpr]
+          let diff ← mkAppM ``HSub.hSub #[y, x]
+          diffNn := diffNn.push (diff, nn)
+      | _ => pure ()
+    let mut S := zeroExpr
+    let mut nnPf ← mkAppM ``le_refl #[zeroExpr]
+    for (diff, nn) in diffNn do
+      nnPf ← mkAppM ``add_nonneg' #[nnPf, nn]
+      S ← mkAppM ``HAdd.hAdd #[S, diff]
+    let subBA ← mkAppM ``HSub.hSub #[b, a]
+    let atomsRef ← IO.mkRef (#[] : Array Expr)
+    let eL ← reifyRing oneExpr zeroExpr atomsRef subBA
+    let eR ← reifyRing oneExpr zeroExpr atomsRef S
+    let atoms ← atomsRef.get
+    let listExpr ← mkListLit realTy atoms.toList
+    let rho := mkLambda `i BinderInfo.default (mkConst ``Nat)
+      (mkAppN (mkConst ``List.getD [Level.zero]) #[realTy, listExpr, mkBVar 0, zeroExpr])
+    let normPf ← mkDecideProof (← mkEq (← mkAppM ``MyRing.normalize #[eL])
+                                       (← mkAppM ``MyRing.normalize #[eR]))
+    let hEq ← mkAppM ``MyRing.of_normalize_eq #[rho, eL, eR, normPf]
+    let motive ← withLocalDeclD `z realTy fun z => do
+      mkLambdaFVars #[z] (← mkAppM ``LE.le #[zeroExpr, z])
+    let congrEq ← mkCongrArg motive hEq
+    let hNonneg ← mkEqMPR congrEq nnPf
+    let final ← mkAppM ``Iff.mpr #[← mkAppM ``nonneg_iff_le #[a, b], hNonneg]
+    goal.assign final
+
+-- ANCHOR: order_tac_demo
+-- 単調性は両方で
+example (a b c d : Real) (h1 : a ≤ b) (h2 : c ≤ d) : a + c ≤ b + d := by mono
+example (a b c d : Real) (h1 : a ≤ b) (h2 : c ≤ d) : a + c ≤ b + d := by lin
+-- 線形結合（推移）は lin のみ
+example (a b c : Real) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by lin
+-- ANCHOR_END: order_tac_demo
