@@ -10,5 +10,5 @@
 -- Text/Proto/ は試作の記録（M1–M7、設計書参照）としてそのまま温存している。
 import Text.C01_FirstProofs
 import Text.C02_Structures
-import Text.C18_FTC
+import Text.C16_FTC
 import Text.E5_Summit

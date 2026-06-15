@@ -5,7 +5,7 @@
 -- 反射の健全性は **任意の AddCommGroup/CommRing 上**で証明する（Real 固定でない）。
 -- ゆえに my_abel/my_ring は Real に限らずどの可換群/可換環の等式でも閉じる。
 import Lean
-import Text.C07_Rewrite
+import Text.C06_Rewrite
 
 -- ============================================================
 -- §1 simp — hand-proved 補題を渡して派生恒等式を畳む（既定セットは汚さない）

@@ -1,6 +1,6 @@
 -- Text/C16_Unique.lean — Ch16 一意性（ε/2 ＋ ネットの非空性 = アルキメデスの値段）
 -- min-free 合流（le_total の場合分け＋fine_mono）・橋 = choose の仕様書・橋の応用
-import Text.C15_Integral
+import Text.C13_Integral
 
 noncomputable section
 

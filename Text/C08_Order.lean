@@ -8,7 +8,7 @@
 -- 注意: `<` は Real の `LT`（≤∧≠）に、`-` は Real の `Sub` に依存するため、それらを使う
 -- 補題は Real 専用に置く（順序クラスに lt/sub を積む一般化は将来の課題）。
 -- 本章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）。
-import Text.C08_Automation
+import Text.C07_Automation
 
 -- ============================================================
 -- §1 順序の基本（最小クラス OrderedAddCommMonoid のフィールドを使いやすく包む）

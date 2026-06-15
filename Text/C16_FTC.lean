@@ -4,7 +4,7 @@
 -- 機構一式は主線から外れる。Text/Proto/ に全証明を温存）。
 -- 構成: 核 ftc_core（完全に局所的——区間加法性も線形性も一意性も存在定理も不要）
 -- ＋実体化（橋 1 回）＋監査総決算
-import Text.C17_Example
+import Text.C15_Example
 
 noncomputable section
 

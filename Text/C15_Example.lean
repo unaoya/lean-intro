@@ -2,7 +2,7 @@
 -- f = id は定義から直接可積分性を示せる稀有な例。中点和が望遠鏡和になり、
 -- 任意のタグとの差は各小区間 ±len/2 → 合計 ±(δ/2)(b−a)。
 -- 監査: sup なし（「定義から直接」は完備性不要——どこで sup が要るのかの対照実験）
-import Text.C16_Unique
+import Text.C14_Unique
 
 noncomputable section
 
