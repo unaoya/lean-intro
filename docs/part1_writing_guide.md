@@ -116,10 +116,10 @@
 
 ### Ch6 — タクティク入門（`ch06_tactic.md`、C06_Tactics）
 - 問い: 残った sorry をどう埋めるか
-- 到達点: 基本タクティクで短い証明・「なぜタクティクで証明になるか（項を書く機械）」に答えられる
-- 新機能: `by`・ゴール状態・intro/exact/apply/have/show・term↔tactic の往復・**One bridge**
-- ANCHOR: （未付与——§5 参照）
-- ▲種明かしの糸の起点（カーネル/De Bruijn・タクティクは項を書く機械）・▼apply=メタ変数＋単一化（`_`も暗黙引数も同じ穴・Ch2/3 と接続）・🪟カーネルと De Bruijn 基準・▲trivialPartition.increase の sorry を埋める（道具の初仕事）・公理射影を term で（add_neg' 等＝1 行）＋ add_left_cancel'（次章の足場）
+- 到達点: 基本タクティクで短い証明・「なぜタクティクで証明になるか（項を書く機械）」に答えられる・**各タクティクが Ch1/Ch4 の導入/除去規則に対応すると分かる**
+- 新機能: `by`・ゴール状態・intro/exact/apply/have/show・term↔tactic の往復・**One bridge**・**タクティク↔導入/除去規則の対応**
+- ANCHOR: **`tactics_as_rules`**（§5 の他は未付与）
+- ▲**種明かしの核＝タクティクは導入/除去規則を逆向きに当てる機械**（2026-06-15・ANCHOR `tactics_as_rules`）: `intro`=→/∀ 導入（fun）／`apply`=→/∀ 除去（適用を逆向き）／`exact ⟨⟩`・`constructor`=帰納型導入／`cases`・`obtain`=帰納型除去（IH 無し）／`rfl`=Eq 導入・`rw`=Eq 除去。Ch1 の and_swap を項とタクティクで並べ「同じ規則」を見せる＝除去規則の糸 (c2) の回収・▼apply=メタ変数＋単一化（`_`も暗黙引数も同じ穴・Ch2/3 と接続）・🪟カーネルと De Bruijn 基準・▲trivialPartition.increase の sorry を埋める（道具の初仕事）・公理射影を term で（add_neg' 等＝1 行）＋ add_left_cancel'（次章の足場）
 - 演習候補: trivialPartition.increase を自分で・公理射影を term と tactic 両方で
 - 引き: Ch7 へ「rw が効くとき効かないとき。等しさは 2 種類？」
 - ⚠ ここは機構と信頼が主題。等式コーパス本体は Ch7・順序は Ch9
@@ -202,7 +202,7 @@
 - **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**term mode の帰納法（Nat.rec 予告）=Ch4・induction タクティク=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
 - **(b) CH 対応表（導入/除去規則つき・2026-06-15 拡張）**: Ch1 で**導入規則/除去規則の列を持つ表**を提示（→∧∨¬⊥⊤=）→ **Ch3** で ∀∃ 行を埋める（∀=Π＝→と同じ関数・∃=帰納型 Exists・導入/除去つき）→ **Ch4 で `#print`/`#check` により完結**（ANCHOR `ch_punchline`: ∧∨∃⊥= は帰納型・→∀¬ は依存関数 Π）。**パンチライン: 論理 = 依存関数（Π）＋帰納型の 2 原始、その導入/除去だけ**。表の各行の導入/除去と「いつ裏付くか」「Π か帰納型か」が整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro。「使う→仕組みを覗く」の順序が保たれているか
-- **(c2) 除去規則（recursor）の糸**（2026-06-15 追加）: **導入規則（構成子）/除去規則（recursor）**を貫通させる。Ch1 で ∧/∨ の導入・除去（`.elim`＝場合分け＝**cases**・非再帰なので IH 無し）→ Ch4 で「除去規則=recursor／再帰なら IH 付き=induction」を `#check @Or.rec` vs `@Nat.rec` で明示（IH は再帰箇所に現れる）＋ Summation を Nat.rec の除去で証明する予告 → Ch6 以降で `cases`（非再帰の除去・ergonomic 版・使う箇所で）→ Ch10 で `induction`（再帰の除去）＋Σ コーパス。**cases と induction は同じ除去規則で、再帰（IH）の有無だけが違う**を本文で一貫させているか
+- **(c2) 除去規則（recursor）の糸**（2026-06-15 追加）: **導入規則（構成子）/除去規則（recursor）**を貫通させる。Ch1 で ∧/∨ の導入・除去（`.elim`＝場合分け＝**cases**・非再帰なので IH 無し）→ Ch4 で「除去規則=recursor／再帰なら IH 付き=induction」を `#check @Or.rec` vs `@Nat.rec` で明示（IH は再帰箇所に現れる）＋ Summation を Nat.rec の除去で証明する予告 → **Ch6 で「タクティク＝導入/除去規則をゴールから逆向きに当てる機械」を種明かし**（ANCHOR `tactics_as_rules`: `intro`=→/∀ 導入・`apply`=→/∀ 除去・`exact ⟨⟩`/`constructor`=帰納型導入・`cases`/`obtain`=帰納型除去・`rfl`/`rw`=Eq 導入/除去）→ Ch10 で `induction`（再帰の除去＝IH 付き）＋Σ コーパス。**タクティクは新しい原理ではなく規則の逆向き適用**・**cases と induction は同じ除去規則で再帰(IH)の有無だけが違う**を本文で一貫させているか
 - **(d) 菱形の糸**（2026-06-15 反映）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch11 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
 - **(e) 監査の段階**: Ch0 で 3 道具導入 → 各章末で `#print axioms` → Ch13 で「第 I 部は古典公理ゼロ」を総決算。不変条件は **`Classical.choice` と `Real.sup` 系が前半の監査に出ないこと**（出たら設計違反）。`propext`・`Quot.sound` は標準の無害公理で、`rs_le_const` 等に現れてよい（説明は最小限に留め Ch18 へ送る）。「古典公理ゼロ」＝ choice ゼロの意味だと本文で明確化する
 - **(f) 脱 abs/min/diam 方針**: 前半に abs・max・min・diam を持ち込まない。Ch13 の第 5 性質は両側評価（生の不等式 2 本）。理由（abs は古典性を呼ぶ）は Ch14 へ予告のみ
