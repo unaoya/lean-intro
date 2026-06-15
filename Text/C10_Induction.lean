@@ -110,59 +110,10 @@ theorem sum_id_nat (n : Nat) :
     omega
 
 -- ============================================================
--- 脇道: Σ は線形形式である
---    additive_summation と summation_mul_left の 2 本は、数学者の言葉では
---    「有限数列のなすベクトル空間 (Range n → Real) 上の線形形式」という 1 つの主張。
---    ベクトル空間の公理と線形写像を class で自作して、そう言い直してみる
---    （class 設計の応用・関数型へのインスタンス・funext の活躍どころ）
+-- Σ は線形写像（加群 Module は Ch4 で定義済み——ここで Σ がその射であることを証明する）
+--    additive_summation と summation_mul_left の 2 本が「Range n → Real 上の線形形式」という
+--    1 つの主張に束ねられる（概念の定義が既証明を束ねる・class 設計の応用）。
 -- ============================================================
-
--- ANCHOR: vector_space
--- Real 上のベクトル空間（• は core の SMul の記法）
-class Module (V : Type) extends Add V, Neg V, Zero V, SMul Real V where
-  add_assoc : ∀ u v w : V, (u + v) + w = u + (v + w)
-  add_comm : ∀ u v : V, u + v = v + u
-  add_zero : ∀ v : V, v + 0 = v
-  add_neg : ∀ v : V, v + -v = 0
-  one_smul : ∀ v : V, (1 : Real) • v = v
-  mul_smul : ∀ (a b : Real) (v : V), (a * b) • v = a • (b • v)
-  smul_add : ∀ (a : Real) (u v : V), a • (u + v) = a • u + a • v
-  add_smul : ∀ (a b : Real) (v : V), (a + b) • v = a • v + b • v
-
--- 線形写像（線形形式は W = Real の場合）
-def IsLinearMap {V W : Type} [Module V] [Module W] (T : V → W) : Prop :=
-  (∀ u v : V, T (u + v) = T u + T v) ∧
-  (∀ (c : Real) (v : V), T (c • v) = c • T v)
--- ANCHOR_END: vector_space
-
--- Real 自身は Real 上のベクトル空間（• は単なる積）
-noncomputable instance : Module Real where
-  smul := fun c x => c * x
-  add_assoc := add_assoc
-  add_comm := add_comm
-  add_zero := add_zero'
-  add_neg := add_neg'
-  one_smul := one_mul_b
-  mul_smul := mul_assoc
-  smul_add := CommRing.left_distrib
-  add_smul := CommRing.right_distrib
-
--- ★ 行き先 V が加群なら、任意の射 α → V も加群（各点演算で誘導）。証明は V の加群公理を
--- funext で点ごとに持ち上げるだけ。これで Range n → Real も Real → Real も**個別インスタンス
--- 不要**で自動的に加群になる（行き先 Real が加群だから）。
-noncomputable instance funModule {α V : Type} [Module V] : Module (α → V) where
-  add := fun f g => fun x => f x + g x
-  neg := fun f => fun x => -(f x)
-  zero := fun _ => 0
-  smul := fun c f => fun x => c • f x
-  add_assoc := fun f g h => funext fun x => Module.add_assoc (f x) (g x) (h x)
-  add_comm := fun f g => funext fun x => Module.add_comm (f x) (g x)
-  add_zero := fun f => funext fun x => Module.add_zero (f x)
-  add_neg := fun f => funext fun x => Module.add_neg (f x)
-  one_smul := fun f => funext fun x => Module.one_smul (f x)
-  mul_smul := fun a b f => funext fun x => Module.mul_smul a b (f x)
-  smul_add := fun a f g => funext fun x => Module.smul_add a (f x) (g x)
-  add_smul := fun a b f => funext fun x => Module.add_smul a b (f x)
 
 -- ANCHOR: summation_linear
 -- Σ は線形形式（証明は corpus の 2 本がそのまま——「線形」という 1 概念に束ねられる）
