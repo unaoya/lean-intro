@@ -189,9 +189,9 @@
 ### Ch13 — リーマン和の性質 5 本（`ch13_properties.md`、C13_Properties・到達点③）
 - 問い: 一般の分割で何が言えるか
 - 到達点: 後段が消費する性質 5 本（到達点③）・第 I 部古典ゼロの監査
-- 新機能: なし（総合演習）。**IsRepr の定義は Ch5・幾何補題は Ch10 に移動済**——ここは「使う」側
+- 新機能: **関数空間 `Real → Real` の中置代数**（VectorSpace が含む Add/Neg/SMul＋Sub インスタンスで `f + g`・`-f`・`c • f`・`f - g` を中置に・点ごと演算・`(f+g) x = f x + g x` は rfl・一般化 my_abel もここで動く／順序が無いので lin は不可）。それ以外は総合演習。**IsRepr の定義は Ch5・幾何補題は Ch10 に移動済**——ここは「使う」側
 - ANCHOR: なし（性質 5 本・docstring 済・ANCHOR は §5。`is_repr` は Ch5 へ移動）
-- ▲**線形性＝加法＋スカラー倍**（RS は f について線形写像 `riemann_sum_isLinear`・Ch10 summation_isLinear の RS 版。符号・差はここから出る系）/ const / nonneg / 両側評価（脱 abs・理由は Ch14 予告）・▲**反例で IsRepr の必要性を実演**（定義は Ch5・タグを区間外にすると nonneg が壊れる）・▼第 I 部古典ゼロの総決算（監査の段階の山）
+- ▲**被積分関数の代数を中置で**: 関数空間に VectorSpace/Sub を入れ、線形性を `fun x => f x + g x` でなく **`RS(f + g)`・`RS(c • f)`・`RS(f - g)`** と述べる（インスタンスは補題の前に置く）・▲**線形性＝加法＋スカラー倍**（RS は f について線形写像 `riemann_sum_isLinear`・Ch10 summation_isLinear の RS 版。符号・差はここから出る系）/ const / nonneg / 両側評価（脱 abs・理由は Ch14 予告）・▲**反例で IsRepr の必要性を実演**（定義は Ch5・タグを区間外にすると nonneg が壊れる）・▼第 I 部古典ゼロの総決算（監査の段階の山）
 - 演習候補: additive/neg/const/nonneg/両側 rs_bound・**IsRepr を落とした反例**・章末 `#print axioms`
 - 引き: Ch14 へ「分割を細かくしたとき和はどこへ向かう？値をひとつ選び取る力が要る（第 II 部へ）」
 - ⚠ 性質 5 本は**生の不等式 2 本**で書く（NearLe 述語への昇格は発展部）。「同じ形が 3 回出たら昇格」の方針を一言。`length_sum` は const と密結合なので C13（幾何だが移さない）
@@ -223,7 +223,7 @@
 - **証明の弧 Fine 分割＋自動化前倒し＋Part II 改番（2026-06-15・構成 v4）**: 「章を短く 1 テーマに・自動化でコーパスを畳む工夫をコーパスの途中に」というユーザー方針で、旧 C06（424 行・80 宣言・独立 3 テーマ）を**単一テーマ 5 章**に分割: **Ch6 タクティク入門**（C06_Tactics）／**Ch7 書き換えと 2 つの等しさ**（新 C07_Rewrite・等式コーパス＋defeq）／**Ch8 自動化と自作タクティク**（C08_Automation・旧 Ch10 間奏を前倒し本章化＝simp/omega/ac_rfl/my_ring・load-bearing）／**Ch9 順序と calc**（新 C09_Order・順序コーパス＋混在 calc）／**Ch10 帰納法**（C10_Induction・旧 C07）。到達点②③は **Ch11 具体例**（C11_Numbers・旧 C08）・**Ch12 性質**（C12_Properties・旧 C09）。**Part II 改番** C13–C17（旧 C11–C15・FTC=Ch17）。新 import 連鎖は線形で C08 自動化が C09/C10 の前。**term/tactic の吟味**: 自明な公理射影（`le_refl := …` 等）は該当章（Ch6/Ch9）に置き Ch1–5 へは散らさない（少量の term 証明は Ch3 に意図的追加済＝公理体感・class 納得）
 - **C06/C07/C09**: ANCHOR 未付与（タクティク/等式/順序 corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
 - **IsRepr/幾何/Σ補題の配置（2026-06-15）**: `IsRepr` 定義→**C05**（ANCHOR `is_repr`）／純 Partition 幾何（length_nonneg・points_mono・left/right_le_point・tag_mem'）と **`length_sum`**→**C10_Induction**（induction の実地）／**`sub_summation`**→**C10_Induction**（Σ corpus）／`equalPartitionRepr_isrepr`→**C11_Numbers**。C12_Properties は RS の性質に絞る。反例は Ch12 で「IsRepr が必須な理由の実演」として残す
-- **RS 線形性＝加法＋スカラー倍（2026-06-15）**: `riemann_sum_add`＋`riemann_sum_smul`＝線形性の本体（`riemann_sum_isLinear : IsLinearMap …`・**Ch10** summation_isLinear の RS 版・VectorSpace (Real→Real) 各点インスタンスを C12 に追加）。`riemann_sum_neg`（c=−1）・`riemann_sum_sub` はそこから出る系
+- **RS 線形性＝加法＋スカラー倍（2026-06-15）**: `riemann_sum_add`＋`riemann_sum_smul`＝線形性の本体（`riemann_sum_isLinear : IsLinearMap …`・**Ch10** summation_isLinear の RS 版・VectorSpace (Real→Real) 各点インスタンスを C13 の補題前に配置）。`riemann_sum_neg`（c=−1）・`riemann_sum_sub` はそこから出る系。**f+g 中置表記化（2026-06-15）**: VectorSpace は Add/Neg/SMul を含むので `RS(f + g)`・`RS(c • f)`・`RS(-f)` を中置で・Sub インスタンス追加で `RS(f - g)` も。被積分関数の代数が読みやすくなり、一般化 my_abel も関数空間で動く（順序は無いので lin 不可）
 - **cast は射（2026-06-15）**: ① `sum_id` は Nat の恒等式 `sum_id_nat`＝**C10_Induction**② **cast を「射」として明示**＝C11_Numbers（`IsNatHom`＋`cast_isHom`・`cast_mul`/`cast_le`・`cast_summation`＝Σ と可換。**Ch10** IsLinearMap と並ぶ「射」の述語）③ **代表点を左端・右端に取る一般化**＝C05。`equalPartitionRepr` は `leftRepr` を適用。監査例は `cast_mul`（C11・C17 とも・[Real, instLOF] 古典ゼロ）。**等分点の formula の扱いは別途検討（ユーザー留保）**
 - **C12_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C12 全宣言＋C05 の is_repr・C10 の幾何・C11 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に

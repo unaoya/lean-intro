@@ -15,28 +15,9 @@ open Range
 --    符号（neg）と差（sub）はここから「出てくる」系。
 -- ============================================================
 
-/-- 線形性（加法）: `RS(f+g) = RS f + RS g`。Σ の `additive_summation` の持ち上げ。 -/
-theorem riemann_sum_add (f g : Real → Real) {n : Nat} {u v : Real}
-    (Δ : Partition n u v) (ξ : Range n → Real) :
-    RiemannSum (fun x => f x + g x) Δ ξ = RiemannSum f Δ ξ + RiemannSum g Δ ξ := by
-  show Summation n (fun i => (f (ξ i) + g (ξ i)) * Δ.length i)
-      = Summation n (fun i => f (ξ i) * Δ.length i)
-        + Summation n (fun i => g (ξ i) * Δ.length i)
-  rw [summation_congr n _ _
-        (fun i => CommRing.right_distrib (f (ξ i)) (g (ξ i)) (Δ.length i)),
-      additive_summation]
-
-/-- 線形性（スカラー倍）: `RS(c·f) = c·RS f`。Σ の `summation_mul_left` の持ち上げ。 -/
-theorem riemann_sum_smul (c : Real) (f : Real → Real) {n : Nat} {u v : Real}
-    (Δ : Partition n u v) (ξ : Range n → Real) :
-    RiemannSum (fun x => c * f x) Δ ξ = c * RiemannSum f Δ ξ := by
-  show Summation n (fun i => (c * f (ξ i)) * Δ.length i)
-      = c * Summation n (fun i => f (ξ i) * Δ.length i)
-  rw [summation_congr n _ _ (fun i => mul_assoc c (f (ξ i)) (Δ.length i)),
-      summation_mul_left]
-
--- 関数空間 Real → Real のベクトル空間構造（各点演算）——RS の線形性を IsLinearMap で
--- 述べるため。Ch10 の VectorSpace (Range n → Real) と同型の作り。
+-- 関数空間 Real → Real のベクトル空間構造（各点演算）。VectorSpace は Add/Neg/Zero/SMul を
+-- 含む（Ch10）ので、これだけで **f + g・-f・c • f が中置で書ける**。さらに Sub を足すと
+-- f - g も書ける——RS の線形性を IsLinearMap で述べ、かつ被積分関数の代数を中置で扱う土台。
 noncomputable instance : VectorSpace (Real → Real) where
   add := fun f g => fun x => f x + g x
   neg := fun f => fun x => -(f x)
@@ -51,6 +32,31 @@ noncomputable instance : VectorSpace (Real → Real) where
   smul_add := fun a f g => funext fun x => CommRing.left_distrib a (f x) (g x)
   add_smul := fun a b f => funext fun x => CommRing.right_distrib a b (f x)
 
+-- 差も Real と同じ流儀（a - b = a + -b）で点ごとに——f - g を中置で書けるように
+noncomputable instance : Sub (Real → Real) := ⟨fun f g => f + -g⟩
+
+/-- 線形性（加法）: `RS(f + g) = RS f + RS g`。Σ の `additive_summation` の持ち上げ。
+`f + g` は関数空間の点ごと加法（VectorSpace の Add）。 -/
+theorem riemann_sum_add (f g : Real → Real) {n : Nat} {u v : Real}
+    (Δ : Partition n u v) (ξ : Range n → Real) :
+    RiemannSum (f + g) Δ ξ = RiemannSum f Δ ξ + RiemannSum g Δ ξ := by
+  show Summation n (fun i => (f (ξ i) + g (ξ i)) * Δ.length i)
+      = Summation n (fun i => f (ξ i) * Δ.length i)
+        + Summation n (fun i => g (ξ i) * Δ.length i)
+  rw [summation_congr n _ _
+        (fun i => CommRing.right_distrib (f (ξ i)) (g (ξ i)) (Δ.length i)),
+      additive_summation]
+
+/-- 線形性（スカラー倍）: `RS(c • f) = c · RS f`。Σ の `summation_mul_left` の持ち上げ。
+`c • f` は関数空間のスカラー倍（VectorSpace の SMul）。 -/
+theorem riemann_sum_smul (c : Real) (f : Real → Real) {n : Nat} {u v : Real}
+    (Δ : Partition n u v) (ξ : Range n → Real) :
+    RiemannSum (c • f) Δ ξ = c * RiemannSum f Δ ξ := by
+  show Summation n (fun i => (c * f (ξ i)) * Δ.length i)
+      = c * Summation n (fun i => f (ξ i) * Δ.length i)
+  rw [summation_congr n _ _ (fun i => mul_assoc c (f (ξ i)) (Δ.length i)),
+      summation_mul_left]
+
 /-- **RS は f について線形写像**（加法＋スカラー倍）。Ch10 の `summation_isLinear` の RS 版。
 これが線形性の本体——以下の符号・差はこの 2 本から出てくる系。 -/
 theorem riemann_sum_isLinear {n : Nat} {u v : Real} (Δ : Partition n u v)
@@ -58,22 +64,22 @@ theorem riemann_sum_isLinear {n : Nat} {u v : Real} (Δ : Partition n u v)
     IsLinearMap (fun f : Real → Real => RiemannSum f Δ ξ) :=
   ⟨fun f g => riemann_sum_add f g Δ ξ, fun c f => riemann_sum_smul c f Δ ξ⟩
 
-/-- 系（符号）: `RS(-f) = -RS f`。スカラー倍の `c = -1` の場合。 -/
+/-- 系（符号）: `RS(-f) = -RS f`。スカラー倍の `c = -1` の場合。`-f` は点ごとの符号反転。 -/
 theorem riemann_sum_neg (f : Real → Real) {n : Nat} {u v : Real}
     (Δ : Partition n u v) (ξ : Range n → Real) :
-    RiemannSum (fun x => -(f x)) Δ ξ = -(RiemannSum f Δ ξ) := by
+    RiemannSum (-f) Δ ξ = -(RiemannSum f Δ ξ) := by
   have h := riemann_sum_smul (-1) f Δ ξ
-  rw [show (fun x => (-1 : Real) * f x) = (fun x => -(f x)) from
-        funext (fun x => by rw [neg_mul, one_mul_b]),
+  rw [show ((-1 : Real) • f) = -f from funext fun x => by
+        show (-1 : Real) * f x = -(f x); rw [neg_mul, one_mul_b],
       show (-1 : Real) * RiemannSum f Δ ξ = -(RiemannSum f Δ ξ) from by
         rw [neg_mul, one_mul_b]] at h
   exact h
 
-/-- 系（差）: `RS(f-g) = RS f - RS g`。加法と符号から。 -/
+/-- 系（差）: `RS(f - g) = RS f - RS g`。加法と符号から。`f - g` は点ごとの差（= f + -g）。 -/
 theorem riemann_sum_sub (f g : Real → Real) {n : Nat} {u v : Real}
     (Δ : Partition n u v) (ξ : Range n → Real) :
-    RiemannSum (fun x => f x - g x) Δ ξ = RiemannSum f Δ ξ - RiemannSum g Δ ξ := by
-  have h := riemann_sum_add f (fun x => -(g x)) Δ ξ
+    RiemannSum (f - g) Δ ξ = RiemannSum f Δ ξ - RiemannSum g Δ ξ := by
+  have h := riemann_sum_add f (-g) Δ ξ
   rw [riemann_sum_neg g Δ ξ] at h
   exact h
 

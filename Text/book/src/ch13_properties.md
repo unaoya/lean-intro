@@ -4,12 +4,13 @@
 
 - 前章からの問い: 一般の分割で何が言えるか
 - 到達点: 後段が消費する性質 5 本（到達点③）。第 I 部古典ゼロの監査
-- 新しい Lean 機能: なし（総合演習 II）。**IsRepr の定義は Ch5・幾何補題（points_mono 等）は Ch7 に移動済**——ここは「使う」側
-- コード: C09_Properties.lean（性質 5 本＋反例。IsRepr=C05・幾何/tag_mem'=C07・equalPartitionRepr_isrepr=C08）
+- 新しい Lean 機能: **関数空間 `Real → Real` の中置代数**（`VectorSpace` が含む Add/Neg/SMul ＋ Sub インスタンスで `f + g`・`-f`・`c • f`・`f - g` を中置で——被積分関数を点ごと演算で扱い、線形性を `fun x => f x + g x` でなく `f + g` で述べる）。それ以外は総合演習 II。**IsRepr の定義は Ch5・幾何補題（points_mono 等）は Ch7 に移動済**——ここは「使う」側
+- コード: C13_Properties.lean（性質 5 本＋反例。**関数空間の VectorSpace/Sub インスタンスを補題の前に置き f+g 表記で線形性を述べる**。IsRepr=C05・幾何/tag_mem'=C07・equalPartitionRepr_isrepr=C08）
 
 ## 9.1 線形性 — RS は f について線形写像（加法＋スカラー倍）
 
-- **線形性の本体は加法 `RS(f+g)=RS f+RS g` とスカラー倍 `RS(c·f)=c·RS f` の 2 本**（Σ の `additive_summation`・`summation_mul_left` の持ち上げ）。`riemann_sum_isLinear : IsLinearMap (fun f => RS f Δ ξ)`＝Ch7 の `summation_isLinear` の RS 版
+- **被積分関数の代数を中置で**: 関数空間 `Real → Real` に VectorSpace（Add/Neg/SMul）＋ Sub を入れ、`RS(f + g)`・`RS(c • f)`・`RS(-f)`・`RS(f - g)` と書く（点ごと演算・`(f+g) x = f x + g x` は `rfl`）。一般化した my_abel もこの関数空間でそのまま動く（順序は無いので lin は不可）
+- **線形性の本体は加法 `RS(f + g)=RS f+RS g` とスカラー倍 `RS(c • f)=c·RS f` の 2 本**（Σ の `additive_summation`・`summation_mul_left` の持ち上げ）。`riemann_sum_isLinear : IsLinearMap (fun f => RS f Δ ξ)`＝Ch7 の `summation_isLinear` の RS 版
 - **符号 `RS(-f)=-RS f`（c=−1 の場合）と差 `RS(f-g)=RS f-RS g` はここから「出てくる」系**
 - Σ→RS の 2 層対応（積分への 3 層対応の予告）
 
