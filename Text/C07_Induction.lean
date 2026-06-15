@@ -346,6 +346,19 @@ theorem summation_telescope : ∀ (n : Nat) (g : Range (n + 1) → Real),
       (g ⟨m + 1, Nat.lt_succ_self (m + 1)⟩)
       (g ⟨m, Nat.lt_succ_of_lt (Nat.lt_succ_self m)⟩)).symm
 
+/-- Σ_{i<n} i の閉じた式（**純粋に Nat の恒等式**）: `(1+1)·Σ i + n = n·n`
+（⟺ `Σ_{i<n} i = n(n−1)/2`）。Summation は和があれば定義でき Nat でも使える——
+これは Real ではなく Nat の式。減算を避けた形にして cast がきれいに通るようにしてある。 -/
+theorem sum_id_nat (n : Nat) :
+    (1 + 1) * Summation n (fun i => i.val) + n = n * n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    have hsucc : Summation (n + 1) (fun i => i.val) = Summation n (fun i => i.val) + n := rfl
+    rw [hsucc, show (n + 1) * (n + 1) = n * n + (1 + 1) * n + 1 from by
+      rw [Nat.succ_mul, Nat.mul_succ]; omega]
+    omega
+
 -- ============================================================
 -- 脇道: Σ は線形形式である
 --    additive_summation と summation_mul_left の 2 本は、数学者の言葉では

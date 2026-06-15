@@ -44,6 +44,28 @@ def IsRepr {n : Nat} {a b : Real} (Δ : Partition n a b) (ξ : Range n → Real)
   ∀ i : Range n, Δ.points (incl i) ≤ ξ i ∧ ξ i ≤ Δ.points (addone i)
 -- ANCHOR_END: is_repr
 
+-- 代表点の取り方は一般化できる: 各小区間の「左端」または「右端」をタグにすれば、
+-- どんな Partition でも妥当（IsRepr）。等分割に限らない一般の構成。
+-- ANCHOR: endpoint_repr
+/-- 左端代表点: 各小区間の左端 `points (incl i)` をタグにする。 -/
+def leftRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
+  fun i => Δ.points (incl i)
+
+/-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/
+theorem leftRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
+    Δ.IsRepr Δ.leftRepr :=
+  fun i => ⟨LinearOrderedField.le_refl _, Δ.increase i⟩
+
+/-- 右端代表点: 各小区間の右端 `points (addone i)` をタグにする。 -/
+def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
+  fun i => Δ.points (addone i)
+
+/-- 右端タグは代表点系。 -/
+theorem rightRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
+    Δ.IsRepr Δ.rightRepr :=
+  fun i => ⟨Δ.increase i, LinearOrderedField.le_refl _⟩
+-- ANCHOR_END: endpoint_repr
+
 end Partition
 
 -- クリフハンガー: 1 分割（リテラルも除法も不要、自明の極み——なのに increase が

@@ -28,22 +28,24 @@
 - **(ii) cast 一括ルート（演習: 試して壊す）**: 全リテラルを ofNat 経由にすると (1:Real) ≡ 0+1 が代数の one と defeq でない → one 系補題に橋が要り rfl が死ぬ。**ダイヤモンドの一般原則「①重なる経路は defeq に ②揃わないなら担当を排他分割」**——mathlib が AtLeastTwo を持つ理由が (ii) の失敗から分かる
 - 菱形の縦糸の完成: Ch3 悪い菱形 → Ch4 良い配線（bridge）→ 本章 排他分割 → 付録 C で mathlib 実物
 
-## 8.5 cast 補題 — 構成的な部分だけ
+## 8.5 cast は「射」——構造を保つ写像（ANCHOR `cast_hom`・2026-06-15）
 
-- succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ
-- **分割線の明示**: sup を使う archimedean 系は Ch11 へ送る——「この章は古典公理ゼロで済む」という公理の節約を設計として見せる
+- succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ・**cast_mul**・**cast_le**（構成的部のみ）
+- **cast は 0・1・+・×・≤ を保つ＝順序付き半環の準同型**。述語 `IsNatHom` で「Nat → Real は構造の射」と明示し `cast_isHom` で証明。`cast_summation`＝**Σ と可換**（Nat で和を取って cast しても、各項を cast して和を取っても同じ）。Ch7 の `IsLinearMap`（線形写像）と並ぶ「射」の述語
+- **分割線の明示**: sup を使う archimedean 系は Ch11 へ送る——「この章は古典公理ゼロで済む」
 
-## 8.6 名物演習: sum_id
+## 8.6 一般の等分割と代表点（左端・右端）
 
-- `(1+1)·Σi = n·(n−1)` 形（リテラル 2 を使わない形がそのまま教材——なぜこの形かの議論込み）。帰納法＋cast 計算
+- `equalPartition`（分点 `a + i·(b−a)/m`）・`equalPartition_length`・代表点は **C05 の一般 `leftRepr`/`rightRepr` を適用**（左端・右端は任意 Partition で IsRepr＝`equalPartitionRepr_isrepr` は `leftRepr_isRepr` の特例）——**一般構成を y=x の前に確立**
 
-## 8.7 RS = (n+1)/(2n)
+## 8.7 sum_id は Nat の式・y=x の RS 計算（TODO）
 
-- 右端タグで (n+1)/(2n)・左端タグで (n−1)/(2n)。「n→∞ で 1/2 に見える——だが極限はまだ定義していない」（第 II 部への遠い引き）
+- **`Σ_{i<n} i` の閉じた式は Nat の恒等式 `sum_id_nat`（C07）**（Summation は Nat でも定義でき、これは Real ではなく Nat の式）。形は `(1+1)·Σi + n = n·n`（減算なし→cast がきれいに通る）
+- y=x の RS 計算（[0,1] n 等分・右端タグ (n+1)/(2n)・左端タグ (n−1)/(2n)）は、**`sum_id_nat` を cast（射）で Real に運んで**行う（TODO(P4)）。「n→∞ で 1/2 に見える——だが極限はまだ定義していない」（第 II 部への遠い引き）
 
 ## 8.8 章末監査
 
-- `#print axioms sum_id` = [Real, instLOF]——**古典論理ゼロ**（試作実測値）
+- `#print axioms cast_mul` = [Real, instLOF]——**古典論理ゼロ**（cast の射性も構成的・sum_id は Nat へ移ったので Ch8 の Real 代表として cast_mul を監査）
 
 ## 引き
 

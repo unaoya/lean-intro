@@ -168,7 +168,7 @@ theorem ftc_of_integrable (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hx
 -- §5 監査総決算: 公理の勾配（どの数学がどの公理を要求したか一望する）
 -- ============================================================
 
-#print axioms sum_id              -- [Real, instLOF] 古典論理ゼロ
+#print axioms cast_mul            -- [Real, instLOF] 古典論理ゼロ（Ch8・cast は射）
 #print axioms archimedean         -- sup が初稼働（上限公理から有限性）
 #print axioms isintegral_id       -- choice あり・sup なし（直接証明は完備性不要）
 #print axioms integral_unique     -- 一意性 = ε/2 ＋ 非空性（アルキメデスの値段）

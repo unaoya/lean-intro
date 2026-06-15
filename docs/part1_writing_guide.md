@@ -105,8 +105,8 @@
 - 問い: 分割をどう表すか
 - 到達点: **リーマン和の定義が書ける**（到達点①）・代表点の妥当性 `IsRepr` も定義・ただし sorry が 1 つ残って幕
 - 新機能: structure（双子章・後編）・notation 自作・暗黙引数（**書く**: `length {n}{a b}`）
-- ANCHOR: `partition`・`riemann_sum`・**`is_repr`**・`trivial_partition`
-- ▼`And` も structure だった（`#print And`・Ch1 の `⟨⟩` 回収）・▲notation 初登場（自動化糸の起点）・▲**IsRepr**（代表点の妥当性＝タグは小区間内・RS は任意 ξ で計算できるが「リーマン和」と呼ぶには妥当なタグを課す）・▲trivialPartition の sorry クリフハンガー（Ch8 で回収）
+- ANCHOR: `partition`・`riemann_sum`・**`is_repr`**・**`endpoint_repr`**・`trivial_partition`
+- ▼`And` も structure だった（`#print And`・Ch1 の `⟨⟩` 回収）・▲notation 初登場（自動化糸の起点）・▲**IsRepr**（代表点の妥当性＝タグは小区間内・RS は任意 ξ で計算できるが「リーマン和」と呼ぶには妥当なタグを課す）・▲**leftRepr/rightRepr**（代表点を左端・右端に取るのは**任意の Partition で一般化**できる・IsRepr が自明に成立）・▲trivialPartition の sorry クリフハンガー（Ch8 で回収）
 - 演習候補: 反転演習（Partition を class にすると IsIntegral が書けない／LOF を structure にすると `a+b` のたびに名指し）
 - 引き: Ch6 へ「定義はできた。sorry を埋める道具が要る」
 - ⚠ **IsRepr はここで定義**（2026-06-15 移動・C09 から）——代表点は概念の一部。効く場面（性質4・非負）と「落とすと壊れる」反例は Ch9。TaggedPartition（束ねた版）は Ch12。RS の定義 1 行に前章までの全部が映る、を体感させる
@@ -126,20 +126,20 @@
 - 新機能: defeq と rw の構文性・rfl/show・**calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1 既出）・induction・omega・**One bridge**
 - ANCHOR: `vector_space`・`summation_linear`（脇道）。Partition 幾何（points_mono 等）は ANCHOR 未付与（§5）
 - ▼rw=Eq.mpr＋motive（種明かし）・▼induction=recursor 適用（Ch4 回収）・▲One bridge（菱形）・**rw の罠 2 種**（引数明示・独立補題への切り出し）・▲**Partition の基本性質**（2026-06-15 移動: 隣接単調＝公理 → `points_mono`＝大域単調を induction で・`left/right_le_point`・`tag_mem'`＝代表点は [u,v] 内。**読者自身の構造への帰納法の実地**）・🪟正規化と #reduce
-- 演習候補: コーパス 9 本の sorry 埋め・脇道「Σ は線形形式」・**`points_mono` を induction で**
+- 演習候補: コーパス 9 本の sorry 埋め・脇道「Σ は線形形式」・**`points_mono` を induction で**・**`sum_id_nat`**（`(1+1)·Σi + n = n·n`＝Σ_{i<n} i の閉じた式・Nat の恒等式・Summation は Nat でも使える）
 - 引き: Ch8 へ「Ch5 の sorry を消しに行こう→2 等分・n 等分」
 - ⚠ telescope_sum がボス戦（最初の本格帰納法・Ch9 length_sum と Ch14 中点和の部品）。Partition 幾何の証明は order 補題（`nonneg_iff_le` 等）の**後**に置く
 
 ### Ch8 — 具体例 y=x の n 等分（`ch08_example.md`、C08・到達点②）
 - 問い: sorry を消し、具体例を計算する
 - 到達点: equalPartition 上の RS=(n+1)/(2n)（到達点②）
-- 新機能: OfNat 物語の回収・`Real.ofNat`（構造的再帰）・NatCast・Div・cast 補題
-- ANCHOR: `of_nat`・`equal_partition`・`sum_id`・`cast_defeq`
-- ▼`(2:Real)` エラー回収（Ch3）・▼trivialPartition の sorry 消える（Ch5）・▲菱形の排他分割（0/1/2 以上＝AtLeastTwo 手作り）・**defeq 観察**（`ofNat 1 = 0+1` は rfl・`= 1` は `#check_failure`）
-- 演習候補: 分点が i/n の確認（show）・`sum_id`（`(1+1)·Σi = n(n−1)`）・cast 一括ルートを試して壊す
-- ▲`equalPartitionRepr_isrepr`（2026-06-15 移動: この等分割の左端タグは妥当＝IsRepr。左端は自分の小区間の左端だから自明）
+- 新機能: OfNat 物語の回収・`Real.ofNat`（構造的再帰）・NatCast・Div・cast 補題・**cast は射（準同型）**
+- ANCHOR: `of_nat`・`equal_partition`・`cast_defeq`・**`cast_hom`**（`sum_id` は C07 へ移動）
+- ▼`(2:Real)` エラー回収（Ch3）・▼trivialPartition の sorry 消える（Ch5）・▲菱形の排他分割（0/1/2 以上＝AtLeastTwo 手作り）・**defeq 観察**・▲**cast は構造を保つ射**（`IsNatHom`＝0/1/+/×/≤ を保つ準同型・`cast_isHom`・`cast_summation`＝Σ と可換。Ch7 の `IsLinearMap` と並ぶ「射」の述語）
+- ▲**一般の等分割を先に**（2026-06-15）: cast 補題（射）→ 一般の `equalPartition`・`length`・代表点（C05 の一般 `leftRepr`/`rightRepr` を適用・`equalPartitionRepr_isrepr` は `leftRepr_isRepr` の特例）→ y=x の RS 計算（TODO・`sum_id_nat` を cast で運ぶ）
+- 演習候補: 分点が i/n の確認（show）・cast 一括ルートを試して壊す・`cast_mul`/`cast_summation` を自分で
 - 引き: Ch9 へ「一般の分割で何が言える？性質を証明しよう」
-- ⚠ cast 補題は**構成的な部分のみ**（archimedean 系の sup 利用は Ch11 へ送る＝公理の節約を設計として見せる）。肥大時は 2 章分割を予約
+- ⚠ **sum_id は Nat の式 `sum_id_nat`＝C07**（Σ は和があれば定義でき Nat の恒等式）。Real の RS 計算はそれを cast（射）で運ぶ。⚠ cast 補題は**構成的な部分のみ**（archimedean 系の sup 利用は Ch11 へ）。肥大時は 2 章分割を予約
 
 ### Ch9 — リーマン和の性質 5 本（`ch09_properties.md`、C09・到達点③）
 - 問い: 一般の分割で何が言えるか
@@ -176,6 +176,7 @@
 - **C06_Tactics**: ANCHOR 未付与（タクティク corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
 - **IsRepr/幾何/Σ補題の配置移動済（2026-06-15）**: 代表点はリーマン和の概念の一部・RS の性質でないものは外す、という指摘を受け再編——`IsRepr` 定義→**C05**（ANCHOR `is_repr` も移動）／純 Partition 幾何（length_nonneg・points_mono・left/right_le_point・tag_mem'）と **`length_sum`**→**C07**（induction の実地・Partition 幾何）／**`sub_summation`**（Σ の性質）→**C07**（Σ corpus）／`equalPartitionRepr_isrepr`→**C08**。C09 は RS の性質に絞る。反例は Ch9 で「IsRepr が必須な理由の実演」として残す
 - **RS 線形性を加法＋スカラー倍に再定式化（2026-06-15）**: `riemann_sum_add`＋`riemann_sum_smul`＝線形性の本体（`riemann_sum_isLinear : IsLinearMap …`・Ch7 summation_isLinear の RS 版・VectorSpace (Real→Real) 各点インスタンスを C09 に追加）。`riemann_sum_neg`（c=−1）・`riemann_sum_sub` はそこから出る系
+- **Ch8 再編（2026-06-15）**: ① `sum_id` は Nat の恒等式 `sum_id_nat`＝**C07**（Summation は Nat でも定義でき、これは Nat の式）② **cast を「射」として明示**＝C08（`IsNatHom` 述語＋`cast_isHom`・`cast_mul`/`cast_le` 追加・`cast_summation`＝Σ と可換。Ch7 IsLinearMap と並ぶ「射」の述語）③ **代表点を左端・右端に取るのは一般化**＝C05（`leftRepr`/`rightRepr`＋`*_isRepr`・任意 Partition）。`equalPartitionRepr` は `leftRepr` を適用。監査例は `sum_id`→`cast_mul`（C08・C15 とも・[Real, instLOF] 古典ゼロ）。**等分点の formula の扱いは別途検討（ユーザー留保）**
 - **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C09 全宣言＋C05 の is_repr・C07 の幾何・C08 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
 - **simp**: 前半は simp 非導入（Ch10 で導入）。等式（length_sum・riemann_sum_const 等）は将来 @[simp] 可・不等式（points_mono 等）は rewrite 規則になれない（2026-06-15 確認）

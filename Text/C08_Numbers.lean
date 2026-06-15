@@ -178,6 +178,56 @@ theorem cast_lt (a b : Nat) : a < b → (a : Real) < (b : Real) := by
 theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
   le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
 
+/-- cast は乗法を保つ: `((n*m : Nat) : Real) = (n:Real)*(m:Real)`。 -/
+theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) := by
+  induction m with
+  | zero =>
+    rw [Nat.mul_zero, show ((0 : Nat) : Real) = 0 from rfl, mul_zero']
+  | succ m ih =>
+    rw [Nat.mul_succ, ← cast_add (n * m) n, ih,
+        show ((m + 1 : Nat) : Real) = (m : Real) + 1 from by rw [← cast_add m 1, cast_one],
+        CommRing.left_distrib, mul_one_b]
+
+/-- cast は順序を保つ（単調）: `a ≤ b → (a:Real) ≤ (b:Real)`。 -/
+theorem cast_le (a b : Nat) (h : a ≤ b) : (a : Real) ≤ (b : Real) := by
+  rcases Nat.eq_or_lt_of_le h with heq | hlt
+  · rw [heq]; exact le_refl _
+  · exact le_of_lt (cast_lt a b hlt)
+
+-- ============================================================
+-- cast は「射」: 構造を保つ写像（順序付き半環の準同型）。0・1・+・×・≤ を保つ。
+--   「Nat → Real は何らかの構造の射」を述語 IsNatHom で明示する。
+-- ============================================================
+
+-- ANCHOR: cast_hom
+/-- Nat → Real が「順序付き半環の準同型」であること: 0・1・+・×・≤ を保つ。 -/
+structure IsNatHom (φ : Nat → Real) : Prop where
+  map_zero : φ 0 = 0
+  map_one : φ 1 = 1
+  map_add : ∀ a b, φ (a + b) = φ a + φ b
+  map_mul : ∀ a b, φ (a * b) = φ a * φ b
+  map_mono : ∀ a b, a ≤ b → φ a ≤ φ b
+
+/-- cast `(· : Real)` は準同型（0/1/+/×/≤ を保つ＝構造を保つ射）。 -/
+theorem cast_isHom : IsNatHom (fun n => (n : Real)) :=
+  ⟨rfl, cast_one, fun a b => (cast_add a b).symm, fun a b => cast_mul a b,
+   fun a b => cast_le a b⟩
+-- ANCHOR_END: cast_hom
+
+/-- 準同型は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`。cast が和を保つことの帰結
+（Σ を Nat で計算してから cast しても、各項を cast してから Σ しても同じ）。 -/
+theorem cast_summation : ∀ (n : Nat) (f : Range n → Nat),
+    ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) := by
+  intro n
+  induction n with
+  | zero => intro f; rfl
+  | succ m ih =>
+    intro f
+    show ((Summation m (fun k => f (Range.incl k)) + f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
+        = Summation m (fun k => ((f (Range.incl k) : Nat) : Real))
+          + ((f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
+    rw [← cast_add, ih (fun k => f (Range.incl k))]
+
 theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
   cases m with
   | zero => exact absurd rfl hm
@@ -223,41 +273,21 @@ theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤
   rw [show (((i.val + 1 : Nat)) : Real) = ((i.val : Nat) : Real) + 1 from succ_ofNat i.val]
   rw [add_sub_cancel ((i.val : Nat) : Real) 1, one_mul]
 
-/-- 代表点 = 各小区間の左端。 -/
-noncomputable def equalPartitionRepr (m : Nat) (a b : Real) (_hm : m ≠ 0) (_hab : a ≤ b) :
+/-- 代表点 = 各小区間の左端（一般の `Partition.leftRepr` を等分割に適用したもの）。 -/
+noncomputable def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
     Range m → Real :=
-  fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)
+  (equalPartition m a b hm hab).leftRepr
 
-/-- 等分割の左端タグ（`equalPartitionRepr`）は代表点系（`IsRepr`）である。左端は自分の
-小区間の左端そのものだから自明。 -/
+/-- 等分割の左端タグは代表点系——一般の `Partition.leftRepr_isRepr` の特例（等分割固有の
+計算は不要）。 -/
 theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
     (equalPartition m a b hm hab).IsRepr (equalPartitionRepr m a b hm hab) :=
-  fun i => ⟨le_refl _, (equalPartition m a b hm hab).increase i⟩
+  (equalPartition m a b hm hab).leftRepr_isRepr
 
--- ============================================================
--- §5 名物演習: sum_id（(1+1)·Σ i = n·(n−1) 形——リテラル 2 を使わない設計の議論込み）
--- ============================================================
+-- 注: Σ_{i<n} i の閉じた式は **Nat の恒等式** `sum_id_nat`（C07）。Real での y=x の
+-- RS 計算（RS=(n−1)/(2n)）はそれを cast（射 `cast_isHom`・`cast_summation`）で運んで
+-- 行う——TODO(P4): 等分割 [0,1] 上の RiemannSum (fun x => x) の計算。
 
--- ANCHOR: sum_id
-theorem sum_id (n : Nat) :
-    (1 + 1) * Summation n (fun i => (i.val : Real))
-      = (n : Real) * ((n : Real) - 1) := by
-  induction n with
-  | zero =>
-    rw [summation_zero, mul_zero']
-    exact (zero_mul' _).symm
-  | succ n ih =>
-    show (1 + 1) * (Summation n (fun i => (i.val : Real)) + ((n : Nat) : Real))
-        = ((n + 1 : Nat) : Real) * (((n + 1 : Nat) : Real) - 1)
-    have hsucc : ((n + 1 : Nat) : Real) = (n : Real) + 1 := succ_ofNat n
-    have harith : ((n : Real) - 1) + (1 + 1) = (n : Real) + 1 := by
-      show ((n : Real) + -1) + (1 + 1) = (n : Real) + 1
-      rw [add_assoc, (add_assoc (-1 : Real) 1 1).symm, neg_add', zero_add']
-    rw [CommRing.left_distrib, ih, hsucc, add_sub_cancel_right,
-        mul_comm (1 + 1) ((n : Nat) : Real), (CommRing.left_distrib _ _ _).symm,
-        harith, mul_comm]
--- ANCHOR_END: sum_id
-
--- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ）
-#print axioms sum_id
+-- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
+#print axioms cast_mul
 #print axioms equalPartition
