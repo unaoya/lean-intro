@@ -36,6 +36,7 @@
 - **骨格**: どの帰納型にも **導入規則**（構成子＝値を作る）と **除去規則**（recursor＝値を使う）がある。除去規則は同じ形だが、**構成子が再帰的な引数を持つと、その分だけ帰納法の仮定 (IH) を受け取る**——再帰の有無が `cases` と `induction` を分ける
 - **Ch1 の回収**: ∨ の `.elim`（or_swap・and_or_distrib の場合分け）は**∨ の除去規則＝cases**だった——∨ は非再帰なので IH 無し。Ch1 で既にやっていた
 - **対比を機械で**（ANCHOR `eliminators`・`#check @Or.rec` / `#check @Nat.rec`）: `Or.rec` は各構成子の引数を受けるだけ（IH 無し＝cases）。`Nat.rec` は succ の段で `motive n`（＝IH）も受ける（Nat が再帰だから＝induction）。**IH が「再帰している箇所」にちょうど現れる**のが型に見える
+- **CH 対応のパンチライン**（ANCHOR `ch_punchline`・Ch1 の表を回収）: `#print And`/`Or`/`Exists`/`False` で「これらは帰納型（構成子＋recursor）」が、`#check fun A B => A → B`/`fun P => ∀ n, P n` で「→/∀ は Π（依存関数）」が見える。**論理 = 依存関数（→ ∀ ¬）＋ 帰納型（∧ ∨ ∃ ⊥ ⊤ =）**——だから**2 つの原始（Π＋帰納型）の導入/除去規則だけ**で論理は尽きる。→ と ∀ が同じ関数なのが核（codomain の依存だけ違う）。「論理は依存関数＋帰納型」を `#print` で実機確認する縦糸の回収点
 - **Summation について最初の証明**（ANCHOR `summation_first_proofs`）: Summation は `Nat.rec` で定義した。それを**除去規則として証明に走らせる**のが induction:
   - (1) `summation_congr`: `congrArg` だけ（除去規則すら不要）
   - (2) `summation_all_zero`: **term mode のまま**（`by` 不使用）`Nat.rec` の除去で全零和=0 を証明。succ の段の `summation_all_zero n` が IH そのもの

@@ -11,7 +11,8 @@ theorem my_first_theorem : 1 = 1 := Eq.refl 1
 theorem and_swap (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩
 -- ANCHOR_END: and_swap
 
--- ならば → = 関数（含意の証明は関数、modus ponens は関数適用）
+-- ならば → = 関数（＝依存関数 Π の非依存版）。導入規則 = `fun`（λ抽象）・除去規則 = 適用。
+-- 含意の証明は関数・modus ponens は関数適用。∀（Ch3）も同じ関数——codomain が依存するだけ
 theorem modus_ponens (A B : Prop) (h : A → B) (a : A) : B := h a
 
 theorem imp_trans (A B C : Prop) (hab : A → B) (hbc : B → C) : A → C :=
@@ -25,7 +26,8 @@ theorem or_intro_left (A B : Prop) (a : A) : A ∨ B := Or.inl a
 theorem or_swap (A B : Prop) (h : A ∨ B) : B ∨ A :=
   h.elim Or.inr Or.inl
 
--- 否定 ¬ = False への関数
+-- 否定 ¬A = A → False（False への関数）。だから ¬ も**関数**（導入=fun・除去=適用）。
+-- False（⊥）は構成子 0 の帰納型——除去 False.elim = 爆発律（全体像は Ch4）
 theorem double_neg_intro (A : Prop) (a : A) : ¬¬A := fun na => na a
 
 theorem modus_tollens (A B : Prop) (h : A → B) (nb : ¬B) : ¬A := fun a => nb (h a)

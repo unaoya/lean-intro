@@ -54,6 +54,26 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
 -- ANCHOR_END: eliminators
 
 -- ============================================================
+-- CH 対応のパンチライン: 論理 = 依存関数（Π）＋ 帰納型、それぞれの導入/除去だけ
+--   Ch1・Ch3 で見た結合子は、Lean では 2 つの原始に還元される:
+--     ・→ と ∀ は **依存関数（Π 型）**。導入 = `fun`（λ）・除去 = 適用。
+--       違いは codomain が引数に依存するかだけ（→ は非依存・∀ は依存）。¬A = A → False も関数。
+--     ・∧ ∨ ∃ ⊥ ⊤ = は **帰納型**。導入 = 構成子・除去 = recursor（cases/induction）。
+--   だから「依存関数の導入/除去（λ/適用）」と「帰納型の導入/除去（構成子/recursor）」だけで
+--   論理はすべて書ける。#print で「これらは帰納型」が、#check で「→/∀ は Π」が見える:
+-- ============================================================
+
+-- ANCHOR: ch_punchline
+#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）
+#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）
+#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）
+#print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
+-- → と ∀ は帰納型ではなく Π（依存関数）。これだけが帰納型と別格の原始:
+#check fun (A B : Prop) => A → B          -- 非依存の関数型（→）
+#check fun (P : Nat → Prop) => ∀ n, P n   -- 依存関数型（∀）
+-- ANCHOR_END: ch_punchline
+
+-- ============================================================
 -- Summation について証明する（予告）: 定義した recursor をそのまま証明に使う
 --   Summation は `Nat.rec`（構造的再帰）で定義した。それを **除去規則として証明に
 --   走らせる**のが induction——「定義する再帰」と「証明する帰納」は同じ recursor。

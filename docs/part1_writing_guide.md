@@ -96,7 +96,7 @@
 - 問い: 有限和とは何か
 - 到達点: Range/Summation が読めて書ける・CH 対応表が完結する・**Summation について最初の証明（合同＋帰納法の予告）が書ける**
 - 新機能: **帰納型【鍵3】**・Subtype・構造的再帰・rfl=defeq の予告編・**Zero bridge**・**term mode の帰納法（再帰＝帰納の予告）**
-- ANCHOR: `range`・`summation`・`summation_rfl`・**`eliminators`**・**`summation_first_proofs`**
+- ANCHOR: `range`・`summation`・`summation_rfl`・**`eliminators`**・**`ch_punchline`**・**`summation_first_proofs`**
 - ▲帰納型を正面で・▼**CH 表のパンチライン**（`#print Or` 等で「論理は依存関数＋帰納型」）・🪟recursor（`#print And.rec`）・▲Zero bridge＝菱形の**良い配線**（Ch3 の対）・🪟「なぜ List でないのか」・▲**除去規則 = recursor／cases と induction（2026-06-15 追加）**: 帰納型は 導入規則（構成子）と 除去規則（recursor）を持つ。**再帰的な構成子の分だけ除去で IH を受け取る**——非再帰（Or・Ch1 の `.elim`）＝cases（IH 無し）／再帰（Nat）＝induction（IH 付き）。ANCHOR `eliminators` で `#check @Or.rec`（IH 無し）vs `#check @Nat.rec`（succ に motive n=IH）を並べ「IH は再帰している箇所に現れる」を機械で見せる。▼**Ch1 の `.elim`（∨ の cases）を回収**・Summation を定義した `Nat.rec` をそのまま除去で証明に走らせる予告（`summation_congr`＝congrArg／`summation_all_zero`＝term mode の Nat.rec・succ の再帰呼び出しが IH）。ergonomic な cases/induction タクティクと Σ コーパス本体は Ch10
 - 演習候補: 型シグネチャ設計（`[Add][Zero]` は最小契約か・自作 Zero／Real 特化との書き比べ）・`n` を implicit にできるか・小さい n で Summation 手計算・**summation_all_zero を `Nat.rec` で（induction タクティク無しで）書く**
 - 引き: Ch5 へ「分割をデータとしてどう表す？」（Σ の本格コーパスと induction タクティクは Ch10 で——再帰で定義した Summation に帰納法で戻る）
@@ -200,7 +200,7 @@
 各章ドラフトを以下で照合する。違反は「方針管理」上の指摘事項。
 
 - **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**term mode の帰納法（Nat.rec 予告）=Ch4・induction タクティク=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
-- **(b) CH 対応 6 表**: Ch1 で提示 → **Ch3** で ∀∃=Π/Σ を裏付け（Real.sup の署名）→ Ch4 で `#print` により完結（∧∨∃=も帰納型）。表の各行が「いつ裏付くか」と整合しているか
+- **(b) CH 対応表（導入/除去規則つき・2026-06-15 拡張）**: Ch1 で**導入規則/除去規則の列を持つ表**を提示（→∧∨¬⊥⊤=）→ **Ch3** で ∀∃ 行を埋める（∀=Π＝→と同じ関数・∃=帰納型 Exists・導入/除去つき）→ **Ch4 で `#print`/`#check` により完結**（ANCHOR `ch_punchline`: ∧∨∃⊥= は帰納型・→∀¬ は依存関数 Π）。**パンチライン: 論理 = 依存関数（Π）＋帰納型の 2 原始、その導入/除去だけ**。表の各行の導入/除去と「いつ裏付くか」「Π か帰納型か」が整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro。「使う→仕組みを覗く」の順序が保たれているか
 - **(c2) 除去規則（recursor）の糸**（2026-06-15 追加）: **導入規則（構成子）/除去規則（recursor）**を貫通させる。Ch1 で ∧/∨ の導入・除去（`.elim`＝場合分け＝**cases**・非再帰なので IH 無し）→ Ch4 で「除去規則=recursor／再帰なら IH 付き=induction」を `#check @Or.rec` vs `@Nat.rec` で明示（IH は再帰箇所に現れる）＋ Summation を Nat.rec の除去で証明する予告 → Ch6 以降で `cases`（非再帰の除去・ergonomic 版・使う箇所で）→ Ch10 で `induction`（再帰の除去）＋Σ コーパス。**cases と induction は同じ除去規則で、再帰（IH）の有無だけが違う**を本文で一貫させているか
 - **(d) 菱形の糸**（2026-06-15 反映）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch11 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
