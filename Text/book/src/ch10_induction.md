@@ -35,7 +35,16 @@
 - `class VectorSpace (V) extends Add V, Neg V, Zero V, SMul Real V`（公理 8 本）を自作——Ch2 の class 設計の応用。`•` は core の SMul の記法
 - **関数型へのインスタンス**: Range n → Real に各点演算で instance を与える（公理の証明はすべて funext＋Real の対応補題 1 行——funext の活躍どころ）。Real 自身も Real 上のベクトル空間（• = 積）
 - `IsLinearMap` を定義し、`summation_isLinear` の証明が **corpus の 2 本をペアにするだけ**であることを見る——「概念を定義すると、すでに証明していたことが 1 つの主張に束ねられる」
-- mathlib 対応（Module・LinearMap・Finset.sum の線形性）は付録 C へ。発展演習: RiemannSum も f について線形（Ch12 の additive/neg の言い直し）
+- mathlib 対応（Module・LinearMap・Finset.sum の線形性）は付録 C へ
+
+## 10.6 線形性を積み上げる: Σ → 重みつき Σ →（引き戻し）→ RS（ANCHOR `weighted_summation`）
+
+- **線形性は合成と特殊化で次の層に伝播する**——RS の線形性（Ch13）を一気に証明せず、層で積む:
+  - `isLinear_comp`: **線形写像の合成は線形**（U→V→W）。「線形性が合成で保たれる」一般道具
+  - `WeightedSum w g := Σ (g i * w i)`: Σ に対角重み w を入れた線形形式。**リーマン和はこの特殊化**（重み = 小区間の長さ・被加数 = タグでの値・`RS f Δ ξ = WeightedSum Δ.length (i↦f(ξ i))` は defeq）
+  - `weightedSum_isLinear w`: 重みつき Σ は被加数について線形（証明は `weightedSum_add`/`smul`＝分配・結合 → corpus 2 本）
+  - `precompose_isLinear ξ`: **引き戻し `f ↦ (i↦f(ξ i))` は線形**（関数空間 → 数列空間・各点なので `⟨rfl, rfl⟩`）
+- Ch13 で `riemann_sum_isLinear = isLinear_comp (weightedSum_isLinear Δ.length) (precompose_isLinear ξ)` と**合成 1 行**で出る——「Σの線形性 → 重みつきΣ → RS」の積み上げが見える
 
 ## 10.6 sum_id_nat — Σ_{i<n} i は Nat の恒等式
 

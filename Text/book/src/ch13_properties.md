@@ -9,10 +9,10 @@
 
 ## 9.1 線形性 — RS は f について線形写像（加法＋スカラー倍）
 
-- **被積分関数の代数を中置で**: 関数空間 `Real → Real` に VectorSpace（Add/Neg/SMul）＋ Sub を入れ、`RS(f + g)`・`RS(c • f)`・`RS(-f)`・`RS(f - g)` と書く（点ごと演算・`(f+g) x = f x + g x` は `rfl`）。一般化した my_abel もこの関数空間でそのまま動く（順序は無いので lin は不可）
-- **線形性の本体は加法 `RS(f + g)=RS f+RS g` とスカラー倍 `RS(c • f)=c·RS f` の 2 本**（Σ の `additive_summation`・`summation_mul_left` の持ち上げ）。`riemann_sum_isLinear : IsLinearMap (fun f => RS f Δ ξ)`＝Ch7 の `summation_isLinear` の RS 版
-- **符号 `RS(-f)=-RS f`（c=−1 の場合）と差 `RS(f-g)=RS f-RS g` はここから「出てくる」系**
-- Σ→RS の 2 層対応（積分への 3 層対応の予告）
+- **被積分関数の代数を中置で**: 関数空間 `Real → Real` の VectorSpace（Ch10）＋ Sub で `RS(f + g)`・`RS(c • f)`・`RS(-f)`・`RS(f - g)` と書く（点ごと演算・`(f+g) x = f x + g x` は `rfl`）。一般化した my_abel もこの関数空間でそのまま動く（順序は無いので lin は不可）
+- **線形性は Ch10 の塔を合成して帰着**（一気に証明しない）: `RS f Δ ξ = WeightedSum Δ.length (i↦f(ξ i))` は defeq なので、`riemann_sum_isLinear = isLinear_comp (weightedSum_isLinear Δ.length) (precompose_isLinear ξ)` の**合成 1 行**。Σの線形性 → 重みつきΣの線形性 →（引き戻し）→ RS の線形性、と積み上がる
+- **加法 `RS(f + g)=RS f+RS g`・スカラー倍 `RS(c • f)=c·RS f` は `riemann_sum_isLinear` の射影**（`.1`/`.2`）で 1 行・**符号 `RS(-f)=-RS f`（c=−1）と差 `RS(f-g)=RS f-RS g` はそこから出る系**
+- Σ→重みつきΣ→RS の 3 層対応（積分への対応の予告）
 
 ## 9.2 const — 望遠鏡和の快感
 

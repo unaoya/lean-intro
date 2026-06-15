@@ -167,6 +167,66 @@ theorem summation_isLinear (n : Nat) :
 -- ANCHOR_END: summation_linear
 
 -- ============================================================
+-- 線形性を積み上げる: Σ → 重みつき Σ → （引き戻し）→ リーマン和（Ch13 で帰着）
+--    各層が「線形写像」で、合成・特殊化として次の層が出てくる。
+-- ============================================================
+
+-- 関数空間 Real → Real のベクトル空間（各点演算）。これで f + g・-f・c • f が中置で書け、
+-- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch13）に使う。
+noncomputable instance : VectorSpace (Real → Real) where
+  add := fun f g => fun x => f x + g x
+  neg := fun f => fun x => -(f x)
+  zero := fun _ => 0
+  smul := fun c f => fun x => c * f x
+  add_assoc := fun f g h => funext fun x => add_assoc (f x) (g x) (h x)
+  add_comm := fun f g => funext fun x => add_comm (f x) (g x)
+  add_zero := fun f => funext fun x => add_zero' (f x)
+  add_neg := fun f => funext fun x => add_neg' (f x)
+  one_smul := fun f => funext fun x => one_mul_b (f x)
+  mul_smul := fun a b f => funext fun x => mul_assoc a b (f x)
+  smul_add := fun a f g => funext fun x => CommRing.left_distrib a (f x) (g x)
+  add_smul := fun a b f => funext fun x => CommRing.right_distrib a b (f x)
+
+-- ANCHOR: weighted_summation
+-- 線形写像の合成は線形（U → V → W）——「線形性は合成で保たれる」道具
+theorem isLinear_comp {U V W : Type} [VectorSpace U] [VectorSpace V] [VectorSpace W]
+    {T : V → W} {S : U → V} (hT : IsLinearMap T) (hS : IsLinearMap S) :
+    IsLinearMap (fun u => T (S u)) :=
+  ⟨fun u v => by show T (S (u + v)) = T (S u) + T (S v); rw [hS.1, hT.1],
+   fun c u => by show T (S (c • u)) = c • T (S u); rw [hS.2, hT.2]⟩
+
+-- 重みつき有限和（重み w・被加数 g）: Σ に対角重み w を入れた線形形式。
+-- リーマン和はこの特殊化（重み = 小区間の長さ・被加数 = タグでの値）。
+noncomputable def WeightedSum {n : Nat} (w g : Range n → Real) : Real :=
+  Summation n (fun i => g i * w i)
+
+/-- 重みつき Σ は被加数について加法的（分配 → additive_summation）。 -/
+theorem weightedSum_add {n : Nat} (w g h : Range n → Real) :
+    WeightedSum w (g + h) = WeightedSum w g + WeightedSum w h := by
+  show Summation n (fun i => (g i + h i) * w i)
+      = Summation n (fun i => g i * w i) + Summation n (fun i => h i * w i)
+  rw [summation_congr n _ _ (fun i => CommRing.right_distrib (g i) (h i) (w i)),
+      additive_summation]
+
+/-- 重みつき Σ はスカラー倍と可換（結合 → summation_mul_left）。 -/
+theorem weightedSum_smul {n : Nat} (w : Range n → Real) (c : Real) (g : Range n → Real) :
+    WeightedSum w (c • g) = c * WeightedSum w g := by
+  show Summation n (fun i => (c * g i) * w i) = c * Summation n (fun i => g i * w i)
+  rw [summation_congr n _ _ (fun i => mul_assoc c (g i) (w i)), summation_mul_left]
+
+/-- **重みつき Σ は線形形式**（重み w を固定して被加数 g について）。Σ の線形性の重み版。 -/
+theorem weightedSum_isLinear {n : Nat} (w : Range n → Real) :
+    IsLinearMap (fun g : Range n → Real => WeightedSum w g) :=
+  ⟨weightedSum_add w, weightedSum_smul w⟩
+
+/-- **タグでの引き戻し `f ↦ (i ↦ f (ξ i))` は線形写像**（関数空間 → 数列空間）。
+RS の線形性はこれと重みつき Σ の線形性の合成。 -/
+theorem precompose_isLinear {n : Nat} (ξ : Range n → Real) :
+    IsLinearMap (fun f : Real → Real => ((fun i => f (ξ i)) : Range n → Real)) :=
+  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
+-- ANCHOR_END: weighted_summation
+
+-- ============================================================
 -- Partition の基本性質（induction を読者自身の構造に適用する実地）
 --    隣接単調（公理 increase）→ 大域単調（points_mono・induction）→ 端点評価・
 --    タグの所属。すべて Ch13 の性質証明が消費する。
