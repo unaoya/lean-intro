@@ -141,9 +141,7 @@ theorem cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
   | zero => exact le_refl 0
   | succ m ih =>
     rw [succ_ofNat]
-    calc (0 : Real) = 0 + 0 := (add_zero' 0).symm
-      _ ≤ Real.ofNat m + 0 := add_le_add_right 0 (Real.ofNat m) 0 ih
-      _ ≤ Real.ofNat m + 1 := add_left_le _ 0 1 zero_lt_one.1
+    exact add_nonneg' ih zero_lt_one.1
 
 theorem cast_pos_succ (n : Nat) : (0 : Real) < ((n + 1 : Nat) : Real) := by
   show (0 : Real) < Real.ofNat (n + 1)

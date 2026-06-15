@@ -74,10 +74,7 @@ theorem nonneg_iff_le (a b : Real) : a ≤ b ↔ 0 ≤ b - a := by
   · intro h
     have h1 := add_le_add_right (0 : Real) (b + -a) a h
     rw [zero_add'] at h1
-    rw [show b + -a + a = b from by
-      calc b + -a + a = b + (-a + a) := add_assoc _ _ _
-        _ = b + 0 := by rw [neg_add']
-        _ = b := add_zero' _] at h1
+    rw [show b + -a + a = b from by my_abel] at h1
     exact h1
 
 theorem neg_neg_nonneg (a : Real) : a ≤ 0 → 0 ≤ -a := by
@@ -93,10 +90,8 @@ theorem sub_pos_of_lt {a b : Real} (h : a < b) : 0 < b - a := by
 
 theorem neg_le_neg' {a b : Real} (h : a ≤ b) : -b ≤ -a := by
   have h1 := add_le_add_right a b (-a + -b) h
-  rw [show a + (-a + -b) = -b from by
-      rw [← add_assoc, add_neg', zero_add'],
-    show b + (-a + -b) = -a from by
-      rw [add_comm (-a) (-b), ← add_assoc, add_neg', zero_add']] at h1
+  rw [show a + (-a + -b) = -b from by my_abel,
+    show b + (-a + -b) = -a from by my_abel] at h1
   exact h1
 
 theorem neg_lt_neg {a b : Real} (h : a < b) : -b < -a :=
@@ -126,13 +121,11 @@ theorem lt_add_of_sub_lt {a b c : Real} (h : a - b < c) : a < c + b := by
 theorem sub_lt_swap {a b c : Real} (h : a - b < c) : a - c < b := by
   have h1 := lt_add_of_sub_lt h
   have h2 := add_lt_add_right a (c + b) (-c) h1
-  rwa [show c + b + -c = b from by
-    rw [add_comm c b, add_assoc, add_neg', add_zero']] at h2
+  rwa [show c + b + -c = b from by my_abel] at h2
 
 theorem sub_lt_of_lt_add {a b c : Real} (h : a < b + c) : a - b < c := by
   have h1 := add_lt_add_right a (b + c) (-b) h
-  have h2 : (b + c) + -b = c := by
-    rw [add_comm b c, add_assoc, add_neg', add_zero']
+  have h2 : (b + c) + -b = c := by my_abel
   rwa [h2] at h1
 
 theorem sub_lt_self (z : Real) {h : Real} (hh : 0 < h) : z - h < z := by

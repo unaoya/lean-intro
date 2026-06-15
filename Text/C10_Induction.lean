@@ -66,12 +66,8 @@ theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i)
   | zero => exact le_refl 0
   | succ n ih =>
     show (0 : Real) ≤ Summation n (fun k => f (incl k)) + f ⟨n, Nat.lt_succ_self n⟩
-    have h1 : (0 : Real) ≤ Summation n (fun k => f (incl k)) :=
-      ih (fun k => f (incl k)) (fun i => h (incl i))
-    calc (0 : Real) = 0 + 0 := (add_zero' 0).symm
-      _ ≤ Summation n (fun k => f (incl k)) + 0 := add_le_add_right 0 _ 0 h1
-      _ ≤ Summation n (fun k => f (incl k)) + f ⟨n, Nat.lt_succ_self n⟩ :=
-          add_left_le _ 0 _ (h ⟨n, Nat.lt_succ_self n⟩)
+    exact add_nonneg' (ih (fun k => f (incl k)) (fun i => h (incl i)))
+      (h ⟨n, Nat.lt_succ_self n⟩)
 
 theorem summation_le : ∀ (n : Nat) (f g : Range n → Real),
     (∀ i, f i ≤ g i) → Summation n f ≤ Summation n g := by
