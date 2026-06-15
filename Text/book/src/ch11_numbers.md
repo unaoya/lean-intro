@@ -27,7 +27,13 @@
 
 ## 11.4 cast は「射」——構造を保つ写像（ANCHOR `cast_hom`）
 
-- succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ・**cast_mul**・**cast_le**（構成的部のみ）
+- **cast の順序系を `cast_le` 基盤で構造化（2026-06-16）**: `cast_le`（順序保存）を**帰納の基盤**にし、nonneg・le_succ・lt・単射・pos をすべてその帰結にする（線形性/RS 単調性の階層化と同じ精神）:
+  - **`cast_le`（基盤）**: `b = a + k` の k について帰納・各ステップ `cast m ≤ cast m + 1`（`0 ≤ 1` のみ）——**`cast_nonneg` を使わず**証明するのが鍵
+  - `cast_nonneg = cast_le 0 n`・`cast_le_succ = cast_le n (n+1)`
+  - `cast_lt = cast_le (a+1 ≤ b) + (cast a < cast a + 1)`（狭義単調）
+  - **`cast_inj`（単射）= 狭義単調 `cast_lt` の帰結**（三分法で a<b・b<a を ≠ で排除）
+  - `cast_pos_succ = cast_lt 0 (n+1)`・`cast_pos_of_ne = cast_lt 0 m`
+  - 依存は線形: `cast_le → {nonneg, le_succ, lt} → {inj, pos}`。`cast_add`/`cast_mul`（+/× の準同型）は独立帰納
 - **cast は 0・1・+・×・≤ を保つ＝順序付き半環の準同型**。述語 `IsNatHom` で「Nat → Real は構造の射」を明示し `cast_isHom` で証明（Ch10 の `IsLinearMap` と並ぶ「射」）。`cast_summation`＝**Σ と可換**（Ch12 の y=x 計算で使う）
 - **分割線**: sup を使う archimedean 系は第 II 部へ——「この章は古典公理ゼロ」
 

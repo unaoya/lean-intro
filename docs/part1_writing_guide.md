@@ -171,7 +171,7 @@
 - 到達点: リテラル（2 以上）・`↑n`・除法 Div が使える・cast 補題（**cast は射**）。y=x 計算（Ch12）の土台
 - 新機能: OfNat 物語の回収・`Real.ofNat`（構造的再帰）・NatCast・Div・cast 補題
 - ANCHOR: `of_nat`・`cast_defeq`・`diamond`・**`cast_hom`**
-- ▼`(2:Real)` エラー回収（Ch3）・▲菱形の排他分割（0/1/2 以上＝AtLeastTwo 手作り）・🪟defeq 観察・▲**diamond 事件**（同型に 2 インスタンスで機構が黙って選ぶ）・▲**cast は構造を保つ射**（`IsNatHom`＝0/1/+/×/≤ を保つ準同型・`cast_isHom`・`cast_summation`＝Σ と可換。Ch10 の `IsLinearMap` と並ぶ「射」）・▲除法補題（純 ring は my_ring＝Ch8 の `/` 対応 reify で・inv 相殺は Field.mul_inv）
+- ▼`(2:Real)` エラー回収（Ch3）・▲菱形の排他分割（0/1/2 以上＝AtLeastTwo 手作り）・🪟defeq 観察・▲**diamond 事件**（同型に 2 インスタンスで機構が黙って選ぶ）・▲**cast は構造を保つ射**（`IsNatHom`＝0/1/+/×/≤ を保つ準同型・`cast_isHom`・`cast_summation`＝Σ と可換。Ch10 の `IsLinearMap` と並ぶ「射」）・▲**cast の順序系を `cast_le` 基盤で構造化（2026-06-16）**: `cast_le` を**帰納の基盤**（`b=a+k` の k 帰納・各ステップ `cast m ≤ cast m+1`・`cast_nonneg` 不使用が鍵）にし、nonneg=`cast_le 0 n`・le_succ=`cast_le n (n+1)`・lt=`cast_le+strict step`・**単射 `cast_inj`=狭義単調 `cast_lt` の帰結**・pos=`cast_lt 0 ·` を全部その帰結に。依存は線形 `cast_le→{nonneg,le_succ,lt}→{inj,pos}`（線形性/RS 単調性の階層化と同じ精神）・▲除法補題（純 ring は my_ring＝Ch8 の `/` 対応 reify で・inv 相殺は Field.mul_inv）
 - 演習候補: cast 一括ルートを試して壊す・`cast_mul` を自分で・div_sub_div を my_ring で
 - 引き: Ch12 へ「数は建った。[0,1] の n 等分で y=x のリーマン和を計算しよう」
 - ⚠ cast 補題は**構成的な部分のみ**（archimedean 系の sup 利用は第 II 部へ）
