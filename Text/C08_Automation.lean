@@ -411,7 +411,7 @@ theorem nfEval_insEntry (ρ : Nat → Real) (p : List Nat × Bool) (l : List (Li
     · simp only [if_neg hc]
       by_cases ho : monLt p.1 q.1 = true
       · simp only [ho, if_true]; rfl
-      · simp only [ho, if_false]
+      · simp only [ho]
         show entEval ρ q + nfEval ρ (insEntry p t) = entEval ρ p + (entEval ρ q + nfEval ρ t)
         rw [ih, ← add_assoc, ← add_assoc, add_comm (entEval ρ q) (entEval ρ p)]
 
