@@ -87,19 +87,63 @@ theorem div_sub_div (a b c : Real) : (a / c) - (b / c) = (a - b) / c := by my_ri
 
 theorem div_add_div (a b c : Real) : a / c + b / c = (a + b) / c := by my_ring
 
-theorem half_add (a : Real) : a / (1 + 1) + a / (1 + 1) = a := by
-  show a * Field.inv (1 + 1) + a * Field.inv (1 + 1) = a
-  rw [← CommRing.left_distrib]
-  suffices h : Field.inv ((1 : Real) + 1) + Field.inv ((1 : Real) + 1) = (1 : Real) by
-    rw [h, mul_one_b]
-  have h1 : ((1 : Real) + 1) * Field.inv ((1 : Real) + 1) = (1 : Real) :=
-    Field.mul_inv (1 + 1) one_one_ne_zero
-  rw [CommRing.right_distrib, one_mul_b] at h1; exact h1
+-- ============================================================
+-- 自作タクティク my_field: 分数を結合し div_eq_iff で分母を払い my_ring で閉じる
+--   （inv 相殺＝q·inv q=1 を要する除法恒等式を自動化。非ゼロは仮定/one_one_ne_zero から）
+-- ============================================================
+
+theorem mul_div_cancel_right (b c : Real) (hc : c ≠ 0) : b * c / c = b := by
+  rw [mul_comm b c]; exact mul_div_cancel' c b hc
+
+theorem div_eq_iff (a b c : Real) (hc : c ≠ 0) : a / c = b ↔ a = b * c := by
+  constructor
+  · intro h
+    have h2 : a / c * c = b * c := by rw [h]
+    rwa [div_mul_cancel a c hc] at h2
+  · intro h; rw [h]; exact mul_div_cancel_right b c hc
+
+theorem div_mul_eq_mul_div (a b c : Real) : a / c * b = a * b / c := by my_ring
+
+open Lean Lean.Meta in
+def findNonzero (oneOne : Expr) (c : Expr) : MetaM (Option Expr) := do
+  for decl in (← getLCtx) do
+    if decl.isImplementationDetail then continue
+    match (← instantiateMVars decl.type).getAppFnArgs with
+    | (``Ne, #[_, x, _]) => if ← isDefEq x c then return some decl.toExpr
+    | _ => pure ()
+  if ← isDefEq c oneOne then return some (mkConst ``one_one_ne_zero)
+  return none
+
+open Lean Lean.Meta Lean.Elab Lean.Elab.Tactic in
+elab "my_field" : tactic => do
+  evalTactic (← `(tactic| try simp only [div_add_div, div_sub_div, div_mul_eq_mul_div]))
+  let oneOne ← elabTerm (← `((1 + 1 : Real))) (some (mkConst ``Real))
+  let goal ← getMainGoal
+  goal.withContext do
+    let ty ← goal.getType
+    let some (_, lhs, rhs) := ty.eq? | throwError "my_field: 等式でない"
+    let clear (g : MVarId) (num den other : Expr) : TacticM Unit := do
+      let some hden ← findNonzero oneOne den | throwError "my_field: 分母の非ゼロが不明"
+      let iffPf ← mkAppM ``div_eq_iff #[num, other, den, hden]
+      let eqProof ← mkAppM ``propext #[iffPf]
+      let newTgt ← mkEq num (← mkAppM ``HMul.hMul #[other, den])
+      let g2 ← g.replaceTargetEq newTgt eqProof
+      replaceMainGoal [g2]
+      evalTactic (← `(tactic| my_ring))
+    match lhs.getAppFnArgs with
+    | (``HDiv.hDiv, #[_,_,_,_, num, den]) => clear goal num den rhs
+    | _ => match rhs.getAppFnArgs with
+      | (``HDiv.hDiv, #[_,_,_,_, num, den]) =>
+          evalTactic (← `(tactic| symm))
+          let g ← getMainGoal
+          clear g num den lhs
+      | _ => evalTactic (← `(tactic| my_ring))
+
+
+theorem half_add (a : Real) : a / (1 + 1) + a / (1 + 1) = a := by my_field
 
 -- x は (x + x) の半分
-theorem double_half (x : Real) : (x + x) / (1 + 1) = x := by
-  rw [(div_add_div x x (1 + 1)).symm]
-  exact half_add x
+theorem double_half (x : Real) : (x + x) / (1 + 1) = x := by my_field
 
 theorem pos_half (a : Real) (h : 0 < a) : 0 < a / (1 + 1) :=
   pos_mul_pos a (Field.inv (1 + 1)) h (pos_inv (1 + 1) zero_lt_one_one)

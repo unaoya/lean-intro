@@ -18,10 +18,12 @@
 - **defeq の観察**（ANCHOR `cast_defeq`）: `Real.ofNat 0 = 0 := rfl` は通り、`Real.ofNat 1 = 0 + 1 := rfl` で中身が見え、`#check_failure (rfl : Real.ofNat 1 = 1)` で **defeq でないことがビルドで検証**（Ch7 の「2 種の等しさ」の実戦）
 - **(ii) cast 一括ルート（演習: 試して壊す）**: 全リテラルを ofNat 経由にすると one 系の rfl が死ぬ——AtLeastTwo の理由。**ダイヤモンド事件**（ANCHOR `diamond`・同型に 2 インスタンスで機構が黙って 1 つを選ぶ）。菱形の縦糸完成: Ch3 悪い菱形→Ch4/Ch6 良い配線→本章 排他分割→付録 C
 
-## 11.3 除法の補題
+## 11.3 除法の補題と自作タクティク my_field
 
-- 中点・半分・等分の部品: zero_div・mul_div_cancel'・div_mul_cancel・**div_sub_div/div_add_div（my_ring で・Ch8 の reify が `/` 対応）**・half_add・double_half・pos_half・順序＋除法（half_lt・div_right_le 等）
-- ⚠ inv 相殺（mul_div_cancel' 等）は Field.mul_inv が要る土台。純 ring の除法は my_ring（reify が `a/b → a*inv b`）
+- 中点・半分・等分の部品: zero_div・mul_div_cancel'・div_mul_cancel（**inv 相殺の土台**＝Field.mul_inv を直接使う）・**div_sub_div/div_add_div（my_ring で・Ch8 の reify が `/` 対応）**
+- **自作タクティク `my_field`**: 分数を結合し `div_eq_iff`（非ゼロ条件付き）で**分母を払い**、残りの多項式恒等式を **my_ring** で閉じる（field_simp＋ring の自作）。非ゼロは仮定 `c ≠ 0` か `one_one_ne_zero` から自動で探す。**half_add・double_half（係数·inv の相殺）が一行**に——B/D（反射）に続く E（体）の道具
+- 順序＋除法: pos_half・half_lt・pos_div_pos・div_right_le 等（pos_mul_pos/mul_nonneg＋pos_inv）
+- ⚠ inv 相殺の土台補題（mul_div_cancel'・div_mul_cancel）は my_field の構成要素なので手証明。my_field はその上の派生・下流を畳む（cast_add 同様の「土台と自動化」の分担）
 
 ## 11.4 cast は「射」——構造を保つ写像（ANCHOR `cast_hom`）
 
