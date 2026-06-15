@@ -51,6 +51,10 @@ theorem sub_summation (n : Nat) (F G : Range n → Real) :
   rw [neg_summation n G]
   exact (additive_summation n F (fun i => -G i)).symm
 
+-- 数列空間 Range n → Real の点ごと半順序（線形でない＝le_total 無し）。これで
+-- Σ・重みつき Σ の単調性を f ≤ g の中置で述べる（線形性の f + g と並行）。
+instance {n : Nat} : LE (Range n → Real) := ⟨fun f g => ∀ i, f i ≤ g i⟩
+
 theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i) :
     0 ≤ Summation n f := by
   induction n with
@@ -61,7 +65,7 @@ theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i)
       (h ⟨n, Nat.lt_succ_self n⟩)
 
 theorem summation_le : ∀ (n : Nat) (f g : Range n → Real),
-    (∀ i, f i ≤ g i) → Summation n f ≤ Summation n g := by
+    f ≤ g → Summation n f ≤ Summation n g := by
   intro n
   induction n with
   | zero => intro f g _; exact le_refl 0
@@ -224,6 +228,14 @@ RS の線形性はこれと重みつき Σ の線形性の合成。 -/
 theorem precompose_isLinear {n : Nat} (ξ : Range n → Real) :
     IsLinearMap (fun f : Real → Real => ((fun i => f (ξ i)) : Range n → Real)) :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
+
+/-- **重みつき Σ は被加数について単調**（重みが非負なら）。線形性に対する順序版——
+各成分で `nonneg_mul_nonneg`（Real の乗法順序）→ `summation_le`。RS の単調性の土台。 -/
+theorem weightedSum_le {n : Nat} (w g h : Range n → Real)
+    (hw : ∀ i, 0 ≤ w i) (hgh : g ≤ h) : WeightedSum w g ≤ WeightedSum w h := by
+  apply summation_le
+  intro i
+  exact nonneg_mul_nonneg (g i) (h i) (w i) (hw i) (hgh i)
 -- ANCHOR_END: weighted_summation
 
 -- ============================================================

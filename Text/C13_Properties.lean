@@ -73,48 +73,56 @@ theorem riemann_sum_const {n : Nat} {u v : Real} (Δ : Partition n u v)
   rw [summation_mul_left n (fun i => Δ.length i) c, length_sum Δ]
 
 -- ============================================================
--- §3 性質 4: nonneg（IsRepr が初めて仕事をする）
+-- §2.5 単調性: 区間上 f ≤ g なら RS f ≤ RS g（IsRepr 必須）。nonneg・両側評価はこの系。
+--    Ch10 の重みつき Σ の単調性 weightedSum_le に帰着（重み=length≥0・タグ∈区間）。
+--    線形性が「合成で帰着」だったのと並行に、単調性も Σ→重みつきΣ→RS と積み上がる。
 -- ============================================================
 
-/-- 性質 4（非負性）: 区間上 `0 ≤ f` なら `0 ≤ RS f`。**`IsRepr` が必須**——タグが区間外なら
-各項の符号が保証されず、これは成り立たない（IsRepr 導入の動機）。 -/
+/-- **RS の単調性**: 区間上 `f ≤ g`（タグが区間内＝`IsRepr`）なら `RS f ≤ RS g`。
+重みつき Σ の単調性 `weightedSum_le`（重み = length ≥ 0）への帰着。
+**`IsRepr` が必須**——タグが区間外なら各項の符号が保証されず崩れる。
+以下の非負性・両側評価はすべてこの特殊化。 -/
+theorem riemann_sum_le {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n → Real)
+    (hr : Δ.IsRepr ξ) {f g : Real → Real}
+    (hfg : ∀ t, u ≤ t → t ≤ v → f t ≤ g t) :
+    RiemannSum f Δ ξ ≤ RiemannSum g Δ ξ := by
+  apply weightedSum_le Δ.length (fun i => f (ξ i)) (fun i => g (ξ i)) (length_nonneg Δ)
+  intro i
+  obtain ⟨hu, hv⟩ := tag_mem' Δ ξ hr i
+  exact hfg (ξ i) hu hv
+
+-- ============================================================
+-- §3 性質 4: nonneg（単調性の系——下を定数 0 で抑える）
+-- ============================================================
+
+/-- 性質 4（非負性）: 区間上 `0 ≤ f` なら `0 ≤ RS f`。**単調性 `riemann_sum_le` の系**
+（`f' = const 0` との比較・`RS(const 0) = 0`）。IsRepr が効く最初の場面。 -/
 theorem riemann_sum_nonneg (f : Real → Real) {n : Nat} {u v : Real}
     (Δ : Partition n u v) (ξ : Range n → Real) (hr : Δ.IsRepr ξ)
-    (hf : ∀ t, u ≤ t → t ≤ v → 0 ≤ f t) : 0 ≤ RiemannSum f Δ ξ :=
-  summation_nonneg n _ (fun i =>
-    mul_nonneg _ _ (hf _ (tag_mem' Δ ξ hr i).1 (tag_mem' Δ ξ hr i).2)
-      (length_nonneg Δ i))
+    (hf : ∀ t, u ≤ t → t ≤ v → 0 ≤ f t) : 0 ≤ RiemannSum f Δ ξ := by
+  have h := riemann_sum_le Δ ξ hr (f := fun _ => 0) (g := f) hf
+  rwa [riemann_sum_const Δ ξ 0, show (0 : Real) * (v - u) = 0 from by my_ring] at h
 
 -- ============================================================
 -- §4 性質 5: 両側評価（abs を使わない。生の不等式 2 本——述語 NearLe への昇格は発展部）
 -- ============================================================
 
-/-- 性質 5（上側）: 区間上 `f ≤ c` なら `RS f ≤ c·(v-u)`。abs を使わない両側評価の片割れ
-（後段の sup 構成が消費する形）。 -/
+/-- 性質 5（上側）: 区間上 `f ≤ c` なら `RS f ≤ c·(v-u)`。**単調性の系**（上を定数 `c` で抑える・
+`RS(const c) = c·(v-u)`）。abs を使わない両側評価の片割れ（後段の sup 構成が消費する形）。 -/
 theorem rs_le_const {n : Nat} {u v : Real} (Δ : Partition n u v)
     (ξ : Range n → Real) (hr : Δ.IsRepr ξ) {f : Real → Real} {c : Real}
     (hb : ∀ t, u ≤ t → t ≤ v → f t ≤ c) :
     RiemannSum f Δ ξ ≤ c * (v - u) := by
-  rw [← riemann_sum_const Δ ξ c]
-  show Summation n (fun i => f (ξ i) * Δ.length i)
-      ≤ Summation n (fun i => c * Δ.length i)
-  apply summation_le
-  intro i
-  obtain ⟨hu, hv⟩ := tag_mem' Δ ξ hr i
-  exact nonneg_mul_nonneg _ _ _ (length_nonneg Δ i) (hb _ hu hv)
+  have h := riemann_sum_le Δ ξ hr (f := f) (g := fun _ => c) hb
+  rwa [riemann_sum_const Δ ξ c] at h
 
-/-- 性質 5（下側）: 区間上 `c ≤ f` なら `c·(v-u) ≤ RS f`。上側 `rs_le_const` と対。 -/
+/-- 性質 5（下側）: 区間上 `c ≤ f` なら `c·(v-u) ≤ RS f`。上側 `rs_le_const` と対（下を定数で抑える）。 -/
 theorem const_le_rs {n : Nat} {u v : Real} (Δ : Partition n u v)
     (ξ : Range n → Real) (hr : Δ.IsRepr ξ) {f : Real → Real} {c : Real}
     (hb : ∀ t, u ≤ t → t ≤ v → c ≤ f t) :
     c * (v - u) ≤ RiemannSum f Δ ξ := by
-  rw [← riemann_sum_const Δ ξ c]
-  show Summation n (fun i => c * Δ.length i)
-      ≤ Summation n (fun i => f (ξ i) * Δ.length i)
-  apply summation_le
-  intro i
-  obtain ⟨hu, hv⟩ := tag_mem' Δ ξ hr i
-  exact nonneg_mul_nonneg _ _ _ (length_nonneg Δ i) (hb _ hu hv)
+  have h := riemann_sum_le Δ ξ hr (f := fun _ => c) (g := f) hb
+  rwa [riemann_sum_const Δ ξ c] at h
 
 -- 章末監査: 第 I 部の総決算（Classical.choice はどこにも現れない）
 #print axioms riemann_sum_const

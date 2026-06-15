@@ -19,14 +19,19 @@
 - `length_sum`（Σ length = b − a、telescope の回収）は **C07（Partition 幾何）**に配置。ここでは const がそれを消費
 - ⚠ `sub_summation`（Σ の性質）は C07 へ・`length_sum`（Partition の性質）も C07 へ移動済（RS の性質ではないため・2026-06-15）
 
+## 9.2.5 単調性 — riemann_sum_le（nonneg・両側評価の親）
+
+- **RS の単調性 `f ≤ g (区間上) ⇒ RS f ≤ RS g`（IsRepr 必須）を中心に据える**。Ch10 の重みつき Σ の単調性 `weightedSum_le`（重み = length ≥ 0）に帰着——線形性が「合成で帰着」だったのと並行に、**単調性も Σ→重みつきΣ→RS と積み上がる**
+- nonneg・両側評価は**この特殊化**: nonneg ＝ 下を `const 0` で（`RS(const 0)=0`）・上側 ＝ 上を `const c` で（`RS(const c)=c(v−u)`）・下側 ＝ 下を `const c` で。各々 `riemann_sum_le` ＋ `riemann_sum_const` で 2 行
+
 ## 9.3 nonneg — 反例が「なぜ IsRepr が必須か」を実演する
 
-- IsRepr（代表点の妥当性）は **Ch5 で定義済**。ここでは性質4で**使い**、タグを区間外にすると非負が**壊れる反例**で「妥当性条件が飾りでない」ことを見せる
+- **単調性 `riemann_sum_le` の系**（`f' = const 0` との比較）。IsRepr（代表点の妥当性）は **Ch5 で定義済**。ここでは**使い**、タグを区間外にすると非負が**壊れる反例**で「妥当性条件が飾りでない」ことを見せる（IsRepr は単調性 riemann_sum_le に効いている）
 - 使う道具: `tag_mem'`（タグは [u,v] 内）・`points_mono`・`length_nonneg`——いずれも **Ch7 で証明済**（読者自身の構造への帰納法の実地）
 
 ## 9.4 両側評価 rs_bound
 
-- `lo·(v−u) ≤ RS ≤ hi·(v−u)`（sum_le_const / const_le_sum）。**abs を使わない**——理由は「第 II 部で明かす」と予告（Ch11 素朴定義実験への伏線）
+- `c·(v−u) ≤ RS ≤ c·(v−u)`（`rs_le_const` / `const_le_rs`）も**単調性 `riemann_sum_le` の系**（定数関数との比較）。**abs を使わない**——理由は「第 II 部で明かす」と予告（Ch11 素朴定義実験への伏線）
 - 生の不等式 2 本で書く（述語化しない——「同じ形が 3 回出たら昇格」の方針を一言）
 
 ## 9.5 章末監査 — 第 I 部の総決算

@@ -45,6 +45,7 @@
   - `weightedSum_isLinear w`: 重みつき Σ は被加数について線形（証明は `weightedSum_add`/`smul`＝分配・結合 → corpus 2 本）
   - `precompose_isLinear ξ`: **引き戻し `f ↦ (i↦f(ξ i))` は線形**（関数空間 → 数列空間・各点なので `⟨rfl, rfl⟩`）
 - Ch13 で `riemann_sum_isLinear = isLinear_comp (weightedSum_isLinear Δ.length) (precompose_isLinear ξ)` と**合成 1 行**で出る——「Σの線形性 → 重みつきΣ → RS」の積み上げが見える
+- **単調性も並行に積む**（線形性の順序版・ANCHOR `weighted_summation` 末尾）: 数列空間 `Range n → Real` に**点ごと半順序** `instance : LE`（`f ≤ g := ∀ i, f i ≤ g i`・線形でない＝le_total 無し）を入れ、`summation_le` を `f ≤ g` の中置で述べる（線形性の `f + g` と並行）。`weightedSum_le`（重み非負なら被加数について単調＝各成分 `nonneg_mul_nonneg` → `summation_le`）。Ch13 で RS の単調性がこれに帰着し、nonneg・両側評価がその系になる
 
 ## 10.6 sum_id_nat — Σ_{i<n} i は Nat の恒等式
 
