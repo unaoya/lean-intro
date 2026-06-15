@@ -96,6 +96,16 @@ theorem lt_of_le_of_ne {a b : Real} (h : a ≤ b) (hne : a ≠ b) : a < b := ⟨
 theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 -- ANCHOR_END: three_brothers
 
+-- 公理は「すでに証明された定理」: 階層のフィールドはそのまま項として使える。
+-- この `a ≤ c` の `≤` が動くのも、class が `LE Real` を解決しているから（Ch2 の回収）。
+-- 本格的な順序コーパスは Ch9。ここは「公理を引くだけで証明になる」一度きりの実演。
+example (a b c : Real) (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c :=
+  LinearOrderedField.le_trans a b c hab hbc
+
+-- 定義の意図を term で読む: `<` を `a ≤ b ∧ a ≠ b` と置いたので、`a < a` は不可能。
+-- `h.2` は `a ≠ a`（＝ `a = a → False`）、それに `rfl : a = a` を渡すだけ。
+theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
+
 -- ============================================================
 -- 根幹の 2 行と、自動で見つかる構造（class = 自動解決される structure）
 --   axiom Real.instLOF（構造一式を公理で名指し）＋ instance（正準登録）の観察。
