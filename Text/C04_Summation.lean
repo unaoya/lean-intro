@@ -1,4 +1,4 @@
--- Text/C04_Summation.lean — Ch4 有限和（Range = 証明を抱えた添字、Summation = 構造的再帰）
+-- Text/C04_Summation.lean — Ch4 帰納型と構造的再帰・分割とリーマン和の定義（到達点①）
 import Text.C03_Axioms
 
 -- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物）

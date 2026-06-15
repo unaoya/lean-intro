@@ -1,4 +1,4 @@
--- Text/C09_Order.lean — Ch9 順序と calc（≤/< のスカラー代数）
+-- Text/C08_Order.lean — Ch8 順序と calc（≤/< のスカラー代数）
 -- 順序の補題を **Real に固定せず、成り立つ最小の順序クラス**で述べる:
 --   ・加法と順序だけ要る補題 → OrderedAddCommMonoid
 --   ・符号（neg）も要る補題   → OrderedAddCommGroup
