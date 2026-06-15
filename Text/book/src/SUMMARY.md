@@ -15,16 +15,17 @@
 - [Ch8 自動化と自作タクティク — simp・omega・my_ring](ch08_automation.md)
 - [Ch9 順序と calc — ≤/< のスカラー代数](ch09_order.md)
 - [Ch10 帰納法 — Σ コーパスと大域単調性](ch10_induction.md)
-- [Ch11 具体例 — y = x の n 等分](ch11_example.md)
-- [Ch12 リーマン和の性質 5 本](ch12_properties.md)
+- [Ch11 数の体系 — リテラル・除法・cast](ch11_numbers.md)
+- [Ch12 具体例 — y = x の n 等分（到達点②）](ch12_example.md)
+- [Ch13 リーマン和の性質 5 本（到達点③）](ch13_properties.md)
 
 # 第 II 部 積分と FTC（古典的な世界）
 
-- [Ch13 アルキメデスと探索 — ∃ から値を選び取る](ch13_archimedes.md)
-- [Ch14 リーマン積分の定義](ch14_integral.md)
-- [Ch15 一意性 — choose の仕様書](ch15_unique.md)
-- [Ch16 直接証明 — ∫x = (b²−a²)/2](ch16_integral_id.md)
-- [Ch17 微積分学の基本定理](ch17_ftc.md)
+- [Ch14 アルキメデスと探索 — ∃ から値を選び取る](ch14_archimedes.md)
+- [Ch15 リーマン積分の定義](ch15_integral.md)
+- [Ch16 一意性 — choose の仕様書](ch16_unique.md)
+- [Ch17 直接証明 — ∫x = (b²−a²)/2](ch17_integral_id.md)
+- [Ch18 微積分学の基本定理](ch18_ftc.md)
 
 # 発展部 存在定理への登山（本編はこれに依存しない）
 

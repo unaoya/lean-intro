@@ -122,13 +122,14 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C08_Automation | Ch8 | **自動化と自作タクティク**: バニラ（simp/omega/ac_rfl＝Std インスタンス）＋**proof by reflection で my_abel（加法群）・my_ring（環）を自作**（mathlib の ring/abel/linarith は無い）。inductive Expr＋eval＋normalize＋健全性＋elab。旧 Ch10 間奏を前倒し本章化・load-bearing（2026-06-15） | 新規 | 514 |
 | C09_Order | Ch9 | **順序と calc**（順序基本＋Trans・加法と順序・移項の小物・乗法順序・zero_lt_one）＋**≤/< 混在 calc**＋**順序タクティク 2 方式**（mono＝gcongr-lite 構造的・lin＝linarith-lite 意味的・my_ring 流用・2026-06-15） | Lemmas 順序部 | 325 |
 | C10_Induction | Ch10 | **帰納法**: Σ補題コーパス・**Partition 幾何**（points_mono 等・induction 実地）・線形脇道・**`sum_id_nat`**（Σ_{i<n} i の Nat 恒等式）（旧 C07） | FTCCore§Σ＋Refine§3 | 250 |
-| C11_Numbers | Ch11 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO）（旧 C08） | Numerals＋Cast 前半＋EqualPartition | 290 |
-| C12_Properties | Ch12 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C10・equalPartitionRepr_isrepr=C11）（旧 C09） | FTCCore§分割＋Criterion§両側評価 | 140 |
-| C13_Archimedes | Ch13 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
-| C14_Integral | Ch14 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
-| C15_Unique | Ch15 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
-| C16_Example | Ch16 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
-| C17_FTC | Ch17 | sum_le_const/const_le_sum・両側比較・ftc_core・**ftc_of_integrable**（可積分仮定版） | FTC＋FTCCore 核部＋Main 後半 | 190 |
+| C11_Numbers | Ch11 | **数の体系**: OfNat/ofNat/NatCast・Div・除法補題・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation）・diamond（2026-06-15 分割: 数の体系部） | Numerals＋Cast 前半 | 233 |
+| C12_Example | Ch12 | **具体例 y=x（到達点②）**: equalPartition・equalPartition_length・代表点（一般 leftRepr 適用）・**sum_id_real**（cast 転送）・**riemann_sum_id**（(1+1)n²·RS=n²−n・my_ring/my_abel で貫通）（2026-06-15 新設・実装済） | EqualPartition＋Example | 127 |
+| C13_Properties | Ch13 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C10・equalPartitionRepr_isrepr=C11）（旧 C12/C09） | FTCCore§分割＋Criterion§両側評価 | 140 |
+| C14_Archimedes | Ch14 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
+| C15_Integral | Ch15 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
+| C16_Unique | Ch16 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
+| C17_Example | Ch17 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
+| C18_FTC | Ch18 | sum_le_const/const_le_sum・両側比較・ftc_core・**ftc_of_integrable**（可積分仮定版） | FTC＋FTCCore 核部＋Main 後半 | 190 |
 | E1–E3 | 発展 3 | 挿入・RS 挿入評価（NearLe 定義込み）・細分比較 | Insert＋InsertBound＋Refine | 1050 |
 | E4 | 発展 2 | 一様連続性・有界性の全文 | UnifCont | 310 |
 | E5 | 発展 1 | integrable_of_cauchy・continuous_integrable | Criterion＋Main 前半 | 130 |
