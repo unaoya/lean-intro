@@ -1,8 +1,8 @@
--- Text/C07_Induction.lean — Ch7 sorry を埋める道具 II（等しさは2種類・帰納法）
--- defeq と rw の構文性（rfl/show）を掴み、帰納法で Σ 補題コーパス＋Partition の大域
--- 単調性を獲得する。順序・等式のスカラー代数と ≤/< 混在 calc は Ch6（C06）で獲得済み。
--- 注意: この章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は C11）
-import Text.C06_Tactics
+-- Text/C10_Induction.lean — Ch10 帰納法（Σ 補題コーパスと Partition の大域単調性）
+-- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch6/7）・
+-- 自動化（Ch8）・順序と ≤/< 混在 calc（Ch9）は獲得済みで、ここで帰納法に組み込む。
+-- 注意: この章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）
+import Text.C09_Order
 
 open Range
 

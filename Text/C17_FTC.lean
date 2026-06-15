@@ -1,10 +1,10 @@
--- Text/C15_FTC.lean — Ch15 微積分学の基本定理
+-- Text/C17_FTC.lean — Ch17 微積分学の基本定理
 -- 片側 FTC（全域の F を作らない）。仮定は数学的に正直な最小: 部分区間の可積分性＋
 -- 点 x での連続性（2026-06-12 決定: 大域連続版は置かない——存在定理（連続⇒可積分）の
 -- 機構一式は主線から外れる。Text/Proto/ に全証明を温存）。
 -- 構成: 核 ftc_core（完全に局所的——区間加法性も線形性も一意性も存在定理も不要）
 -- ＋実体化（橋 1 回）＋監査総決算
-import Text.C14_Example
+import Text.C16_Example
 
 noncomputable section
 

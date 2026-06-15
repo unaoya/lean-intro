@@ -1,9 +1,9 @@
--- Text/C09_Properties.lean — Ch9 リーマン和の性質 5 本（到達点③）
+-- Text/C12_Properties.lean — Ch12 リーマン和の性質 5 本（到達点③）
 -- additive / neg / const / nonneg / 両側評価。abs は使わない（理由は Ch11 の素朴定義実験）。
 -- 章末監査: 第 I 部は古典公理ゼロ。
 -- IsRepr は C05（定義）・分割の幾何（points_mono 等）と tag_mem' は C07・
 -- equalPartitionRepr_isrepr は C08 に配置済（ここでは性質の証明に使うだけ）。
-import Text.C08_Numbers
+import Text.C11_Numbers
 
 noncomputable section
 

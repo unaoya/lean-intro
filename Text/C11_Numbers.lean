@@ -1,9 +1,9 @@
--- Text/C08_Numbers.lean — Ch8 具体例 y = x の n 等分
+-- Text/C11_Numbers.lean — Ch11 具体例 y = x の n 等分
 -- リテラルの一般機構（Ch3 のエラーの回収）・除法・cast 補題（構成的な部分のみ——
 -- sup を使う archimedean 系は C11 へ。この分割線が「公理の節約」の教材）・
 -- equalPartition・sum_id
 -- TODO(P4): RS = (n+1)/(2n)（右端タグ）・(n−1)/(2n)（左端タグ）の計算演習
-import Text.C07_Induction
+import Text.C10_Induction
 
 noncomputable section
 
