@@ -173,10 +173,13 @@ theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c :=
 -- ofNat の定義（| 0 | n+1）により再帰方程式は rfl
 theorem succ_ofNat (n : Nat) : Real.ofNat (n + 1) = Real.ofNat n + (1 : Real) := rfl
 
-/-- cast は順序を保つ（単調）——**順序系の基盤**。`b = a + k` の k について帰納し、各ステップ
-`cast m ≤ cast m + 1`（`0 ≤ 1` のみ）で積む。**cast_nonneg を使わず**証明するので、
-nonneg・le_succ・lt・単射・pos をすべてこの帰結にできる。 -/
-theorem cast_le (a b : Nat) (h : a ≤ b) : (a : Real) ≤ (b : Real) := by
+/-- **順序写像**（順序を保つ写像＝弱単調）。順序集合間の「順序の射」を抽象的に述べる述語。 -/
+def Monotone {α β : Type} [LE α] [LE β] (φ : α → β) : Prop := ∀ a b, a ≤ b → φ a ≤ φ b
+
+/-- **cast は順序写像**（順序系の基盤）。`b = a + k` の k について帰納し、各ステップ
+`cast m ≤ cast m + 1`（`0 ≤ 1` のみ）で積む。**cast_nonneg を使わず**証明する。 -/
+theorem cast_le : Monotone (fun (n : Nat) => (n : Real)) := by
+  intro a b h
   obtain ⟨k, rfl⟩ := Nat.le.dest h
   clear h
   show (a : Real) ≤ Real.ofNat (a + k)
@@ -185,15 +188,6 @@ theorem cast_le (a b : Nat) (h : a ≤ b) : (a : Real) ≤ (b : Real) := by
   | succ k ih =>
     rw [show a + (k + 1) = (a + k) + 1 from (Nat.add_assoc a k 1).symm, succ_ofNat]
     exact le_trans ih (le_add_nonneg _ 1 (le_of_lt zero_lt_one))
-
-/-- `0 ≤ cast n`（`cast_le 0 n` と `cast 0 = 0`）。 -/
-theorem cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
-  have h := cast_le 0 n (Nat.zero_le n)
-  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
-
-/-- `cast n ≤ cast (n+1)`（`cast_le` に `n ≤ n+1`）。 -/
-theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
-  cast_le n (n + 1) (Nat.le_succ n)
 
 theorem cast_add (n m : Nat) : (n : Real) + (m : Real) = ((n + m : Nat) : Real) := by
   show Real.ofNat n + Real.ofNat m = Real.ofNat (n + m)
@@ -206,22 +200,6 @@ theorem cast_add (n m : Nat) : (n : Real) + (m : Real) = ((n + m : Nat) : Real) 
       = (Real.ofNat n + Real.ofNat m) + 1 := (add_assoc _ _ _).symm
       _ = Real.ofNat (n + m) + 1 := by rw [ih]
 
-/-- cast は狭義単調: `a < b → cast a < cast b`。`cast_le (a+1 ≤ b)` と
-`cast a < cast a + 1`（`= cast (a+1)`）から。 -/
-theorem cast_lt (a b : Nat) (h : a < b) : (a : Real) < (b : Real) := by
-  have hle : ((a + 1 : Nat) : Real) ≤ (b : Real) := cast_le (a + 1) b h
-  have hstep : (a : Real) < ((a + 1 : Nat) : Real) := by
-    rw [show ((a + 1 : Nat) : Real) = (a : Real) + 1 from by rw [← cast_add a 1, cast_one]]
-    exact lt_add_pos (a : Real) 1 zero_lt_one
-  exact lt_le_trans (a : Real) ((a + 1 : Nat) : Real) (b : Real) hstep hle
-
-/-- **cast は単射**（狭義単調の帰結）: `cast a = cast b → a = b`。三分法で a<b・b<a を ≠ で排除。 -/
-theorem cast_inj (a b : Nat) (h : (a : Real) = (b : Real)) : a = b := by
-  rcases Nat.lt_trichotomy a b with hlt | heq | hgt
-  · exact absurd h ((ne_of_gt (cast_lt a b hlt)).symm)
-  · exact heq
-  · exact absurd h (ne_of_gt (cast_lt b a hgt))
-
 /-- cast は乗法を保つ: `((n*m : Nat) : Real) = (n:Real)*(m:Real)`。 -/
 theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) := by
   induction m with
@@ -232,34 +210,68 @@ theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) 
         show ((m + 1 : Nat) : Real) = (m : Real) + 1 from by rw [← cast_add m 1, cast_one],
         CommRing.left_distrib, mul_one_b]
 
-/-- `0 < cast (n+1)`（`cast_lt 0 (n+1)` と `cast 0 = 0`）。 -/
-theorem cast_pos_succ (n : Nat) : (0 : Real) < ((n + 1 : Nat) : Real) := by
-  have h := cast_lt 0 (n + 1) (Nat.succ_pos n)
-  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
-
-/-- `m ≠ 0 → 0 < cast m`（`cast_lt 0 m`）。 -/
-theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
-  have h := cast_lt 0 m (Nat.pos_of_ne_zero hm)
-  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
-
 -- ============================================================
--- cast は「射」: 構造を保つ写像（順序付き半環の準同型）。0・1・+・×・≤ を保つ。
---   「Nat → Real は何らかの構造の射」を述語 IsNatHom で明示する。
+-- cast は「順序半環の射」: 0・1・+・×・≤ を保つ。
+--   nonneg・狭義単調・単射は **射の一般論**から出る——cast 固有は cast_le と +/× だけ。
 -- ============================================================
 
 -- ANCHOR: cast_hom
-/-- Nat → Real が「順序付き半環の準同型」であること: 0・1・+・×・≤ を保つ。 -/
-structure IsNatHom (φ : Nat → Real) : Prop where
+/-- **順序半環の射**: Nat → Real が 0・1・+・×・≤ を保つこと
+（≤ の保存＝順序写像 `Monotone`）。Nat と Real を順序半環とみなしたときの準同型。 -/
+structure IsOrderedSemiringHom (φ : Nat → Real) : Prop where
   map_zero : φ 0 = 0
   map_one : φ 1 = 1
   map_add : ∀ a b, φ (a + b) = φ a + φ b
   map_mul : ∀ a b, φ (a * b) = φ a * φ b
-  map_mono : ∀ a b, a ≤ b → φ a ≤ φ b
+  monotone : Monotone φ
 
-/-- cast `(· : Real)` は準同型（0/1/+/×/≤ を保つ＝構造を保つ射）。 -/
-theorem cast_isHom : IsNatHom (fun n => (n : Real)) :=
-  ⟨rfl, cast_one, fun a b => (cast_add a b).symm, fun a b => cast_mul a b,
-   fun a b => cast_le a b⟩
+namespace IsOrderedSemiringHom
+variable {φ : Nat → Real}
+
+/-- 射は非負: `0 ≤ φ n`（順序写像＋0 を保つ・`0 ≤ n` だから）。 -/
+theorem nonneg (h : IsOrderedSemiringHom φ) (n : Nat) : 0 ≤ φ n := by
+  rw [← h.map_zero]; exact h.monotone 0 n (Nat.zero_le n)
+
+/-- 射は後者で狭義増加: `φ n < φ (n+1)`（`φ(n+1)=φ n+φ 1=φ n+1 > φ n`・**0<1 のみ**）。 -/
+theorem succ_step (h : IsOrderedSemiringHom φ) (n : Nat) : φ n < φ (n + 1) := by
+  rw [h.map_add n 1, h.map_one]
+  exact lt_add_pos (φ n) 1 zero_lt_one
+
+/-- 射は狭義単調: `a < b → φ a < φ b`（順序写像＋後者増加の離散版）。 -/
+theorem strictMono (h : IsOrderedSemiringHom φ) {a b : Nat} (hab : a < b) : φ a < φ b :=
+  lt_le_trans (φ a) (φ (a + 1)) (φ b) (h.succ_step a) (h.monotone (a + 1) b hab)
+
+/-- 射は単射（狭義単調の帰結）: `φ a = φ b → a = b`。三分法で a<b・b<a を ≠ で排除。 -/
+theorem injective (h : IsOrderedSemiringHom φ) {a b : Nat} (hab : φ a = φ b) : a = b := by
+  rcases Nat.lt_trichotomy a b with hlt | heq | hgt
+  · exact absurd hab ((ne_of_gt (h.strictMono hlt)).symm)
+  · exact heq
+  · exact absurd hab (ne_of_gt (h.strictMono hgt))
+
+end IsOrderedSemiringHom
+
+/-- cast `(· : Real)` は順序半環の射（0/1/+/×/≤ を保つ）。 -/
+theorem cast_isHom : IsOrderedSemiringHom (fun (n : Nat) => (n : Real)) :=
+  ⟨rfl, cast_one, fun a b => (cast_add a b).symm, fun a b => cast_mul a b, cast_le⟩
+
+-- cast の順序系は「射の一般論」を cast に適用するだけ（cast 固有の証明は不要）
+/-- `0 ≤ cast n`（射の非負）。 -/
+theorem cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := cast_isHom.nonneg n
+/-- `cast n ≤ cast (n+1)`（順序写像に `n ≤ n+1`）。 -/
+theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
+  cast_le n (n + 1) (Nat.le_succ n)
+/-- cast は狭義単調: `a < b → cast a < cast b`（射の狭義単調）。 -/
+theorem cast_lt (a b : Nat) (h : a < b) : (a : Real) < (b : Real) := cast_isHom.strictMono h
+/-- cast は単射（射の単射）。 -/
+theorem cast_inj (a b : Nat) (h : (a : Real) = (b : Real)) : a = b := cast_isHom.injective h
+/-- `0 < cast (n+1)`（`cast_lt 0 (n+1)`）。 -/
+theorem cast_pos_succ (n : Nat) : (0 : Real) < ((n + 1 : Nat) : Real) := by
+  have h := cast_lt 0 (n + 1) (Nat.succ_pos n)
+  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
+/-- `m ≠ 0 → 0 < cast m`（`cast_lt 0 m`）。 -/
+theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
+  have h := cast_lt 0 m (Nat.pos_of_ne_zero hm)
+  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
 
 /-- 準同型は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`。cast が和を保つこと
 （`map_add`）の帰結——Σ を Nat で計算してから cast しても、各項を cast してから Σ しても
