@@ -119,7 +119,7 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C05_RiemannSum | Ch5 | Partition・length・RiemannSum・**IsRepr**＋**leftRepr/rightRepr**（代表点の妥当性・左右端の一般代表点・2026-06-15）・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 60 |
 | C06_Tactics | Ch6 | タクティク演習集（代数補題の基礎部） | Lemmas 基礎部 | 60 |
 | C07_Induction | Ch7 | Σ補題コーパス・Trans・calc 演習・**Partition 幾何**（points_mono 等・induction 実地）・**`sum_id_nat`**（Σ_{i<n} i の Nat 恒等式・2026-06-15 移動） | FTCCore§Σ＋InsertBound§1＋Refine§3 を再配列 | 130 |
-| C08_Numbers | Ch8 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation・2026-06-15）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO） | Numerals＋Cast 前半＋EqualPartition | 150 |
+| C08_Numbers | Ch8 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・2026-06-15）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO） | Numerals＋Cast 前半＋EqualPartition | 150 |
 | C09_Properties | Ch9 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C07・equalPartitionRepr_isrepr=C08 へ移動済） | FTCCore§分割＋Criterion§両側評価 | 90 |
 | C10_Automation | Ch10 | simp セット・macro 合成・my_ring 入口 | 新規（P4 開発） | 80 |
 | C11_Archimedes | Ch11 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |

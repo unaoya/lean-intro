@@ -214,29 +214,10 @@ theorem cast_isHom : IsNatHom (fun n => (n : Real)) :=
    fun a b => cast_le a b⟩
 -- ANCHOR_END: cast_hom
 
-/-- 準同型は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`。cast が和を保つことの帰結
-（Σ を Nat で計算してから cast しても、各項を cast してから Σ しても同じ）。 -/
-theorem cast_summation : ∀ (n : Nat) (f : Range n → Nat),
-    ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) := by
-  intro n
-  induction n with
-  | zero => intro f; rfl
-  | succ m ih =>
-    intro f
-    show ((Summation m (fun k => f (Range.incl k)) + f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
-        = Summation m (fun k => ((f (Range.incl k) : Nat) : Real))
-          + ((f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
-    rw [← cast_add, ih (fun k => f (Range.incl k))]
-
 theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
   cases m with
   | zero => exact absurd rfl hm
   | succ k => exact cast_pos_succ k
-
-theorem cast_addone_val {n : Nat} (k : Range n) :
-    (((addone k).val : Nat) : Real) = ((k.val : Nat) : Real) + 1 := by
-  show Real.ofNat (k.val + 1) = Real.ofNat k.val + 1
-  exact succ_ofNat k.val
 
 -- ============================================================
 -- §4 n 等分: points i = a + i * (b−a) / m
@@ -285,8 +266,9 @@ theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a
   (equalPartition m a b hm hab).leftRepr_isRepr
 
 -- 注: Σ_{i<n} i の閉じた式は **Nat の恒等式** `sum_id_nat`（C07）。Real での y=x の
--- RS 計算（RS=(n−1)/(2n)）はそれを cast（射 `cast_isHom`・`cast_summation`）で運んで
--- 行う——TODO(P4): 等分割 [0,1] 上の RiemannSum (fun x => x) の計算。
+-- RS 計算（RS=(n−1)/(2n)）はそれを cast（射 `cast_isHom`）で運んで行う——
+-- TODO(P4): 等分割 [0,1] 上の RiemannSum (fun x => x) の計算（その段で「cast は Σ と
+-- 可換」を必要に応じて追加する）。
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
 #print axioms cast_mul

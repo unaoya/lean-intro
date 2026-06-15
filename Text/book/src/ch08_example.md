@@ -31,7 +31,7 @@
 ## 8.5 cast は「射」——構造を保つ写像（ANCHOR `cast_hom`・2026-06-15）
 
 - succ_ofNat・cast_nonneg・cast_add・cast_lt・cast_le_succ・**cast_mul**・**cast_le**（構成的部のみ）
-- **cast は 0・1・+・×・≤ を保つ＝順序付き半環の準同型**。述語 `IsNatHom` で「Nat → Real は構造の射」と明示し `cast_isHom` で証明。`cast_summation`＝**Σ と可換**（Nat で和を取って cast しても、各項を cast して和を取っても同じ）。Ch7 の `IsLinearMap`（線形写像）と並ぶ「射」の述語
+- **cast は 0・1・+・×・≤ を保つ＝順序付き半環の準同型**。述語 `IsNatHom` で「Nat → Real は構造の射」と明示し `cast_isHom` で証明（Ch7 の `IsLinearMap`（線形写像）と並ぶ「射」の述語）。「Σ と可換」は y=x の RS 計算が要る段で必要に応じて追加（需要駆動）
 - **分割線の明示**: sup を使う archimedean 系は Ch11 へ送る——「この章は古典公理ゼロで済む」
 
 ## 8.6 一般の等分割と代表点（左端・右端）
