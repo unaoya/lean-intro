@@ -7,13 +7,18 @@
 -- 代数構造のクラス階層（実数が満たすべきインターフェース）
 -- ============================================================
 
+-- 加法は「可換モノイド（逆元なし）→ 可換群（逆元あり）」の 2 段で積む。
+-- 補題が成り立つ最小構造を Ch9 で示すための土台（モノイドで足りる加法補題と
+-- 群が要る符号補題を分ける）。
 -- ANCHOR: hierarchy
-class AddCommGroup (α : Type) extends Add α, Neg α where
+class AddCommMonoid (α : Type) extends Add α where
   zero : α
   add_assoc : ∀ a b c : α, (a + b) + c = a + (b + c)
   add_comm : ∀ a b : α, a + b = b + a
   add_zero : ∀ a, a + zero = a
   zero_add : ∀ a, zero + a = a
+
+class AddCommGroup (α : Type) extends AddCommMonoid α, Neg α where
   add_neg : ∀ a, a + -a = zero
   neg_add : ∀ a, -a + a = zero
 
@@ -33,15 +38,35 @@ class Field (α : Type) extends CommRing α where
   mul_inv : ∀ a : α, a ≠ zero → a * inv a = one
   inv_mul : ∀ a : α, a ≠ zero → inv a * a = one
   nontrivial : zero ≠ one
+-- ANCHOR_END: hierarchy
 
-class LinearOrderedField (α : Type) extends Field α, LE α where
+-- 注: zero/add_assoc/add_comm/zero_add/add_zero は AddCommMonoid へ移ったが、
+-- extends が親フィールドのアクセサ `AddCommMonoid.zero` 等を自動生成するので、
+-- Ch6/7/8 の既存参照（`AddCommMonoid.zero_add` 等）はそのまま温存される。
+
+-- 順序の階層（補題が成り立つ最小構造を Ch9 で活用するための中間クラス）。
+-- 順序モノイド（加法と順序）→ 順序群（符号も）→ 順序体（乗法も）→ 全順序体（線形性）。
+-- ANCHOR: order_hierarchy
+class OrderedAddCommMonoid (α : Type) extends AddCommMonoid α, LE α where
   le_refl : ∀ a : α, a ≤ a
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
-  le_total : ∀ a b : α, a ≤ b ∨ b ≤ a
-  add_le_add : ∀ a b c : α, a ≤ b → a + c ≤ b + c
+  add_le_add_right : ∀ a b c : α, a ≤ b → a + c ≤ b + c
+
+class OrderedAddCommGroup (α : Type) extends AddCommGroup α, OrderedAddCommMonoid α
+
+class OrderedField (α : Type) extends OrderedAddCommGroup α, Field α where
   mul_nonneg : ∀ a b : α, zero ≤ a → zero ≤ b → zero ≤ a * b
--- ANCHOR_END: hierarchy
+
+class LinearOrderedField (α : Type) extends OrderedField α where
+  le_total : ∀ a b : α, a ≤ b ∨ b ≤ a
+-- ANCHOR_END: order_hierarchy
+
+-- le_refl/le_antisymm/le_trans/le_total/mul_nonneg は中間クラスへ移ったが、extends の
+-- 自動アクセサで `OrderedAddCommMonoid.le_trans` 等はそのまま引ける。唯一 add_le_add は
+-- フィールド名が add_le_add_right に変わったので、従来名のエイリアスを 1 本だけ置く。
+theorem LinearOrderedField.add_le_add {α : Type} [LinearOrderedField α] (a b c : α)
+    (h : a ≤ b) : a + c ≤ b + c := OrderedAddCommMonoid.add_le_add_right a b c h
 
 -- ============================================================
 -- 実数の公理（5 本）
@@ -82,7 +107,7 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 -- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形は C03 のトイデモ参照）。
 -- リテラル 1 以上と NatCast は Ch11 まで導入しない
 -- ANCHOR: zero_bridge
-noncomputable instance : Zero Real := ⟨AddCommGroup.zero⟩
+noncomputable instance : Zero Real := ⟨AddCommMonoid.zero⟩
 -- ANCHOR_END: zero_bridge
 
 -- length の引き算（階層にあるのは Neg。中置 a - b はここで定義）
@@ -104,7 +129,7 @@ theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 -- ANCHOR_END: three_brothers
 
 -- 名前空間（namespace）との最初の接触＝「アクセス」: `Real.sup`・`Real.instLOF`・
---   `AddCommGroup.add_neg`・`LinearOrderedField.le_trans` のドット付きの名前は、
+--   `AddCommGroup.add_neg`・`OrderedAddCommMonoid.le_trans` のドット付きの名前は、
 --   `名前空間.名前` という階層化された名前への参照。`le_trans` は `LinearOrderedField`
 --   の中に整理されている——フルパスで名指せばどこからでも引ける。
 --   （この段階はまだ「既にある名前空間を読む」だけ。自分で名前空間を**作る**のは
@@ -113,7 +138,7 @@ theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 -- この `a ≤ c` の `≤` が動くのも、class が `LE Real` を解決しているから（Ch2 の回収）。
 -- 本格的な順序コーパスは Ch9。ここは「公理を引くだけで証明になる」一度きりの実演。
 example (a b c : Real) (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c :=
-  LinearOrderedField.le_trans a b c hab hbc
+  OrderedAddCommMonoid.le_trans a b c hab hbc
 
 -- 定義の意図を term で読む: `<` を `a ≤ b ∧ a ≠ b` と置いたので、`a < a` は不可能。
 -- `h.2` は `a ≠ a`（＝ `a = a → False`）、それに `rfl : a = a` を渡すだけ。

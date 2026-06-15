@@ -39,13 +39,13 @@ example (A B : Prop) (f : A → B) (a : A) : B := by
 
 theorem add_neg' (a : Real) : a + -a = (0 : Real) := AddCommGroup.add_neg a
 theorem neg_add' (a : Real) : -a + a = (0 : Real) := AddCommGroup.neg_add a
-theorem zero_add' (a : Real) : (0 : Real) + a = a := AddCommGroup.zero_add a
-theorem add_zero' (a : Real) : a + (0 : Real) = a := AddCommGroup.add_zero a
+theorem zero_add' (a : Real) : (0 : Real) + a = a := AddCommMonoid.zero_add a
+theorem add_zero' (a : Real) : a + (0 : Real) = a := AddCommMonoid.add_zero a
 theorem one_mul_b (a : Real) : (1 : Real) * a = a := MulCommMonoid.one_mul a
 theorem mul_one_b (a : Real) : a * (1 : Real) = a := MulCommMonoid.mul_one a
 
-theorem add_comm (a b : Real) : a + b = b + a := AddCommGroup.add_comm a b
-theorem add_assoc (a b c : Real) : a + b + c = a + (b + c) := AddCommGroup.add_assoc a b c
+theorem add_comm (a b : Real) : a + b = b + a := AddCommMonoid.add_comm a b
+theorem add_assoc (a b c : Real) : a + b + c = a + (b + c) := AddCommMonoid.add_assoc a b c
 theorem mul_comm (a b : Real) : a * b = b * a := MulCommMonoid.mul_comm a b
 theorem mul_assoc (a b c : Real) : a * b * c = a * (b * c) := MulCommMonoid.mul_assoc a b c
 
@@ -59,8 +59,8 @@ theorem one_mul (a : Real) : 1 * a = a := one_mul_b a
 theorem add_left_cancel' (a b c : Real) (h : a + b = a + c) : b = c := by
   calc b = 0 + b := (zero_add' _).symm
     _ = (-a + a) + b := by rw [neg_add']
-    _ = -a + (a + b) := AddCommGroup.add_assoc _ _ _
+    _ = -a + (a + b) := AddCommMonoid.add_assoc _ _ _
     _ = -a + (a + c) := by rw [h]
-    _ = (-a + a) + c := (AddCommGroup.add_assoc _ _ _).symm
+    _ = (-a + a) + c := (AddCommMonoid.add_assoc _ _ _).symm
     _ = 0 + c := by rw [neg_add']
     _ = c := zero_add' _

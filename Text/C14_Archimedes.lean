@@ -48,9 +48,9 @@ theorem sup_near (S : Real → Prop) (hne : ∃ x, S x) (hbdd : ∃ B, ∀ x, S 
     rw [show Real.sup S hne hbdd - γ + -(Real.sup S hne hbdd) = -γ from by
           show Real.sup S hne hbdd + -γ + -(Real.sup S hne hbdd) = -γ
           rw [add_comm (Real.sup S hne hbdd) (-γ),
-              add_assoc, AddCommGroup.add_neg, AddCommGroup.add_zero]] at h1
+              add_assoc, AddCommGroup.add_neg, AddCommMonoid.add_zero]] at h1
     have h2 : γ ≤ 0 :=
-      calc γ = 0 + γ := (AddCommGroup.zero_add γ).symm
+      calc γ = 0 + γ := (AddCommMonoid.zero_add γ).symm
         _ ≤ -γ + γ := add_le_add_right 0 (-γ) γ h1
         _ = 0 := AddCommGroup.neg_add γ
     exact hγ.2 (le_antisymm 0 γ hγ.1 h2)

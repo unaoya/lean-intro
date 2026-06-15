@@ -64,7 +64,7 @@ def leftRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
 /-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/
 theorem leftRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
     Δ.IsRepr Δ.leftRepr :=
-  fun i => ⟨LinearOrderedField.le_refl _, Δ.increase i⟩
+  fun i => ⟨OrderedAddCommMonoid.le_refl _, Δ.increase i⟩
 
 /-- 右端代表点: 各小区間の右端 `points (addone i)` をタグにする。 -/
 def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
@@ -73,7 +73,7 @@ def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :
 /-- 右端タグは代表点系。 -/
 theorem rightRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
     Δ.IsRepr Δ.rightRepr :=
-  fun i => ⟨Δ.increase i, LinearOrderedField.le_refl _⟩
+  fun i => ⟨Δ.increase i, OrderedAddCommMonoid.le_refl _⟩
 -- ANCHOR_END: endpoint_repr
 
 end Partition

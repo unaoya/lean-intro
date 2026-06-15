@@ -94,5 +94,5 @@ theorem summation_congr (n : Nat) (f g : Range n → Real) (h : ∀ i, f i = g i
 --     succ の段に現れる `summation_all_zero n` が**帰納法の仮定 (IH) そのもの**。
 theorem summation_all_zero : (n : Nat) → Summation n (fun _ : Range n => (0 : Real)) = 0
   | 0 => rfl
-  | n + 1 => (congrArg (· + (0 : Real)) (summation_all_zero n)).trans (AddCommGroup.zero_add 0)
+  | n + 1 => (congrArg (· + (0 : Real)) (summation_all_zero n)).trans (AddCommMonoid.zero_add 0)
 -- ANCHOR_END: summation_first_proofs

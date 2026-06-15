@@ -26,10 +26,10 @@ theorem neg_add_distrib (a b : Real) : -(a + b) = -a + -b := by
   have lhs : (a + b) + -(a + b) = (0 : Real) := add_neg' _
   have rhs : (a + b) + (-a + -b) = (0 : Real) := by
     calc (a + b) + (-a + -b)
-      = a + (b + (-a + -b)) := AddCommGroup.add_assoc _ _ _
-      _ = a + ((b + -a) + -b) := by rw [AddCommGroup.add_assoc b (-a) (-b)]
-      _ = a + ((-a + b) + -b) := by rw [AddCommGroup.add_comm b (-a)]
-      _ = a + (-a + (b + -b)) := by rw [AddCommGroup.add_assoc (-a) b (-b)]
+      = a + (b + (-a + -b)) := AddCommMonoid.add_assoc _ _ _
+      _ = a + ((b + -a) + -b) := by rw [AddCommMonoid.add_assoc b (-a) (-b)]
+      _ = a + ((-a + b) + -b) := by rw [AddCommMonoid.add_comm b (-a)]
+      _ = a + (-a + (b + -b)) := by rw [AddCommMonoid.add_assoc (-a) b (-b)]
       _ = a + (-a + 0) := by rw [add_neg']
       _ = a + -a := by rw [add_zero']
       _ = 0 := add_neg' _
@@ -67,15 +67,15 @@ theorem neg_sub (a b : Real) : -(a - b) = b - a := by
   rw [neg_add_distrib, neg_neg, add_comm]
 
 theorem add_sub_cancel (a b : Real) : a + b - a = b := by
-  calc a + b + -a = a + (b + -a) := AddCommGroup.add_assoc _ _ _
-    _ = a + (-a + b) := by rw [AddCommGroup.add_comm b (-a)]
-    _ = (a + -a) + b := (AddCommGroup.add_assoc _ _ _).symm
+  calc a + b + -a = a + (b + -a) := AddCommMonoid.add_assoc _ _ _
+    _ = a + (-a + b) := by rw [AddCommMonoid.add_comm b (-a)]
+    _ = (a + -a) + b := (AddCommMonoid.add_assoc _ _ _).symm
     _ = 0 + b := by rw [add_neg']
     _ = b := zero_add' _
 
 theorem add_sub_cancel' (a b : Real) : a + (b - a) = b := by
-  calc a + (b + -a) = a + (-a + b) := by rw [AddCommGroup.add_comm b (-a)]
-    _ = (a + -a) + b := (AddCommGroup.add_assoc _ _ _).symm
+  calc a + (b + -a) = a + (-a + b) := by rw [AddCommMonoid.add_comm b (-a)]
+    _ = (a + -a) + b := (AddCommMonoid.add_assoc _ _ _).symm
     _ = 0 + b := by rw [add_neg']
     _ = b := zero_add' _
 
@@ -85,27 +85,27 @@ theorem add_sub_cancel_right (a b : Real) : a + b - b = a := by
 
 theorem sub_add_cancel (a b : Real) : a - b + b = a := by
   show a + -b + b = a
-  rw [AddCommGroup.add_assoc, neg_add', add_zero']
+  rw [AddCommMonoid.add_assoc, neg_add', add_zero']
 
 theorem add_sub_add' (a b c : Real) : a + b - (a + c) = (b - c) := by
   show a + b + -(a + c) = b + -c
   rw [show -(a + c) = -a + -c from neg_add_distrib a c]
-  calc a + b + (-a + -c) = a + (b + (-a + -c)) := AddCommGroup.add_assoc _ _ _
-    _ = a + (b + -a + -c) := by rw [AddCommGroup.add_assoc b (-a) (-c)]
-    _ = a + (-a + b + -c) := by rw [AddCommGroup.add_comm b (-a)]
-    _ = a + (-a + (b + -c)) := by rw [AddCommGroup.add_assoc (-a) b (-c)]
-    _ = (a + -a) + (b + -c) := (AddCommGroup.add_assoc _ _ _).symm
+  calc a + b + (-a + -c) = a + (b + (-a + -c)) := AddCommMonoid.add_assoc _ _ _
+    _ = a + (b + -a + -c) := by rw [AddCommMonoid.add_assoc b (-a) (-c)]
+    _ = a + (-a + b + -c) := by rw [AddCommMonoid.add_comm b (-a)]
+    _ = a + (-a + (b + -c)) := by rw [AddCommMonoid.add_assoc (-a) b (-c)]
+    _ = (a + -a) + (b + -c) := (AddCommMonoid.add_assoc _ _ _).symm
     _ = 0 + (b + -c) := by rw [add_neg']
     _ = b + -c := zero_add' _
 
 theorem add_sub_add (a b c d : Real) : a + b - (c + d) = (a - c) + (b - d) := by
   show a + b + -(c + d) = (a + -c) + (b + -d)
   rw [show -(c + d) = -c + -d from neg_add_distrib c d]
-  calc a + b + (-c + -d) = a + (b + (-c + -d)) := AddCommGroup.add_assoc _ _ _
-    _ = a + (b + -c + -d) := by rw [AddCommGroup.add_assoc b (-c) (-d)]
-    _ = a + (-c + b + -d) := by rw [AddCommGroup.add_comm b (-c)]
-    _ = a + (-c + (b + -d)) := by rw [AddCommGroup.add_assoc (-c) b (-d)]
-    _ = (a + -c) + (b + -d) := (AddCommGroup.add_assoc _ _ _).symm
+  calc a + b + (-c + -d) = a + (b + (-c + -d)) := AddCommMonoid.add_assoc _ _ _
+    _ = a + (b + -c + -d) := by rw [AddCommMonoid.add_assoc b (-c) (-d)]
+    _ = a + (-c + b + -d) := by rw [AddCommMonoid.add_comm b (-c)]
+    _ = a + (-c + (b + -d)) := by rw [AddCommMonoid.add_assoc (-c) b (-d)]
+    _ = (a + -c) + (b + -d) := (AddCommMonoid.add_assoc _ _ _).symm
 
 theorem sub_sub' (a b c : Real) : a - (b + c) = a - b - c := by
   show a + -(b + c) = a + -b + -c
@@ -127,16 +127,16 @@ theorem add_four_comm (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) :
 theorem telescope_2 (a b c : Real) : b - a = (c - a) + (b - c) := by
   show b + -a = (c + -a) + (b + -c)
   symm
-  calc (c + -a) + (b + -c) = c + (-a + (b + -c)) := AddCommGroup.add_assoc _ _ _
-    _ = c + (-a + b + -c) := by rw [AddCommGroup.add_assoc (-a) b (-c)]
-    _ = c + (b + -a + -c) := by rw [AddCommGroup.add_comm (-a) b]
-    _ = c + (b + (-a + -c)) := by rw [AddCommGroup.add_assoc b (-a) (-c)]
-    _ = (c + b) + (-a + -c) := (AddCommGroup.add_assoc _ _ _).symm
+  calc (c + -a) + (b + -c) = c + (-a + (b + -c)) := AddCommMonoid.add_assoc _ _ _
+    _ = c + (-a + b + -c) := by rw [AddCommMonoid.add_assoc (-a) b (-c)]
+    _ = c + (b + -a + -c) := by rw [AddCommMonoid.add_comm (-a) b]
+    _ = c + (b + (-a + -c)) := by rw [AddCommMonoid.add_assoc b (-a) (-c)]
+    _ = (c + b) + (-a + -c) := (AddCommMonoid.add_assoc _ _ _).symm
     _ = (c + b) + -(a + c) := by rw [neg_add_distrib]
-    _ = (b + c) + -(c + a) := by rw [AddCommGroup.add_comm c b, AddCommGroup.add_comm a c]
+    _ = (b + c) + -(c + a) := by rw [AddCommMonoid.add_comm c b, AddCommMonoid.add_comm a c]
     _ = (b + c) + (-c + -a) := by rw [neg_add_distrib]
-    _ = b + (c + (-c + -a)) := AddCommGroup.add_assoc _ _ _
-    _ = b + ((c + -c) + -a) := by rw [(AddCommGroup.add_assoc c (-c) (-a)).symm]
+    _ = b + (c + (-c + -a)) := AddCommMonoid.add_assoc _ _ _
+    _ = b + ((c + -c) + -a) := by rw [(AddCommMonoid.add_assoc c (-c) (-a)).symm]
     _ = b + (0 + -a) := by rw [add_neg']
     _ = b + -a := by rw [zero_add']
 
