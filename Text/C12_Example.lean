@@ -105,13 +105,12 @@ theorem riemann_sum_id (n : Nat) (hn : n ≠ 0) :
           * ((i.val : Nat) : Real)) hterm,
         summation_mul_left n (fun i => ((i.val : Nat) : Real))
           (Field.inv (n : Real) * Field.inv (n : Real))]
-  -- n² · (1/n)² = 1
+  -- n² · (1/n)² = 1: my_ring で (n·inv n)·(n·inv n) に並べ替え、mul_inv で相殺し my_ring で締める
   have hnn : (n : Real) * n * (Field.inv (n : Real) * Field.inv (n : Real)) = 1 := by
-    have h1 : (n : Real) * Field.inv (n : Real) = 1 := Field.mul_inv (n : Real) hnR
-    calc (n : Real) * n * (Field.inv (n : Real) * Field.inv (n : Real))
-        = ((n : Real) * Field.inv (n : Real)) * ((n : Real) * Field.inv (n : Real)) := by my_ring
-      _ = 1 * 1 := by rw [h1]
-      _ = 1 := mul_one_b 1
+    rw [show (n : Real) * n * (Field.inv (n : Real) * Field.inv (n : Real))
+          = ((n : Real) * Field.inv (n : Real)) * ((n : Real) * Field.inv (n : Real)) from by my_ring,
+        Field.mul_inv (n : Real) hnR]
+    my_ring
   rw [hRS,
       show (1 + 1) * ((n : Real) * n)
             * (Field.inv (n : Real) * Field.inv (n : Real) * Summation n (fun i => ((i.val : Nat) : Real)))
