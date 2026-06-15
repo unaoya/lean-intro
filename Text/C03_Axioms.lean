@@ -1,23 +1,7 @@
--- Text/C02_Axioms.lean — Ch2–3 実数の公理（フル契約）
--- 代数階層クラス＋公理 5 本＋最小インスタンス 3 つ＋最初の実数証明（< の 3 兄弟）
--- sup 最小性実験（Ch2 演習）: sup 公理 3 本をコメントアウトしても C05 まではビルドが通る
-
--- ============================================================
--- 数学的構造はデータ: 「α 上の構造」は型であり、住人が「構造ひとつ」
---   （階層クラスを読む前の見方。Ch1 の ⟨⟩ ペアの大きい版・instance は使わない）
--- ============================================================
-
--- ANCHOR: structure_as_data
-#check (Add Nat)                              -- Add Nat : Type（「α 上の加法構造」は型）
-
--- Add α の住人とは「α 上の二項演算ひとつ」にすぎない（⟨⟩ で作れる）
-example : Add Nat := ⟨Nat.add⟩               -- 普通の加法
-example : Add Nat := ⟨fun a b => a * b⟩      -- 乗法も Nat 上の二項演算 → Add Nat の住人
-
--- 同じ集合 Nat に「構造」はいくつも載る。Add は法則を持たない——だから乗法すら
--- 住人になれてしまう。法則（結合律・単位律…）は AddCommGroup 以降が束ねる。
--- これが「階層がある」理由であり、次に読む公理の束の正体。
--- ANCHOR_END: structure_as_data
+-- Text/C03_Axioms.lean — Ch3 実数を公理で読む
+-- Ch2 で得た「構造＝データ・class＝自動で見つかる構造」の見方で、実数の公理を読む。
+-- 代数階層クラス＋公理 5 本＋最小インスタンス＋根幹 2 行の観察＋最初の実数証明（< の 3 兄弟）
+-- sup 最小性実験（演習）: sup 公理 3 本をコメントアウトしても C05 まではビルドが通る
 
 -- ============================================================
 -- 代数構造のクラス階層（実数が満たすべきインターフェース）
@@ -111,3 +95,24 @@ theorem lt_of_le_of_ne {a b : Real} (h : a ≤ b) (hne : a ≠ b) : a < b := ⟨
 
 theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 -- ANCHOR_END: three_brothers
+
+-- ============================================================
+-- 根幹の 2 行と、自動で見つかる構造（class = 自動解決される structure）
+--   axiom Real.instLOF（構造一式を公理で名指し）＋ instance（正準登録）の観察。
+--   これが Ch2 の「class＝自動で見つかる構造」の実物——だから a + b が動く。
+-- ============================================================
+
+#check Real.instLOF
+#check (inferInstance : LinearOrderedField Real)
+
+-- `a + b` が型検査を通る——書いた覚えのない「+」をインスタンス解決が運んでくる
+#check fun (a b : Real) => a + b
+#check fun (a b : Real) => a ≤ b
+
+-- 今 Real に登録された数のインスタンスは 0 だけ（リテラル 1 は Ch6・2 以上は Ch8）。
+-- #check_failure は「失敗すること」自体を検査する——伏線がビルドで保証される
+-- ANCHOR: check_failure
+#check (0 : Real)         -- 通る（Σ の基底として上で導入済み）
+#check_failure (1 : Real) -- failed to synthesize OfNat Real 1（1 は Ch6 で）
+#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch8 で）
+-- ANCHOR_END: check_failure

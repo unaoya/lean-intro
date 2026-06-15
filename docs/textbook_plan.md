@@ -77,8 +77,8 @@
 | **第 I 部 リーマン和（構成的な世界）** | | 監査: [Real, instLOF] のみ |
 | Ch0 | 環境構築 | lake・#check/#print/#print axioms |
 | Ch1 | 証明はデータ（論理） | 命題=型・証明=項・fun・⟨⟩・射影 |
-| Ch2 | 実数を 5 本の公理で読む | 署名読解・依存型（sup）・Prop/Type・universe |
-| Ch3 | + と 0 はどこから来るか | class・instance（双子章前編）・インスタンス解決 |
+| Ch2 | 数学的構造と class の仕組み（2026-06-15 スワップ） | structure キーワード・構造＝データ・一般化（1回証明→複数適用）・class 最小 |
+| Ch3 | 実数を公理で読む（2026-06-15 スワップ） | 署名読解・依存型（sup）・Prop/Type・universe |
 | Ch4 | 有限和 Σ | 帰納型・Subtype（Range）・構造的再帰・rfl=defeq |
 | Ch5 | 分割とリーマン和（**到達点①**） | structure（双子章後編）・notation 自作・sorry クリフハンガー |
 | Ch6 | sorry を埋める道具 I | tactic mode（intro/exact/apply/rw/have/show）・種明かし |
@@ -112,8 +112,9 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | Text ファイル | 章 | 内容 | Proto 整形元 | 行数目安 |
 |---|---|---|---|---|
 | C01_FirstProofs | Ch1 | 論理ウォームアップ | 新規 | 40 |
-| C02_Axioms | Ch2–3 | 階層クラス・公理 5 本・instance・最小インスタンス・`<` の 3 兄弟 | Axioms (74) | 60 |
-| C03_Class | Ch3 | **実演・実験専用**（根幹 2 行の観察・`#check_failure (1/2 : Real)`・ダイヤモンド事件トイデモ。定義は足さない・import 連鎖の葉） | 新規（2026-06-12 決定で C03 復活） | 45 |
+| C02_Structures | Ch2 | **machinery**（structure_as_data・general_proof＝CommMonoidStr＋交換則・and_is_structure）。core のみ・主線非依存の葉 | 新規（2026-06-15 スワップ） | 60 |
+| C03_Axioms | Ch3 | 階層クラス・公理 5 本・zero_bridge・最小インスタンス・根幹 2 行・check_failure・`<` の 3 兄弟 | 旧 C02_Axioms を改名（2026-06-15） | 75 |
+| （diamond） | Ch8 | ダイヤモンド事件は C08_Numbers へ移設（NatCast 排他分割の動機・旧 C03_Class は解体） | — | — |
 | C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
 | C05_RiemannSum | Ch5 | Partition・length・RiemannSum・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 35 |
 | C06_Tactics | Ch6 | タクティク演習集（代数補題の基礎部） | Lemmas 基礎部 | 60 |
@@ -389,9 +390,12 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 3. **反転演習で確定させる**: 「`Partition` を class にしてみよ」→ 分割を任意に走る ∀ が書けず **`IsIntegral` が定義不能になる**。逆に「`LinearOrderedField` を structure にしてみよ」→ `a + b` のたびに「どの + か」を指定する羽目になる。どちらも壊れたコードを読む演習に。
 
-章割り上は Ch3（class 側）と Ch5（structure 側）の**双子章**とし、同じ比較表を 2 章かけて完成させる。Ch5 で「Ch1 から使っていた `And` も structure だった」（`#print And`）の種明かしを行い、Ch4 の帰納型と合わせて伏線を回収する。
+**Ch2/Ch3 スワップ（2026-06-15 決定・上記より優先）**: 「一般構造で 1 回証明→複数インスタンスに適用」の例を入れる検討から、**Ch2＝数学的構造と class の仕組み（machinery）／Ch3＝実数を公理で読む（application）** に順序を入れ替えた。理由: 現状は class を説明する前に class ベースの公理を読む倒錯があり、structure を先に立てた方が依存順が正しい（例 `general_proof` が素の `structure`＋explicit args だけで完結し warning ゼロ・`interchange natAdd …` が `+`/`*` に defeq 一致するのが、この先行を裏づける）。**制約**: ℝ の公理は `class` のまま（`a+b`/`a≤b` の記法解決のため）——「structure で済ませる」が効くのは教材の例の方。**class は最小限早期・深い話は後で**: Ch2 では `class`＝「自動で見つかる構造（だから ℝ で `a+b` が動く）」だけ。インスタンス解決の深い機構・ダイヤモンド事件は Ch8（NatCast の排他分割＝AtLeastTwo の動機として後置）。
 
-**Ch2 冒頭の「構造＝データ」導入ビート（2026-06-15 決定・執筆中に判明した接着剤）**: 階層クラスを「公理の束」として*読む*には、その前に「型の上に数学的構造をデータとして載せる」見方が要る。3 分割で配置する——**概念**（carrier 上の構造＝データ・複数載るのは普通・`Add α` は構造の型）=Ch2／**機構**（`class`・`instance` キーワード・解決・ダイヤモンド）=Ch3／**`structure` キーワード**と「And も構造」種明かし=Ch5。Ch2 の実演は `Add Nat` の住人を `example` で 2 つ作る（`⟨Nat.add⟩` と `⟨fun a b => a*b⟩`——Add は法則を持たないから乗法すら住人になれる→法則は AddCommGroup 以降が束ねる→階層がある、の動機づけ。`def … : クラス型` は reducible 警告が出るため `example` を使う。C02 の ANCHOR `structure_as_data`）。∃ vs データ（0 をデータにする理由＝choose と監査）は Ch2 では予告 1 行のみ、本格は sup 導入時／公理設計の論点で。詳細な章別配置は `docs/part1_writing_guide.md` §3 Ch2。
+機能の再配置: structure キーワード=**Ch2**（Ch5 から前出し）／class 最小=Ch2／依存型・universe（Real.sup）=**Ch3**／class 深い機構・diamond=Ch8。双子章の再構成: Ch2 が structure＋class を導入し、**Ch5 は structure を Partition に適用＋設計判断リトマス（class vs structure の表を Ch5 で完成）**。「And も structure」種明かしは Ch2（structure 導入時・`#print And`）に前出し可。コード: 新 C02_Structures.lean（`structure_as_data`・`general_proof`＝CommMonoidStr＋interchange＋natAdd/natMul・`and_is_structure`）／C02_Axioms→C03_Axioms.lean（階層・公理5本・zero_bridge・根幹2行・check_failure・three_brothers）／旧 C03_Class 解体。詳細な章別配置は `docs/part1_writing_guide.md` §3 Ch2・Ch3。
+
+——以下は上記スワップ前（2026-06-15 早い段階）の記録で、配置はスワップ後に従う:
+章割り上は Ch3（class 側）と Ch5（structure 側）の**双子章**とし、同じ比較表を 2 章かけて完成させる。Ch5 で「Ch1 から使っていた `And` も structure だった」（`#print And`）の種明かしを行い、Ch4 の帰納型と合わせて伏線を回収する。
 
 ### 第 I 部のストーリー（リーマン和への道）
 

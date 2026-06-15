@@ -5,7 +5,7 @@
 --   主線はこれに依存しない）
 -- Text/Proto/ は試作の記録（M1–M7、設計書参照）としてそのまま温存している。
 import Text.C01_FirstProofs
-import Text.C03_Class
+import Text.C02_Structures
 import Text.C10_Automation
 import Text.C15_FTC
 import Text.E5_Summit

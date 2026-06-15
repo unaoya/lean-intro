@@ -64,34 +64,30 @@
 - 演習候補: `and_assoc'`・`and_or_distrib`・`imp_trans`・`double_neg_intro`（C01 内に既存）
 - 引き: Ch2 へ「実数とは何か。公理を読みに行こう」
 
-### Ch2 — 実数を 5 本の公理で読む（`ch02_axioms.md`、C02）
-- 問い: 実数とは何か
-- 到達点: 「数学的構造はデータ」の見方を得て、C02 の階層・公理が**読める**・最初の実数証明
-- 新機能: 署名の読み方・**依存型【鍵1】**・∀/∃=Π/Σ・**Prop vs Type・universe【鍵2】**・暗黙引数（**読む**）・`axiom`・namespace/open
-- ANCHOR: `structure_as_data`・`hierarchy`・`axioms`・`zero_bridge`・`three_brothers`
-- **開くビート「数学的構造をどう書くか」（2026-06-15 追加・階層を読む前の接着剤）**: 5 段の梯子——
-  ① 型=集合(carrier)。Ch1 では型は命題、ここでは「住人を持つ集合」の顔
-  ② 構造=データ: 演算と「それが法則を満たす証明」を 1 つの項に束ねたもの。**Ch1 の `⟨h.2, h.1⟩` ペアの大きい版**
-  ③ `Add α`・`AddCommGroup α` は「α 上の構造の型」。`Add : Type → Type` は依存型【鍵1】の最初の顔
-  ④ 同じ carrier に構造は複数載る（ANCHOR `structure_as_data`: `Add Nat` の住人を `⟨⟩` で 2 つ＝普通の加法と乗法。**Add は法則を持たない→乗法すら住人になれる→法則は AddCommGroup 以降が束ねる→だから階層がある**）
-  ⑤ これを携えて C02 の `class … extends … where …` が「α 上の構造を束ねたレコードの宣言」として読める
-- ▲依存型・universe を正面で・▼CH 表の ∀∃ 行を裏付け・🪟公理と noncomputable・🪟証明無関係性と Prop
-- 演習候補: 署名読解ドリル・`<` の 3 兄弟の変種・**sup 最小性実験**（sup 3 行を消しても C05 までビルドが通る）
-- 引き: Ch3 へ「`a + b` の `+` はどこから来た？」
-- ⚠ **境界**: 概念（構造＝データ・複数載る）=Ch2／`class`・`instance` の**機構**（解決・ダイヤモンド）=Ch3（「この `class` の仕組みは Ch3 で」と送る）／`structure` キーワードと「And も構造」種明かし=Ch5。実演は `def` でなく `example`（`def … : クラス型` は reducible 警告が出る・`example` は警告ゼロで Ch3 既出）
-- ⚠ **∃ vs データ（Q3=予告のみ）**: 「0・演算はデータとして束ねる（∃ 主張ではなく）。理由（choose が要り監査に choice 混入）は後で」を**予告 1 行**に留める。本格議論は sup 導入時／Ch3 の公理設計の論点
-- ⚠ noncomputable の源泉①（公理に実行コードがない）をここで正直に説明。設計書「公理設計の論点」を素材に
-- ⚠ **肥大注意**: 構造の見方ビート追加で Ch2 は重い。肥大時は 2 分割（構造の見方／公理を読む）を予約（Ch8 と同方針）
+### Ch2 — 数学的構造と class の仕組み（`ch02_structures.md`、C02_Structures）※2026-06-15 スワップ
+- 問い: 実数とは何か（→ 実数は「構造」で与えられる。まず構造を掴む）
+- 到達点: 「構造＝データ・class＝自動で見つかる構造」の見方・一般構造で 1 回証明して複数インスタンスに適用する経験
+- 新機能: **structure キーワード**・署名の読み方・暗黙引数（**読む**）・**class（最小: 自動解決される構造）**
+- ANCHOR: `structure_as_data`・`general_proof`・`and_is_structure`
+- ビート: ① 型=集合(carrier)・構造=データ（Ch1 の `⟨h.2,h.1⟩` の大きい版・`structure` キーワード）② `structure_as_data`（`Add Nat` の住人 2 つ・Add は法則を持たない→階層がある動機）③ **`general_proof`**（`CommMonoidStr`＋交換則を assoc/comm だけで証明→`natAdd`/`natMul` に適用・`interchange natAdd …` が `+`/`*` に defeq 一致＝抽象化の威力）④ class 最小導入（`M.op` 煩雑→ℝ で `a+b` が欲しい→class=自動で見つかる構造）⑤ `and_is_structure`（`#print And`・Ch1 の `⟨⟩` の正体）
+- ▲structure＝データの視点・▲抽象化（1 回証明→多数適用）・▲class の最小概念
+- 演習候補: `Add Nat` の住人をもう 1 つ・`CommMonoidStr` の別インスタンス・`n` を implicit に（Ch4 への布石）
+- 引き: Ch3 へ「道具は揃った。実数の公理を読もう——それは『構造』として書かれている」
+- ⚠ **制約**: ℝ は `class` のまま（`a+b` 記法）。教材の例（`general_proof`）は素の `structure`＋explicit で完結（`def` 可・警告ゼロ・instance 不要）
+- ⚠ **境界**: 概念＝Ch2／class の**深い機構**（解決・`(2:Real)` 観察）＝Ch3 の軽い回・**diamond と排他分割＝Ch8**。`structure` キーワードは Ch2（Ch5 から前出し）・Ch5 は structure を Partition に適用＋設計判断
+- ⚠ **class は最小限**: 「自動で見つかる structure」だけ。解決の仕組み・diamond は後章
 
-### Ch3 — + と 0 はどこから来るか（`ch03_class.md`、C03＝実演専用）
-- 問い: `+` や `0` はどこから来たか
-- 到達点: インスタンス解決が「見える」・`(2:Real)` がエラーになる理由が言える
-- 新機能: class・instance・インスタンス解決（双子章・前編）
-- ANCHOR: `check_failure`・`diamond`
-- ▲菱形の**悪い例**（diamond トイデモ・§4d の起点）・▲`(2:Real)` エラー（Ch8 で回収）・▼CH 表の量化子（C02 を素材に再訪）
-- 演習候補: 「0 を ∃ で置いたら何が壊れるか」議論（コードは Ch11 の choose 学習後に再訪）
+### Ch3 — 実数を公理で読む（`ch03_axioms.md`、C03_Axioms）※2026-06-15 スワップ
+- 問い: 道具（構造と class）は揃った。実数の公理をどう読むか
+- 到達点: C03_Axioms の全行が**読める**・最初の実数証明
+- 新機能: **依存型【鍵1】**・∀/∃=Π/Σ・**Prop vs Type・universe【鍵2】**・`axiom`・namespace/open
+- ANCHOR: `hierarchy`・`axioms`・`zero_bridge`・`check_failure`・`three_brothers`
+- ▲依存型・universe を正面で（Real.sup の署名）・▼CH 表の ∀∃ 行を裏付け・🪟公理と noncomputable・🪟証明無関係性と Prop・🪟存在をデータに格上げ
+- ビート: 階層を読む（Ch2 の構造観で）・公理 5 本・**Real.sup の署名＝依存型**（∃ vs データの本格議論＝Ch2 予告の回収）・Prop/universe・根幹 2 行（class＝自動解決の実物）・check_failure（今 ℝ は 0 のみ→`(1/2:Real)` は失敗・Ch6/Ch8 伏線）・`<` の 3 兄弟
+- 演習候補: 署名読解ドリル・`<` の 3 兄弟の変種・**sup 最小性実験**（sup 3 行を消しても C05 までビルドが通る）
 - 引き: Ch4 へ「リーマン和には Σ が要る。有限和とは何か？」
-- ⚠ C03 は「0 だけの世界」（リテラル 1・2 がまだ無い）でこそ `#check_failure` が成立。import 連鎖の葉
+- ⚠ noncomputable の源泉①（公理に実行コードがない）をここで正直に説明・公理設計の論点（0=データ・sup=Skolem・束）
+- ⚠ check_failure は「0 だけの世界」（リテラル 1・2 がまだ無い）で成立。深い解決機構・diamond は Ch8 へ
 
 ### Ch4 — 有限和（`ch04_inductive.md`、C04）
 - 問い: 有限和とは何か
@@ -158,14 +154,14 @@
 
 各章ドラフトを以下で照合する。違反は「方針管理」上の指摘事項。
 
-- **(a) 機能初出の単調性**: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。既出機能を「新規」として説明していないか。簡単→難しいの順が崩れていないか（例: tactic mode は Ch6 まで出さない）。**この不変条件は Lean の*キーワード/機構*が基準**——「数学的構造をデータとみなす視点」（Ch2）のような*概念*は keyword ではないので、`structure`/`class`/`instance` の機構を Ch5/Ch3 に残したまま Ch2 で導入してよい
-- **(b) CH 対応 6 表**: Ch1 で提示 → Ch2 で ∀∃=Π/Σ を裏付け → Ch4 で `#print` により完結（∧∨∃=も帰納型）。表の各行が「いつ裏付くか」と整合しているか
+- **(a) 機能初出の単調性**（2026-06-15 スワップ反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode は Ch6 まで出さない）。スワップ後の初出: **structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・class の深い機構（解決・diamond）=Ch8。`structure` を素の教材例（`general_proof`）で先に使い、`class`/`instance` の自動解決と深い機構は段階的に
+- **(b) CH 対応 6 表**: Ch1 で提示 → **Ch3** で ∀∃=Π/Σ を裏付け（Real.sup の署名）→ Ch4 で `#print` により完結（∧∨∃=も帰納型）。表の各行が「いつ裏付くか」と整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr・induction=recursor（Ch4 の recursor を回収）・omega 予告。「使う→仕組みを覗く」の順序が保たれているか
-- **(d) 菱形の糸**: Ch3 悪い菱形（diamond）→ Ch4 Zero bridge・Ch6 One bridge（良い配線）→ Ch8 排他分割（AtLeastTwo）。良い／悪いの対比が崩れていないか
+- **(d) 菱形の糸**（2026-06-15 スワップで再配置）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch8 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
 - **(e) 監査の段階**: Ch0 で 3 道具導入 → 各章末で `#print axioms` → Ch9 で「第 I 部は古典公理ゼロ」を総決算。不変条件は **`Classical.choice` と `Real.sup` 系が前半の監査に出ないこと**（出たら設計違反）。`propext`・`Quot.sound` は標準の無害公理で、`rs_le_const` 等に現れてよい（説明は最小限に留め Ch15 へ送る）。「古典公理ゼロ」＝ choice ゼロの意味だと本文で明確化する
 - **(f) 脱 abs/min/diam 方針**: 前半に abs・max・min・diam を持ち込まない。Ch9 の第 5 性質は両側評価（生の不等式 2 本）。理由（abs は古典性を呼ぶ）は Ch11 へ予告のみ
 - **(g) コード引用の正確性**: ANCHOR が実在するか（§5 の未付与リストに注意）。defeq・監査の主張が**実ビルドと一致**するか（`cast_defeq` の `#check_failure`、章末 `#print axioms` の値など、机上で書かず実行値を貼る）
-- **(h) 3 つの鍵の言及**: 依存型(Ch2)・universe(Ch2)・帰納型(Ch4)が正面で扱われ、他章の解説でも意識的に言及されているか
+- **(h) 3 つの鍵の言及**（2026-06-15 スワップ反映）: 依存型(**Ch3**・Real.sup)・universe(**Ch3**)・帰納型(Ch4)が正面で扱われ、他章の解説でも意識的に言及されているか。structure キーワードは Ch2
 
 ---
 
@@ -173,7 +169,7 @@
 
 本文に集中するパスのため以下は未整備。**引用が必要になった段で**対応（多くは P4）。
 
-- **C02_Axioms**: `structure_as_data` 実演を追加済（2026-06-15・`example` で `Add Nat` の住人 2 つ・警告ゼロ）
+- **Ch2/Ch3 スワップ済（2026-06-15）**: 新 C02_Structures.lean（structure_as_data・general_proof・and_is_structure）＝Ch2 machinery／C02_Axioms→C03_Axioms.lean（階層・公理・根幹2行・check_failure・three_brothers）＝Ch3／旧 C03_Class は解体（diamond は C08_Numbers へ）。md は ch02_structures.md・ch03_axioms.md
 - **C06_Tactics**: ANCHOR 未付与（タクティク corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
 - **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（`is_repr` のみ済）
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る

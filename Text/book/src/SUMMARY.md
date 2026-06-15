@@ -6,8 +6,8 @@
 
 - [Ch0 環境構築](ch00_setup.md)
 - [Ch1 最初の証明 — 命題=型・証明=項](ch01_term.md)
-- [Ch2 実数を 5 本の公理で読む — 依存型・量化子・universe](ch02_axioms.md)
-- [Ch3 + と 0 はどこから来るか — class と instance](ch03_class.md)
+- [Ch2 数学的構造と class の仕組み — structure と一般化](ch02_structures.md)
+- [Ch3 実数を公理で読む — 依存型・量化子・universe](ch03_axioms.md)
 - [Ch4 有限和 — 帰納型と再帰](ch04_inductive.md)
 - [Ch5 分割とリーマン和の定義 — structure と notation](ch05_structure.md)
 - [Ch6 sorry を埋める道具 I — tactic mode](ch06_tactic.md)

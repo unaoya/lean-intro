@@ -43,6 +43,31 @@ theorem cast_one : ((1 : Nat) : Real) = 1 := zero_add' 1  -- 命題的にはも�
 -- ANCHOR_END: cast_defeq
 
 -- ============================================================
+-- ダイヤモンド事件: 「2 つ目の値を正準にすると事故」（class 深い機構の悪い例）
+--   リテラルの担当を 0/1/2 以上で排他分割する理由——同じ型に 2 つインスタンスを
+--   登録すると機構は黙って 1 つを選び、事故は静かに起きる。Ch2 の「class＝自動で
+--   見つかる構造」の影の側面。本物の NatCast ダイヤモンドの語りは原稿側。
+-- ============================================================
+
+-- ANCHOR: diamond
+namespace DiamondIncident
+
+class Price (α : Type) where
+  value : α → Nat
+
+structure Coin where
+  v : Nat
+
+instance viaFace : Price Coin := ⟨fun c => c.v⟩
+instance viaDouble : Price Coin := ⟨fun c => c.v + c.v⟩
+
+-- どちらが選ばれているか？ 機構は後者（viaDouble）を黙って選ぶ
+example : Price.value (⟨3⟩ : Coin) = 6 := rfl
+
+end DiamondIncident
+-- ANCHOR_END: diamond
+
+-- ============================================================
 -- §2 除法の補題（中点・半分・等分の計算部品）
 -- ============================================================
 
