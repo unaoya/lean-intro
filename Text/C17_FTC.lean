@@ -49,10 +49,10 @@ theorem left_of_straddle {f : Real → Real} {a b x : Real}
 
 -- ============================================================
 -- §2 核の部品: IsIntegral レベルの両側評価（脱 abs の単調性）
---    定数の積分 const_isintegral は Ch13（橋の応用）で証明済み
+--    定数の積分 const_isintegral は Ch15（橋の応用）で証明済み
 -- ============================================================
 
--- 両側評価の束ね直し（Ch9 の raw 版 → TaggedPartition 版）
+-- 両側評価の束ね直し（Ch12 の raw 版 → TaggedPartition 版）
 theorem sum_le_const {u v : Real} (P : TaggedPartition u v) {g : Real → Real} {c : Real}
     (hb : ∀ t, u ≤ t → t ≤ v → g t ≤ c) : P.sum g ≤ c * (v - u) :=
   rs_le_const P.Δ P.ξ P.repr hb
@@ -168,7 +168,7 @@ theorem ftc_of_integrable (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hx
 -- §5 監査総決算: 公理の勾配（どの数学がどの公理を要求したか一望する）
 -- ============================================================
 
-#print axioms cast_mul            -- [Real, instLOF] 古典論理ゼロ（Ch8・cast は射）
+#print axioms cast_mul            -- [Real, instLOF] 古典論理ゼロ（Ch11・cast は射）
 #print axioms archimedean         -- sup が初稼働（上限公理から有限性）
 #print axioms isintegral_id       -- choice あり・sup なし（直接証明は完備性不要）
 #print axioms integral_unique     -- 一意性 = ε/2 ＋ 非空性（アルキメデスの値段）

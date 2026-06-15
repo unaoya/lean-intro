@@ -114,19 +114,21 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C01_FirstProofs | Ch1 | 論理ウォームアップ | 新規 | 40 |
 | C02_Structures | Ch2 | **machinery**（structure_as_data・general_proof＝CommMonoidStr＋交換則・and_is_structure）。core のみ・主線非依存の葉 | 新規（2026-06-15 スワップ） | 60 |
 | C03_Axioms | Ch3 | 階層クラス・公理 5 本・zero_bridge・最小インスタンス・根幹 2 行・check_failure・`<` の 3 兄弟 | 旧 C02_Axioms を改名（2026-06-15） | 75 |
-| （diamond） | Ch8 | ダイヤモンド事件は C08_Numbers へ移設（NatCast 排他分割の動機・旧 C03_Class は解体） | — | — |
+| （diamond） | Ch11 | ダイヤモンド事件は C11_Numbers へ移設（NatCast 排他分割の動機・旧 C03_Class は解体） | — | — |
 | C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
 | C05_RiemannSum | Ch5 | Partition・length・RiemannSum・**IsRepr**＋**leftRepr/rightRepr**（代表点の妥当性・左右端の一般代表点・2026-06-15）・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 60 |
-| C06_Tactics | Ch6 | タクティク導入＋実数のスカラー代数（**等式コーパス＋順序コーパス**＝順序基本/Trans/加法と順序/移項/乗法順序）・**≤/< 混在 calc**（2026-06-15 C07 から統合） | Lemmas 基礎部＋順序部 | 130 |
-| C07_Induction | Ch7 | **defeq（rfl/show・rw の罠）＋帰納法**: Σ補題コーパス・**Partition 幾何**（points_mono 等・induction 実地）・線形脇道・**`sum_id_nat`**（Σ_{i<n} i の Nat 恒等式）（順序コーパス・Trans・calc は Ch6 へ移動・2026-06-15） | FTCCore§Σ＋Refine§3 を再配列 | 130 |
-| C08_Numbers | Ch8 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation・2026-06-15）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO） | Numerals＋Cast 前半＋EqualPartition | 150 |
-| C09_Properties | Ch9 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C07・equalPartitionRepr_isrepr=C08 へ移動済） | FTCCore§分割＋Criterion§両側評価 | 90 |
-| C10_Automation | Ch10 | simp セット・macro 合成・my_ring 入口 | 新規（P4 開発） | 80 |
-| C11_Archimedes | Ch11 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
-| C12_Integral | Ch12 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
-| C13_Unique | Ch13 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
-| C14_Example | Ch14 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
-| C15_FTC | Ch15 | sum_le_const/const_le_sum・両側比較・ftc_core・**ftc_of_integrable**（可積分仮定版） | FTC＋FTCCore 核部＋Main 後半 | 190 |
+| C06_Tactics | Ch6 | **タクティク入門**（by・intro/exact/apply・種明かし＝項を書く機械・カーネル/De Bruijn）＋One bridge＋公理射影＋add_left_cancel'（2026-06-15 Fine 分割） | Lemmas 基礎部 | 40 |
+| C07_Rewrite | Ch7 | **書き換えと 2 つの等しさ**（rw・defeq・rfl/show・rw の罠）＋等式/環コーパス本体（消去・ゼロ・符号・引き算の整理・telescope_2） | Lemmas 等式部 | 150 |
+| C08_Automation | Ch8 | **自動化と自作タクティク**（simp/simp only・omega・ac_rfl＝Std インスタンス・my_ring macro）。自前 ring-lite（mathlib 無し）。旧 Ch10 間奏を前倒し本章化（2026-06-15・load-bearing） | 新規 | 75 |
+| C09_Order | Ch9 | **順序と calc**（順序基本＋Trans・加法と順序・移項の小物・乗法順序・zero_lt_one）＋**≤/< 混在 calc** | Lemmas 順序部 | 250 |
+| C10_Induction | Ch10 | **帰納法**: Σ補題コーパス・**Partition 幾何**（points_mono 等・induction 実地）・線形脇道・**`sum_id_nat`**（Σ_{i<n} i の Nat 恒等式）（旧 C07） | FTCCore§Σ＋Refine§3 | 250 |
+| C11_Numbers | Ch11 | OfNat/ofNat/NatCast・cast 補題（構成的部）・**cast は射**（IsNatHom・cast_isHom・cast_mul/le・cast_summation）・equalPartition（一般 leftRepr 適用）・RS=(n−1)/(2n)（TODO）（旧 C08） | Numerals＋Cast 前半＋EqualPartition | 290 |
+| C12_Properties | Ch12 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C10・equalPartitionRepr_isrepr=C11）（旧 C09） | FTCCore§分割＋Criterion§両側評価 | 140 |
+| C13_Archimedes | Ch13 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
+| C14_Integral | Ch14 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |
+| C15_Unique | Ch15 | integral_unique・橋・橋の応用（値の等式） | Unique | 90 |
+| C16_Example | Ch16 | 代数小物・degenerate_sum・isintegral_id・integral_id | Example（sum_id 除く） | 200 |
+| C17_FTC | Ch17 | sum_le_const/const_le_sum・両側比較・ftc_core・**ftc_of_integrable**（可積分仮定版） | FTC＋FTCCore 核部＋Main 後半 | 190 |
 | E1–E3 | 発展 3 | 挿入・RS 挿入評価（NearLe 定義込み）・細分比較 | Insert＋InsertBound＋Refine | 1050 |
 | E4 | 発展 2 | 一様連続性・有界性の全文 | UnifCont | 310 |
 | E5 | 発展 1 | integrable_of_cauchy・continuous_integrable | Criterion＋Main 前半 | 130 |
@@ -392,9 +394,9 @@ CH/BHK の物語は第 II 部冒頭で**転調**する: `Classical.choose` の�
 
 **Ch2/Ch3 スワップ（2026-06-15 決定・上記より優先）**: 「一般構造で 1 回証明→複数インスタンスに適用」の例を入れる検討から、**Ch2＝数学的構造と class の仕組み（machinery）／Ch3＝実数を公理で読む（application）** に順序を入れ替えた。理由: 現状は class を説明する前に class ベースの公理を読む倒錯があり、structure を先に立てた方が依存順が正しい（例 `general_proof` が素の `structure`＋explicit args だけで完結し warning ゼロ・`interchange natAdd …` が `+`/`*` に defeq 一致するのが、この先行を裏づける）。**制約**: ℝ の公理は `class` のまま（`a+b`/`a≤b` の記法解決のため）——「structure で済ませる」が効くのは教材の例の方。**class は最小限早期・深い話は後で**: Ch2 では `class`＝「自動で見つかる構造（だから ℝ で `a+b` が動く）」だけ。インスタンス解決の深い機構・ダイヤモンド事件は Ch8（NatCast の排他分割＝AtLeastTwo の動機として後置）。
 
-**Ch6/Ch7 再編（2026-06-15 決定）**: 「2 幕構造（Ch1–5＝定義の幕で証明しない／Ch6–9＝証明の幕）の必然として補題が Ch6–7 に全部溜まり、Ch7 の話題（defeq・calc・induction）の焦点がぼやける」というユーザー指摘を受け再編。**Ch7 を defeq+induction に純化**し、順序・不等式コーパス（順序基本＋Trans・加法と順序・移項・乗法順序）と **`≤`/`<` 混在 calc を C07→C06 へ移動**。Ch6＝「tactic を学びながら実数のスカラー代数（= と ≤）を証明し混在 calc を導入する章」、Ch7＝「Σ コーパス＋帰納法＋Partition 幾何＋線形脇道＋defeq」。**章番号は不変**（A 案: Ch6 に統合・新章を挿まない——FTC=Ch15 等の固定番号と相互参照を守る）。**term/tactic の吟味**: 自明な公理射影（`le_refl := LinearOrderedField.le_refl` 等）は 1 行 term mode だが Ch6 に置き、Ch1–5（定義の幕）へは散らさない（「定義の幕は証明しない」を保つ）。依存は安全（順序コーパスは等式コーパス＋公理のみ使用）。
+**証明の弧 Fine 分割（2026-06-15 決定・構成 v4）**: 「2 幕構造（Ch1–5＝定義の幕／Ch6 以降＝証明の幕）の必然として補題が Ch6 に全部溜まる（旧 C06 ＝424 行・80 宣言・独立 3 テーマ）。章を短く 1 テーマに・自動化でコーパスを畳む工夫をコーパスの途中に」というユーザー方針で再編。**証明の弧を単一テーマ 5 章へ分割**: Ch6 タクティク入門（C06_Tactics）／Ch7 書き換えと 2 つの等しさ（新 C07_Rewrite・等式コーパス＋defeq）／**Ch8 自動化と自作タクティク**（C08_Automation・旧 Ch10 間奏を前倒し本章化＝simp/omega/ac_rfl/my_ring・mathlib 無しで自前 ring-lite・load-bearing）／Ch9 順序と calc（新 C09_Order・順序コーパス＋混在 calc）／Ch10 帰納法（C10_Induction・旧 C07）。到達点②③は Ch11 具体例（C11_Numbers・旧 C08）・Ch12 性質（C12_Properties・旧 C09）。**Part II は C13–C17 へ改番**（旧 C11–C15・FTC=Ch17）。新 import 連鎖は線形で C08 自動化が C09/C10 の前（順序・帰納法の証明が自動化を使える）。**term/tactic の吟味**: 自明な公理射影は該当章（Ch6/Ch9）に置き Ch1–5 へは散らさない。ただし**定義の弧にも少量の term 証明を意図的に**（Ch3 に `example`＝公理は項として使える＋class が ≤ を解決・`lt_irrefl`＝< の定義意図——公理体感・class 納得）。**自動化が当 core で使える範囲**: register_simp_attr は不可→simp only リスト＋my_ring macro。反射版 my_ring は付録 D。詳細な章別配置は `docs/part1_writing_guide.md` §3 Ch6–Ch12。
 
-機能の再配置: structure キーワード=**Ch2**（Ch5 から前出し）／class 最小=Ch2／依存型・universe（Real.sup）=**Ch3**／class 深い機構・diamond=Ch8。**calc（`=`・term mode）も Ch1 へ前出し（2026-06-15）**: `nat_interchange`（加法版を直接証明・乗法版は演習）を Ch1 に置き、Ch2 の `interchange`（可換モノイドの抽象版）が「具体→抽象」で繋がる。calc は `by` 不要の term mode なので Ch1 で導入してよく、`≤`/`<` 混在＋Trans の深掘りは **Ch6**（順序コーパスと同居・2026-06-15 C07 から移動。Ch7 は defeq+induction に純化）。固定構造への局所記法（`local_notation` デモ）→多相 `+` は class が要る、で §2.5→§2.6 の class 動機を回収。双子章の再構成: Ch2 が structure＋class を導入し、**Ch5 は structure を Partition に適用＋設計判断リトマス（class vs structure の表を Ch5 で完成）**。「And も structure」種明かしは Ch2（structure 導入時・`#print And`）に前出し可。コード: 新 C02_Structures.lean（`structure_as_data`・`general_proof`＝CommMonoidStr＋interchange＋natAdd/natMul・`and_is_structure`）／C02_Axioms→C03_Axioms.lean（階層・公理5本・zero_bridge・根幹2行・check_failure・three_brothers）／旧 C03_Class 解体。詳細な章別配置は `docs/part1_writing_guide.md` §3 Ch2・Ch3。
+機能の再配置: structure キーワード=**Ch2**（Ch5 から前出し）／class 最小=Ch2／依存型・universe（Real.sup）=**Ch3**／class 深い機構・diamond=**Ch11**。**calc（`=`・term mode）も Ch1 へ前出し（2026-06-15）**: `nat_interchange`（加法版を直接証明・乗法版は演習）を Ch1 に置き、Ch2 の `interchange`（可換モノイドの抽象版）が「具体→抽象」で繋がる。calc は `by` 不要の term mode なので Ch1 で導入してよく、`≤`/`<` 混在＋Trans の深掘りは **Ch9**（順序コーパスと同居・2026-06-15 Fine 分割で独立章化）。固定構造への局所記法（`local_notation` デモ）→多相 `+` は class が要る、で §2.5→§2.6 の class 動機を回収。双子章の再構成: Ch2 が structure＋class を導入し、**Ch5 は structure を Partition に適用＋設計判断リトマス（class vs structure の表を Ch5 で完成）**。「And も structure」種明かしは Ch2（structure 導入時・`#print And`）に前出し可。コード: 新 C02_Structures.lean（`structure_as_data`・`general_proof`＝CommMonoidStr＋interchange＋natAdd/natMul・`and_is_structure`）／C02_Axioms→C03_Axioms.lean（階層・公理5本・zero_bridge・根幹2行・check_failure・three_brothers）／旧 C03_Class 解体。詳細な章別配置は `docs/part1_writing_guide.md` §3 Ch2・Ch3。
 
 ——以下は上記スワップ前（2026-06-15 早い段階）の記録で、配置はスワップ後に従う:
 章割り上は Ch3（class 側）と Ch5（structure 側）の**双子章**とし、同じ比較表を 2 章かけて完成させる。Ch5 で「Ch1 から使っていた `And` も structure だった」（`#print And`）の種明かしを行い、Ch4 の帰納型と合わせて伏線を回収する。
