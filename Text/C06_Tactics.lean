@@ -5,7 +5,7 @@
 import Text.C05_RiemannSum
 
 -- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由——
--- C02 の Zero と対。数の段階導入: 0=Ch2・1=Ch6・2 以上と NatCast=Ch8）
+-- C03 の Zero と対。数の段階導入: 0=Ch3・1=Ch6・2 以上と NatCast=Ch11）
 noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
 
 -- ============================================================

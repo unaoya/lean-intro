@@ -128,7 +128,7 @@ theorem equalPartition_fine (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a �
     div_right_lt _ _ _ hm_pos h1
   rwa [mul_div_cancel' _ _ (ne_of_gt hm_pos)] at h2
 
--- 任意の細かさの等分割の存在（raw 版。TaggedPartition に束ねた版は Ch12）
+-- 任意の細かさの等分割の存在（raw 版。TaggedPartition に束ねた版は Ch15）
 theorem exists_fine_equalPartition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
     ∃ m, ∃ hm : m ≠ 0,
       ∀ i : Range m, (equalPartition m a b hm hab).length i < δ := by
@@ -142,7 +142,7 @@ theorem exists_fine_equalPartition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ
 
 -- ============================================================
 -- §6 素朴定義実験: max / min を if で書くと choice が監査に現れる
---    （Ch9 の両側評価が abs の言い換えだった種明かし。
+--    （Ch13 の両側評価が abs の言い換えだった種明かし。
 --      rmin は発展部の細分機械が証明装置として実際に使う）
 -- ============================================================
 

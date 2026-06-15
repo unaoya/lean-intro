@@ -23,7 +23,7 @@ theorem integrable_of_cauchy (g : Real → Real) (u v : Real) (huv : u ≤ v)
         ∃ δ', 0 < δ' ∧ ∀ P' : TaggedPartition u v, P'.Fine δ' →
           Near ε (P.sum g) (P'.sum g)) :
     IsIntegrable g u v := by
-  -- S = 「最終的にリーマン和の下界になる値」（Ch12 で定義済みの LowerRS）
+  -- S = 「最終的にリーマン和の下界になる値」（Ch15 で定義済みの LowerRS）
   have hS_ne : ∃ y, LowerRS g u v y :=
     ⟨lo * (v - u), 1, zero_lt_one, fun P _ => const_le_sum P hlo⟩
   have hS_bdd : ∃ M, ∀ y, LowerRS g u v y → y ≤ M := by
@@ -86,7 +86,7 @@ theorem continuous_integrable (f : Real → Real) {u v : Real} (huv : u ≤ v)
     (hf : ∀ x, u ≤ x → x ≤ v → ContinuousAt f x) : IsIntegrable f u v := by
   cases Classical.em (u = v) with
   | inl he =>
-    -- 退化区間 [u, u]: すべての分点が u に潰れ、どの RS も 0（Ch14 の補題）
+    -- 退化区間 [u, u]: すべての分点が u に潰れ、どの RS も 0（Ch17 の補題）
     subst he
     refine ⟨0, fun ε hε => ⟨1, zero_lt_one, fun P _ => ?_⟩⟩
     rw [degenerate_sum P f]

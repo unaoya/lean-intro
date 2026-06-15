@@ -1,5 +1,5 @@
 -- Text/C13_Properties.lean — Ch13 リーマン和の性質 5 本（到達点③）
--- additive / neg / const / nonneg / 両側評価。abs は使わない（理由は Ch11 の素朴定義実験）。
+-- additive / neg / const / nonneg / 両側評価。abs は使わない（理由は Ch14 の素朴定義実験）。
 -- 章末監査: 第 I 部は古典公理ゼロ。
 -- IsRepr は C05（定義）・分割の幾何（points_mono 等）と tag_mem' は C07・
 -- equalPartitionRepr_isrepr は C08 に配置済（ここでは性質の証明に使うだけ）。
@@ -36,7 +36,7 @@ theorem riemann_sum_smul (c : Real) (f : Real → Real) {n : Nat} {u v : Real}
       summation_mul_left]
 
 -- 関数空間 Real → Real のベクトル空間構造（各点演算）——RS の線形性を IsLinearMap で
--- 述べるため。Ch7 の VectorSpace (Range n → Real) と同型の作り。
+-- 述べるため。Ch10 の VectorSpace (Range n → Real) と同型の作り。
 noncomputable instance : VectorSpace (Real → Real) where
   add := fun f g => fun x => f x + g x
   neg := fun f => fun x => -(f x)
@@ -51,7 +51,7 @@ noncomputable instance : VectorSpace (Real → Real) where
   smul_add := fun a f g => funext fun x => CommRing.left_distrib a (f x) (g x)
   add_smul := fun a b f => funext fun x => CommRing.right_distrib a b (f x)
 
-/-- **RS は f について線形写像**（加法＋スカラー倍）。Ch7 の `summation_isLinear` の RS 版。
+/-- **RS は f について線形写像**（加法＋スカラー倍）。Ch10 の `summation_isLinear` の RS 版。
 これが線形性の本体——以下の符号・差はこの 2 本から出てくる系。 -/
 theorem riemann_sum_isLinear {n : Nat} {u v : Real} (Δ : Partition n u v)
     (ξ : Range n → Real) :

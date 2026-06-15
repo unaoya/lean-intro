@@ -73,7 +73,7 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 -- ゼロの窓口クラス: core の `Zero`（mathlib から昇格）に公理の zero を登録する。
 -- リテラル 0 へは core の一方向 bridge `Zero.toOfNat0 : [Zero α] → OfNat α 0` が配線する。
 -- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形は C03 のトイデモ参照）。
--- リテラル 1 以上と NatCast は Ch8 まで導入しない
+-- リテラル 1 以上と NatCast は Ch11 まで導入しない
 -- ANCHOR: zero_bridge
 noncomputable instance : Zero Real := ⟨AddCommGroup.zero⟩
 -- ANCHOR_END: zero_bridge
@@ -119,10 +119,10 @@ theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
 #check fun (a b : Real) => a + b
 #check fun (a b : Real) => a ≤ b
 
--- 今 Real に登録された数のインスタンスは 0 だけ（リテラル 1 は Ch6・2 以上は Ch8）。
+-- 今 Real に登録された数のインスタンスは 0 だけ（リテラル 1 は Ch6・2 以上は Ch11）。
 -- #check_failure は「失敗すること」自体を検査する——伏線がビルドで保証される
 -- ANCHOR: check_failure
 #check (0 : Real)         -- 通る（Σ の基底として上で導入済み）
 #check_failure (1 : Real) -- failed to synthesize OfNat Real 1（1 は Ch6 で）
-#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch8 で）
+#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch11 で）
 -- ANCHOR_END: check_failure

@@ -1,5 +1,5 @@
 -- Text/E2_InsertBound.lean — 発展部 §2: 点挿入によるリーマン和の変化の評価
--- NearLe（両側評価の述語——Ch9 の生の不等式がここで昇格）と
+-- NearLe（両側評価の述語——Ch13 の生の不等式がここで昇格）と
 -- Σ の分割補題（one_term / split_term）、挿入の評価（2M は M+M で書く）
 import Text.E1_Insert
 

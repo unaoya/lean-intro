@@ -201,7 +201,7 @@ theorem zero_lt_one : (0 : Real) < 1 := by
     rw [h2] at h1
     exact absurd (le_antisymm (0 : Real) (1 : Real) h1 h) Field.nontrivial
 
--- リテラル 2 はまだ無い: 1 + 1 で書く（リテラル機構は Ch8）
+-- リテラル 2 はまだ無い: 1 + 1 で書く（リテラル機構は Ch11）
 theorem zero_lt_one_one : (0 : Real) < 1 + 1 := by
   have h1 := add_left_lt 1 0 1 zero_lt_one
   rw [add_zero'] at h1

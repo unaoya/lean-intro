@@ -178,7 +178,7 @@ theorem summation_isLinear (n : Nat) :
 -- ============================================================
 -- Partition の基本性質（induction を読者自身の構造に適用する実地）
 --    隣接単調（公理 increase）→ 大域単調（points_mono・induction）→ 端点評価・
---    タグの所属。すべて Ch9 の性質証明が消費する。
+--    タグの所属。すべて Ch13 の性質証明が消費する。
 -- ============================================================
 
 /-- 各小区間の長さは非負（分点が広義単調だから）。 -/
@@ -226,7 +226,7 @@ theorem point_le_right {n : Nat} {u v : Real} (Δ : Partition n u v)
   exact h
 
 /-- 代表点系のタグは区間 `[u, v]` 内にある（IsRepr＝小区間内・端点評価から区間全体へ。
-raw 版。`TaggedPartition` に束ねた版は Ch12）。 -/
+raw 版。`TaggedPartition` に束ねた版は Ch15）。 -/
 theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (i : Range n) : u ≤ ξ i ∧ ξ i ≤ v := by
   have h1 : Δ.points ⟨0, Nat.succ_pos n⟩ ≤ Δ.points (Range.incl i) :=

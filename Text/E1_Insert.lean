@@ -1,5 +1,5 @@
 -- Text/E1_Insert.lean — 発展部「存在定理への登山」§1: 分割への点の挿入と小区間の探索
--- （∀-Fine 形。find_interval は Ch11 の探索 has_min の実戦）
+-- （∀-Fine 形。find_interval は Ch14 の探索 has_min の実戦）
 -- 発展部は本編（C15_FTC）の後に置かれ、主線の import 連鎖からは独立
 import Text.C18_FTC
 

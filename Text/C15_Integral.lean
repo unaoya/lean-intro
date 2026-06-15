@@ -25,14 +25,14 @@ namespace TaggedPartition
 noncomputable def sum {a b : Real} (P : TaggedPartition a b) (f : Real → Real) : Real :=
   RiemannSum f P.Δ P.ξ
 
--- 細かさ: ∀ 形（diam / max を使わない——Ch11 の実験の帰結を設計に）
+-- 細かさ: ∀ 形（diam / max を使わない——Ch14 の実験の帰結を設計に）
 def Fine {a b : Real} (P : TaggedPartition a b) (δ : Real) : Prop :=
   ∀ i, P.Δ.length i < δ
 
 end TaggedPartition
 -- ANCHOR_END: tagged_partition
 
--- タグの所属（Ch9 の raw 版を束ねた形で）
+-- タグの所属（Ch10 の raw 版を束ねた形で）
 theorem tag_mem {u v : Real} (P : TaggedPartition u v) (i : Range P.n) :
     u ≤ P.ξ i ∧ P.ξ i ≤ v :=
   tag_mem' P.Δ P.ξ P.repr i
@@ -42,7 +42,7 @@ theorem const_sum {u v : Real} (P : TaggedPartition u v) (c : Real) :
     P.sum (fun _ => c) = c * (v - u) :=
   riemann_sum_const P.Δ P.ξ c
 
--- 任意の細かさのタグ付き分割の存在（Ch11 の等分割を束ねる）
+-- 任意の細かさのタグ付き分割の存在（Ch12 の等分割を束ねる）
 theorem exists_fine_partition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
     ∃ P : TaggedPartition a b, P.Fine δ := by
   obtain ⟨m, hm, hfine⟩ := exists_fine_equalPartition a b δ hab hδ
