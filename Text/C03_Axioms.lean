@@ -110,6 +110,11 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 noncomputable instance : Zero Real := ⟨AddCommMonoid.zero⟩
 -- ANCHOR_END: zero_bridge
 
+-- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由）。
+-- 0 と同じく Ch3 で導入する——加群（Ch4）のスカラー単位 1 で使うため前倒し。
+-- 2 以上のリテラルと NatCast は数の体系（Ch10）まで導入しない。
+noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
+
 -- length の引き算（階層にあるのは Neg。中置 a - b はここで定義）
 noncomputable instance : Sub Real := ⟨fun a b => a + -b⟩
 
@@ -157,10 +162,10 @@ theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
 #check fun (a b : Real) => a + b
 #check fun (a b : Real) => a ≤ b
 
--- 今 Real に登録された数のインスタンスは 0 だけ（リテラル 1 は Ch6・2 以上は Ch11）。
+-- 今 Real に登録された数のインスタンスは 0 と 1 だけ（2 以上は Ch10 数の体系で）。
 -- #check_failure は「失敗すること」自体を検査する——伏線がビルドで保証される
 -- ANCHOR: check_failure
-#check (0 : Real)         -- 通る（Σ の基底として上で導入済み）
-#check_failure (1 : Real) -- failed to synthesize OfNat Real 1（1 は Ch6 で）
-#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch11 で）
+#check (0 : Real)         -- 通る（Σ の基底・上で Zero bridge を導入済み）
+#check (1 : Real)         -- 通る（加群のスカラー単位・上で One bridge を導入済み）
+#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch10 で）
 -- ANCHOR_END: check_failure

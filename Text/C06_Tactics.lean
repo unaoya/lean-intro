@@ -4,9 +4,7 @@
 -- 等式コーパス本体は Ch7（C07_Rewrite）、自動化は Ch8、順序と calc は Ch9。
 import Text.C05_RiemannSum
 
--- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由——
--- C03 の Zero と対。数の段階導入: 0=Ch3・1=Ch6・2 以上と NatCast=Ch11）
-noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
+-- （One Real bridge は C03 へ前倒し済み＝加群のスカラー単位 1 を Ch4 で使うため）
 
 -- ============================================================
 -- タクティク = 導入/除去規則を「ゴールから逆向きに」適用する機械
