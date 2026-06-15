@@ -35,7 +35,8 @@
     - **`succ_step`（`φ n < φ(n+1)`）= map_add ＋ map_one ＋ 0<1**（`φ(n+1)=φ n+1>φ n`）——strict の鍵
     - `strictMono`（lt）= monotone ＋ succ_step（離散）／ `injective`（単射）= strictMono ＋ 三分法
   - **cast への適用**: `cast_nonneg/lt/inj = cast_isHom.{nonneg,strictMono,injective}`・`cast_pos_* = cast_lt 0 ·`。cast 固有の証明は `cast_le`＋`cast_add`/`mul` だけ（Ch10 の `IsLinearMap`／RS 単調性と同じ「中核概念から帰結を導く」精神）
-  - `cast_isHom : IsOrderedSemiringHom (Nat-cast)`・`cast_summation`＝**Σ と可換**（Ch12 の y=x 計算で使う）
+  - `cast_isHom : IsOrderedSemiringHom (Nat-cast)`
+  - **`map_summation`（射は Σ と交換）も一般論**: `φ(Σ f) = Σ(φ∘f)` は **`map_zero`＋`map_add` だけ**の帰結（順序・乗法は不要＝厳密には加法準同型で成立・Σ が Nat/Real 両方で `[Add][Zero]` 定義だから運べる）。`cast_summation = cast_isHom.map_summation`（Ch12 の y=x 計算で使う）。`IsLinearMap`（Σ の線形性）と響き合う「構造の射は構造的演算と交換」
 - **分割線**: sup を使う archimedean 系は第 II 部へ——「この章は古典公理ゼロ」
 
 ## 11.5 章末監査
