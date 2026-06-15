@@ -31,13 +31,16 @@
 
 - summation_zero / summation_succ は **rfl で証明できる**（定義の再帰方程式＝defeq の予告編、Ch7 の主題へ）
 
-## 4.x Summation について証明する — 再帰と帰納は同じ recursor（2026-06-15 追加）
+## 4.x 帰納型を使う — 除去規則（recursor）と cases／induction（2026-06-15 追加）
 
-- **planting**: Summation は構造的再帰（`Nat.rec`）で定義した。**それについて証明するときも同じ `Nat.rec` を「帰納法」として走らせる**——「定義する再帰」と「証明する帰納」は表裏一体。これを Summation の場で予告する（ANCHOR `summation_first_proofs`）
-- **(1) 合同 `summation_congr`**: f と g が各点で等しければ和も等しい。`congrArg (Summation n) (funext h)` だけ——帰納法すら要らない「Summation についての最初の証明」
-- **(2) 帰納法の予告 `summation_all_zero`**: 全部 0 の和は 0。**term mode のまま**（`by` を使わず）`n` についての構造的再帰で証明し、succ の段に現れる `summation_all_zero n` が**帰納法の仮定そのもの**だと見せる
-- **縦糸**: ergonomic な `induction` タクティク（`by induction`）と Σ 補題の本格コーパス（線形性・望遠鏡和・幾何）は **Ch10**。「再帰で定義した Summation に、帰納法で戻る」を Ch4→Ch10 で張る
-- ⚠ Ch1–5 は term mode が基調。ここは `Nat.rec`（構造的再帰）による term mode の帰納で `by`/タクティクは使わない——「帰納法＝recursor の適用」を機構レベルで見せる予告
+- **骨格**: どの帰納型にも **導入規則**（構成子＝値を作る）と **除去規則**（recursor＝値を使う）がある。除去規則は同じ形だが、**構成子が再帰的な引数を持つと、その分だけ帰納法の仮定 (IH) を受け取る**——再帰の有無が `cases` と `induction` を分ける
+- **Ch1 の回収**: ∨ の `.elim`（or_swap・and_or_distrib の場合分け）は**∨ の除去規則＝cases**だった——∨ は非再帰なので IH 無し。Ch1 で既にやっていた
+- **対比を機械で**（ANCHOR `eliminators`・`#check @Or.rec` / `#check @Nat.rec`）: `Or.rec` は各構成子の引数を受けるだけ（IH 無し＝cases）。`Nat.rec` は succ の段で `motive n`（＝IH）も受ける（Nat が再帰だから＝induction）。**IH が「再帰している箇所」にちょうど現れる**のが型に見える
+- **Summation について最初の証明**（ANCHOR `summation_first_proofs`）: Summation は `Nat.rec` で定義した。それを**除去規則として証明に走らせる**のが induction:
+  - (1) `summation_congr`: `congrArg` だけ（除去規則すら不要）
+  - (2) `summation_all_zero`: **term mode のまま**（`by` 不使用）`Nat.rec` の除去で全零和=0 を証明。succ の段の `summation_all_zero n` が IH そのもの
+- **縦糸**: 「定義する再帰」と「証明する帰納」は同じ recursor。ergonomic な `cases`/`induction` タクティクは Ch6 以降、Σ 補題の本格コーパスは **Ch10**。Ch1（∨ の cases）→ Ch4（Nat の induction）→ Ch10（タクティク＋コーパス）で除去規則の糸を張る
+- ⚠ Ch1–5 は term mode 基調。ここは `Nat.rec` による term mode の除去で `by` を使わない——「帰納法＝除去規則の適用」を機構レベルで見せる予告
 
 ## 演習
 

@@ -37,20 +37,37 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
 -- ANCHOR_END: summation_rfl
 
 -- ============================================================
--- Summation について証明する（予告）: 再帰と帰納は同じ recursor
---   Summation は構造的再帰（`Nat.rec`）で定義した。それについて証明するときも
---   同じ `Nat.rec` を **帰納法** として走らせる——「定義する再帰」と「証明する帰納」は
---   表裏一体。ここでは term mode のまま 2 つだけ見る（ergonomic な `induction`
---   タクティクと Σ 補題コーパス本体は Ch10。本章は「定義＋最初の証明」で閉じる）。
+-- 帰納型を「証明で使う」: 除去規則（eliminator = recursor）
+--   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
+--   除去規則は同じ形だが、**構成子が再帰的な引数を持つと、その分だけ「結果の予測」
+--   ＝帰納法の仮定 (IH) を受け取る**。再帰の有無が cases と induction を分ける:
+--     ・非再帰（Or・And・Subtype）の除去 = 場合分け `cases`（IH 無し）。Ch1 の `.elim`
+--       （or_swap・and_or_distrib）が既にこれ——∨ の除去規則の適用だった。
+--     ・再帰（Nat）の除去 = `induction`（succ の段で motive n = IH を受け取る）。
+--   下の 2 つの型を並べると、IH が「再帰している箇所」にちょうど現れるのが見える。
+-- ============================================================
+
+-- ANCHOR: eliminators
+#check @Or.rec    -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
+#check @Nat.rec   -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
+                  --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
+-- ANCHOR_END: eliminators
+
+-- ============================================================
+-- Summation について証明する（予告）: 定義した recursor をそのまま証明に使う
+--   Summation は `Nat.rec`（構造的再帰）で定義した。それを **除去規則として証明に
+--   走らせる**のが induction——「定義する再帰」と「証明する帰納」は同じ recursor。
+--   ここでは term mode のまま 2 つだけ（ergonomic な induction タクティクと Σ 補題
+--   コーパス本体は Ch10。本章は「定義＋最初の証明」で閉じる）。
 -- ============================================================
 
 -- ANCHOR: summation_first_proofs
--- (1) 合同: f と g が各点で等しければ和も等しい（`congrArg` だけ・帰納法は不要）
+-- (1) 合同: f と g が各点で等しければ和も等しい（`congrArg` だけ・除去規則も不要）
 theorem summation_congr (n : Nat) (f g : Range n → Real) (h : ∀ i, f i = g i) :
     Summation n f = Summation n g := congrArg (Summation n) (funext h)
 
--- (2) 帰納法の予告: 全部 0 の和は 0。n についての構造的再帰（＝`Nat.rec`）で証明する。
---     succ の段に現れる `summation_all_zero n` が**帰納法の仮定そのもの**。
+-- (2) 帰納法の予告: 全部 0 の和は 0。n についての構造的再帰（＝`Nat.rec` の除去）で証明。
+--     succ の段に現れる `summation_all_zero n` が**帰納法の仮定 (IH) そのもの**。
 theorem summation_all_zero : (n : Nat) → Summation n (fun _ : Range n => (0 : Real)) = 0
   | 0 => rfl
   | n + 1 => (congrArg (· + (0 : Real)) (summation_all_zero n)).trans (AddCommGroup.zero_add 0)

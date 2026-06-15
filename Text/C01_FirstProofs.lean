@@ -5,7 +5,8 @@
 theorem my_first_theorem : 1 = 1 := Eq.refl 1
 -- ANCHOR_END: my_first_theorem
 
--- かつ ∧ = ペア（無名コンストラクタ ⟨,⟩ と射影 .1 / .2）
+-- 論理結合子はすべて帰納型（非再帰）。各々に 導入規則（構成子＝作る）と
+-- 除去規則（使う）がある。∧ の導入 = 無名コンストラクタ ⟨,⟩・除去 = 射影 .1 / .2
 -- ANCHOR: and_swap
 theorem and_swap (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩
 -- ANCHOR_END: and_swap
@@ -16,7 +17,9 @@ theorem modus_ponens (A B : Prop) (h : A → B) (a : A) : B := h a
 theorem imp_trans (A B C : Prop) (hab : A → B) (hbc : B → C) : A → C :=
   fun a => hbc (hab a)
 
--- または ∨ = 直和（場合分けの正体 = recursor は Ch4 で）
+-- または ∨ = 直和。導入 = Or.inl / Or.inr（2 つの構成子）・除去 = .elim（場合分け）。
+-- この .elim こそ ∨ の**除去規則 = 場合分け（cases）**——∨ は非再帰なので帰納法の仮定
+-- (IH) は無い。「除去規則 = recursor」「再帰なら IH が付いて induction」の全体像は Ch4。
 theorem or_intro_left (A B : Prop) (a : A) : A ∨ B := Or.inl a
 
 theorem or_swap (A B : Prop) (h : A ∨ B) : B ∨ A :=
