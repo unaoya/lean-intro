@@ -248,6 +248,20 @@ theorem injective (h : IsOrderedSemiringHom φ) {a b : Nat} (hab : φ a = φ b) 
   · exact heq
   · exact absurd hab (ne_of_gt (h.strictMono hgt))
 
+/-- **加法を保つ射は有限和と可換**: `φ (Σ f) = Σ (φ ∘ f)`（`map_zero`＋`map_add` だけの帰結・
+順序や乗法は不要）。Σ は Nat・Real の両方で `[Add][Zero]` で定義されているので、
+**加法準同型が Σ を運ぶ**。「構造の射は構造的演算（有限和）と交換する」という一般論。 -/
+theorem map_summation (h : IsOrderedSemiringHom φ) :
+    ∀ (n : Nat) (f : Range n → Nat), φ (Summation n f) = Summation n (fun i => φ (f i)) := by
+  intro n
+  induction n with
+  | zero => intro f; exact h.map_zero
+  | succ m ih =>
+    intro f
+    show φ (Summation m (fun k => f (Range.incl k)) + f ⟨m, Nat.lt_succ_self m⟩)
+        = Summation m (fun k => φ (f (Range.incl k))) + φ (f ⟨m, Nat.lt_succ_self m⟩)
+    rw [h.map_add, ih (fun k => f (Range.incl k))]
+
 end IsOrderedSemiringHom
 
 /-- cast `(· : Real)` は順序半環の射（0/1/+/×/≤ を保つ）。 -/
@@ -273,20 +287,12 @@ theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
   have h := cast_lt 0 m (Nat.pos_of_ne_zero hm)
   rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
 
-/-- 準同型は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`。cast が和を保つこと
-（`map_add`）の帰結——Σ を Nat で計算してから cast しても、各項を cast してから Σ しても
-同じ。「構造の射は構造的な演算（有限和）と可換」という一般論の実例。 -/
-theorem cast_summation : ∀ (n : Nat) (f : Range n → Nat),
-    ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) := by
-  intro n
-  induction n with
-  | zero => intro f; rfl
-  | succ m ih =>
-    intro f
-    show ((Summation m (fun k => f (Range.incl k)) + f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
-        = Summation m (fun k => ((f (Range.incl k) : Nat) : Real))
-          + ((f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
-    rw [← cast_add, ih (fun k => f (Range.incl k))]
+/-- cast は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`——**射が和と交換する一般論**
+（`map_summation`）の cast への適用。Σ を Nat で計算してから cast しても、各項を cast して
+から Σ しても同じ。 -/
+theorem cast_summation (n : Nat) (f : Range n → Nat) :
+    ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) :=
+  cast_isHom.map_summation n f
 -- ANCHOR_END: cast_hom
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
