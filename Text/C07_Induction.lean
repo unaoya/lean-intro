@@ -294,6 +294,13 @@ theorem neg_summation (n : Nat) (f : Range n → Real) :
         = Summation m (fun k => -(f (incl k))) + -(f ⟨m, Nat.lt_succ_self m⟩)
     rw [neg_add_distrib, ih (fun k => f (incl k))]
 
+/-- Σ レベルの差: `Σ F - Σ G = Σ (F - G)`（加法＋符号の系）。 -/
+theorem sub_summation (n : Nat) (F G : Range n → Real) :
+    Summation n F - Summation n G = Summation n (fun i => F i - G i) := by
+  show Summation n F + -Summation n G = Summation n (fun i => F i - G i)
+  rw [neg_summation n G]
+  exact (additive_summation n F (fun i => -G i)).symm
+
 theorem summation_nonneg (n : Nat) (f : Range n → Real) (h : ∀ i, 0 ≤ f i) :
     0 ≤ Summation n f := by
   induction n with
@@ -410,6 +417,12 @@ theorem summation_isLinear (n : Nat) :
 theorem length_nonneg {n : Nat} {u v : Real} (Δ : Partition n u v) (i : Range n) :
     0 ≤ Δ.length i :=
   (nonneg_iff_le _ _).mp (Δ.increase i)
+
+/-- 長さの総和は区間幅: `Σ length = v - u`。望遠鏡和（`summation_telescope`）で潰れる。 -/
+theorem length_sum {n : Nat} {u v : Real} (Δ : Partition n u v) :
+    Summation n (fun i => Δ.length i) = v - u := by
+  show Summation n (fun i => Δ.points (Range.addone i) - Δ.points (Range.incl i)) = v - u
+  rw [summation_telescope n Δ.points, Δ.right, Δ.left]
 
 /-- 分点列の単調性: 添字 `k.val ≤ lv` なら `points k ≤ points ⟨lv,_⟩`。隣接単調（公理
 `increase`）から **induction** で大域単調を導く（well-founded 再帰は不要）。 -/

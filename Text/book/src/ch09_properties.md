@@ -7,13 +7,16 @@
 - 新しい Lean 機能: なし（総合演習 II）。**IsRepr の定義は Ch5・幾何補題（points_mono 等）は Ch7 に移動済**——ここは「使う」側
 - コード: C09_Properties.lean（性質 5 本＋反例。IsRepr=C05・幾何/tag_mem'=C07・equalPartitionRepr_isrepr=C08）
 
-## 9.1 additive / neg — Σ の線形性の持ち上げ
+## 9.1 線形性 — RS は f について線形写像（加法＋スカラー倍）
 
-- Σ→RS の 2 層対応（積分への 3 層対応の予告）。sub は系として軽演習
+- **線形性の本体は加法 `RS(f+g)=RS f+RS g` とスカラー倍 `RS(c·f)=c·RS f` の 2 本**（Σ の `additive_summation`・`summation_mul_left` の持ち上げ）。`riemann_sum_isLinear : IsLinearMap (fun f => RS f Δ ξ)`＝Ch7 の `summation_isLinear` の RS 版
+- **符号 `RS(-f)=-RS f`（c=−1 の場合）と差 `RS(f-g)=RS f-RS g` はここから「出てくる」系**
+- Σ→RS の 2 層対応（積分への 3 層対応の予告）
 
 ## 9.2 const — 望遠鏡和の快感
 
-- length_sum（Σ length = b − a、telescope_sum の回収）→ const_sum
+- `length_sum`（Σ length = b − a、telescope の回収）は **C07（Partition 幾何）**に配置。ここでは const がそれを消費
+- ⚠ `sub_summation`（Σ の性質）は C07 へ・`length_sum`（Partition の性質）も C07 へ移動済（RS の性質ではないため・2026-06-15）
 
 ## 9.3 nonneg — 反例が「なぜ IsRepr が必須か」を実演する
 

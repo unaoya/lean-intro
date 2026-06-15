@@ -146,7 +146,7 @@
 - 到達点: 後段が消費する性質 5 本（到達点③）・第 I 部古典ゼロの監査
 - 新機能: なし（総合演習）。**IsRepr の定義は Ch5・幾何補題は Ch7 に移動済**——ここは「使う」側
 - ANCHOR: なし（性質 5 本・docstring 済・ANCHOR は §5。`is_repr` は Ch5 へ移動）
-- ▲線形性 / const（望遠鏡和）/ nonneg / 両側評価（脱 abs・理由は Ch11 予告）・▲**反例で IsRepr の必要性を実演**（定義は Ch5・タグを区間外にすると nonneg が壊れる）・▼第 I 部古典ゼロの総決算（監査の段階の山）
+- ▲**線形性＝加法＋スカラー倍**（RS は f について線形写像 `riemann_sum_isLinear`・Ch7 summation_isLinear の RS 版。符号・差はここから出る系）/ const / nonneg / 両側評価（脱 abs・理由は Ch11 予告）・▲**反例で IsRepr の必要性を実演**（定義は Ch5・タグを区間外にすると nonneg が壊れる）・▼第 I 部古典ゼロの総決算（監査の段階の山）
 - 演習候補: additive/neg/const/nonneg/両側 rs_bound・**IsRepr を落とした反例**・章末 `#print axioms`
 - 引き: Ch10 へ「同じパターンを繰り返した。手を自動化しよう（間奏へ）」
 - ⚠ 性質 5 本は**生の不等式 2 本**で書く（NearLe 述語への昇格は発展部）。「同じ形が 3 回出たら昇格」の方針を一言。`length_sum` は const と密結合なので C09（幾何だが移さない）
@@ -174,7 +174,8 @@
 
 - **Ch2/Ch3 スワップ済（2026-06-15）**: 新 C02_Structures.lean（structure_as_data・general_proof・and_is_structure）＝Ch2 machinery／C02_Axioms→C03_Axioms.lean（階層・公理・根幹2行・check_failure・three_brothers）＝Ch3／旧 C03_Class は解体（diamond は C08_Numbers へ）。md は ch02_structures.md・ch03_axioms.md
 - **C06_Tactics**: ANCHOR 未付与（タクティク corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
-- **IsRepr/幾何の配置移動済（2026-06-15）**: 代表点はリーマン和の概念の一部、という指摘を受け再編——`IsRepr` 定義→**C05**（ANCHOR `is_repr` も移動）／純 Partition 幾何（length_nonneg・points_mono・left/right_le_point・tag_mem'）→**C07**（induction の実地）／`equalPartitionRepr_isrepr`→**C08**。C09 は性質 5 本（＋length_sum）に絞る。反例は Ch9 で「IsRepr が必須な理由の実演」として残す
+- **IsRepr/幾何/Σ補題の配置移動済（2026-06-15）**: 代表点はリーマン和の概念の一部・RS の性質でないものは外す、という指摘を受け再編——`IsRepr` 定義→**C05**（ANCHOR `is_repr` も移動）／純 Partition 幾何（length_nonneg・points_mono・left/right_le_point・tag_mem'）と **`length_sum`**→**C07**（induction の実地・Partition 幾何）／**`sub_summation`**（Σ の性質）→**C07**（Σ corpus）／`equalPartitionRepr_isrepr`→**C08**。C09 は RS の性質に絞る。反例は Ch9 で「IsRepr が必須な理由の実演」として残す
+- **RS 線形性を加法＋スカラー倍に再定式化（2026-06-15）**: `riemann_sum_add`＋`riemann_sum_smul`＝線形性の本体（`riemann_sum_isLinear : IsLinearMap …`・Ch7 summation_isLinear の RS 版・VectorSpace (Real→Real) 各点インスタンスを C09 に追加）。`riemann_sum_neg`（c=−1）・`riemann_sum_sub` はそこから出る系
 - **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C09 全宣言＋C05 の is_repr・C07 の幾何・C08 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
 - **simp**: 前半は simp 非導入（Ch10 で導入）。等式（length_sum・riemann_sum_const 等）は将来 @[simp] 可・不等式（points_mono 等）は rewrite 規則になれない（2026-06-15 確認）
