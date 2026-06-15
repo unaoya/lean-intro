@@ -4,14 +4,19 @@
 <!-- 2026-06-15 新設: Ch6 の順序コーパス＋≤/< 混在 calc を独立章に（1章1テーマ） -->
 
 - 前章からの問い: 等式は simp で畳めた。順序（≤/<）の補題はどう獲得し、どう鎖にするか
-- 到達点: 順序の補題コーパスを獲得する。`≤`/`<` 混在の calc が設計できる（Trans）
-- 新しい Lean 機能: `≤`/`<` 混在の calc（Trans インスタンス）（`=` の calc は Ch1・rw は Ch7・simp は Ch8）
-- コード: C09_Order.lean（順序基本＋Trans・加法と順序・移項の小物・乗法順序）
+- 到達点: 順序の補題を **成り立つ最小の順序クラスで型多相に**述べる。`≤`/`<` 混在の calc が設計できる（Trans）
+- 新しい Lean 機能: **順序クラスの階層**（OrderedAddCommMonoid→OrderedAddCommGroup→OrderedField→LinearOrderedField＝補題の最小構造）・**型多相な補題**・`≤`/`<` 混在の calc（Trans インスタンス）（`=` の calc は Ch1・rw は Ch7・simp は Ch8）
+- コード: C09_Order.lean（最小クラスで述べた順序補題＋Trans・lin の型多相化）
 
-## 9.1 公理から順序の基本
+## 9.1 補題を「成り立つ最小の順序クラス」で述べる
 
-- 公理の取り出し: le_refl/le_trans/le_antisymm/le_total・add_le_add（**1 行の term mode 射影**——Ch3 で一度見た「公理は定理」の本格展開）
-- 推移律の変種（lt_trans・lt_le_trans・le_lt_trans）
+- **方針転換（2026-06-15）**: Ch3 のように Real へ公理を取り出すのは**やめる**。補題は最初から型多相で、**その補題が成り立つ最小の構造**を型クラスで明示する——「この事実は何があれば言えるか」を型が語る:
+  - 加法と順序だけ（neg 不要）→ `OrderedAddCommMonoid`（le_refl/le_trans/add_le_add'・add_nonneg'）
+  - 符号も要る → `OrderedAddCommGroup`（nonneg_iff_le・neg_le_neg'）
+  - 乗法の非負性 → `OrderedField`（mul_nonneg・nonneg_mul_nonneg）
+  - 線形性（le_total）→ `LinearOrderedField`
+- コード上、この階層は C03 の代数階層（AddCommMonoid を土台に積み直す）の延長として置く。Ch3 の散文では LinearOrderedField を一括で読み、**中間の順序クラスは本章で初めて「補題の最小構造」として活用**する
+- 推移律の変種（lt_trans・lt_le_trans・le_lt_trans）。`<` は Real の `LT`（≤∧≠）に依存するので Real 専用（順序クラスに lt を積む一般化は発展課題）
 
 ## 9.2 ≤/< 混在の calc を設計する
 
@@ -32,8 +37,8 @@
 
 - Ch8 で等式を反射タクティクに任せた。順序も自作する（linarith は無い）。**2 つの設計を作って比べる**:
 - **mono（順序のみ・構造的）**: 目標 `L ≤ R` の構造を下って単調性補題（add_le_add'・sub_le_sub）を適用し、葉を仮定で閉じる「gcongr-lite」。再帰 `macro_rules` で短く書ける。`f(a) ≤ f(b)` 型に強い
-- **lin（順序体・意味的）**: `a ≤ b` を `0 ≤ b−a` に帰し、**Ch8 の `my_ring`（D）の正規化を流用**して `b−a` を仮定差の和に正規化し非負を示す「linarith-lite」。**推移律 `a≤c`（from a≤b,b≤c）など線形結合**を扱える（mono は構造一致しないので不可）
-- 比較の要点: 構造的（mono）vs 意味的（lin）。**lin が代数基盤（my_ring）を再利用**するのが「順序体タクティク」の旨味。一般の係数探索（LP）は係数1の仮定和に限定（発展）。`<` 版・乗法の単調性（符号条件付き）は発展課題
+- **lin（順序体・意味的）**: `a ≤ b` を `0 ≤ b + -a` に帰し、**Ch8 の `my_ring`（一般化済）の正規化を流用**して `b + -a` を仮定差の和に正規化し非負を示す「linarith-lite」。**推移律 `a≤c`（from a≤b,b≤c）など線形結合**を扱える（mono は構造一致しないので不可）。my_ring が型多相になったので **lin もゴールの型 α を取り出して型多相**（任意の OrderedField で動く）
+- 比較の要点: 構造的（mono）vs 意味的（lin）。**lin が代数基盤（my_ring）を再利用**するのが「順序体タクティク」の旨味。**lin を ≤ 核の直後に置き、`sub_le_sub` 等の派生補題を `by lin` で畳む**（「tactic を先に作って補題を畳む」設計）。一般の係数探索（LP）は係数1の仮定和に限定（発展）。`<` 版・乗法の単調性（符号条件付き）は発展課題
 
 ## 演習
 

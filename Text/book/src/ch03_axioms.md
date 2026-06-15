@@ -13,7 +13,8 @@
 
 ## 3.1 階層クラスを「読む」（ANCHOR `hierarchy`）
 
-- AddCommGroup → … → LinearOrderedField の 5 段 extends 連鎖を読む。Ch2 の「構造＝データ」の見方で「公理を束ねたレコードの型」として読める
+- AddCommMonoid → AddCommGroup → CommRing → Field → …（順序を被せて）→ LinearOrderedField の extends の塔を読む。Ch2 の「構造＝データ」の見方で「公理を束ねたレコードの型」として読める
+- 加法は「可換モノイド（逆元なし）→ 可換群（逆元あり）」の 2 段で積む——**補題が成り立つ最小構造**を分ける土台（活用は Ch9）。順序の中間クラス（OrderedAddCommMonoid 等）はコードに在るが、Ch3 では LinearOrderedField を**頂点として一括で**読み、最小構造の使い分けは Ch9 へ送る
 - 公理の編集という行為: 杉浦の R1〜R17 列挙との対比（公理設計の論点表: 0 はデータ・sup は Skolem 化・列挙でなく束）
 
 ## 3.2 公理 5 本（ANCHOR `axioms`）

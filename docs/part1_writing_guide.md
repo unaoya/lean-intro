@@ -147,11 +147,12 @@
 
 ### Ch9 — 順序と calc（`ch09_order.md`、C09_Order）※2026-06-15 順序コーパス独立章化＋順序タクティク 2 方式
 - 問い: 等式は畳めた。順序の補題はどう獲得し、どう鎖にするか
-- 到達点: 順序コーパスを獲得・**`≤`/`<` 混在の calc を設計できる**（Trans）・**順序の自作タクティク 2 方式（mono/lin）を比較できる**
-- 新機能: **calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1・rw は Ch7・simp/反射は Ch8）・**順序タクティクの自作**（macro_rules 再帰 mono／elab lin）
-- ANCHOR: **`order_tac_demo`**（mono/lin の比較）
-- ▲公理から順序基本（le_refl/trans/antisymm/total・add_le_add＝1 行 term 射影・Ch3 の「公理は定理」の本格展開）・▲Trans＝calc の機構（種明かし回収）・▲加法と順序・移項の小物（両側評価の部品）・▲乗法順序（mul_nonneg・**zero_lt_one は定理**＝nontrivial・pos_inv）・▲**順序タクティク 2 方式**: mono（構造的・gcongr-lite・macro_rules）／lin（意味的・linarith-lite・`0≤b-a` に帰し **my_ring(D) を流用**・推移など線形結合を扱える）。構造的 vs 意味的の対比
-- 演習候補: 順序ドリル（nonneg_iff_le・neg_le_neg'・sub_lt_swap）・混在 calc を 1 本設計・mono に新しい単調性補題を足す・lin の限界（係数探索 LP は未実装）を観察
+- 到達点: 順序補題を **成り立つ最小の順序クラスで型多相に**述べる・**`≤`/`<` 混在の calc を設計できる**（Trans）・**順序の自作タクティク 2 方式（mono/lin）を比較できる**
+- 新機能: **順序クラスの階層**（OrderedAddCommMonoid→OrderedAddCommGroup→OrderedField→LinearOrderedfield＝補題の最小構造を型が語る）・**型多相な補題**・**calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1・rw は Ch7・simp/反射は Ch8）・**順序タクティクの自作**（macro_rules 再帰 mono／elab lin）
+- ANCHOR: **`order_tac_demo`**（mono/lin の比較＋型多相補題の実演）
+- ▲**方針転換（2026-06-15・一般クラス化）**: Ch3 の「Real へ公理を取り出す」を**やめ**、補題を最初から型多相で**成り立つ最小の順序クラス**で述べる（加法のみ=OrderedAddCommMonoid・符号も=OrderedAddCommGroup・乗法非負=OrderedField・線形性=LinearOrderedField）。コード上クラス階層は C03（AddCommMonoid を土台に積み直す）に置くが、中間順序クラスは**本章で初めて「補題の最小構造」として活用**（Ch3 散文は LinearOrderedField 一括のまま）・▲Trans＝calc の機構（種明かし回収）・▲乗法順序（mul_nonneg・**zero_lt_one は定理**＝nontrivial・pos_inv）・▲**順序タクティク 2 方式**: mono（構造的・gcongr-lite・macro_rules・型多相）／lin（意味的・linarith-lite・`0≤b+ -a` に帰し **my_ring（一般化済）を流用**・ゴール型 α を取り出し**型多相**・推移など線形結合を扱える）。構造的 vs 意味的の対比・▲**lin を ≤ 核の直後に置き `sub_le_sub` 等を `by lin` で畳む**（tactic 先・補題を畳む）
+- ⚠ **`<` と `-` は Real 固有**: `<` は Real の `LT`（≤∧≠）、`-` は Real の `Sub` に依存するので、それらを使う補題は Real 専用（順序クラスに lt/sub を積む一般化は発展課題）。差は一般補題では `a + -b` で表す
+- 演習候補: 順序ドリル（nonneg_iff_le・neg_le_neg'・sub_lt_swap）・混在 calc を 1 本設計・mono に新しい単調性補題を足す・**補題の最小クラスを当てる**（この事実は monoid/group/field のどれで言えるか）・lin の限界（係数探索 LP は未実装）を観察
 - 引き: Ch10 へ「スカラーの代数は揃った。Σ（有限和）の性質は項数 n の帰納法が要る」
 - ⚠ 順序コーパスは等式（Ch6/7）の後・simp/my_ring（Ch8）で等式変形の段を畳める・リテラル 2 は無いので `1+1`・古典補題は第 II 部。順序タクティクは順序コーパス＋my_ring の後に置く（依存）
 
@@ -201,7 +202,7 @@
 
 各章ドラフトを以下で照合する。違反は「方針管理」上の指摘事項。
 
-- **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**term mode の帰納法（Nat.rec 予告）=Ch4・induction タクティク=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
+- **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**順序クラス階層で補題を型多相に述べる（OrderedAddCommMonoid〜LinearOrderedField＝補題の最小構造）=Ch9**（クラス定義は C03・活用は Ch9）・**term mode の帰納法（Nat.rec 予告）=Ch4・induction タクティク=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
 - **(b) CH 対応表（導入/除去規則つき・2026-06-15 拡張）**: Ch1 で**導入規則/除去規則の列を持つ表**を提示（→∧∨¬⊥⊤=）→ **Ch3** で ∀∃ 行を埋める（∀=Π＝→と同じ関数・∃=帰納型 Exists・導入/除去つき）→ **Ch4 で `#print`/`#check` により完結**（ANCHOR `ch_punchline`: ∧∨∃⊥= は帰納型・→∀¬ は依存関数 Π）。**パンチライン: 論理 = 依存関数（Π）＋帰納型の 2 原始、その導入/除去だけ**。表の各行の導入/除去と「いつ裏付くか」「Π か帰納型か」が整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro。「使う→仕組みを覗く」の順序が保たれているか
 - **(c2) 除去規則（recursor）の糸**（2026-06-15 追加）: **導入規則（構成子）/除去規則（recursor）**を貫通させる。Ch1 で ∧/∨ の導入・除去（`.elim`＝場合分け＝**cases**・非再帰なので IH 無し）→ Ch4 で「除去規則=recursor／再帰なら IH 付き=induction」を `#check @Or.rec` vs `@Nat.rec` で明示（IH は再帰箇所に現れる）＋ Summation を Nat.rec の除去で証明する予告 → **Ch6 で「タクティク＝導入/除去規則をゴールから逆向きに当てる機械」を種明かし**（ANCHOR `tactics_as_rules`: `intro`=→/∀ 導入・`apply`=→/∀ 除去・`exact ⟨⟩`/`constructor`=帰納型導入・`cases`/`obtain`=帰納型除去・`rfl`/`rw`=Eq 導入/除去）→ Ch10 で `induction`（再帰の除去＝IH 付き）＋Σ コーパス。**タクティクは新しい原理ではなく規則の逆向き適用**・**cases と induction は同じ除去規則で再帰(IH)の有無だけが違う**を本文で一貫させているか

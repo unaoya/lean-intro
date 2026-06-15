@@ -130,8 +130,8 @@ theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 
 -- 名前空間（namespace）との最初の接触＝「アクセス」: `Real.sup`・`Real.instLOF`・
 --   `AddCommGroup.add_neg`・`OrderedAddCommMonoid.le_trans` のドット付きの名前は、
---   `名前空間.名前` という階層化された名前への参照。`le_trans` は `LinearOrderedField`
---   の中に整理されている——フルパスで名指せばどこからでも引ける。
+--   `名前空間.名前` という階層化された名前への参照。`le_trans` は順序クラス
+--   `OrderedAddCommMonoid` に整理されている——フルパスで名指せばどこからでも引ける。
 --   （この段階はまだ「既にある名前空間を読む」だけ。自分で名前空間を**作る**のは
 --    Ch4 `namespace Range`、`open` で接頭辞を省く旨味は Ch5 で。）
 -- 公理は「すでに証明された定理」: 階層のフィールドはそのまま項として使える。
