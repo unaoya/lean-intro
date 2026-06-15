@@ -85,13 +85,9 @@ theorem div_mul_cancel (a c : Real) (hc : c ≠ (0 : Real)) : a / c * c = a := b
   show a * Field.inv c * c = a
   rw [mul_assoc, show Field.inv c * c = (1 : Real) from Field.inv_mul c hc, mul_one_b]
 
-theorem div_sub_div (a b c : Real) : (a / c) - (b / c) = (a - b) / c := by
-  show a * Field.inv c + -(b * Field.inv c) = (a + -b) * Field.inv c
-  rw [show -(b * Field.inv c) = (-b) * Field.inv c from by rw [neg_mul]]
-  exact (CommRing.right_distrib a (-b) (Field.inv c)).symm
+theorem div_sub_div (a b c : Real) : (a / c) - (b / c) = (a - b) / c := by my_ring
 
-theorem div_add_div (a b c : Real) : a / c + b / c = (a + b) / c :=
-  (CommRing.right_distrib a b (Field.inv c)).symm
+theorem div_add_div (a b c : Real) : a / c + b / c = (a + b) / c := by my_ring
 
 theorem half_add (a : Real) : a / (1 + 1) + a / (1 + 1) = a := by
   show a * Field.inv (1 + 1) + a * Field.inv (1 + 1) = a

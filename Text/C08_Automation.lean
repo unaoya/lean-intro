@@ -469,6 +469,11 @@ partial def reifyRing (oneExpr zeroExpr : Expr) (atomsRef : IO.Ref (Array Expr))
   | (``HSub.hSub, #[_, _, _, _, a, b]) =>
       return mkApp2 (mkConst ``MyRing.Expr.sub)
         (← reifyRing oneExpr zeroExpr atomsRef a) (← reifyRing oneExpr zeroExpr atomsRef b)
+  | (``HDiv.hDiv, #[_, _, _, _, a, b]) =>
+      -- a / b = a * (b⁻¹)。b⁻¹ は積の原子として扱う（純 ring の除法を my_ring が閉じる）
+      let invB ← mkAppM ``Field.inv #[b]
+      return mkApp2 (mkConst ``MyRing.Expr.mul)
+        (← reifyRing oneExpr zeroExpr atomsRef a) (← reifyRing oneExpr zeroExpr atomsRef invB)
   | (``Neg.neg, #[_, _, a]) =>
       return mkApp (mkConst ``MyRing.Expr.neg) (← reifyRing oneExpr zeroExpr atomsRef a)
   | _ =>
