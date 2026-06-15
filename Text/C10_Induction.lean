@@ -119,7 +119,7 @@ theorem sum_id_nat (n : Nat) :
 
 -- ANCHOR: vector_space
 -- Real 上のベクトル空間（• は core の SMul の記法）
-class VectorSpace (V : Type) extends Add V, Neg V, Zero V, SMul Real V where
+class Module (V : Type) extends Add V, Neg V, Zero V, SMul Real V where
   add_assoc : ∀ u v w : V, (u + v) + w = u + (v + w)
   add_comm : ∀ u v : V, u + v = v + u
   add_zero : ∀ v : V, v + 0 = v
@@ -130,13 +130,13 @@ class VectorSpace (V : Type) extends Add V, Neg V, Zero V, SMul Real V where
   add_smul : ∀ (a b : Real) (v : V), (a + b) • v = a • v + b • v
 
 -- 線形写像（線形形式は W = Real の場合）
-def IsLinearMap {V W : Type} [VectorSpace V] [VectorSpace W] (T : V → W) : Prop :=
+def IsLinearMap {V W : Type} [Module V] [Module W] (T : V → W) : Prop :=
   (∀ u v : V, T (u + v) = T u + T v) ∧
   (∀ (c : Real) (v : V), T (c • v) = c • T v)
 -- ANCHOR_END: vector_space
 
 -- Real 自身は Real 上のベクトル空間（• は単なる積）
-noncomputable instance : VectorSpace Real where
+noncomputable instance : Module Real where
   smul := fun c x => c * x
   add_assoc := add_assoc
   add_comm := add_comm
@@ -147,20 +147,22 @@ noncomputable instance : VectorSpace Real where
   smul_add := CommRing.left_distrib
   add_smul := CommRing.right_distrib
 
--- 有限数列の空間 Range n → Real（演算はすべて各点で——funext の出番）
-noncomputable instance (n : Nat) : VectorSpace (Range n → Real) where
-  add := fun f g => fun i => f i + g i
-  neg := fun f => fun i => -(f i)
+-- ★ 行き先 V が加群なら、任意の射 α → V も加群（各点演算で誘導）。証明は V の加群公理を
+-- funext で点ごとに持ち上げるだけ。これで Range n → Real も Real → Real も**個別インスタンス
+-- 不要**で自動的に加群になる（行き先 Real が加群だから）。
+noncomputable instance funModule {α V : Type} [Module V] : Module (α → V) where
+  add := fun f g => fun x => f x + g x
+  neg := fun f => fun x => -(f x)
   zero := fun _ => 0
-  smul := fun c f => fun i => c * f i
-  add_assoc := fun f g h => funext fun i => add_assoc (f i) (g i) (h i)
-  add_comm := fun f g => funext fun i => add_comm (f i) (g i)
-  add_zero := fun f => funext fun i => add_zero' (f i)
-  add_neg := fun f => funext fun i => add_neg' (f i)
-  one_smul := fun f => funext fun i => one_mul_b (f i)
-  mul_smul := fun a b f => funext fun i => mul_assoc a b (f i)
-  smul_add := fun a f g => funext fun i => CommRing.left_distrib a (f i) (g i)
-  add_smul := fun a b f => funext fun i => CommRing.right_distrib a b (f i)
+  smul := fun c f => fun x => c • f x
+  add_assoc := fun f g h => funext fun x => Module.add_assoc (f x) (g x) (h x)
+  add_comm := fun f g => funext fun x => Module.add_comm (f x) (g x)
+  add_zero := fun f => funext fun x => Module.add_zero (f x)
+  add_neg := fun f => funext fun x => Module.add_neg (f x)
+  one_smul := fun f => funext fun x => Module.one_smul (f x)
+  mul_smul := fun a b f => funext fun x => Module.mul_smul a b (f x)
+  smul_add := fun a f g => funext fun x => Module.smul_add a (f x) (g x)
+  add_smul := fun a b f => funext fun x => Module.add_smul a b (f x)
 
 -- ANCHOR: summation_linear
 -- Σ は線形形式（証明は corpus の 2 本がそのまま——「線形」という 1 概念に束ねられる）
@@ -175,25 +177,12 @@ theorem summation_isLinear (n : Nat) :
 --    各層が「線形写像」で、合成・特殊化として次の層が出てくる。
 -- ============================================================
 
--- 関数空間 Real → Real のベクトル空間（各点演算）。これで f + g・-f・c • f が中置で書け、
+-- 関数空間 Real → Real も上の funModule で自動的に加群（f + g・-f・c • f が中置で書ける）。
 -- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch13）に使う。
-noncomputable instance : VectorSpace (Real → Real) where
-  add := fun f g => fun x => f x + g x
-  neg := fun f => fun x => -(f x)
-  zero := fun _ => 0
-  smul := fun c f => fun x => c * f x
-  add_assoc := fun f g h => funext fun x => add_assoc (f x) (g x) (h x)
-  add_comm := fun f g => funext fun x => add_comm (f x) (g x)
-  add_zero := fun f => funext fun x => add_zero' (f x)
-  add_neg := fun f => funext fun x => add_neg' (f x)
-  one_smul := fun f => funext fun x => one_mul_b (f x)
-  mul_smul := fun a b f => funext fun x => mul_assoc a b (f x)
-  smul_add := fun a f g => funext fun x => CommRing.left_distrib a (f x) (g x)
-  add_smul := fun a b f => funext fun x => CommRing.right_distrib a b (f x)
 
 -- ANCHOR: weighted_summation
 -- 線形写像の合成は線形（U → V → W）——「線形性は合成で保たれる」道具
-theorem isLinear_comp {U V W : Type} [VectorSpace U] [VectorSpace V] [VectorSpace W]
+theorem isLinear_comp {U V W : Type} [Module U] [Module V] [Module W]
     {T : V → W} {S : U → V} (hT : IsLinearMap T) (hS : IsLinearMap S) :
     IsLinearMap (fun u => T (S u)) :=
   ⟨fun u v => by show T (S (u + v)) = T (S u) + T (S v); rw [hS.1, hT.1],
