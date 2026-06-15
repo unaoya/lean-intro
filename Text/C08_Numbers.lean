@@ -212,6 +212,21 @@ structure IsNatHom (φ : Nat → Real) : Prop where
 theorem cast_isHom : IsNatHom (fun n => (n : Real)) :=
   ⟨rfl, cast_one, fun a b => (cast_add a b).symm, fun a b => cast_mul a b,
    fun a b => cast_le a b⟩
+
+/-- 準同型は Σ と可換: `((Σ f : Nat) : Real) = Σ (cast ∘ f)`。cast が和を保つこと
+（`map_add`）の帰結——Σ を Nat で計算してから cast しても、各項を cast してから Σ しても
+同じ。「構造の射は構造的な演算（有限和）と可換」という一般論の実例。 -/
+theorem cast_summation : ∀ (n : Nat) (f : Range n → Nat),
+    ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) := by
+  intro n
+  induction n with
+  | zero => intro f; rfl
+  | succ m ih =>
+    intro f
+    show ((Summation m (fun k => f (Range.incl k)) + f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
+        = Summation m (fun k => ((f (Range.incl k) : Nat) : Real))
+          + ((f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
+    rw [← cast_add, ih (fun k => f (Range.incl k))]
 -- ANCHOR_END: cast_hom
 
 theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
@@ -266,9 +281,8 @@ theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a
   (equalPartition m a b hm hab).leftRepr_isRepr
 
 -- 注: Σ_{i<n} i の閉じた式は **Nat の恒等式** `sum_id_nat`（C07）。Real での y=x の
--- RS 計算（RS=(n−1)/(2n)）はそれを cast（射 `cast_isHom`）で運んで行う——
--- TODO(P4): 等分割 [0,1] 上の RiemannSum (fun x => x) の計算（その段で「cast は Σ と
--- 可換」を必要に応じて追加する）。
+-- RS 計算（RS=(n−1)/(2n)）はそれを cast（射 `cast_isHom`・Σ 可換 `cast_summation`）で
+-- 運んで行う——TODO(P4): 等分割 [0,1] 上の RiemannSum (fun x => x) の計算。
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
 #print axioms cast_mul
