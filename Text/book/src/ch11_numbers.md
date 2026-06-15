@@ -27,14 +27,15 @@
 
 ## 11.4 cast は「射」——構造を保つ写像（ANCHOR `cast_hom`）
 
-- **cast の順序系を `cast_le` 基盤で構造化（2026-06-16）**: `cast_le`（順序保存）を**帰納の基盤**にし、nonneg・le_succ・lt・単射・pos をすべてその帰結にする（線形性/RS 単調性の階層化と同じ精神）:
-  - **`cast_le`（基盤）**: `b = a + k` の k について帰納・各ステップ `cast m ≤ cast m + 1`（`0 ≤ 1` のみ）——**`cast_nonneg` を使わず**証明するのが鍵
-  - `cast_nonneg = cast_le 0 n`・`cast_le_succ = cast_le n (n+1)`
-  - `cast_lt = cast_le (a+1 ≤ b) + (cast a < cast a + 1)`（狭義単調）
-  - **`cast_inj`（単射）= 狭義単調 `cast_lt` の帰結**（三分法で a<b・b<a を ≠ で排除）
-  - `cast_pos_succ = cast_lt 0 (n+1)`・`cast_pos_of_ne = cast_lt 0 m`
-  - 依存は線形: `cast_le → {nonneg, le_succ, lt} → {inj, pos}`。`cast_add`/`cast_mul`（+/× の準同型）は独立帰納
-- **cast は 0・1・+・×・≤ を保つ＝順序付き半環の準同型**。述語 `IsNatHom` で「Nat → Real は構造の射」を明示し `cast_isHom` で証明（Ch10 の `IsLinearMap` と並ぶ「射」）。`cast_summation`＝**Σ と可換**（Ch12 の y=x 計算で使う）
+- **cast を抽象的に「順序写像」「順序半環の射」として定式化し、補題を一般論から出す（2026-06-16）**:
+  - **`Monotone φ`（順序写像）**: 順序集合間の射 `∀ a b, a ≤ b → φ a ≤ φ b` を抽象述語で定義。**`cast_le : Monotone (Nat-cast)`**＝「cast は順序写像」。基盤証明は `b = a + k` の k 帰納・各ステップ `cast m ≤ cast m + 1`（`0 ≤ 1` のみ・**`cast_nonneg` を使わない**）——cast 固有の順序事実はこれだけ
+  - **`IsOrderedSemiringHom φ`（順序半環の射）**: `map_zero`/`map_one`/`map_add`/`map_mul`＋`monotone : Monotone φ`。Nat・Real を順序半環とみた準同型（旧 `IsNatHom` を改名）
+  - **順序系は「射の一般論」から**（cast 非依存・`IsOrderedSemiringHom` のメソッド）:
+    - `nonneg` = monotone ＋ map_zero
+    - **`succ_step`（`φ n < φ(n+1)`）= map_add ＋ map_one ＋ 0<1**（`φ(n+1)=φ n+1>φ n`）——strict の鍵
+    - `strictMono`（lt）= monotone ＋ succ_step（離散）／ `injective`（単射）= strictMono ＋ 三分法
+  - **cast への適用**: `cast_nonneg/lt/inj = cast_isHom.{nonneg,strictMono,injective}`・`cast_pos_* = cast_lt 0 ·`。cast 固有の証明は `cast_le`＋`cast_add`/`mul` だけ（Ch10 の `IsLinearMap`／RS 単調性と同じ「中核概念から帰結を導く」精神）
+  - `cast_isHom : IsOrderedSemiringHom (Nat-cast)`・`cast_summation`＝**Σ と可換**（Ch12 の y=x 計算で使う）
 - **分割線**: sup を使う archimedean 系は第 II 部へ——「この章は古典公理ゼロ」
 
 ## 11.5 章末監査
