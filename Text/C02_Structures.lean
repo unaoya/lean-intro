@@ -10,6 +10,7 @@
 
 -- ANCHOR: structure_as_data
 #check (Add Nat)                              -- Add Nat : Type（「α 上の加法構造」は型）
+#check Add
 
 -- Add α の住人とは「α 上の二項演算ひとつ」にすぎない（⟨⟩ で作れる）
 example : Add Nat := ⟨Nat.add⟩               -- 普通の加法
@@ -51,6 +52,24 @@ example (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) :=
 example (a b c d : Nat) : (a * b) * (c * d) = (a * c) * (b * d) :=
   interchange natMul a b c d
 -- ANCHOR_END: general_proof
+
+-- ============================================================
+-- §2.5 記法は付けられるか？（→ class の動機）
+--   固定した構造には記法を当てられる（structure で OK）。だが「どんな型でも a+b」
+--   のように Lean が構造を自動で探す多相な記法は、これでは作れない——class が要る。
+-- ============================================================
+
+-- ANCHOR: local_notation
+-- 固定した natAdd の op に局所記法 ⋆ を当てる（structure のままで可能）
+local infixl:65 " ⋆ " => natAdd.op
+
+-- 一般定理がそのまま使える（⋆ は natAdd.op、interchange natAdd の型と一致）
+example (a b c d : Nat) : (a ⋆ b) ⋆ (c ⋆ d) = (a ⋆ c) ⋆ (b ⋆ d) :=
+  interchange natAdd a b c d
+
+-- だが ⋆ は「natAdd という特定の構造」に固定されている。型ごとに構造を自動で選ぶ
+-- 多相な `+`（ℝ でも Nat でも `a + b`）は、構造を探す仕組み＝class／instance が要る（§2.6）。
+-- ANCHOR_END: local_notation
 
 -- ============================================================
 -- §3 種明かし: Ch1 から使ってきた ⟨⟩ も structure だった

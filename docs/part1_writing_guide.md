@@ -57,19 +57,20 @@
 
 ### Ch1 — 最初の証明（`ch01_term.md`、C01）
 - 問い: `⊢` とは何か
-- 到達点: 命題論理の証明を**項**として手書きできる（Real 不要・タクティク不要）
-- 新機能: 命題=型・証明=項（term mode）・`fun`・`⟨⟩`・射影
-- ANCHOR: `my_first_theorem`・`and_swap`
-- ▲CH 対応 6 表を提示・🪟BHK 解釈
-- 演習候補: `and_assoc'`・`and_or_distrib`・`imp_trans`・`double_neg_intro`（C01 内に既存）
-- 引き: Ch2 へ「実数とは何か。公理を読みに行こう」
+- 到達点: 命題論理の証明を**項**として手書きできる・**等式を calc で繋げる**（Real 不要・タクティク不要・term mode）
+- 新機能: 命題=型・証明=項（term mode）・`fun`・`⟨⟩`・射影・**calc（等式の連鎖・term mode）**（2026-06-15 Ch7 から前出し）
+- ANCHOR: `my_first_theorem`・`and_swap`・`calc_warmup`・`nat_interchange`
+- ▲CH 対応 6 表を提示・🪟BHK 解釈・▲**calc で等式証明**（`nat_interchange` ＝ Ch2 抽象版の具体先取り）
+- 演習候補: `and_assoc'`・`and_or_distrib`・`imp_trans`・`double_neg_intro`・**乗法版 interchange を calc で**（`Solutions.nat_interchange_mul` に解答）
+- 引き: Ch2 へ「`+` の式は繋げた。`×` でも繰り返すのか？——実数とは何か・式の繰り返しをどう束ねるか＝『構造』」
+- ⚠ calc は **term mode**（`by` を使わない）。`by`=tactic mode は Ch6・`≤`/`<` 混在の calc と Trans は Ch7（ここは `=` の calc だけ）
 
 ### Ch2 — 数学的構造と class の仕組み（`ch02_structures.md`、C02_Structures）※2026-06-15 スワップ
 - 問い: 実数とは何か（→ 実数は「構造」で与えられる。まず構造を掴む）
 - 到達点: 「構造＝データ・class＝自動で見つかる構造」の見方・一般構造で 1 回証明して複数インスタンスに適用する経験
 - 新機能: **structure キーワード**・署名の読み方・暗黙引数（**読む**）・**class（最小: 自動解決される構造）**
-- ANCHOR: `structure_as_data`・`general_proof`・`and_is_structure`
-- ビート: ① 型=集合(carrier)・構造=データ（Ch1 の `⟨h.2,h.1⟩` の大きい版・`structure` キーワード）② `structure_as_data`（`Add Nat` の住人 2 つ・Add は法則を持たない→階層がある動機）③ **`general_proof`**（`CommMonoidStr`＋交換則を assoc/comm だけで証明→`natAdd`/`natMul` に適用・`interchange natAdd …` が `+`/`*` に defeq 一致＝抽象化の威力）④ class 最小導入（`M.op` 煩雑→ℝ で `a+b` が欲しい→class=自動で見つかる構造）⑤ `and_is_structure`（`#print And`・Ch1 の `⟨⟩` の正体）
+- ANCHOR: `structure_as_data`・`general_proof`・`local_notation`・`and_is_structure`
+- ビート: ① 型=集合(carrier)・構造=データ（Ch1 の `⟨h.2,h.1⟩` の大きい版・`structure` キーワード）② `structure_as_data`（`Add Nat` の住人 2 つ・Add は法則を持たない→階層がある動機）③ **`general_proof`**（`CommMonoidStr`＋交換則を assoc/comm だけで証明＝**Ch1 `nat_interchange` の抽象版**・calc 既出で読める→`natAdd`/`natMul` に適用・`+`/`*` に defeq 一致＝抽象化の威力・乗法版の直接労力が無料に）④ `local_notation`（固定構造に記法 `⋆` は当てられる・だが多相 `+` は不可→class の動機・L39 回収）⑤ class 最小導入（自動で見つかる構造）⑥ `and_is_structure`（`#print And`・Ch1 の `⟨⟩` の正体）
 - ▲structure＝データの視点・▲抽象化（1 回証明→多数適用）・▲class の最小概念
 - 演習候補: `Add Nat` の住人をもう 1 つ・`CommMonoidStr` の別インスタンス・`n` を implicit に（Ch4 への布石）
 - 引き: Ch3 へ「道具は揃った。実数の公理を読もう——それは『構造』として書かれている」
@@ -120,8 +121,8 @@
 
 ### Ch7 — sorry を埋める道具 II（`ch07_defeq.md`、C07）
 - 問い: 等しさには 2 種類あるのか
-- 到達点: calc が設計できる・帰納法で Σ 補題コーパスが証明できる
-- 新機能: defeq と rw の構文性・rfl/show・calc・Trans・induction・omega・**One bridge**
+- 到達点: **`≤`/`<` 混在の calc を設計できる**（Trans インスタンス）・帰納法で Σ 補題コーパスが証明できる
+- 新機能: defeq と rw の構文性・rfl/show・**calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1 既出）・induction・omega・**One bridge**
 - ANCHOR: `vector_space`・`summation_linear`（脇道）
 - ▼rw=Eq.mpr＋motive（種明かし）・▼induction=recursor 適用（Ch4 回収）・▲One bridge（菱形）・**rw の罠 2 種**（引数明示・独立補題への切り出し）・🪟正規化と #reduce
 - 演習候補: コーパス 9 本の sorry 埋め・脇道「Σ は線形形式」（VectorSpace 自作・関数空間インスタンス・summation_isLinear＝corpus 2 本のペア）
@@ -154,7 +155,7 @@
 
 各章ドラフトを以下で照合する。違反は「方針管理」上の指摘事項。
 
-- **(a) 機能初出の単調性**（2026-06-15 スワップ反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode は Ch6 まで出さない）。スワップ後の初出: **structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・class の深い機構（解決・diamond）=Ch8。`structure` を素の教材例（`general_proof`）で先に使い、`class`/`instance` の自動解決と深い機構は段階的に
+- **(a) 機能初出の単調性**（2026-06-15 スワップ＋calc 前出し反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**calc 深掘り（`≤`/`<`・Trans）=Ch7**・class 深い機構（解決・diamond）=Ch8。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
 - **(b) CH 対応 6 表**: Ch1 で提示 → **Ch3** で ∀∃=Π/Σ を裏付け（Real.sup の署名）→ Ch4 で `#print` により完結（∧∨∃=も帰納型）。表の各行が「いつ裏付くか」と整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr・induction=recursor（Ch4 の recursor を回収）・omega 予告。「使う→仕組みを覗く」の順序が保たれているか
 - **(d) 菱形の糸**（2026-06-15 スワップで再配置）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch8 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
