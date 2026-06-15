@@ -361,3 +361,18 @@ theorem const_le_rs {n : Nat} {u v : Real} (Δ : Partition n u v)
 #print axioms riemann_sum_const
 #print axioms riemann_sum_nonneg
 #print axioms rs_le_const
+
+-- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch9 に置く）。
+namespace Partition
+
+/-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/
+theorem leftRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
+    Δ.IsRepr Δ.leftRepr :=
+  fun i => ⟨OrderedAddCommMonoid.le_refl _, Δ.increase i⟩
+
+/-- 右端タグは代表点系。 -/
+theorem rightRepr_isRepr {n : Nat} {a b : Real} (Δ : Partition n a b) :
+    Δ.IsRepr Δ.rightRepr :=
+  fun i => ⟨Δ.increase i, OrderedAddCommMonoid.le_refl _⟩
+
+end Partition

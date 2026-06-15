@@ -147,3 +147,70 @@ noncomputable instance funModule {α V : Type} [Module V] : Module (α → V) wh
   mul_smul := fun a b f => funext fun x => Module.mul_smul a b (f x)
   smul_add := fun a f g => funext fun x => Module.smul_add a (f x) (g x)
   add_smul := fun a b f => funext fun x => Module.add_smul a b (f x)
+
+-- ============================================================
+-- 分割とリーマン和の**定義**（到達点①）。証明技術は不要——structure とΣで値を作るだけ。
+--   代表点が妥当（leftRepr_isRepr）であることの証明は順序 le_refl を要するので Ch9 で。
+-- ============================================================
+
+open Range
+
+-- 区間 [a, b] の n 分割: 広義単調な分点列で両端が a, b（データと証明が同居する依存レコード）。
+-- ANCHOR: partition
+structure Partition (n : Nat) (a b : Real) where
+  points : Range (n + 1) → Real
+  increase : ∀ i : Range n, points (incl i) ≤ points (addone i)
+  left : points ⟨0, Nat.succ_pos n⟩ = a
+  right : points ⟨n, Nat.lt_succ_self n⟩ = b
+-- ANCHOR_END: partition
+
+namespace Partition
+
+-- i 番目の小区間の長さ（dot 記法 Δ.length が効く）
+noncomputable def length {n : Nat} {a b : Real} (Δ : Partition n a b)
+    (i : Range n) : Real :=
+  Δ.points (addone i) - Δ.points (incl i)
+
+end Partition
+
+-- リーマン和の定義は 1 行（値ベクトル f∘ξ と幅ベクトル length の和）
+-- ANCHOR: riemann_sum
+noncomputable def RiemannSum (f : Real → Real) {n : Nat} {a b : Real}
+    (Δ : Partition n a b) (ξ : Range n → Real) : Real :=
+  Summation n (fun i => f (ξ i) * Δ.length i)
+-- ANCHOR_END: riemann_sum
+
+namespace Partition
+
+-- ANCHOR: is_repr
+/-- 代表点系 `IsRepr`: タグ `ξ i` が各小区間 `[points (incl i), points (addone i)]` に
+属すること。リーマン和の概念の一部（妥当なタグの条件）。 -/
+def IsRepr {n : Nat} {a b : Real} (Δ : Partition n a b) (ξ : Range n → Real) : Prop :=
+  ∀ i : Range n, Δ.points (incl i) ≤ ξ i ∧ ξ i ≤ Δ.points (addone i)
+-- ANCHOR_END: is_repr
+
+-- ANCHOR: endpoint_repr
+/-- 左端代表点: 各小区間の左端 `points (incl i)` をタグにする。 -/
+def leftRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
+  fun i => Δ.points (incl i)
+
+/-- 右端代表点: 各小区間の右端 `points (addone i)` をタグにする。 -/
+def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :=
+  fun i => Δ.points (addone i)
+-- ANCHOR_END: endpoint_repr
+
+end Partition
+
+-- クリフハンガー: 1 分割（リテラルも除法も不要、自明の極み——なのに increase が
+-- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch5 で完成）。
+-- ANCHOR: trivial_partition
+def trivialPartition (a b : Real) (hab : a ≤ b) : Partition 1 a b where
+  points := fun i => if i.val = 0 then a else b
+  increase := by
+    intro ⟨v, hv⟩
+    match v, hv with
+    | 0, _ => exact hab
+    | v + 1, hv => exact absurd hv (by omega)
+  left := rfl
+  right := rfl
+-- ANCHOR_END: trivial_partition
