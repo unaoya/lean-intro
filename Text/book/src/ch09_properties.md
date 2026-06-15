@@ -4,8 +4,8 @@
 
 - 前章からの問い: 一般の分割で何が言えるか
 - 到達点: 後段が消費する性質 5 本（到達点③）。第 I 部古典ゼロの監査
-- 新しい Lean 機能: なし（総合演習 II）——だが述語の設計（IsRepr）が初登場
-- コード: C09_Properties.lean（Proto: FTCCore§分割補題＋Criterion§両側評価 → ~120 行）
+- 新しい Lean 機能: なし（総合演習 II）。**IsRepr の定義は Ch5・幾何補題（points_mono 等）は Ch7 に移動済**——ここは「使う」側
+- コード: C09_Properties.lean（性質 5 本＋反例。IsRepr=C05・幾何/tag_mem'=C07・equalPartitionRepr_isrepr=C08）
 
 ## 9.1 additive / neg — Σ の線形性の持ち上げ
 
@@ -15,10 +15,10 @@
 
 - length_sum（Σ length = b − a、telescope_sum の回収）→ const_sum
 
-## 9.3 nonneg — 反例が定義を生む
+## 9.3 nonneg — 反例が「なぜ IsRepr が必須か」を実演する
 
-- タグが区間外なら非負にならない**反例**から IsRepr が必然として登場
-- tag_mem・points_mono（Nat 帰納法の好例——well-founded 不要）・length_nonneg
+- IsRepr（代表点の妥当性）は **Ch5 で定義済**。ここでは性質4で**使い**、タグを区間外にすると非負が**壊れる反例**で「妥当性条件が飾りでない」ことを見せる
+- 使う道具: `tag_mem'`（タグは [u,v] 内）・`points_mono`・`length_nonneg`——いずれも **Ch7 で証明済**（読者自身の構造への帰納法の実地）
 
 ## 9.4 両側評価 rs_bound
 

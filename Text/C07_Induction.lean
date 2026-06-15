@@ -399,3 +399,63 @@ theorem summation_isLinear (n : Nat) :
   ⟨fun f g => additive_summation n f g,
    fun c f => summation_mul_left n f c⟩
 -- ANCHOR_END: summation_linear
+
+-- ============================================================
+-- Partition の基本性質（induction を読者自身の構造に適用する実地）
+--    隣接単調（公理 increase）→ 大域単調（points_mono・induction）→ 端点評価・
+--    タグの所属。すべて Ch9 の性質証明が消費する。
+-- ============================================================
+
+/-- 各小区間の長さは非負（分点が広義単調だから）。 -/
+theorem length_nonneg {n : Nat} {u v : Real} (Δ : Partition n u v) (i : Range n) :
+    0 ≤ Δ.length i :=
+  (nonneg_iff_le _ _).mp (Δ.increase i)
+
+/-- 分点列の単調性: 添字 `k.val ≤ lv` なら `points k ≤ points ⟨lv,_⟩`。隣接単調（公理
+`increase`）から **induction** で大域単調を導く（well-founded 再帰は不要）。 -/
+theorem points_mono {n : Nat} {u v : Real} (Δ : Partition n u v) (k : Range (n + 1)) :
+    ∀ (lv : Nat) (hl : lv < n + 1), k.val ≤ lv → Δ.points k ≤ Δ.points ⟨lv, hl⟩ := by
+  intro lv
+  induction lv with
+  | zero =>
+    intro hl hk
+    have hke : k = ⟨0, hl⟩ := Subtype.ext (Nat.le_zero.mp hk)
+    rw [hke]; exact le_refl _
+  | succ m ih =>
+    intro hl hk
+    rcases Nat.lt_or_ge k.val (m + 1) with hlt | hge
+    · have hm : m < n + 1 := Nat.lt_of_succ_lt hl
+      have hmn : m < n := Nat.lt_of_succ_lt_succ hl
+      exact le_trans (ih hm (Nat.le_of_lt_succ hlt)) (Δ.increase ⟨m, hmn⟩)
+    · have hke : k = ⟨m + 1, hl⟩ := Subtype.ext (Nat.le_antisymm hk hge)
+      rw [hke]; exact le_refl _
+
+/-- すべての分点は左端 `u` 以上（単調性＋`Δ.left`）。 -/
+theorem left_le_point {n : Nat} {u v : Real} (Δ : Partition n u v)
+    (i : Range (n + 1)) : u ≤ Δ.points i := by
+  have h := points_mono Δ ⟨0, Nat.succ_pos n⟩ i.val i.property (Nat.zero_le _)
+  rw [Δ.left] at h
+  exact h
+
+/-- すべての分点は右端 `v` 以下（単調性＋`Δ.right`）。 -/
+theorem point_le_right {n : Nat} {u v : Real} (Δ : Partition n u v)
+    (i : Range (n + 1)) : Δ.points i ≤ v := by
+  have h := points_mono Δ i n (Nat.lt_succ_self n) (Nat.le_of_lt_succ i.property)
+  rw [Δ.right] at h
+  exact h
+
+/-- 代表点系のタグは区間 `[u, v]` 内にある（IsRepr＝小区間内・端点評価から区間全体へ。
+raw 版。`TaggedPartition` に束ねた版は Ch12）。 -/
+theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n → Real)
+    (hr : Δ.IsRepr ξ) (i : Range n) : u ≤ ξ i ∧ ξ i ≤ v := by
+  have h1 : Δ.points ⟨0, Nat.succ_pos n⟩ ≤ Δ.points (Range.incl i) :=
+    points_mono Δ ⟨0, Nat.succ_pos n⟩ i.val (Nat.lt_succ_of_lt i.property) (Nat.zero_le _)
+  have h2 : Δ.points (Range.addone i) ≤ Δ.points ⟨n, Nat.lt_succ_self n⟩ :=
+    points_mono Δ (Range.addone i) n (Nat.lt_succ_self n) i.property
+  constructor
+  · calc u = Δ.points ⟨0, Nat.succ_pos n⟩ := Δ.left.symm
+      _ ≤ Δ.points (Range.incl i) := h1
+      _ ≤ ξ i := (hr i).1
+  · calc ξ i ≤ Δ.points (Range.addone i) := (hr i).2
+      _ ≤ Δ.points ⟨n, Nat.lt_succ_self n⟩ := h2
+      _ = v := Δ.right

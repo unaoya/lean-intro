@@ -116,11 +116,11 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C03_Axioms | Ch3 | 階層クラス・公理 5 本・zero_bridge・最小インスタンス・根幹 2 行・check_failure・`<` の 3 兄弟 | 旧 C02_Axioms を改名（2026-06-15） | 75 |
 | （diamond） | Ch8 | ダイヤモンド事件は C08_Numbers へ移設（NatCast 排他分割の動機・旧 C03_Class は解体） | — | — |
 | C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
-| C05_RiemannSum | Ch5 | Partition・length・RiemannSum・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 35 |
+| C05_RiemannSum | Ch5 | Partition・length・RiemannSum・**IsRepr**（代表点の妥当性・2026-06-15 移動）・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 50 |
 | C06_Tactics | Ch6 | タクティク演習集（代数補題の基礎部） | Lemmas 基礎部 | 60 |
-| C07_Induction | Ch7 | Σ補題コーパス 9 本・Trans・calc 演習 | FTCCore§Σ＋InsertBound§1＋Refine§3 を再配列 | 120 |
+| C07_Induction | Ch7 | Σ補題コーパス 9 本・Trans・calc 演習・**Partition 幾何**（length_nonneg・points_mono・left/right_le_point・tag_mem'・2026-06-15 移動＝induction 実地） | FTCCore§Σ＋InsertBound§1＋Refine§3 を再配列 | 120 |
 | C08_Numbers | Ch8 | OfNat/ofNat/NatCast・cast 補題（構成的部）・equalPartition・sum_id・RS=(n+1)/(2n) | Numerals＋Cast 前半＋EqualPartition＋Example§2 | 150 |
-| C09_Properties | Ch9 | IsRepr・tag_mem・points_mono・length_sum・const_sum・additive/neg/nonneg・両側 rs_bound | FTCCore§分割＋Criterion§両側評価 | 120 |
+| C09_Properties | Ch9 | 性質 5 本（additive/neg/sub・length_sum＋const・nonneg・両側 rs_bound）＋反例で IsRepr の必要性を実演（IsRepr=C05・幾何=C07・equalPartitionRepr_isrepr=C08 へ移動済） | FTCCore§分割＋Criterion§両側評価 | 90 |
 | C10_Automation | Ch10 | simp セット・macro 合成・my_ring 入口 | 新規（P4 開発） | 80 |
 | C11_Archimedes | Ch11 | sup_near・archimedean・has_min・natMin・ceil・exists_fine_partition・古典順序補題・素朴定義実験 | Cast 後半＋EqualPartition(fine)＋Lemmas 古典部 | 160 |
 | C12_Integral | Ch12 | TaggedPartition・Fine・Near・IsIntegral・Integral・Integral'・ContinuousAt・∫記法 | Partition 残部＋Integral＋FTC(ContinuousAt) | 70 |

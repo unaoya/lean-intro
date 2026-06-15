@@ -1,5 +1,6 @@
 -- Text/C05_RiemannSum.lean — Ch5 分割とリーマン和の定義（到達点①）
--- IsRepr は Ch9（反例から必然として登場）、TaggedPartition は Ch12 まで持たない
+-- 代表点の妥当性 IsRepr もここで定義（タグは小区間内から選ぶ＝リーマン和の概念の一部）。
+-- TaggedPartition（束ねた版）は Ch12 まで持たない。
 -- TODO(P4): Σ 記法・リーマン和の記法をここで自作する（notation 初登場）
 import Text.C04_Summation
 
@@ -30,6 +31,20 @@ noncomputable def RiemannSum (f : Real → Real) {n : Nat} {a b : Real}
     (Δ : Partition n a b) (ξ : Range n → Real) : Real :=
   Summation n (fun i => f (ξ i) * Δ.length i)
 -- ANCHOR_END: riemann_sum
+
+-- 代表点の妥当性: タグ ξ は各小区間の中から選ぶ。RiemannSum 自体は任意の ξ で計算できるが、
+-- 「リーマン和」と呼ぶにはタグが代表点系（IsRepr）であることを課す。
+-- この条件が効く場面（性質 4・非負性）は Ch9 で見る——落とすと何が壊れるかも。
+namespace Partition
+
+-- ANCHOR: is_repr
+/-- 代表点系 `IsRepr`: タグ `ξ i` が各小区間 `[points (incl i), points (addone i)]` に
+属すること。リーマン和の概念の一部（妥当なタグの条件）。 -/
+def IsRepr {n : Nat} {a b : Real} (Δ : Partition n a b) (ξ : Range n → Real) : Prop :=
+  ∀ i : Range n, Δ.points (incl i) ≤ ξ i ∧ ξ i ≤ Δ.points (addone i)
+-- ANCHOR_END: is_repr
+
+end Partition
 
 -- クリフハンガー: 1 分割（リテラルも除法も不要、自明の極み——なのに increase が
 -- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch8 で完成）

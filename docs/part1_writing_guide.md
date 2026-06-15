@@ -103,13 +103,13 @@
 
 ### Ch5 — 分割とリーマン和の定義（`ch05_structure.md`、C05・到達点①）
 - 問い: 分割をどう表すか
-- 到達点: **リーマン和の定義が書ける**（到達点①）・ただし sorry が 1 つ残って幕
+- 到達点: **リーマン和の定義が書ける**（到達点①）・代表点の妥当性 `IsRepr` も定義・ただし sorry が 1 つ残って幕
 - 新機能: structure（双子章・後編）・notation 自作・暗黙引数（**書く**: `length {n}{a b}`）
-- ANCHOR: `partition`・`riemann_sum`・`trivial_partition`
-- ▼`And` も structure だった（`#print And`・Ch1 の `⟨⟩` 回収）・▲notation 初登場（自動化糸の起点）・▲trivialPartition の sorry クリフハンガー（Ch8 で回収）
+- ANCHOR: `partition`・`riemann_sum`・**`is_repr`**・`trivial_partition`
+- ▼`And` も structure だった（`#print And`・Ch1 の `⟨⟩` 回収）・▲notation 初登場（自動化糸の起点）・▲**IsRepr**（代表点の妥当性＝タグは小区間内・RS は任意 ξ で計算できるが「リーマン和」と呼ぶには妥当なタグを課す）・▲trivialPartition の sorry クリフハンガー（Ch8 で回収）
 - 演習候補: 反転演習（Partition を class にすると IsIntegral が書けない／LOF を structure にすると `a+b` のたびに名指し）
 - 引き: Ch6 へ「定義はできた。sorry を埋める道具が要る」
-- ⚠ TaggedPartition・IsRepr はまだ出さない（Ch12・Ch9）。RS の定義 1 行に前章までの全部が映る、を体感させる
+- ⚠ **IsRepr はここで定義**（2026-06-15 移動・C09 から）——代表点は概念の一部。効く場面（性質4・非負）と「落とすと壊れる」反例は Ch9。TaggedPartition（束ねた版）は Ch12。RS の定義 1 行に前章までの全部が映る、を体感させる
 
 ### Ch6 — sorry を埋める道具 I（`ch06_tactic.md`、C06）
 - 問い: 残った sorry をどう埋めるか
@@ -122,13 +122,13 @@
 
 ### Ch7 — sorry を埋める道具 II（`ch07_defeq.md`、C07）
 - 問い: 等しさには 2 種類あるのか
-- 到達点: **`≤`/`<` 混在の calc を設計できる**（Trans インスタンス）・帰納法で Σ 補題コーパスが証明できる
+- 到達点: **`≤`/`<` 混在の calc を設計できる**（Trans インスタンス）・帰納法で Σ 補題コーパス＋**Partition の大域単調性**が証明できる
 - 新機能: defeq と rw の構文性・rfl/show・**calc の深掘り（`≤`/`<` 混在・Trans）**（`=` の calc は Ch1 既出）・induction・omega・**One bridge**
-- ANCHOR: `vector_space`・`summation_linear`（脇道）
-- ▼rw=Eq.mpr＋motive（種明かし）・▼induction=recursor 適用（Ch4 回収）・▲One bridge（菱形）・**rw の罠 2 種**（引数明示・独立補題への切り出し）・🪟正規化と #reduce
-- 演習候補: コーパス 9 本の sorry 埋め・脇道「Σ は線形形式」（VectorSpace 自作・関数空間インスタンス・summation_isLinear＝corpus 2 本のペア）
+- ANCHOR: `vector_space`・`summation_linear`（脇道）。Partition 幾何（points_mono 等）は ANCHOR 未付与（§5）
+- ▼rw=Eq.mpr＋motive（種明かし）・▼induction=recursor 適用（Ch4 回収）・▲One bridge（菱形）・**rw の罠 2 種**（引数明示・独立補題への切り出し）・▲**Partition の基本性質**（2026-06-15 移動: 隣接単調＝公理 → `points_mono`＝大域単調を induction で・`left/right_le_point`・`tag_mem'`＝代表点は [u,v] 内。**読者自身の構造への帰納法の実地**）・🪟正規化と #reduce
+- 演習候補: コーパス 9 本の sorry 埋め・脇道「Σ は線形形式」・**`points_mono` を induction で**
 - 引き: Ch8 へ「Ch5 の sorry を消しに行こう→2 等分・n 等分」
-- ⚠ telescope_sum がボス戦（最初の本格帰納法・Ch9 length_sum と Ch14 中点和の部品）
+- ⚠ telescope_sum がボス戦（最初の本格帰納法・Ch9 length_sum と Ch14 中点和の部品）。Partition 幾何の証明は order 補題（`nonneg_iff_le` 等）の**後**に置く
 
 ### Ch8 — 具体例 y=x の n 等分（`ch08_example.md`、C08・到達点②）
 - 問い: sorry を消し、具体例を計算する
@@ -137,18 +137,19 @@
 - ANCHOR: `of_nat`・`equal_partition`・`sum_id`・`cast_defeq`
 - ▼`(2:Real)` エラー回収（Ch3）・▼trivialPartition の sorry 消える（Ch5）・▲菱形の排他分割（0/1/2 以上＝AtLeastTwo 手作り）・**defeq 観察**（`ofNat 1 = 0+1` は rfl・`= 1` は `#check_failure`）
 - 演習候補: 分点が i/n の確認（show）・`sum_id`（`(1+1)·Σi = n(n−1)`）・cast 一括ルートを試して壊す
+- ▲`equalPartitionRepr_isrepr`（2026-06-15 移動: この等分割の左端タグは妥当＝IsRepr。左端は自分の小区間の左端だから自明）
 - 引き: Ch9 へ「一般の分割で何が言える？性質を証明しよう」
 - ⚠ cast 補題は**構成的な部分のみ**（archimedean 系の sup 利用は Ch11 へ送る＝公理の節約を設計として見せる）。肥大時は 2 章分割を予約
 
 ### Ch9 — リーマン和の性質 5 本（`ch09_properties.md`、C09・到達点③）
 - 問い: 一般の分割で何が言えるか
 - 到達点: 後段が消費する性質 5 本（到達点③）・第 I 部古典ゼロの監査
-- 新機能: なし（総合演習）——ただし**述語の設計（IsRepr）**が初登場
-- ANCHOR: `is_repr`（性質 5 本は未付与・§5 参照）
-- ▲両側評価（脱 abs・理由は Ch11 予告）・▲IsRepr（反例が要求）・▼第 I 部古典ゼロの総決算（監査の段階の山）
-- 演習候補: additive/neg/const（望遠鏡和）/nonneg（反例から IsRepr）/両側 rs_bound・章末 `#print axioms`
+- 新機能: なし（総合演習）。**IsRepr の定義は Ch5・幾何補題は Ch7 に移動済**——ここは「使う」側
+- ANCHOR: なし（性質 5 本・docstring 済・ANCHOR は §5。`is_repr` は Ch5 へ移動）
+- ▲線形性 / const（望遠鏡和）/ nonneg / 両側評価（脱 abs・理由は Ch11 予告）・▲**反例で IsRepr の必要性を実演**（定義は Ch5・タグを区間外にすると nonneg が壊れる）・▼第 I 部古典ゼロの総決算（監査の段階の山）
+- 演習候補: additive/neg/const/nonneg/両側 rs_bound・**IsRepr を落とした反例**・章末 `#print axioms`
 - 引き: Ch10 へ「同じパターンを繰り返した。手を自動化しよう（間奏へ）」
-- ⚠ 性質 5 本は**生の不等式 2 本**で書く（NearLe 述語への昇格は発展部）。「同じ形が 3 回出たら昇格」の方針を一言
+- ⚠ 性質 5 本は**生の不等式 2 本**で書く（NearLe 述語への昇格は発展部）。「同じ形が 3 回出たら昇格」の方針を一言。`length_sum` は const と密結合なので C09（幾何だが移さない）
 
 ---
 
@@ -173,8 +174,10 @@
 
 - **Ch2/Ch3 スワップ済（2026-06-15）**: 新 C02_Structures.lean（structure_as_data・general_proof・and_is_structure）＝Ch2 machinery／C02_Axioms→C03_Axioms.lean（階層・公理・根幹2行・check_failure・three_brothers）＝Ch3／旧 C03_Class は解体（diamond は C08_Numbers へ）。md は ch02_structures.md・ch03_axioms.md
 - **C06_Tactics**: ANCHOR 未付与（タクティク corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
-- **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（`is_repr` のみ済）。**docstring は全宣言に付与済（2026-06-15）**
-- **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C09 のみ済）。新規・改稿する宣言には `/-- -/` を付ける運用に
+- **IsRepr/幾何の配置移動済（2026-06-15）**: 代表点はリーマン和の概念の一部、という指摘を受け再編——`IsRepr` 定義→**C05**（ANCHOR `is_repr` も移動）／純 Partition 幾何（length_nonneg・points_mono・left/right_le_point・tag_mem'）→**C07**（induction の実地）／`equalPartitionRepr_isrepr`→**C08**。C09 は性質 5 本（＋length_sum）に絞る。反例は Ch9 で「IsRepr が必須な理由の実演」として残す
+- **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
+- **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C09 全宣言＋C05 の is_repr・C07 の幾何・C08 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
+- **simp**: 前半は simp 非導入（Ch10 で導入）。等式（length_sum・riemann_sum_const 等）は将来 @[simp] 可・不等式（points_mono 等）は rewrite 規則になれない（2026-06-15 確認）
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る
 - **演習の sorry 化＋Solutions 分離・`#include` 配線・mdbook 導入**: P4（今回はインライン引用で可・ANCHOR は維持し後で変換）
 - **Ch10 間奏（C10）・付録 D（my_ring）**: 前半の範囲外

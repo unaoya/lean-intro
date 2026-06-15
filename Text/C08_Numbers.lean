@@ -223,10 +223,16 @@ theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤
   rw [show (((i.val + 1 : Nat)) : Real) = ((i.val : Nat) : Real) + 1 from succ_ofNat i.val]
   rw [add_sub_cancel ((i.val : Nat) : Real) 1, one_mul]
 
--- 代表点 = 各小区間の左端（IsRepr であることの証明は Ch9）
+/-- 代表点 = 各小区間の左端。 -/
 noncomputable def equalPartitionRepr (m : Nat) (a b : Real) (_hm : m ≠ 0) (_hab : a ≤ b) :
     Range m → Real :=
   fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)
+
+/-- 等分割の左端タグ（`equalPartitionRepr`）は代表点系（`IsRepr`）である。左端は自分の
+小区間の左端そのものだから自明。 -/
+theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    (equalPartition m a b hm hab).IsRepr (equalPartitionRepr m a b hm hab) :=
+  fun i => ⟨le_refl _, (equalPartition m a b hm hab).increase i⟩
 
 -- ============================================================
 -- §5 名物演習: sum_id（(1+1)·Σ i = n·(n−1) 形——リテラル 2 を使わない設計の議論込み）
