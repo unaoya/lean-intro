@@ -173,20 +173,27 @@ theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c :=
 -- ofNat の定義（| 0 | n+1）により再帰方程式は rfl
 theorem succ_ofNat (n : Nat) : Real.ofNat (n + 1) = Real.ofNat n + (1 : Real) := rfl
 
-theorem cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
-  show (0 : Real) ≤ Real.ofNat n
-  induction n with
-  | zero => exact le_refl 0
-  | succ m ih =>
-    rw [succ_ofNat]
-    exact add_nonneg' ih zero_lt_one.1
+/-- cast は順序を保つ（単調）——**順序系の基盤**。`b = a + k` の k について帰納し、各ステップ
+`cast m ≤ cast m + 1`（`0 ≤ 1` のみ）で積む。**cast_nonneg を使わず**証明するので、
+nonneg・le_succ・lt・単射・pos をすべてこの帰結にできる。 -/
+theorem cast_le (a b : Nat) (h : a ≤ b) : (a : Real) ≤ (b : Real) := by
+  obtain ⟨k, rfl⟩ := Nat.le.dest h
+  clear h
+  show (a : Real) ≤ Real.ofNat (a + k)
+  induction k with
+  | zero => exact le_refl _
+  | succ k ih =>
+    rw [show a + (k + 1) = (a + k) + 1 from (Nat.add_assoc a k 1).symm, succ_ofNat]
+    exact le_trans ih (le_add_nonneg _ 1 (le_of_lt zero_lt_one))
 
-theorem cast_pos_succ (n : Nat) : (0 : Real) < ((n + 1 : Nat) : Real) := by
-  show (0 : Real) < Real.ofNat (n + 1)
-  rw [succ_ofNat]
-  exact lt_le_trans 0 1 (Real.ofNat n + 1) zero_lt_one
-    (by calc (1 : Real) = 0 + 1 := (zero_add' 1).symm
-        _ ≤ Real.ofNat n + 1 := add_le_add_right 0 (Real.ofNat n) 1 (cast_nonneg n))
+/-- `0 ≤ cast n`（`cast_le 0 n` と `cast 0 = 0`）。 -/
+theorem cast_nonneg (n : Nat) : (0 : Real) ≤ (n : Real) := by
+  have h := cast_le 0 n (Nat.zero_le n)
+  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
+
+/-- `cast n ≤ cast (n+1)`（`cast_le` に `n ≤ n+1`）。 -/
+theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
+  cast_le n (n + 1) (Nat.le_succ n)
 
 theorem cast_add (n m : Nat) : (n : Real) + (m : Real) = ((n + m : Nat) : Real) := by
   show Real.ofNat n + Real.ofNat m = Real.ofNat (n + m)
@@ -199,20 +206,21 @@ theorem cast_add (n m : Nat) : (n : Real) + (m : Real) = ((n + m : Nat) : Real) 
       = (Real.ofNat n + Real.ofNat m) + 1 := (add_assoc _ _ _).symm
       _ = Real.ofNat (n + m) + 1 := by rw [ih]
 
-theorem cast_lt (a b : Nat) : a < b → (a : Real) < (b : Real) := by
-  intro h
-  obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_lt h
-  have hassoc : a + d + 1 = a + (d + 1) := Nat.add_assoc a d 1
-  rw [hd, hassoc]
-  have h_eq : ((a + (d + 1) : Nat) : Real) = (a : Real) + ((d + 1 : Nat) : Real) :=
-    (cast_add a (d + 1)).symm
-  rw [h_eq]
-  have hpos : (0 : Real) < ((d + 1 : Nat) : Real) := cast_pos_succ d
-  have h1 := add_left_lt (a : Real) 0 ((d + 1 : Nat) : Real) hpos
-  rw [add_zero'] at h1; exact h1
+/-- cast は狭義単調: `a < b → cast a < cast b`。`cast_le (a+1 ≤ b)` と
+`cast a < cast a + 1`（`= cast (a+1)`）から。 -/
+theorem cast_lt (a b : Nat) (h : a < b) : (a : Real) < (b : Real) := by
+  have hle : ((a + 1 : Nat) : Real) ≤ (b : Real) := cast_le (a + 1) b h
+  have hstep : (a : Real) < ((a + 1 : Nat) : Real) := by
+    rw [show ((a + 1 : Nat) : Real) = (a : Real) + 1 from by rw [← cast_add a 1, cast_one]]
+    exact lt_add_pos (a : Real) 1 zero_lt_one
+  exact lt_le_trans (a : Real) ((a + 1 : Nat) : Real) (b : Real) hstep hle
 
-theorem cast_le_succ (n : Nat) : (n : Real) ≤ ((n + 1 : Nat) : Real) :=
-  le_of_lt (cast_lt n (n + 1) (Nat.lt_succ_self n))
+/-- **cast は単射**（狭義単調の帰結）: `cast a = cast b → a = b`。三分法で a<b・b<a を ≠ で排除。 -/
+theorem cast_inj (a b : Nat) (h : (a : Real) = (b : Real)) : a = b := by
+  rcases Nat.lt_trichotomy a b with hlt | heq | hgt
+  · exact absurd h ((ne_of_gt (cast_lt a b hlt)).symm)
+  · exact heq
+  · exact absurd h (ne_of_gt (cast_lt b a hgt))
 
 /-- cast は乗法を保つ: `((n*m : Nat) : Real) = (n:Real)*(m:Real)`。 -/
 theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) := by
@@ -224,11 +232,15 @@ theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) 
         show ((m + 1 : Nat) : Real) = (m : Real) + 1 from by rw [← cast_add m 1, cast_one],
         CommRing.left_distrib, mul_one_b]
 
-/-- cast は順序を保つ（単調）: `a ≤ b → (a:Real) ≤ (b:Real)`。 -/
-theorem cast_le (a b : Nat) (h : a ≤ b) : (a : Real) ≤ (b : Real) := by
-  rcases Nat.eq_or_lt_of_le h with heq | hlt
-  · rw [heq]; exact le_refl _
-  · exact le_of_lt (cast_lt a b hlt)
+/-- `0 < cast (n+1)`（`cast_lt 0 (n+1)` と `cast 0 = 0`）。 -/
+theorem cast_pos_succ (n : Nat) : (0 : Real) < ((n + 1 : Nat) : Real) := by
+  have h := cast_lt 0 (n + 1) (Nat.succ_pos n)
+  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
+
+/-- `m ≠ 0 → 0 < cast m`（`cast_lt 0 m`）。 -/
+theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
+  have h := cast_lt 0 m (Nat.pos_of_ne_zero hm)
+  rwa [show ((0 : Nat) : Real) = 0 from rfl] at h
 
 -- ============================================================
 -- cast は「射」: 構造を保つ写像（順序付き半環の準同型）。0・1・+・×・≤ を保つ。
@@ -264,12 +276,6 @@ theorem cast_summation : ∀ (n : Nat) (f : Range n → Nat),
           + ((f ⟨m, Nat.lt_succ_self m⟩ : Nat) : Real)
     rw [← cast_add, ih (fun k => f (Range.incl k))]
 -- ANCHOR_END: cast_hom
-
-theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
-  cases m with
-  | zero => exact absurd rfl hm
-  | succ k => exact cast_pos_succ k
-
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
 #print axioms cast_mul
