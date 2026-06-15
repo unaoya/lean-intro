@@ -133,15 +133,15 @@
 - 演習候補: 等式ドリル（neg_neg・mul_sub・add_sub_cancel 等）・rfl が通るか #check_failure で判定
 - 引き: Ch8 へ「等式を 1 本ずつ手で。同じパターンを機械に任せられないか」
 
-### Ch8 — 自動化と自作タクティク（`ch08_automation.md`、C08_Automation）※2026-06-15 旧 Ch10 間奏を前倒し・本章化
+### Ch8 — 自動化と自作タクティク（`ch08_automation.md`、C08_Automation）※2026-06-15 旧 Ch10 間奏を前倒し・本章化＋反射 my_abel/my_ring 実装
 - 問い: 繰り返した等式の証明パターンを道具にできないか
-- 到達点: simp に自分の補題を渡して派生恒等式を畳む・omega・ac_rfl・自作 my_ring を以後の章で使える
-- 新機能: simp / simp only・omega・**ac_rfl**（Std.Associative/Commutative インスタンス）・**macro**
-- ANCHOR: `simp_demo`・`omega_demo`・`ac_demo`・`my_ring`
-- 🪟simp と書き換え系（停止する有向書き換え）・▲**自作 ring-lite**（mathlib の ring/linarith/group は無いので自作）・▼ac_rfl はインスタンスを食べる・▲macro（notation Ch5→macro 本章→elab 付録 D の中段）・▲限界の正直（方向的正規化の苦手＝反射版 my_ring 付録 D の動機）
-- 演習候補: 手証明と simp 版の対比・my_ring を別の恒等式に・simp only の規則リスト設計
-- 引き: Ch9 へ「等式は畳めた。順序（≤/<）はどう獲得し calc で鎖にするか」
-- ⚠ register_simp_attr は当 core で不可→simp only リスト＋macro 方式。全デモは実ビルドで通す（机上禁止）。「本体=模範解答・自作道具は加速装置」の運用を明記
+- 到達点: バニラ（simp/omega/ac_rfl）を押さえ、**自分の公理から proof by reflection で my_abel（加法群）・my_ring（環）を自作**できる。以後の章で使える
+- 新機能: simp / simp only・omega・**ac_rfl**（Std.Associative/Commutative）・**メタプログラミング**（inductive 構文・elab・isDefEq・mkDecideProof による反射）
+- ANCHOR: `simp_demo`・`omega_demo`・`ac_demo`・**`my_abel_demo`**・**`my_ring_demo`**
+- 🪟simp＝停止する有向書き換え（限界: 並べ替え＋相殺は不可・実測）・▲ac_rfl はインスタンスを食べる（逆元相殺は不可）・▲**proof by reflection の三幕**（構文 Expr＋eval ／ normalize＋健全性 eval e=nfEval(normalize e) ／ メタで反射＋decide）・▲**my_abel**（正規形＝符号付き原子の整列リスト・相殺は add_neg'/neg_add'）→**my_ring**（原子→単項式・分配 crossMul・my_abel を包含）・▲applySign/xnorB をパターンマッチ定義にして defeq を通すメタの工夫
+- 演習候補: simp で閉じる/閉じない命題の判定・my_abel/my_ring を別の恒等式に・reify に新しい演算を足す
+- 引き: Ch9 へ「等式は反射で畳めた。順序（≤/<）はどう自動化するか——順序のみ／順序体の道具を比べる」
+- ⚠ mathlib の ring/abel/linarith は**無い**（unknown tactic・実測）ので全部自作。register_simp_attr も当 core で不可。全デモは実ビルドで通す（机上禁止）。「本体=模範解答・自作道具は加速装置」の運用を明記。反射の一般化（多項式正規形）と mathlib 対応は付録 C/D
 
 ### Ch9 — 順序と calc（`ch09_order.md`、C09_Order）※2026-06-15 旧 C06 の順序コーパスを独立章化
 - 問い: 等式は畳めた。順序の補題はどう獲得し、どう鎖にするか
@@ -213,7 +213,7 @@
 - **cast は射（2026-06-15）**: ① `sum_id` は Nat の恒等式 `sum_id_nat`＝**C10_Induction**② **cast を「射」として明示**＝C11_Numbers（`IsNatHom`＋`cast_isHom`・`cast_mul`/`cast_le`・`cast_summation`＝Σ と可換。**Ch10** IsLinearMap と並ぶ「射」の述語）③ **代表点を左端・右端に取る一般化**＝C05。`equalPartitionRepr` は `leftRepr` を適用。監査例は `cast_mul`（C11・C17 とも・[Real, instLOF] 古典ゼロ）。**等分点の formula の扱いは別途検討（ユーザー留保）**
 - **C12_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（docstring は済）
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C12 全宣言＋C05 の is_repr・C10 の幾何・C11 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
-- **simp は Ch8 で導入済（2026-06-15）**: 自前の simp only リスト＋my_ring macro（register_simp_attr は当 core で不可）。等式（length_sum・riemann_sum_const 等）の @[simp] 化や my_ring の反射版は付録 D・follow-up。既存コーパスの全面 simp 化も follow-up
+- **Ch8 自動化＝反射タクティク実装済（2026-06-15）**: バニラ（simp/omega/ac_rfl）の実測検証後、**proof by reflection で `my_abel`（加法群）・`my_ring`（環）を C08_Automation に実装**（mathlib の ring/abel/linarith が無いため自作）。my_ring は my_abel を包含し、`a+b-a=b`〜`(a+b)*(c+d)=…` を一行で閉じる。**follow-up**: 既存コーパス（C07/C09/C10）の手証明を my_abel/my_ring に置換して重い章を縮小・反射の一般化（多項式正規形・Horner）は付録 D・順序タクティク（順序のみ／順序体）は次フェーズ
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る
 - **演習の sorry 化＋Solutions 分離・`#include` 配線・mdbook 導入**: P4（今回はインライン引用で可・ANCHOR は維持し後で変換）
 - **付録 D（反射版 my_ring）**: Ch8 の入口デモの本体。前半の範囲外
