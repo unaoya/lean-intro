@@ -50,10 +50,11 @@
 
 ### Ch0 — 環境構築（`ch00_setup.md`、対応コードなし）
 - 問い: 序章の挑戦をどう始めるか
-- 到達点: clone → 演習着手 10 分・3 道具を知る
-- 新機能: `#check`／`#print`／`#print axioms`（監査文化の起点）
-- ▲監査 3 道具（§4e の起点）
+- 到達点: clone → 演習着手 10 分・3 道具を知る・**docstring を読める**
+- 新機能: `#check`／`#print`／`#print axioms`（監査文化の起点）・**docstring `/-- -/`**（2026-06-15 ここで導入）
+- ▲監査 3 道具（§4e の起点）・▲**docstring**（読む側の道具・1 段落。`--` との違い・hover/#check/#print に出る・本書の Text/ は docstring 付き。書く側の習慣は C01 以降で自然に・`/-! -/` は一言）
 - 引き: Ch1 へ「ゴール表示の `⊢` とは何か」
+- ⚠ Ch0 は自前コードなし。docstring は既存コード（MyProject や Text/）に hover して見せる
 
 ### Ch1 — 最初の証明（`ch01_term.md`、C01）
 - 問い: `⊢` とは何か
@@ -172,7 +173,8 @@
 
 - **Ch2/Ch3 スワップ済（2026-06-15）**: 新 C02_Structures.lean（structure_as_data・general_proof・and_is_structure）＝Ch2 machinery／C02_Axioms→C03_Axioms.lean（階層・公理・根幹2行・check_failure・three_brothers）＝Ch3／旧 C03_Class は解体（diamond は C08_Numbers へ）。md は ch02_structures.md・ch03_axioms.md
 - **C06_Tactics**: ANCHOR 未付与（タクティク corpus）。特定の補題証明を引用する段で `ANCHOR:` を付ける
-- **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（`is_repr` のみ済）
+- **C09_Properties**: 性質 5 本（riemann_sum_add/neg/const/nonneg・rs_le_const）の ANCHOR 未付与（`is_repr` のみ済）。**docstring は全宣言に付与済（2026-06-15）**
+- **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C09 のみ済）。新規・改稿する宣言には `/-- -/` を付ける運用に
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る
 - **演習の sorry 化＋Solutions 分離・`#include` 配線・mdbook 導入**: P4（今回はインライン引用で可・ANCHOR は維持し後で変換）
 - **Ch10 間奏（C10）・付録 D（my_ring）**: 前半の範囲外
