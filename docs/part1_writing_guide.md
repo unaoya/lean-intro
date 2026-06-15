@@ -224,6 +224,9 @@
 - **docstring の整合**: Ch0 で「Text/ のコードは docstring 付き」と述べる以上、各 C** ファイルにも docstring を順次付ける（現状 C12 全宣言＋C05 の is_repr・C10 の幾何・C11 の equalPartitionRepr 系が済）。新規・改稿する宣言には `/-- -/` を付ける運用に
 - **Ch8 自動化＝反射タクティク実装済（2026-06-15）**: バニラ（simp/omega/ac_rfl）の実測検証後、**proof by reflection で `my_abel`（加法群）・`my_ring`（環）を C08_Automation に実装**（mathlib の ring/abel/linarith が無いため自作）。my_ring は my_abel を包含し、`a+b-a=b`〜`(a+b)*(c+d)=…` を一行で閉じる。**follow-up**: 既存コーパス（C07/C09/C10）の手証明を my_abel/my_ring/mono/lin に置換して重い章を縮小・反射の一般化（多項式正規形・Horner）は付録 D
 - **Ch9 順序タクティク 2 方式 実装済（2026-06-15）**: **mono**（gcongr-lite・構造的・再帰 macro_rules で単調性合同）と **lin**（linarith-lite・意味的・`0≤b-a` に帰し my_ring(D) の reifyRing/normalize を流用して差の和に正規化し非負を示す）を C09_Order に実装。lin は推移など線形結合を扱える（mono は不可）＝構造的 vs 意味的の比較。ANCHOR `order_tac_demo`。**follow-up**: lin の係数探索（LP）・`<` 版・乗法単調性（符号条件）・mono の @[gcongr] 風タグ化
+- **Ch11 field タクティク my_field 実装済（2026-06-15）**: 分数を結合し `div_eq_iff`（非ゼロ条件付き）で分母を払い my_ring で閉じる（field_simp＋ring）。非ゼロは仮定 `c≠0`／`one_one_ne_zero` を findNonzero で自動探索。half_add・double_half（係数·inv 相殺）を一行に。土台補題（mul_div_cancel'/div_mul_cancel）は構成要素ゆえ手証明。B(abel)/D(ring)/順序(mono,lin)/E(field) の自作タクティク群が完成。**follow-up**: Laurent 反射で土台補題も自動化（~200行・ROI 低・保留）
+- **到達点② y=x 実装済（2026-06-15）**: C12_Example `riemann_sum_id`（(1+1)n²·RS=n²−n）を自作タクティクで貫通（sum_id_real＝cast 転送＋my_ring/my_abel＋Field.mul_inv）。監査古典ゼロ。割った形 (n−1)/(2n) は my_field で従う（演習）
+- **コメント内の旧 Ch 番号 精査済（2026-06-15）**: 累積改番のずれを現章立て（第I部Ch0-13）に照合して .lean 22＋E 5＋md 数件を個別修正（定義場所を grep 確認）。残る散文中の旧参照は執筆時に随時
 - **序章/Ch0**: 対応 C** ファイルなし。`main'` 引用は MyProject 参照・監査出力は**実行値**を貼る
 - **演習の sorry 化＋Solutions 分離・`#include` 配線・mdbook 導入**: P4（今回はインライン引用で可・ANCHOR は維持し後で変換）
 - **付録 D（反射版 my_ring）**: Ch8 の入口デモの本体。前半の範囲外
