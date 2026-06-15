@@ -115,7 +115,7 @@ Proto/ は試作の記録としてそのまま温存し、執筆時に章対応�
 | C02_Structures | Ch2 | **machinery**（structure_as_data・general_proof＝CommMonoidStr＋交換則・and_is_structure）。core のみ・主線非依存の葉 | 新規（2026-06-15 スワップ） | 60 |
 | C03_Axioms | Ch3 | 階層クラス・公理 5 本・zero_bridge・最小インスタンス・根幹 2 行・check_failure・`<` の 3 兄弟 | 旧 C02_Axioms を改名（2026-06-15） | 75 |
 | （diamond） | Ch11 | ダイヤモンド事件は C11_Numbers へ移設（NatCast 排他分割の動機・旧 C03_Class は解体） | — | — |
-| C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl) | Sum (29) | 25 |
+| C04_Summation | Ch4 | Range・incl/addone・Summation・zero/succ (rfl)・**最初の証明 summation_congr/summation_all_zero**（term mode の帰納＝Nat.rec 予告・2026-06-15） | Sum (29) | 50 |
 | C05_RiemannSum | Ch5 | Partition・length・RiemannSum・**IsRepr**＋**leftRepr/rightRepr**（代表点の妥当性・左右端の一般代表点・2026-06-15）・Σ/RS 記法・trivialPartition（sorry） | Partition の定義部 | 60 |
 | C06_Tactics | Ch6 | **タクティク入門**（by・intro/exact/apply・種明かし＝項を書く機械・カーネル/De Bruijn）＋One bridge＋公理射影＋add_left_cancel'（2026-06-15 Fine 分割） | Lemmas 基礎部 | 40 |
 | C07_Rewrite | Ch7 | **書き換えと 2 つの等しさ**（rw・defeq・rfl/show・rw の罠）＋等式/環コーパス本体（消去・ゼロ・符号・引き算の整理・telescope_2） | Lemmas 等式部 | 150 |

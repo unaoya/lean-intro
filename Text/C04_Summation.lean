@@ -35,3 +35,23 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
     Summation (n + 1) f
       = Summation n (fun k => f (Range.incl k)) + f ⟨n, Nat.lt_succ_self n⟩ := rfl
 -- ANCHOR_END: summation_rfl
+
+-- ============================================================
+-- Summation について証明する（予告）: 再帰と帰納は同じ recursor
+--   Summation は構造的再帰（`Nat.rec`）で定義した。それについて証明するときも
+--   同じ `Nat.rec` を **帰納法** として走らせる——「定義する再帰」と「証明する帰納」は
+--   表裏一体。ここでは term mode のまま 2 つだけ見る（ergonomic な `induction`
+--   タクティクと Σ 補題コーパス本体は Ch10。本章は「定義＋最初の証明」で閉じる）。
+-- ============================================================
+
+-- ANCHOR: summation_first_proofs
+-- (1) 合同: f と g が各点で等しければ和も等しい（`congrArg` だけ・帰納法は不要）
+theorem summation_congr (n : Nat) (f g : Range n → Real) (h : ∀ i, f i = g i) :
+    Summation n f = Summation n g := congrArg (Summation n) (funext h)
+
+-- (2) 帰納法の予告: 全部 0 の和は 0。n についての構造的再帰（＝`Nat.rec`）で証明する。
+--     succ の段に現れる `summation_all_zero n` が**帰納法の仮定そのもの**。
+theorem summation_all_zero : (n : Nat) → Summation n (fun _ : Range n => (0 : Real)) = 0
+  | 0 => rfl
+  | n + 1 => (congrArg (· + (0 : Real)) (summation_all_zero n)).trans (AddCommGroup.zero_add 0)
+-- ANCHOR_END: summation_first_proofs

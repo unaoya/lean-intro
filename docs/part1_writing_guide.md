@@ -94,12 +94,12 @@
 
 ### Ch4 — 有限和（`ch04_inductive.md`、C04）
 - 問い: 有限和とは何か
-- 到達点: Range/Summation が読めて書ける・CH 対応表が完結する
-- 新機能: **帰納型【鍵3】**・Subtype・構造的再帰・rfl=defeq の予告編・**Zero bridge**
-- ANCHOR: `range`・`summation`・`summation_rfl`
-- ▲帰納型を正面で・▼**CH 表のパンチライン**（`#print Or` 等で「論理は依存関数＋帰納型」）・🪟recursor（`#print And.rec`）・▲Zero bridge＝菱形の**良い配線**（Ch3 の対）・🪟「なぜ List でないのか」
-- 演習候補: 型シグネチャ設計（`[Add][Zero]` は最小契約か・自作 Zero／Real 特化との書き比べ）・`n` を implicit にできるか・小さい n で Summation 手計算
-- 引き: Ch5 へ「分割をデータとしてどう表す？」
+- 到達点: Range/Summation が読めて書ける・CH 対応表が完結する・**Summation について最初の証明（合同＋帰納法の予告）が書ける**
+- 新機能: **帰納型【鍵3】**・Subtype・構造的再帰・rfl=defeq の予告編・**Zero bridge**・**term mode の帰納法（再帰＝帰納の予告）**
+- ANCHOR: `range`・`summation`・`summation_rfl`・**`summation_first_proofs`**
+- ▲帰納型を正面で・▼**CH 表のパンチライン**（`#print Or` 等で「論理は依存関数＋帰納型」）・🪟recursor（`#print And.rec`）・▲Zero bridge＝菱形の**良い配線**（Ch3 の対）・🪟「なぜ List でないのか」・▲**再帰＝帰納は同じ recursor**（2026-06-15 追加）: Summation を定義した `Nat.rec` をそのまま**帰納法**として走らせる予告——`summation_congr`（congrArg だけ・帰納法不要）＋ `summation_all_zero`（term mode の構造的再帰＝Nat.rec・succ の段の再帰呼び出しが帰納法の仮定）。「定義する再帰／証明する帰納」の表裏一体を Summation の場で planting。ergonomic な `induction` タクティクと Σ コーパス本体は Ch10
+- 演習候補: 型シグネチャ設計（`[Add][Zero]` は最小契約か・自作 Zero／Real 特化との書き比べ）・`n` を implicit にできるか・小さい n で Summation 手計算・**summation_all_zero を `Nat.rec` で（induction タクティク無しで）書く**
+- 引き: Ch5 へ「分割をデータとしてどう表す？」（Σ の本格コーパスと induction タクティクは Ch10 で——再帰で定義した Summation に帰納法で戻る）
 - ⚠ Summation は `[Add α][Zero α]`・n は explicit（2026-06-12 決定）。Finset.sum が AddCommMonoid を要る理由（商と well-defined）はコラム
 
 ### Ch5 — 分割とリーマン和の定義（`ch05_structure.md`、C05・到達点①）
@@ -199,9 +199,9 @@
 
 各章ドラフトを以下で照合する。違反は「方針管理」上の指摘事項。
 
-- **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**induction=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
+- **(a) 機能初出の単調性**（2026-06-15 証明の弧 Fine 分割 反映）: §3 の「新機能」に挙がるのは**前章までに登場していない**機能だけ。簡単→難しいの順が崩れていないか（例: tactic mode `by` は Ch6 まで出さない）。初出: **calc（`=`・term mode）=Ch1**・**structure キーワード=Ch2**・class（最小: 自動解決される構造）=Ch2・依存型/universe=Ch3・**tactic mode（by）=Ch6**・**rw/defeq=Ch7**・**simp/omega/ac_rfl/macro=Ch8**・**calc 深掘り（`≤`/`<`・Trans）=Ch9**・**term mode の帰納法（Nat.rec 予告）=Ch4・induction タクティク=Ch10**・class 深い機構（解決・diamond）=Ch11。calc は term mode なので Ch1（`by` 不要）で導入してよい——`by`/tactic mode との区別を本文で明示
 - **(b) CH 対応 6 表**: Ch1 で提示 → **Ch3** で ∀∃=Π/Σ を裏付け（Real.sup の署名）→ Ch4 で `#print` により完結（∧∨∃=も帰納型）。表の各行が「いつ裏付くか」と整合しているか
-- **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro → Ch10 induction=recursor（Ch4 の recursor を回収）。「使う→仕組みを覗く」の順序が保たれているか
+- **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro → Ch4 で再帰＝帰納を予告（Nat.rec）→ Ch10 induction タクティク=recursor 適用（Ch4 を回収）。「使う→仕組みを覗く」の順序が保たれているか
 - **(d) 菱形の糸**（2026-06-15 反映）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch11 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
 - **(e) 監査の段階**: Ch0 で 3 道具導入 → 各章末で `#print axioms` → Ch13 で「第 I 部は古典公理ゼロ」を総決算。不変条件は **`Classical.choice` と `Real.sup` 系が前半の監査に出ないこと**（出たら設計違反）。`propext`・`Quot.sound` は標準の無害公理で、`rs_le_const` 等に現れてよい（説明は最小限に留め Ch18 へ送る）。「古典公理ゼロ」＝ choice ゼロの意味だと本文で明確化する
 - **(f) 脱 abs/min/diam 方針**: 前半に abs・max・min・diam を持ち込まない。Ch13 の第 5 性質は両側評価（生の不等式 2 本）。理由（abs は古典性を呼ぶ）は Ch14 へ予告のみ

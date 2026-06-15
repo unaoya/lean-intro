@@ -8,18 +8,9 @@ open Range
 
 -- ============================================================
 -- Σ 補題コーパス（帰納法の訓練場。添字の付け替え fun k => f ⟨k.val, …⟩ が主役）
+--   合同 summation_congr と全零 summation_all_zero は Ch4 で予告済み（再帰＝帰納の
+--   最初の一手）。ここからは `induction` タクティクで本格コーパスを積む。
 -- ============================================================
-
-theorem summation_congr (n : Nat) (f g : Range n → Real) (h : ∀ i, f i = g i) :
-    Summation n f = Summation n g := congrArg (Summation n) (funext h)
-
-theorem summation_all_zero (n : Nat) :
-    Summation n (fun _ : Range n => (0 : Real)) = 0 := by
-  induction n with
-  | zero => rfl
-  | succ m ih =>
-    show Summation m (fun _ : Range m => (0 : Real)) + (0 : Real) = 0
-    rw [ih, zero_add']
 
 theorem additive_summation (n : Nat) (f g : Range n → Real) :
     Summation n (fun i => f i + g i) = Summation n f + Summation n g := by

@@ -31,6 +31,14 @@
 
 - summation_zero / summation_succ は **rfl で証明できる**（定義の再帰方程式＝defeq の予告編、Ch7 の主題へ）
 
+## 4.x Summation について証明する — 再帰と帰納は同じ recursor（2026-06-15 追加）
+
+- **planting**: Summation は構造的再帰（`Nat.rec`）で定義した。**それについて証明するときも同じ `Nat.rec` を「帰納法」として走らせる**——「定義する再帰」と「証明する帰納」は表裏一体。これを Summation の場で予告する（ANCHOR `summation_first_proofs`）
+- **(1) 合同 `summation_congr`**: f と g が各点で等しければ和も等しい。`congrArg (Summation n) (funext h)` だけ——帰納法すら要らない「Summation についての最初の証明」
+- **(2) 帰納法の予告 `summation_all_zero`**: 全部 0 の和は 0。**term mode のまま**（`by` を使わず）`n` についての構造的再帰で証明し、succ の段に現れる `summation_all_zero n` が**帰納法の仮定そのもの**だと見せる
+- **縦糸**: ergonomic な `induction` タクティク（`by induction`）と Σ 補題の本格コーパス（線形性・望遠鏡和・幾何）は **Ch10**。「再帰で定義した Summation に、帰納法で戻る」を Ch4→Ch10 で張る
+- ⚠ Ch1–5 は term mode が基調。ここは `Nat.rec`（構造的再帰）による term mode の帰納で `by`/タクティクは使わない——「帰納法＝recursor の適用」を機構レベルで見せる予告
+
 ## 演習
 
 - Range の操作（incl/addone の値の確認を show で）・小さい n での Summation の手計算
