@@ -4,7 +4,7 @@
 
 - 前章からの問い: 有限和とは何か
 - 到達点: Range と Summation が読めて書ける。CH 対応表が完結する
-- 新しい Lean 機能: 帰納型【鍵 3】・Subtype・構造的再帰・rfl=defeq の予告編
+- 新しい Lean 機能: 帰納型【鍵 3】・Subtype・構造的再帰・**namespace を作る**（縦糸 2/3）・rfl=defeq の予告編
 - コード: C04_Summation.lean（Proto/Sum 29 行 → ~25 行）
 
 ## 4.1 #print で種明かし — すべては帰納型だった
@@ -21,6 +21,7 @@
 
 - `Range n := { i : Nat // i < n }`（Subtype＝依存和の実物、CH 表 ∃ 行の Type 側親戚）
 - incl / addone（隣接分点を安全に参照する 2 つの埋め込み）
+- **名前空間を作る（namespace 縦糸 2/3）**: `namespace Range … end Range` で囲むと `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に束ね、衝突を避け、所属を名前で示す。Ch3＝既存の名前空間を読む（アクセス）の対＝**自分で作る**。`open` で省く・dot 記法の旨味は次章 Ch5
 
 ## 4.4 Summation — 構造的再帰
 

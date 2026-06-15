@@ -33,6 +33,11 @@
 - Sort 階層。本書の全コードは Type 0 と Prop で完結する——その事実を universe 理解の素材に
 - 🪟 窓: 証明無関係性と Prop — なぜ命題の宇宙は特別か
 
+## 3.4b 名前空間との最初の接触 = アクセス（namespace 縦糸 1/3）
+
+- ドット付きの名前（`Real.sup`・`Real.instLOF`・`AddCommGroup.add_neg`・`LinearOrderedField.le_trans`）は `名前空間.名前` という階層化された参照。`le_trans` は `LinearOrderedField` の中に整理されている——フルパスで名指せばどこからでも引ける
+- **この段階はまだ「既にある名前空間を読む」だけ**。自分で作るのは Ch4（`namespace Range`）、`open` で接頭辞を省く旨味は Ch5——縦糸: **Ch3 アクセス → Ch4 作る → Ch5 開いて省く＋dot 記法**
+
 ## 3.5 根幹の 2 行・class は自動で見つかる（最小機構の実物）
 
 - `#check Real.instLOF`・`inferInstance`・`a + b` が解決される——Ch2 の「class＝自動で見つかる構造」の実物

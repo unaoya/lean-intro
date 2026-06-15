@@ -4,6 +4,10 @@
 -- TODO(P4): Σ 記法・リーマン和の記法をここで自作する（notation 初登場）
 import Text.C04_Summation
 
+-- 名前空間の旨味 1（`open`）: Ch4 で `Range.incl`/`Range.addone` と名付けたが、
+--   `open Range` するとこのファイルでは接頭辞 `Range.` を省いて `incl`/`addone` と書ける
+--   （下の Partition のフィールドはどれも incl/addone を使う）。Ch3＝アクセス・Ch4＝作る・
+--   Ch5＝開いて省く、の 3 段目。
 open Range
 
 -- 区間 [a, b] の n 分割: 広義単調な分点列で両端が a, b。
@@ -16,6 +20,12 @@ structure Partition (n : Nat) (a b : Real) where
   right : points ⟨n, Nat.lt_succ_self n⟩ = b
 -- ANCHOR_END: partition
 
+-- 名前空間の旨味 2（dot 記法）: `length` を `namespace Partition` の中に置くと、
+--   `Δ : Partition n a b` に対して `Δ.length i` と書ける（＝`Partition.length Δ i` の略記）。
+--   Lean は `Δ` の型 `Partition …` を見て、同名の名前空間 `Partition` の中から `length` を
+--   探し、`Δ` を第 1 引数に差し込む。下の RiemannSum の `Δ.length i`・`Δ.IsRepr`・
+--   `Δ.leftRepr` が全部この仕組み——構造体のフィールド `Δ.points` と同じ記法で、
+--   自分で定義した関数も呼べる。これが「名前空間に束ねる」最大の見返り。
 namespace Partition
 
 -- i 番目の小区間の長さ

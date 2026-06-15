@@ -103,6 +103,12 @@ theorem lt_of_le_of_ne {a b : Real} (h : a ≤ b) (hne : a ≠ b) : a < b := ⟨
 theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 -- ANCHOR_END: three_brothers
 
+-- 名前空間（namespace）との最初の接触＝「アクセス」: `Real.sup`・`Real.instLOF`・
+--   `AddCommGroup.add_neg`・`LinearOrderedField.le_trans` のドット付きの名前は、
+--   `名前空間.名前` という階層化された名前への参照。`le_trans` は `LinearOrderedField`
+--   の中に整理されている——フルパスで名指せばどこからでも引ける。
+--   （この段階はまだ「既にある名前空間を読む」だけ。自分で名前空間を**作る**のは
+--    Ch4 `namespace Range`、`open` で接頭辞を省く旨味は Ch5 で。）
 -- 公理は「すでに証明された定理」: 階層のフィールドはそのまま項として使える。
 -- この `a ≤ c` の `≤` が動くのも、class が `LE Real` を解決しているから（Ch2 の回収）。
 -- 本格的な順序コーパスは Ch9。ここは「公理を引くだけで証明になる」一度きりの実演。

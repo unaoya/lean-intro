@@ -86,7 +86,7 @@
 - 新機能: **依存型【鍵1】**・∀/∃=Π/Σ・**Prop vs Type・universe【鍵2】**・`axiom`・namespace/open
 - ANCHOR: `hierarchy`・`axioms`・`zero_bridge`・`check_failure`・`three_brothers`
 - ▲依存型・universe を正面で（Real.sup の署名）・▼CH 表の ∀∃ 行を裏付け・🪟公理と noncomputable・🪟証明無関係性と Prop・🪟存在をデータに格上げ
-- ビート: 階層を読む（Ch2 の構造観で）・公理 5 本・**Real.sup の署名＝依存型**（∃ vs データの本格議論＝Ch2 予告の回収）・Prop/universe・根幹 2 行（class＝自動解決の実物）・check_failure（今 ℝ は 0 のみ→`(1/2:Real)` は失敗・Ch6/Ch8 伏線）・`<` の 3 兄弟
+- ビート: 階層を読む（Ch2 の構造観で）・公理 5 本・**Real.sup の署名＝依存型**（∃ vs データの本格議論＝Ch2 予告の回収）・Prop/universe・根幹 2 行（class＝自動解決の実物）・check_failure（今 ℝ は 0 のみ→`(1/2:Real)` は失敗・Ch6/Ch8 伏線）・`<` の 3 兄弟・▲**名前空間＝アクセス（縦糸 1/3）**: `Real.sup`・`LinearOrderedField.le_trans` のドット名は `名前空間.名前` の参照。「既存の名前空間を読む」だけ（作るのは Ch4・open/dot は Ch5）
 - 演習候補: 署名読解ドリル・`<` の 3 兄弟の変種・**sup 最小性実験**（sup 3 行を消しても C05 までビルドが通る）
 - 引き: Ch4 へ「リーマン和には Σ が要る。有限和とは何か？」
 - ⚠ noncomputable の源泉①（公理に実行コードがない）をここで正直に説明・公理設計の論点（0=データ・sup=Skolem・束）
@@ -95,9 +95,10 @@
 ### Ch4 — 有限和（`ch04_inductive.md`、C04）
 - 問い: 有限和とは何か
 - 到達点: Range/Summation が読めて書ける・CH 対応表が完結する・**Summation について最初の証明（合同＋帰納法の予告）が書ける**
-- 新機能: **帰納型【鍵3】**・Subtype・構造的再帰・rfl=defeq の予告編・**Zero bridge**・**term mode の帰納法（再帰＝帰納の予告）**
+- 新機能: **帰納型【鍵3】**・Subtype・構造的再帰・**namespace を作る（縦糸 2/3）**・rfl=defeq の予告編・**Zero bridge**・**term mode の帰納法（再帰＝帰納の予告）**
 - ANCHOR: `range`・`summation`・`summation_rfl`・**`eliminators`**・**`ch_punchline`**・**`summation_first_proofs`**
 - ▲帰納型を正面で・▼**CH 表のパンチライン**（`#print Or` 等で「論理は依存関数＋帰納型」）・🪟recursor（`#print And.rec`）・▲Zero bridge＝菱形の**良い配線**（Ch3 の対）・🪟「なぜ List でないのか」・▲**除去規則 = recursor／cases と induction（2026-06-15 追加）**: 帰納型は 導入規則（構成子）と 除去規則（recursor）を持つ。**再帰的な構成子の分だけ除去で IH を受け取る**——非再帰（Or・Ch1 の `.elim`）＝cases（IH 無し）／再帰（Nat）＝induction（IH 付き）。ANCHOR `eliminators` で `#check @Or.rec`（IH 無し）vs `#check @Nat.rec`（succ に motive n=IH）を並べ「IH は再帰している箇所に現れる」を機械で見せる。▼**Ch1 の `.elim`（∨ の cases）を回収**・Summation を定義した `Nat.rec` をそのまま除去で証明に走らせる予告（`summation_congr`＝congrArg／`summation_all_zero`＝term mode の Nat.rec・succ の再帰呼び出しが IH）。ergonomic な cases/induction タクティクと Σ コーパス本体は Ch10
+- ▲**namespace を作る（縦糸 2/3）**: `namespace Range … end Range` で `incl`/`addone` を `Range.` 接頭辞に束ねる。Ch3 の「既存の名前空間を読む（アクセス）」の対＝**自分で作る**。`open`／dot 記法の旨味は Ch5 へ
 - 演習候補: 型シグネチャ設計（`[Add][Zero]` は最小契約か・自作 Zero／Real 特化との書き比べ）・`n` を implicit にできるか・小さい n で Summation 手計算・**summation_all_zero を `Nat.rec` で（induction タクティク無しで）書く**
 - 引き: Ch5 へ「分割をデータとしてどう表す？」（Σ の本格コーパスと induction タクティクは Ch10 で——再帰で定義した Summation に帰納法で戻る）
 - ⚠ Summation は `[Add α][Zero α]`・n は explicit（2026-06-12 決定）。Finset.sum が AddCommMonoid を要る理由（商と well-defined）はコラム
@@ -105,8 +106,9 @@
 ### Ch5 — 分割とリーマン和の定義（`ch05_structure.md`、C05・到達点①）
 - 問い: 分割をどう表すか
 - 到達点: **リーマン和の定義が書ける**（到達点①）・代表点の妥当性 `IsRepr` も定義・ただし sorry が 1 つ残って幕
-- 新機能: structure（双子章・後編）・notation 自作・暗黙引数（**書く**: `length {n}{a b}`）
+- 新機能: structure（双子章・後編）・**open と dot 記法（縦糸 3/3）**・notation 自作・暗黙引数（**書く**: `length {n}{a b}`）
 - ANCHOR: `partition`・`riemann_sum`・**`is_repr`**・**`endpoint_repr`**・`trivial_partition`
+- ▼**名前空間の旨味（縦糸 3/3 回収）**: `open Range` で `Range.` を省く（旨味 1）・`length` を `namespace Partition` に置くと `Δ.length`／`Δ.IsRepr`／`Δ.leftRepr`（dot 記法・旨味 2）が動く——`Δ : Partition …` の型から同名 namespace を辿り `Δ` を第 1 引数に。Ch3 アクセス→Ch4 作る→Ch5 開く＋dot で一周
 - ▼`And` も structure だった（`#print And`・Ch1 の `⟨⟩` 回収）・▲notation 初登場（自動化糸の起点）・▲**IsRepr**（代表点の妥当性＝タグは小区間内・RS は任意 ξ で計算できるが「リーマン和」と呼ぶには妥当なタグを課す）・▲**leftRepr/rightRepr**（代表点を左端・右端に取るのは**任意の Partition で一般化**できる・IsRepr が自明に成立）・▲trivialPartition の sorry クリフハンガー（Ch8 で回収）
 - 演習候補: 反転演習（Partition を class にすると IsIntegral が書けない／LOF を structure にすると `a+b` のたびに名指し）
 - 引き: Ch6 へ「定義はできた。sorry を埋める道具が要る」
@@ -203,6 +205,7 @@
 - **(b) CH 対応表（導入/除去規則つき・2026-06-15 拡張）**: Ch1 で**導入規則/除去規則の列を持つ表**を提示（→∧∨¬⊥⊤=）→ **Ch3** で ∀∃ 行を埋める（∀=Π＝→と同じ関数・∃=帰納型 Exists・導入/除去つき）→ **Ch4 で `#print`/`#check` により完結**（ANCHOR `ch_punchline`: ∧∨∃⊥= は帰納型・→∀¬ は依存関数 Π）。**パンチライン: 論理 = 依存関数（Π）＋帰納型の 2 原始、その導入/除去だけ**。表の各行の導入/除去と「いつ裏付くか」「Π か帰納型か」が整合しているか
 - **(c) 種明かしの糸**: Ch6 カーネル/De Bruijn・apply=メタ変数 → Ch7 rw=Eq.mpr → Ch8 simp＝停止する書き換え系・macro。「使う→仕組みを覗く」の順序が保たれているか
 - **(c2) 除去規則（recursor）の糸**（2026-06-15 追加）: **導入規則（構成子）/除去規則（recursor）**を貫通させる。Ch1 で ∧/∨ の導入・除去（`.elim`＝場合分け＝**cases**・非再帰なので IH 無し）→ Ch4 で「除去規則=recursor／再帰なら IH 付き=induction」を `#check @Or.rec` vs `@Nat.rec` で明示（IH は再帰箇所に現れる）＋ Summation を Nat.rec の除去で証明する予告 → **Ch6 で「タクティク＝導入/除去規則をゴールから逆向きに当てる機械」を種明かし**（ANCHOR `tactics_as_rules`: `intro`=→/∀ 導入・`apply`=→/∀ 除去・`exact ⟨⟩`/`constructor`=帰納型導入・`cases`/`obtain`=帰納型除去・`rfl`/`rw`=Eq 導入/除去）→ Ch10 で `induction`（再帰の除去＝IH 付き）＋Σ コーパス。**タクティクは新しい原理ではなく規則の逆向き適用**・**cases と induction は同じ除去規則で再帰(IH)の有無だけが違う**を本文で一貫させているか
+- **(c3) 名前空間の糸**（2026-06-15 追加）: **アクセス → 作る → 開く＋dot 記法**の 3 段で名前空間の使い道を一周させる。**Ch3** ＝既存の名前空間を読む（`Real.sup`・`LinearOrderedField.le_trans` のドット名＝`名前空間.名前` の参照）→ **Ch4** ＝自分で作る（`namespace Range … end Range` で `incl`/`addone` を束ねる）→ **Ch5** ＝旨味を回収（`open Range` で接頭辞を省く・`length` を `namespace Partition` に置き `Δ.length`／`Δ.IsRepr`／`Δ.leftRepr` の dot 記法が `Δ` の型から解決される）。「読む→作る→省く」の順序と、dot 記法が構造体フィールド `Δ.points` と同じ記法で自作関数に及ぶことを本文で接続できているか
 - **(d) 菱形の糸**（2026-06-15 反映）: Ch4 Zero bridge・Ch6 One bridge（良い配線が先）→ **Ch11 で diamond（悪い例）＋排他分割（AtLeastTwo・修正）** をまとめて。Ch2 は「class＝自動で見つかる構造」の良い面のみ。良い→悪い→修正の順が崩れていないか
 - **(e) 監査の段階**: Ch0 で 3 道具導入 → 各章末で `#print axioms` → Ch13 で「第 I 部は古典公理ゼロ」を総決算。不変条件は **`Classical.choice` と `Real.sup` 系が前半の監査に出ないこと**（出たら設計違反）。`propext`・`Quot.sound` は標準の無害公理で、`rs_le_const` 等に現れてよい（説明は最小限に留め Ch18 へ送る）。「古典公理ゼロ」＝ choice ゼロの意味だと本文で明確化する
 - **(f) 脱 abs/min/diam 方針**: 前半に abs・max・min・diam を持ち込まない。Ch13 の第 5 性質は両側評価（生の不等式 2 本）。理由（abs は古典性を呼ぶ）は Ch14 へ予告のみ
