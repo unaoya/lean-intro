@@ -52,7 +52,7 @@ theorem left_of_straddle {f : Real → Real} {a b x : Real}
 --    定数の積分 const_isintegral は Ch16（橋の応用）で証明済み
 -- ============================================================
 
--- 両側評価の束ね直し（Ch13 の raw 版 → TaggedPartition 版）
+-- 両側評価の束ね直し（Ch10 の raw 版 → TaggedPartition 版）
 theorem sum_le_const {u v : Real} (P : TaggedPartition u v) {g : Real → Real} {c : Real}
     (hb : ∀ t, u ≤ t → t ≤ v → g t ≤ c) : P.sum g ≤ c * (v - u) :=
   rs_le_const P.Δ P.ξ P.repr hb

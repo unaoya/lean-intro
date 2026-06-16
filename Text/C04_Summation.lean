@@ -8,7 +8,7 @@ def Range (n : Nat) := { i : Nat // i < n }
 -- 名前空間を**作る**（Ch3 の「アクセス」の対）: `namespace Range … end Range` で囲むと、
 --   中で定義した `incl` は外から `Range.incl` という名前になる。Range に関わる操作を
 --   1 つの接頭辞の下に束ね、名前の衝突を避け、所属を名前で示す。
---   （次章 Ch5 で `open Range` すれば接頭辞 `Range.` を省ける——それが旨味。）
+--   （この後 `open Range` すれば接頭辞 `Range.` を省ける——それが旨味。下の分割定義で実演。）
 namespace Range
 
 -- 隣接分点を安全に参照するための 2 つの埋め込み
@@ -99,7 +99,7 @@ theorem summation_all_zero : (n : Nat) → Summation n (fun _ : Range n => (0 : 
 
 -- ============================================================
 -- 分割とリーマン和の**定義**（到達点①）。証明技術は不要——structure とΣで値を作るだけ。
---   代表点が妥当（leftRepr_isRepr）であることの証明は順序 le_refl を要するので Ch9 で。
+--   代表点が妥当（leftRepr_isRepr）であることの証明は順序 le_refl を要するので Ch10 で。
 -- ============================================================
 
 open Range
@@ -151,7 +151,7 @@ def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :
 end Partition
 
 -- クリフハンガー: 1 分割（リテラルも除法も不要、自明の極み——なのに increase が
--- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch5 で完成）。
+-- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch6 で完成）。
 -- ANCHOR: trivial_partition
 def trivialPartition (a b : Real) (hab : a ≤ b) : Partition 1 a b where
   points := fun i => if i.val = 0 then a else b

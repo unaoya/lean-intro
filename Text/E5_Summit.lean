@@ -86,7 +86,7 @@ theorem continuous_integrable (f : Real → Real) {u v : Real} (huv : u ≤ v)
     (hf : ∀ x, u ≤ x → x ≤ v → ContinuousAt f x) : IsIntegrable f u v := by
   cases Classical.em (u = v) with
   | inl he =>
-    -- 退化区間 [u, u]: すべての分点が u に潰れ、どの RS も 0（Ch17 の補題）
+    -- 退化区間 [u, u]: すべての分点が u に潰れ、どの RS も 0（Ch16 の補題）
     subst he
     refine ⟨0, fun ε hε => ⟨1, zero_lt_one, fun P _ => ?_⟩⟩
     rw [degenerate_sum P f]

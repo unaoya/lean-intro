@@ -110,7 +110,7 @@ theorem sum_id_nat (n : Nat) :
     omega
 
 -- ============================================================
--- Σ は線形写像（加群 Module は Ch4 で定義済み——ここで Σ がその射であることを証明する）
+-- Σ は線形写像（加群 Module は Ch5 で定義済み——ここで Σ がその射であることを証明する）
 --    additive_summation と summation_mul_left の 2 本が「Range n → Real 上の線形形式」という
 --    1 つの主張に束ねられる（概念の定義が既証明を束ねる・class 設計の応用）。
 -- ============================================================
@@ -124,12 +124,12 @@ theorem summation_isLinear (n : Nat) :
 -- ANCHOR_END: summation_linear
 
 -- ============================================================
--- 線形性を積み上げる: Σ → 重みつき Σ → （引き戻し）→ リーマン和（Ch13 で帰着）
+-- 線形性を積み上げる: Σ → 重みつき Σ → （引き戻し）→ リーマン和（Ch10 で帰着）
 --    各層が「線形写像」で、合成・特殊化として次の層が出てくる。
 -- ============================================================
 
 -- 関数空間 Real → Real も上の funModule で自動的に加群（f + g・-f・c • f が中置で書ける）。
--- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch13）に使う。
+-- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch10）に使う。
 
 -- ANCHOR: weighted_summation
 -- 線形写像の合成は線形（U → V → W）——「線形性は合成で保たれる」道具
@@ -181,7 +181,7 @@ theorem weightedSum_le {n : Nat} (w g h : Range n → Real)
 -- ============================================================
 -- Partition の基本性質（induction を読者自身の構造に適用する実地）
 --    隣接単調（公理 increase）→ 大域単調（points_mono・induction）→ 端点評価・
---    タグの所属。すべて Ch13 の性質証明が消費する。
+--    タグの所属。すべて Ch10 の性質証明が消費する。
 -- ============================================================
 
 /-- 各小区間の長さは非負（分点が広義単調だから）。 -/
@@ -229,7 +229,7 @@ theorem point_le_right {n : Nat} {u v : Real} (Δ : Partition n u v)
   exact h
 
 /-- 代表点系のタグは区間 `[u, v]` 内にある（IsRepr＝小区間内・端点評価から区間全体へ。
-raw 版。`TaggedPartition` に束ねた版は Ch15）。 -/
+raw 版。`TaggedPartition` に束ねた版は Ch14）。 -/
 theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (i : Range n) : u ≤ ξ i ∧ ξ i ≤ v := by
   have h1 : Δ.points ⟨0, Nat.succ_pos n⟩ ≤ Δ.points (Range.incl i) :=
@@ -362,7 +362,7 @@ theorem const_le_rs {n : Nat} {u v : Real} (Δ : Partition n u v)
 #print axioms riemann_sum_nonneg
 #print axioms rs_le_const
 
--- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch9 に置く）。
+-- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch10 に置く）。
 namespace Partition
 
 /-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/

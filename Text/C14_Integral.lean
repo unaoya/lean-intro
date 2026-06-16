@@ -42,7 +42,7 @@ theorem const_sum {u v : Real} (P : TaggedPartition u v) (c : Real) :
     P.sum (fun _ => c) = c * (v - u) :=
   riemann_sum_const P.Δ P.ξ c
 
--- 任意の細かさのタグ付き分割の存在（Ch12 の等分割を束ねる）
+-- 任意の細かさのタグ付き分割の存在（Ch13 の等分割を束ねる）
 theorem exists_fine_partition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
     ∃ P : TaggedPartition a b, P.Fine δ := by
   obtain ⟨m, hm, hfine⟩ := exists_fine_equalPartition a b δ hab hδ
