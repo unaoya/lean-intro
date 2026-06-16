@@ -1,11 +1,11 @@
--- Text/C07_Automation.lean — Ch7 自動化と自作タクティク（simp・omega・my_ring）
+-- Text/C08_Automation.lean — Ch7 自動化と自作タクティク（simp・omega・my_ring）
 -- まずバニラ（simp/omega/ac_rfl）を押さえ、その上で自分の公理から「proof by
 -- reflection」で自作タクティクを作る: my_abel（加法可換群）→ my_ring（可換環）。
 -- mathlib の ring/abel/linarith は無い（unknown tactic）ので、すべて自作する。
 -- 反射の健全性は **任意の AddCommGroup/CommRing 上**で証明する（Real 固定でない）。
 -- ゆえに my_abel/my_ring は Real に限らずどの可換群/可換環の等式でも閉じる。
 import Lean
-import Text.C06_Rewrite
+import Text.C07_Rewrite
 
 -- ============================================================
 -- §1 simp — hand-proved 補題を渡して派生恒等式を畳む（既定セットは汚さない）

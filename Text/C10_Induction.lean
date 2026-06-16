@@ -1,8 +1,8 @@
--- Text/C09_Induction.lean — Ch9 帰納法・加群・Σ コーパス・リーマン和の性質（到達点③）
+-- Text/C10_Induction.lean — Ch9 帰納法・加群・Σ コーパス・リーマン和の性質（到達点③）
 -- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch6/7）・
 -- 自動化（Ch8）・順序と ≤/< 混在 calc（Ch9）は獲得済みで、ここで帰納法に組み込む。
 -- 注意: この章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）
-import Text.C08_Order
+import Text.C09_Order
 
 open Range
 

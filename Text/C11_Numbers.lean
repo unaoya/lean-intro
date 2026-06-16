@@ -1,7 +1,7 @@
--- Text/C10_Numbers.lean — Ch10 数の体系（リテラル・除法・cast）
+-- Text/C11_Numbers.lean — Ch10 数の体系（リテラル・除法・cast）
 -- リテラルの一般機構（Ch3 のエラーの回収）・除法 Div・cast 補題（構成的な部分のみ・
 -- cast は射）。これが y=x 計算（Ch12）の土台。sup を使う archimedean 系は第 II 部へ。
-import Text.C09_Induction
+import Text.C10_Induction
 
 noncomputable section
 

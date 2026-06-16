@@ -1,8 +1,8 @@
--- Text/C13_Integral.lean — Ch13 リーマン積分の定義
+-- Text/C14_Integral.lean — Ch13 リーマン積分の定義
 -- TaggedPartition（∀ 量化のための束ね）・Fine の ∀ 形・Near（3 種の ε-δ の統一語彙）・
 -- IsIntegral・dite＋choose の Integral・監査 3 層
 -- TODO(P4): ∫ 記法の自作（Ch5 の再演）・IsLimAt（演習）
-import Text.C12_Archimedes
+import Text.C13_Archimedes
 
 noncomputable section
 
