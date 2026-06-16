@@ -4,14 +4,32 @@ import Text.C03_Axioms
 -- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物）
 -- ANCHOR: range
 def Range (n : Nat) := { i : Nat // i < n }
+-- ANCHOR_END: range
 
+-- ANCHOR: range_intro
+-- Range の「項」と「関数」の基本動作（Subtype の導入と除去）:
+--   項を作る = 値と「範囲内」の証明を ⟨_, _⟩ で組む（導入）／取り出す = .val（除去）
+example : Range 3 := ⟨2, Nat.lt_succ_self 2⟩      -- 値 2 ＋ 証明 2 < 3（= 2 < 2+1）
+example (i : Range 3) : Nat := i.val              -- Range「から」の関数（domain が Range・射影）
+-- Range 3「から」の関数を i.val の 0/1/2 で場合分け。i.val < 3 ゆえ 0/1/2 で尽きるが、
+-- 型 `Range 3` だけからは Lean にそれが分からない——Nat 全体の網羅に最後の枝が要る（依存型の限界）
+example (i : Range 3) : Nat := match i.val with
+  | 0 => 10
+  | 1 => 20
+  | 2 => 30
+  | _ => 0                                        -- i.val < 3 ゆえ到達しない（網羅性のためのダミー）
+-- Range「へ」の関数（codomain が Range）は値を作り範囲内の証明を添える——下の incl/addone が実戦
+-- ANCHOR_END: range_intro
+
+-- ANCHOR: range_funcs
 -- 名前空間を**作る**（Ch3 の「アクセス」の対）: `namespace Range … end Range` で囲むと、
 --   中で定義した `incl` は外から `Range.incl` という名前になる。Range に関わる操作を
 --   1 つの接頭辞の下に束ね、名前の衝突を避け、所属を名前で示す。
 --   （この後 `open Range` すれば接頭辞 `Range.` を省ける——それが旨味。下の分割定義で実演。）
 namespace Range
 
--- 隣接分点を安全に参照するための 2 つの埋め込み
+-- incl/addone は「Range への関数」の実戦（Range n の項から Range (n+1) の項を作る——
+-- 値は同じ / +1、添える「範囲内」の証明だけを既存補題で作り替える）。隣接分点の安全な参照
 def incl {n : Nat} : Range n → Range (n + 1) :=
   fun k => ⟨k.val, Nat.lt_succ_of_lt k.property⟩
 
@@ -19,7 +37,7 @@ def addone {n : Nat} : Range n → Range (n + 1) :=
   fun k => ⟨k.val + 1, Nat.succ_lt_succ k.property⟩
 
 end Range
--- ANCHOR_END: range
+-- ANCHOR_END: range_funcs
 
 -- 有限和。契約は最小（二項演算とゼロの値 = [Add α] [Zero α]）。
 -- 基底の `0` は C02 の bridge（Zero → OfNat）経由で Zero.zero に defeq。
@@ -154,7 +172,9 @@ end Partition
 -- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch6 で完成）。
 -- ANCHOR: trivial_partition
 def trivialPartition (a b : Real) (hab : a ≤ b) : Partition 1 a b where
-  points := fun i => if i.val = 0 then a else b
+  points := fun i => match i.val with
+    | 0 => a
+    | _ + 1 => b
   increase := by
     intro ⟨v, hv⟩
     match v, hv with

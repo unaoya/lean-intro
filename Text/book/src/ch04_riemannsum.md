@@ -7,6 +7,40 @@
 - 新しい Lean 機能: 帰納型【鍵 3】・Subtype・構造的再帰・**namespace を作る＋open/dot 記法**（縦糸 2-3/3）・structure（双子章・後編）・notation 自作・rfl=defeq の予告編
 - コード: C04_Summation.lean（Range・Summation・Partition・RiemannSum・IsRepr・leftRepr・trivialPartition。**加群は次章 Ch5 へ分離**）
 
+## 書くべきこと
+
+Subtypeについて書く必要がある。
+Subtypeの作り方と使い方。
+Subtypeの項の作り方と使い方。
+型 a に対し、a上のPropがあればSubtypeが作れる。
+Structureで定義するのと同じ？
+
+Subtypeの例として、nより小さい自然数のなす型を作る。
+これはさらにnを引数にもつ関数であることに注意する。
+Range 0, Range 1などがそれぞれ型である。
+集合論的には{0,1,\ldots,n-1}である。
+Range n \to Range n+1をinclとaddoneの二つ作る。
+incl k = k, addone k = k+1である。
+ただし、条件を満たす証明（Prop型のi < nを型に持つ項）をつける必要がある。
+これは要するにk < nならばk < n+1とk < n ならばk +1 < n + 1である。
+すでに既存の証明が標準ライブラリにあるので流用する。
+
+Summationの定義。
+パターンまっちによる定義。
+直和集合上の関数をどう定義するか？
+Natは直和ではなく帰納的に定義されているので少し難しいが、
+zeroかsuccのどちらかである。
+
+自明な事実を証明してみる。
+rflで証明できる！
+
+分割、代表点を定義すればリーマン和が定義できる。
+分割や代表点もstructureとして定義する。
+分割の例として自明な分割がある。
+等分割もあるが後で。
+increaseの照明が面倒？（実は簡単ではない？）
+あと自然数と実数を結びつける必要があるので。
+
 ## 4.1 #print で種明かし — すべては帰納型だった
 
 - Nat・And・Or・False・Eq を `#print`。Ch1 から使ってきた論理結合子の正体
@@ -19,8 +53,10 @@
 
 ## 4.3 Range — 証明を抱えた添字
 
-- `Range n := { i : Nat // i < n }`（Subtype＝依存和の実物、CH 表 ∃ 行の Type 側親戚）
-- incl / addone（隣接分点を安全に参照する 2 つの埋め込み）
+- `Range n := { i : Nat // i < n }`（Subtype＝依存和の実物、CH 表 ∃ 行の Type 側親戚）。`Range 0`・`Range 1`… がそれぞれ型（集合論の {0,…,n−1}）・`n` を引数に取る関数でもある
+- **Subtype の項と関数の基本動作**（ANCHOR `range_intro`）: 項を作る = 値＋「範囲内」の証明を `⟨2, …⟩` で組む（導入）／取り出す = `.val`（除去）。**Range「から」の関数**（domain が Range・射影 `i.val`）と **Range「へ」の関数**（codomain が Range・値＋証明を添える）の 2 方向を最小例で見せる
+- **依存型の限界の予告**: `Range 3` からの関数を `i.val` の `0/1/2` で場合分けすると、`i.val < 3` ゆえ 3 枝で尽きるはずなのに **Nat 全体の網羅にもう 1 枝（到達不能なダミー）が要る**——型 `Range 3` だけからは Lean が「i.val は 2 以下」を読めない。証明を使って網羅を絞るのは後の章（§4.12 trivialPartition も同じ構図——だから `increase` が sorry になる）
+- incl / addone（ANCHOR `range_funcs`）は **Range「への」関数の実戦**——`Range n` の項から `Range (n+1)` の項を作る（値は同じ/+1、添える証明だけ既存補題 `Nat.lt_succ_of_lt`/`Nat.succ_lt_succ` で作り替える）。隣接分点を安全に参照する 2 つの埋め込み
 - **名前空間を作る（namespace 縦糸 2/3）**: `namespace Range … end Range` で囲むと `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に束ね、衝突を避け、所属を名前で示す。Ch3＝既存の名前空間を読む（アクセス）の対＝**自分で作る**。`open` で省く・dot 記法の旨味はこの章の後半（§4.8）
 
 ## 4.4 Summation — 構造的再帰
@@ -72,7 +108,8 @@
 
 ## 4.12 クリフハンガー: trivialPartition
 
-- 1 分割（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める（ANCHOR `trivial_partition`）——`increase` が添字の場合分けなしに書けない。読者版では **sorry のまま幕**（Ch6 タクティク入門の初仕事で埋める）
+- 1 分割（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める（ANCHOR `trivial_partition`）。`points` は **`match i.val with | 0 => a | _+1 => b`**——Nat の zero/succ で分岐（§4.6 のパターンマッチ・Summation と同じスタイル。if-then-else は Decidable を陰に持ち込むので避ける）。`left`/`right` は `rfl` で通る
+- だが `increase` は **添字の場合分けなしに書けない**——読者版では **sorry のまま幕**（Ch6 タクティク入門の初仕事で埋める）
 
 ## 演習
 
