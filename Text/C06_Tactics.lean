@@ -1,4 +1,4 @@
--- Text/C06_Tactics.lean — Ch5 タクティク入門（tactic mode の機構と信頼）
+-- Text/C06_Tactics.lean — Ch6 タクティク入門（tactic mode の機構と信頼）
 -- by・ゴール状態・intro/exact/apply/rw/have/show を学び、「タクティクは証明項を書く
 -- 機械」であることを #print で確かめる。等式補題を数本だけ手で証明して道具に慣れる。
 -- 等式コーパス本体は Ch7（C07_Rewrite）、自動化は Ch8、順序と calc は Ch9。

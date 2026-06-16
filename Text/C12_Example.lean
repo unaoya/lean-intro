@@ -1,4 +1,4 @@
--- Text/C12_Example.lean — Ch11 具体例 y=x の n 等分（到達点②）
+-- Text/C12_Example.lean — Ch12 具体例 y=x の n 等分（到達点②）
 -- n 等分割 equalPartition と、[0,1] 上の y=x のリーマン和（(1+1)n²·RS = n²−n）。
 -- Ch11 の cast（射）と自作タクティク my_ring/my_abel（Ch8）で貫通する。
 import Text.C11_Numbers

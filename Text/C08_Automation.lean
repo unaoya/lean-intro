@@ -1,4 +1,4 @@
--- Text/C08_Automation.lean — Ch7 自動化と自作タクティク（simp・omega・my_ring）
+-- Text/C08_Automation.lean — Ch8 自動化と自作タクティク（simp・omega・my_ring）
 -- まずバニラ（simp/omega/ac_rfl）を押さえ、その上で自分の公理から「proof by
 -- reflection」で自作タクティクを作る: my_abel（加法可換群）→ my_ring（可換環）。
 -- mathlib の ring/abel/linarith は無い（unknown tactic）ので、すべて自作する。

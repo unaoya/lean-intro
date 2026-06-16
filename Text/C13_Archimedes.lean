@@ -1,4 +1,4 @@
--- Text/C13_Archimedes.lean — Ch12 アルキメデスと探索
+-- Text/C13_Archimedes.lean — Ch13 アルキメデスと探索
 -- 第 II 部の開幕: (1) sup（Skolem 化済み——choice 不要）(2) 探索 has_min（choice 不要・
 -- ただし noncomputable）(3) 分岐 Classical.em（古典論理の入口）。
 -- sup 公理はここで初稼働し、archimedean（白眉①）が出る。素朴定義実験もここ。

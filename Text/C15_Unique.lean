@@ -1,4 +1,4 @@
--- Text/C15_Unique.lean — Ch14 一意性（choose の仕様書）
+-- Text/C15_Unique.lean — Ch15 一意性（choose の仕様書）
 -- min-free 合流（le_total の場合分け＋fine_mono）・橋 = choose の仕様書・橋の応用
 import Text.C14_Integral
 
