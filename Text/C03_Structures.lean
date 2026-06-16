@@ -1,7 +1,8 @@
--- Text/C02_Structures.lean — Ch2 数学的構造と class の仕組み（machinery）
+-- Text/C03_Structures.lean — Ch3 数学的構造と class の仕組み（machinery）
 -- 構造をデータとして書く・一般構造で 1 回証明して複数インスタンスに適用する、を
--- 素の structure だけで体験する（class／instance の深い機構と ℝ の公理は Ch3 以降）。
--- import 連鎖の葉（core のみ・主線非依存）。
+-- 素の structure だけで体験する（class／instance の深い機構と ℝ の公理は Ch4 以降）。
+-- 前章 C02_Types（型の構成）を受けて、できた型に「構造を載せる」段に進む。
+import Text.C02_Types
 
 -- ============================================================
 -- §1 数学的構造はデータ: 「α 上の構造」は型であり、住人が「構造ひとつ」
@@ -37,7 +38,7 @@ example : Add Nat := ⟨fun a b => a * b⟩      -- 乗法も Nat 上の二項�
 #check (Mul Int)
 -- いずれも `Type`——Add Nat と同じ「構造＝データ」。クラス名が記法と対応し、法則はまだ無い。
 -- mathlib があれば法則付きの Monoid/CommRing/… も借りられるが、本書は core のみ＝法則は
--- 自分で束ねる（次の §2 の structure・Ch3 の class 階層）
+-- 自分で束ねる（次の §2 の structure・Ch4 の class 階層）
 -- ANCHOR_END: nat_structures
 
 -- ============================================================
@@ -84,6 +85,19 @@ example (a b c d : Nat × Nat) :
     prodNatAdd.op (prodNatAdd.op a b) (prodNatAdd.op c d)
       = prodNatAdd.op (prodNatAdd.op a c) (prodNatAdd.op b d) :=
   interchange prodNatAdd a b c d
+
+-- ★ 関数型 X → M（M がモノイド構造を持つ）にも各点演算でモノイド構造が載る。Ch2 で作った
+-- 有限集合 Three からの関数 Three → Nat に各点加法を入れる——funext で点ごとに法則を持ち上げる。
+-- これは Ch6 の funModule（関数空間が加群）の伏線。interchange はやはりそのまま効く。
+def funNatAdd : CommMonoidStr (Three → Nat) where
+  op f g := fun x => f x + g x
+  op_assoc _ _ _ := funext fun _ => Nat.add_assoc _ _ _
+  op_comm _ _ := funext fun _ => Nat.add_comm _ _
+
+example (f g h k : Three → Nat) :
+    funNatAdd.op (funNatAdd.op f g) (funNatAdd.op h k)
+      = funNatAdd.op (funNatAdd.op f h) (funNatAdd.op g k) :=
+  interchange funNatAdd f g h k
 -- ANCHOR_END: general_proof
 
 -- ============================================================
@@ -111,28 +125,3 @@ example (a b c d : Nat) : (a ⋆ b) ⋆ (c ⋆ d) = (a ⋆ c) ⋆ (b ⋆ d) :=
 -- ANCHOR: and_is_structure
 #print And   -- structure And (a b : Prop) : Prop（⟨h.2, h.1⟩ の ⟨⟩ はこれ）
 -- ANCHOR_END: and_is_structure
-
--- ============================================================
--- §4（コラム・予告）型を自分で「作る」2 つの道——帰納型と商
---   ここまでは既存の型に構造を「載せた」。型そのものを作る道も 2 つある。本格は
---   Ch4（帰納型＝Nat.rec で Summation）と発展（商で整数の代数）。ここは入口の一望だけ。
--- ============================================================
-
--- ANCHOR: type_construction_preview
--- (a) 帰納型で作る: 構成子を並べて新しい型を定義する（Ch4 の Nat・Summation の予告）
-inductive MyInt where
-  | ofNat   : Nat → MyInt     -- 0, 1, 2, …
-  | negSucc : Nat → MyInt     -- -1, -2, …
-
--- (b) 商で作る: 同値関係で割る。整数 = (Nat × Nat)/~、(a,b) ~ (c,d) ⟺ a+d = c+b
---   （直感: (a,b) は差 a−b を表し、(n,n) はすべて 0 と同一視される）
---   ※ iseqv の反射/対称/推移は omega（Ch8 の自動化）に任せる——ここでは結果だけ借りる
-instance intSetoid : Setoid (Nat × Nat) where
-  r p q := p.1 + q.2 = q.1 + p.2
-  iseqv := ⟨fun _ => by omega, fun h => by omega, fun h1 h2 => by omega⟩
-
-def IntByQuot := Quotient intSetoid
--- 0 の同一視: (n, n) はどれも (0, 0) と同じ整数（差が 0）
-example (n : Nat) : ((0, 0) : Nat × Nat) ≈ (n, n) := by show (0:Nat) + n = n + 0; omega
--- well-defined な演算（商の上の加法 = Quotient.lift）の定義は発展で扱う
--- ANCHOR_END: type_construction_preview

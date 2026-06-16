@@ -1,7 +1,7 @@
--- Text/C11_Numbers.lean — Ch11 数の体系（リテラル・除法・cast）
--- リテラルの一般機構（Ch3 のエラーの回収）・除法 Div・cast 補題（構成的な部分のみ・
--- cast は射）。これが y=x 計算（Ch12）の土台。sup を使う archimedean 系は第 II 部へ。
-import Text.C10_Induction
+-- Text/C12_Numbers.lean — Ch12 数の体系（リテラル・除法・cast）
+-- リテラルの一般機構（Ch4 のエラーの回収）・除法 Div・cast 補題（構成的な部分のみ・
+-- cast は射）。これが y=x 計算（Ch13）の土台。sup を使う archimedean 系は第 II 部へ。
+import Text.C11_Induction
 
 noncomputable section
 
@@ -11,14 +11,14 @@ open Range
 -- §1 リテラルの一般機構と除法
 -- ============================================================
 
--- （リテラル機構 Real.ofNat・OfNat・NatCast と除法 Div の「定義」は Ch5「構造と射」へ前倒し。
+-- （リテラル機構 Real.ofNat・OfNat・NatCast と除法 Div の「定義」は Ch6「構造と射」へ前倒し。
 --   ここではその defeq の含意と、cast が射であること＝cast 補題の証明本体を扱う。）
 
 -- defeq の観察: 「数の 2 つの建て方」の分かれ目。
 -- cast は代数の 0 と 1 から建てた（代数一次）。重なる点の等式の「強さ」が違う:
 -- cast 0 = 0 は構成により rfl（defeq）、cast 1 = 1 は命題的（証明が要る）。
 -- もし全リテラルを cast で配線したら (1 : Real) の中身は 0 + 1 になり、
--- 公理には計算が無いので 1 と defeq にならない——rfl 証明が死ぬ（Ch7 の 2 種の等しさ）。
+-- 公理には計算が無いので 1 と defeq にならない——rfl 証明が死ぬ（Ch8 の 2 種の等しさ）。
 -- これが mathlib の Nat.AtLeastTwo（リテラル 0/1/2 以上の担当の排他分割）の理由
 -- ANCHOR: cast_defeq
 example : Real.ofNat 0 = 0 := rfl        -- defeq（構成どおり）
@@ -30,7 +30,7 @@ theorem cast_one : ((1 : Nat) : Real) = 1 := zero_add' 1  -- 命題的にはも�
 -- ============================================================
 -- ダイヤモンド事件: 「2 つ目の値を正準にすると事故」（class 深い機構の悪い例）
 --   リテラルの担当を 0/1/2 以上で排他分割する理由——同じ型に 2 つインスタンスを
---   登録すると機構は黙って 1 つを選び、事故は静かに起きる。Ch2 の「class＝自動で
+--   登録すると機構は黙って 1 つを選び、事故は静かに起きる。Ch3 の「class＝自動で
 --   見つかる構造」の影の側面。本物の NatCast ダイヤモンドの語りは原稿側。
 -- ============================================================
 
@@ -157,10 +157,10 @@ theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c :=
 -- §3 cast 補題（構成的な部分のみ）
 -- ============================================================
 
--- ofNat の定義（| 0 | n+1）により再帰方程式は rfl（Real.ofNat の定義は Ch5「構造と射」）
+-- ofNat の定義（| 0 | n+1）により再帰方程式は rfl（Real.ofNat の定義は Ch6「構造と射」）
 theorem succ_ofNat (n : Nat) : Real.ofNat (n + 1) = Real.ofNat n + (1 : Real) := rfl
 
--- （順序写像 Monotone・順序半環の射 IsOrderedSemiringHom の「定義」は Ch5 へ前倒し。
+-- （順序写像 Monotone・順序半環の射 IsOrderedSemiringHom の「定義」は Ch6 へ前倒し。
 --   この §3 は「cast がそれらの実例である」＝射であることの証明本体。）
 
 /-- **cast は順序写像**（順序系の基盤）。`b = a + k` の k について帰納し、各ステップ
@@ -198,7 +198,7 @@ theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) 
         CommRing.left_distrib, mul_one_b]
 
 -- ============================================================
--- cast が「順序半環の射」（IsOrderedSemiringHom・定義は Ch5）であることの証明と、その帰結。
+-- cast が「順序半環の射」（IsOrderedSemiringHom・定義は Ch6）であることの証明と、その帰結。
 --   nonneg・狭義単調・単射は **射の一般論**から出る——cast 固有は cast_le と +/× だけ。
 -- ============================================================
 
@@ -276,14 +276,14 @@ theorem cast_summation (n : Nat) (f : Range n → Nat) :
 #print axioms cast_mul
 
 -- ============================================================
--- §4 分割の具体例: n 等分割 equalPartition（分点式 points i = a + i·(b−a)/m は Ch5 で例示）。
+-- §4 分割の具体例: n 等分割 equalPartition（分点式 points i = a + i·(b−a)/m は Ch6 で例示）。
 --   ここで increase（順序＝広義単調）と両端 left/right（除法）を埋めて Partition を完成させる。
 -- ============================================================
 
 -- ANCHOR: equal_partition
 noncomputable def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
     Partition m a b where
-  points := fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)  -- Ch5 の equalPoints と同じ式
+  points := fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)  -- Ch6 の equalPoints と同じ式
   increase := by
     intro i
     apply add_left_le

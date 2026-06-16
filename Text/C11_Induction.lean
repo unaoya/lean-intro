@@ -1,14 +1,14 @@
--- Text/C10_Induction.lean — Ch10 帰納法・加群の線形性・Σ コーパス・リーマン和の性質（到達点③）
--- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch6/7）・
--- 自動化（Ch8）・順序と ≤/< 混在 calc（Ch9）は獲得済みで、ここで帰納法に組み込む。
+-- Text/C11_Induction.lean — Ch11 帰納法・加群の線形性・Σ コーパス・リーマン和の性質（到達点③）
+-- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch7/7）・
+-- 自動化（Ch9）・順序と ≤/< 混在 calc（Ch10）は獲得済みで、ここで帰納法に組み込む。
 -- 注意: この章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）
-import Text.C09_Order
+import Text.C10_Order
 
 open Range
 
 -- ============================================================
 -- Σ 補題コーパス（帰納法の訓練場。添字の付け替え fun k => f ⟨k.val, …⟩ が主役）
---   合同 summation_congr と全零 summation_all_zero は Ch4 で予告済み（再帰＝帰納の
+--   合同 summation_congr と全零 summation_all_zero は Ch5 で予告済み（再帰＝帰納の
 --   最初の一手）。ここからは `induction` タクティクで本格コーパスを積む。
 -- ============================================================
 
@@ -110,7 +110,7 @@ theorem sum_id_nat (n : Nat) :
     omega
 
 -- ============================================================
--- Σ は線形写像（加群 Module は Ch5 で定義済み——ここで Σ がその射であることを証明する）
+-- Σ は線形写像（加群 Module は Ch6 で定義済み——ここで Σ がその射であることを証明する）
 --    additive_summation と summation_mul_left の 2 本が「Range n → Real 上の線形形式」という
 --    1 つの主張に束ねられる（概念の定義が既証明を束ねる・class 設計の応用）。
 -- ============================================================
@@ -124,12 +124,12 @@ theorem summation_isLinear (n : Nat) :
 -- ANCHOR_END: summation_linear
 
 -- ============================================================
--- 線形性を積み上げる: Σ → 重みつき Σ → （引き戻し）→ リーマン和（Ch10 で帰着）
+-- 線形性を積み上げる: Σ → 重みつき Σ → （引き戻し）→ リーマン和（Ch11 で帰着）
 --    各層が「線形写像」で、合成・特殊化として次の層が出てくる。
 -- ============================================================
 
 -- 関数空間 Real → Real も上の funModule で自動的に加群（f + g・-f・c • f が中置で書ける）。
--- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch10）に使う。
+-- precompose（引き戻し）の定義域になり、RS の線形性帰着（Ch11）に使う。
 
 -- ANCHOR: weighted_summation
 -- 線形写像の合成は線形（U → V → W）——「線形性は合成で保たれる」道具
@@ -181,7 +181,7 @@ theorem weightedSum_le {n : Nat} (w g h : Range n → Real)
 -- ============================================================
 -- Partition の基本性質（induction を読者自身の構造に適用する実地）
 --    隣接単調（公理 increase）→ 大域単調（points_mono・induction）→ 端点評価・
---    タグの所属。すべて Ch10 の性質証明が消費する。
+--    タグの所属。すべて Ch11 の性質証明が消費する。
 -- ============================================================
 
 /-- 各小区間の長さは非負（分点が広義単調だから）。 -/
@@ -229,7 +229,7 @@ theorem point_le_right {n : Nat} {u v : Real} (Δ : Partition n u v)
   exact h
 
 /-- 代表点系のタグは区間 `[u, v]` 内にある（IsRepr＝小区間内・端点評価から区間全体へ。
-raw 版。`TaggedPartition` に束ねた版は Ch14）。 -/
+raw 版。`TaggedPartition` に束ねた版は Ch15）。 -/
 theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n → Real)
     (hr : Δ.IsRepr ξ) (i : Range n) : u ≤ ξ i ∧ ξ i ≤ v := by
   have h1 : Δ.points ⟨0, Nat.succ_pos n⟩ ≤ Δ.points (Range.incl i) :=
@@ -245,14 +245,14 @@ theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n →
       _ = v := Δ.right
 
 -- ============================================================
--- リーマン和の性質（旧 Ch13・到達点③）: 線形性・単調性・const・nonneg・両側評価
+-- リーマン和の性質（旧 Ch14・到達点③）: 線形性・単調性・const・nonneg・両側評価
 --   いずれも Σ コーパス（線形性=合成／単調性=weightedSum_le）の RS への持ち上げ。
 -- ============================================================
--- 関数空間 Real → Real のベクトル空間（f + g・-f・c • f が中置）は Ch10 で導入済。
+-- 関数空間 Real → Real のベクトル空間（f + g・-f・c • f が中置）は Ch11 で導入済。
 -- ここでは差 f - g を中置で書けるよう Sub だけ足す（Real と同じ流儀 a - b = a + -b）。
 noncomputable instance : Sub (Real → Real) := ⟨fun f g => f + -g⟩
 
-/-- **RS は f について線形写像**。Ch10 の線形性の塔を合成して帰着する:
+/-- **RS は f について線形写像**。Ch11 の線形性の塔を合成して帰着する:
 `RiemannSum f Δ ξ = WeightedSum Δ.length (i ↦ f (ξ i))`（定義的に等しい＝重みつき和）なので、
 **重みつき Σ の線形性 `weightedSum_isLinear` と引き戻し `precompose_isLinear` の合成**で出る。
 線形性が Σ → 重みつき Σ →（引き戻し）→ RS と積み上がる——以下の加法・符号・差はその系。 -/
@@ -307,7 +307,7 @@ theorem riemann_sum_const {n : Nat} {u v : Real} (Δ : Partition n u v)
 
 -- ============================================================
 -- §2.5 単調性: 区間上 f ≤ g なら RS f ≤ RS g（IsRepr 必須）。nonneg・両側評価はこの系。
---    Ch10 の重みつき Σ の単調性 weightedSum_le に帰着（重み=length≥0・タグ∈区間）。
+--    Ch11 の重みつき Σ の単調性 weightedSum_le に帰着（重み=length≥0・タグ∈区間）。
 --    線形性が「合成で帰着」だったのと並行に、単調性も Σ→重みつきΣ→RS と積み上がる。
 -- ============================================================
 
@@ -362,7 +362,7 @@ theorem const_le_rs {n : Nat} {u v : Real} (Δ : Partition n u v)
 #print axioms riemann_sum_nonneg
 #print axioms rs_le_const
 
--- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch10 に置く）。
+-- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch11 に置く）。
 namespace Partition
 
 /-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/

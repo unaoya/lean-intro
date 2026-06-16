@@ -1,5 +1,5 @@
--- Text/C03_Axioms.lean — Ch3 実数を公理で読む
--- Ch2 で得た「構造＝データ・class＝自動で見つかる構造」の見方で、実数の公理を読む。
+-- Text/C04_Axioms.lean — Ch4 実数を公理で読む
+-- Ch3 で得た「構造＝データ・class＝自動で見つかる構造」の見方で、実数の公理を読む。
 -- 代数階層クラス＋公理 5 本＋最小インスタンス＋根幹 2 行の観察＋最初の実数証明（< の 3 兄弟）
 -- sup 最小性実験（演習）: sup 公理 3 本をコメントアウトしても C05 まではビルドが通る
 
@@ -8,7 +8,7 @@
 -- ============================================================
 
 -- 加法は「可換モノイド（逆元なし）→ 可換群（逆元あり）」の 2 段で積む。
--- 補題が成り立つ最小構造を Ch9 で示すための土台（モノイドで足りる加法補題と
+-- 補題が成り立つ最小構造を Ch10 で示すための土台（モノイドで足りる加法補題と
 -- 群が要る符号補題を分ける）。
 -- ANCHOR: hierarchy
 class AddCommMonoid (α : Type) extends Add α where
@@ -42,9 +42,9 @@ class Field (α : Type) extends CommRing α where
 
 -- 注: zero/add_assoc/add_comm/zero_add/add_zero は AddCommMonoid へ移ったが、
 -- extends が親フィールドのアクセサ `AddCommMonoid.zero` 等を自動生成するので、
--- Ch6/7/8 の既存参照（`AddCommMonoid.zero_add` 等）はそのまま温存される。
+-- Ch7/7/8 の既存参照（`AddCommMonoid.zero_add` 等）はそのまま温存される。
 
--- 順序の階層（補題が成り立つ最小構造を Ch9 で活用するための中間クラス）。
+-- 順序の階層（補題が成り立つ最小構造を Ch10 で活用するための中間クラス）。
 -- 順序モノイド（加法と順序）→ 順序群（符号も）→ 順序体（乗法も）→ 全順序体（線形性）。
 -- ANCHOR: order_hierarchy
 class OrderedAddCommMonoid (α : Type) extends AddCommMonoid α, LE α where
@@ -96,7 +96,7 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 --     導入規則 = `fun x => …`・除去規則 = 適用。だから ∀ の証明は関数を書くこと。
 --   `∃ x, P x` は **帰納型 `Exists`**（Σ＝依存和）。導入 = `⟨a, h⟩`（証人＋証明）・
 --     除去 = `.elim`（場合分け＝cases）。「∃ をデータに格上げ」したのが sup の証人。
--- → ∀ ¬ は依存関数（Π）・∧ ∨ ∃ ⊥ ⊤ = は帰納型——2 つの原始の導入/除去で論理は尽きる（Ch4 で #print 確認）
+-- → ∀ ¬ は依存関数（Π）・∧ ∨ ∃ ⊥ ⊤ = は帰納型——2 つの原始の導入/除去で論理は尽きる（Ch5 で #print 確認）
 
 -- ============================================================
 -- 最小インスタンス（リーマン和の記述に必要な分だけ）
@@ -105,14 +105,14 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 -- ゼロの窓口クラス: core の `Zero`（mathlib から昇格）に公理の zero を登録する。
 -- リテラル 0 へは core の一方向 bridge `Zero.toOfNat0 : [Zero α] → OfNat α 0` が配線する。
 -- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形は C03 のトイデモ参照）。
--- リテラル 1 以上と NatCast は Ch11 まで導入しない
+-- リテラル 1 以上と NatCast は Ch12 まで導入しない
 -- ANCHOR: zero_bridge
 noncomputable instance : Zero Real := ⟨AddCommMonoid.zero⟩
 -- ANCHOR_END: zero_bridge
 
 -- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由）。
--- 0 と同じく Ch3 で導入する——加群（Ch4）のスカラー単位 1 で使うため前倒し。
--- 2 以上のリテラルと NatCast は数の体系（Ch10）まで導入しない。
+-- 0 と同じく Ch4 で導入する——加群（Ch5）のスカラー単位 1 で使うため前倒し。
+-- 2 以上のリテラルと NatCast は数の体系（Ch11）まで導入しない。
 noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
 
 -- length の引き算（階層にあるのは Neg。中置 a - b はここで定義）
@@ -138,10 +138,10 @@ theorem ne_of_gt {a b : Real} (h : a < b) : b ≠ a := fun h0 => h.2 h0.symm
 --   `名前空間.名前` という階層化された名前への参照。`le_trans` は順序クラス
 --   `OrderedAddCommMonoid` に整理されている——フルパスで名指せばどこからでも引ける。
 --   （この段階はまだ「既にある名前空間を読む」だけ。自分で名前空間を**作る**のは
---    Ch4 `namespace Range`、`open` で接頭辞を省く旨味は Ch5 で。）
+--    Ch5 `namespace Range`、`open` で接頭辞を省く旨味は Ch6 で。）
 -- 公理は「すでに証明された定理」: 階層のフィールドはそのまま項として使える。
--- この `a ≤ c` の `≤` が動くのも、class が `LE Real` を解決しているから（Ch2 の回収）。
--- 本格的な順序コーパスは Ch9。ここは「公理を引くだけで証明になる」一度きりの実演。
+-- この `a ≤ c` の `≤` が動くのも、class が `LE Real` を解決しているから（Ch3 の回収）。
+-- 本格的な順序コーパスは Ch10。ここは「公理を引くだけで証明になる」一度きりの実演。
 example (a b c : Real) (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c :=
   OrderedAddCommMonoid.le_trans a b c hab hbc
 
@@ -152,7 +152,7 @@ theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
 -- ============================================================
 -- 根幹の 2 行と、自動で見つかる構造（class = 自動解決される structure）
 --   axiom Real.instLOF（構造一式を公理で名指し）＋ instance（正準登録）の観察。
---   これが Ch2 の「class＝自動で見つかる構造」の実物——だから a + b が動く。
+--   これが Ch3 の「class＝自動で見つかる構造」の実物——だから a + b が動く。
 -- ============================================================
 
 #check Real.instLOF
@@ -162,10 +162,10 @@ theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
 #check fun (a b : Real) => a + b
 #check fun (a b : Real) => a ≤ b
 
--- 今 Real に登録された数のインスタンスは 0 と 1 だけ（2 以上は Ch10 数の体系で）。
+-- 今 Real に登録された数のインスタンスは 0 と 1 だけ（2 以上は Ch11 数の体系で）。
 -- #check_failure は「失敗すること」自体を検査する——伏線がビルドで保証される
 -- ANCHOR: check_failure
 #check (0 : Real)         -- 通る（Σ の基底・上で Zero bridge を導入済み）
 #check (1 : Real)         -- 通る（加群のスカラー単位・上で One bridge を導入済み）
-#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch10 で）
+#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch11 で）
 -- ANCHOR_END: check_failure

@@ -3,7 +3,7 @@
 --   ・細分上で親の代表点を使った RS は元の RS に等しい（rs_refine_eq、ステップ原始関数）
 --   ・挿入誤差は B2 の評価で θ 以下に抑えられる
 -- を合成して rs_compare（コーシー条件の素材）を得る。
--- 注意: 証明装置 stepAnti は rmin（Ch13 の素朴 if 定義の min）を使う——
+-- 注意: 証明装置 stepAnti は rmin（Ch14 の素朴 if 定義の min）を使う——
 -- これを使う定理の公理監査には choice が現れる（素朴定義実験の実戦版）。
 import Text.E2_InsertBound
 

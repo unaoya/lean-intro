@@ -1,16 +1,16 @@
--- Text/C05_Structures.lean — Ch5 数学的構造とその射（加群・順序半環の射 cast・分割の例）
--- Ch2 で「構造＝データ・class＝自動で見つかる構造」を学んだ。ここでは具体的な数学的構造を
+-- Text/C06_Structures.lean — Ch6 数学的構造とその射（加群・順序半環の射 cast・分割の例）
+-- Ch3 で「構造＝データ・class＝自動で見つかる構造」を学んだ。ここでは具体的な数学的構造を
 -- **定義として**並べる: 加群（Real 上の Module）とその射（線形写像 IsLinearMap）・順序半環の射
 -- （cast）・分割の具体例（等分割の points formula）。
--- 証明本体は道具が要るので後回し: Σ/リーマン和の線形性は Ch10（帰納法のあと）、
--- cast の順序系（≤ を保つ・正値・単射）と等分割 increase の完成は Ch11。
+-- 証明本体は道具が要るので後回し: Σ/リーマン和の線形性は Ch11（帰納法のあと）、
+-- cast の順序系（≤ を保つ・正値・単射）と等分割 increase の完成は Ch12。
 -- ここは「構造と射の輪郭」を term で描く章——tactic も順序補題もまだ使わない。
-import Text.C04_Summation
+import Text.C05_Summation
 
 -- ============================================================
--- 加群（Real 上の Module）: リーマン和の線形性（Ch10 で証明）の土台を**定義として**用意する。
+-- 加群（Real 上の Module）: リーマン和の線形性（Ch11 で証明）の土台を**定義として**用意する。
 --   行き先 V が加群なら α → V も各点で加群——Range n → Real も Real → Real も自動で加群。
---   公理の証明（線形写像 IsLinearMap・Σ の線形性）は道具が揃う Ch10 で行う。
+--   公理の証明（線形写像 IsLinearMap・Σ の線形性）は道具が揃う Ch11 で行う。
 -- ============================================================
 
 -- ANCHOR: module
@@ -30,7 +30,7 @@ def IsLinearMap {V W : Type} [Module V] [Module W] (T : V → W) : Prop :=
   (∀ (c : Real) (v : V), T (c • v) = c • T v)
 -- ANCHOR_END: module
 
--- Real 自身は Real 上の加群（• は積）。公理は階層クラス（Ch3）のフィールドから直接。
+-- Real 自身は Real 上の加群（• は積）。公理は階層クラス（Ch4）のフィールドから直接。
 noncomputable instance : Module Real where
   smul := fun c x => c * x
   add_assoc := AddCommMonoid.add_assoc
@@ -61,7 +61,7 @@ noncomputable instance funModule {α V : Type} [Module V] : Module (α → V) wh
 -- ============================================================
 -- 順序半環の射 cast: Nat を Real に埋め込む写像の「定義」と「射の概念」。
 --   cast が 0・1・+・×・≤ を保つ（射である）ことの証明は、道具（順序・帰納法）が
---   揃う Ch11 で。ここでは埋め込みの定義と「順序半環の射」という概念だけを置く。
+--   揃う Ch12 で。ここでは埋め込みの定義と「順序半環の射」という概念だけを置く。
 -- ============================================================
 
 -- 自然数の埋め込み（構造的再帰）: 0 ↦ 0, n+1 ↦ (n の像)+1
@@ -71,7 +71,7 @@ noncomputable def Real.ofNat : Nat → Real
   | n + 1 => Real.ofNat n + 1
 -- ANCHOR_END: of_nat
 
--- リテラル 2 以上（Ch3 の failed to synthesize OfNat Real 2 がここで解決）
+-- リテラル 2 以上（Ch4 の failed to synthesize OfNat Real 2 がここで解決）
 noncomputable instance (n : Nat) : OfNat Real (n + 2) := ⟨Real.ofNat (n + 2)⟩
 -- 変数の埋め込み ↑n（リテラル用 OfNat との対比）
 noncomputable instance : NatCast Real := ⟨Real.ofNat⟩
@@ -84,7 +84,7 @@ def Monotone {α β : Type} [LE α] [LE β] (φ : α → β) : Prop := ∀ a b, 
 -- ANCHOR_END: monotone
 
 -- **順序半環の射**: Nat → Real が 0・1・+・×・≤ を保つこと（≤ の保存＝順序写像 Monotone）。
--- Nat と Real を順序半環とみなしたときの準同型。cast がこの実例であることの証明は Ch11。
+-- Nat と Real を順序半環とみなしたときの準同型。cast がこの実例であることの証明は Ch12。
 -- ANCHOR: cast_hom
 structure IsOrderedSemiringHom (φ : Nat → Real) : Prop where
   map_zero : φ 0 = 0
@@ -95,10 +95,10 @@ structure IsOrderedSemiringHom (φ : Nat → Real) : Prop where
 -- ANCHOR_END: cast_hom
 
 -- ============================================================
--- 分割の具体例（分点式）: n 等分割の分点を与える関数。Ch4 の Partition を cast と除法で
+-- 分割の具体例（分点式）: n 等分割の分点を与える関数。Ch5 の Partition を cast と除法で
 --   具体的に作るための「材料」。points i = a + i·(b−a)/m——cast（↑i.val）と除法（/m）が
 --   登場する最初の実例。これが広義単調（increase）で両端が a,b になることの証明には順序・
---   除法の補題が要るので、完全な Partition への組み上げ（equalPartition）は Ch11 で行う。
+--   除法の補題が要るので、完全な Partition への組み上げ（equalPartition）は Ch12 で行う。
 -- ============================================================
 
 -- ANCHOR: equal_points

@@ -1,10 +1,10 @@
--- Text/C17_FTC.lean — Ch17 微積分学の基本定理
+-- Text/C18_FTC.lean — Ch18 微積分学の基本定理
 -- 片側 FTC（全域の F を作らない）。仮定は数学的に正直な最小: 部分区間の可積分性＋
 -- 点 x での連続性（2026-06-12 決定: 大域連続版は置かない——存在定理（連続⇒可積分）の
 -- 機構一式は主線から外れる。Text/Proto/ に全証明を温存）。
 -- 構成: 核 ftc_core（完全に局所的——区間加法性も線形性も一意性も存在定理も不要）
 -- ＋実体化（橋 1 回）＋監査総決算
-import Text.C16_Example
+import Text.C17_Example
 
 noncomputable section
 
@@ -49,10 +49,10 @@ theorem left_of_straddle {f : Real → Real} {a b x : Real}
 
 -- ============================================================
 -- §2 核の部品: IsIntegral レベルの両側評価（脱 abs の単調性）
---    定数の積分 const_isintegral は Ch16（橋の応用）で証明済み
+--    定数の積分 const_isintegral は Ch17（橋の応用）で証明済み
 -- ============================================================
 
--- 両側評価の束ね直し（Ch10 の raw 版 → TaggedPartition 版）
+-- 両側評価の束ね直し（Ch11 の raw 版 → TaggedPartition 版）
 theorem sum_le_const {u v : Real} (P : TaggedPartition u v) {g : Real → Real} {c : Real}
     (hb : ∀ t, u ≤ t → t ≤ v → g t ≤ c) : P.sum g ≤ c * (v - u) :=
   rs_le_const P.Δ P.ξ P.repr hb
@@ -168,7 +168,7 @@ theorem ftc_of_integrable (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hx
 -- §5 監査総決算: 公理の勾配（どの数学がどの公理を要求したか一望する）
 -- ============================================================
 
-#print axioms cast_mul            -- [Real, instLOF] 古典論理ゼロ（Ch11・cast は射）
+#print axioms cast_mul            -- [Real, instLOF] 古典論理ゼロ（Ch12・cast は射）
 #print axioms archimedean         -- sup が初稼働（上限公理から有限性）
 #print axioms isintegral_id       -- choice あり・sup なし（直接証明は完備性不要）
 #print axioms integral_unique     -- 一意性 = ε/2 ＋ 非空性（アルキメデスの値段）

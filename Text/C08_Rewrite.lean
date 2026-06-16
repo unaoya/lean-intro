@@ -1,8 +1,8 @@
--- Text/C07_Rewrite.lean — Ch7 書き換えと 2 つの等しさ（rw と defeq）
+-- Text/C08_Rewrite.lean — Ch8 書き換えと 2 つの等しさ（rw と defeq）
 -- 等式/環の補題コーパスを rw/calc で獲得する。「sub は a + -b の略記」を通じて
 -- defeq（計算で同じ）と構文的等しさ（rw が見る）の違いを掴む。
--- 自動化（simp で畳む）は Ch8、順序コーパスは Ch9、帰納法は Ch10。
-import Text.C06_Tactics
+-- 自動化（simp で畳む）は Ch9、順序コーパスは Ch10、帰納法は Ch11。
+import Text.C07_Tactics
 
 -- ============================================================
 -- 基本計算（消去・ゼロ・符号）

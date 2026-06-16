@@ -1,14 +1,14 @@
--- Text/C09_Order.lean — Ch9 順序と calc（≤/< のスカラー代数）
+-- Text/C10_Order.lean — Ch10 順序と calc（≤/< のスカラー代数）
 -- 順序の補題を **Real に固定せず、成り立つ最小の順序クラス**で述べる:
 --   ・加法と順序だけ要る補題 → OrderedAddCommMonoid
 --   ・符号（neg）も要る補題   → OrderedAddCommGroup
 --   ・乗法の非負性が要る補題   → OrderedField
 --   ・線形性（le_total）が要る  → LinearOrderedField
--- 自作タクティク（my_abel/my_ring=Ch8・lin=本章）はどれも型多相なので、補題証明を畳む。
+-- 自作タクティク（my_abel/my_ring=Ch9・lin=本章）はどれも型多相なので、補題証明を畳む。
 -- 注意: `<` は Real の `LT`（≤∧≠）に、`-` は Real の `Sub` に依存するため、それらを使う
 -- 補題は Real 専用に置く（順序クラスに lt/sub を積む一般化は将来の課題）。
 -- 本章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）。
-import Text.C08_Automation
+import Text.C09_Automation
 
 -- ============================================================
 -- §1 順序の基本（最小クラス OrderedAddCommMonoid のフィールドを使いやすく包む）
@@ -94,7 +94,7 @@ theorem nonneg_mul_nonneg {α : Type} [OrderedField α] (a b c : α)
 
 -- ============================================================
 -- §5 順序の自作タクティク（mono = 単調性合同・lin = 差の和で非負）
---    どちらも型多相。lin はゴールの型 α を取り出し、my_ring（Ch8・一般化済）で
+--    どちらも型多相。lin はゴールの型 α を取り出し、my_ring（Ch9・一般化済）で
 --    正規化する。「tactic を先に作って派生補題を畳む」設計の要。
 -- ============================================================
 
@@ -261,7 +261,7 @@ theorem zero_lt_one : (0 : Real) < 1 := by
     rw [h2] at h1
     exact absurd (le_antisymm (0 : Real) (1 : Real) h1 h) Field.nontrivial
 
--- リテラル 2 はまだ無い: 1 + 1 で書く（リテラル機構は Ch11）
+-- リテラル 2 はまだ無い: 1 + 1 で書く（リテラル機構は Ch12）
 theorem zero_lt_one_one : (0 : Real) < 1 + 1 := by
   have h1 := add_left_lt 1 0 1 zero_lt_one
   rw [add_zero'] at h1

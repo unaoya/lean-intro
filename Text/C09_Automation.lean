@@ -1,11 +1,11 @@
--- Text/C08_Automation.lean — Ch8 自動化と自作タクティク（simp・omega・my_ring）
+-- Text/C09_Automation.lean — Ch9 自動化と自作タクティク（simp・omega・my_ring）
 -- まずバニラ（simp/omega/ac_rfl）を押さえ、その上で自分の公理から「proof by
 -- reflection」で自作タクティクを作る: my_abel（加法可換群）→ my_ring（可換環）。
 -- mathlib の ring/abel/linarith は無い（unknown tactic）ので、すべて自作する。
 -- 反射の健全性は **任意の AddCommGroup/CommRing 上**で証明する（Real 固定でない）。
 -- ゆえに my_abel/my_ring は Real に限らずどの可換群/可換環の等式でも閉じる。
 import Lean
-import Text.C07_Rewrite
+import Text.C08_Rewrite
 
 -- ============================================================
 -- §1 simp — hand-proved 補題を渡して派生恒等式を畳む（既定セットは汚さない）
@@ -42,7 +42,7 @@ example (a b c d : Real) : (a + b) + (c + d) = (a + c) + (b + d) := by ac_rfl
 -- §3.5 抽象代数補題（反射の健全性が依存する公理の帰結）
 --    Real ではなく **任意の AddCommGroup/CommRing** 上で一度だけ証明しておく。
 --    これにより反射の健全性も my_abel/my_ring も型多相になる。
---    （Ch6/7 の Real 版補題はそのまま・ここは抽象版を別名で並置する。）
+--    （Ch7/7 の Real 版補題はそのまま・ここは抽象版を別名で並置する。）
 -- ============================================================
 
 namespace AbstractAlg

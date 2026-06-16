@@ -1,5 +1,5 @@
--- Text/C04_Summation.lean — Ch4 帰納型と構造的再帰・分割とリーマン和の定義（到達点①）
-import Text.C03_Axioms
+-- Text/C05_Summation.lean — Ch5 帰納型と構造的再帰・分割とリーマン和の定義（到達点①）
+import Text.C04_Axioms
 
 -- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物）
 -- ANCHOR: range
@@ -22,7 +22,7 @@ example (i : Range 3) : Nat := match i.val with
 -- ANCHOR_END: range_intro
 
 -- ANCHOR: range_funcs
--- 名前空間を**作る**（Ch3 の「アクセス」の対）: `namespace Range … end Range` で囲むと、
+-- 名前空間を**作る**（Ch4 の「アクセス」の対）: `namespace Range … end Range` で囲むと、
 --   中で定義した `incl` は外から `Range.incl` という名前になる。Range に関わる操作を
 --   1 つの接頭辞の下に束ね、名前の衝突を避け、所属を名前で示す。
 --   （この後 `open Range` すれば接頭辞 `Range.` を省ける——それが旨味。下の分割定義で実演。）
@@ -77,7 +77,7 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
 
 -- ============================================================
 -- CH 対応のパンチライン: 論理 = 依存関数（Π）＋ 帰納型、それぞれの導入/除去だけ
---   Ch1・Ch3 で見た結合子は、Lean では 2 つの原始に還元される:
+--   Ch1・Ch4 で見た結合子は、Lean では 2 つの原始に還元される:
 --     ・→ と ∀ は **依存関数（Π 型）**。導入 = `fun`（λ）・除去 = 適用。
 --       違いは codomain が引数に依存するかだけ（→ は非依存・∀ は依存）。¬A = A → False も関数。
 --     ・∧ ∨ ∃ ⊥ ⊤ = は **帰納型**。導入 = 構成子・除去 = recursor（cases/induction）。
@@ -100,7 +100,7 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
 --   Summation は `Nat.rec`（構造的再帰）で定義した。それを **除去規則として証明に
 --   走らせる**のが induction——「定義する再帰」と「証明する帰納」は同じ recursor。
 --   ここでは term mode のまま 2 つだけ（ergonomic な induction タクティクと Σ 補題
---   コーパス本体は Ch10。本章は「定義＋最初の証明」で閉じる）。
+--   コーパス本体は Ch11。本章は「定義＋最初の証明」で閉じる）。
 -- ============================================================
 
 -- ANCHOR: summation_first_proofs
@@ -117,7 +117,7 @@ theorem summation_all_zero : (n : Nat) → Summation n (fun _ : Range n => (0 : 
 
 -- ============================================================
 -- 分割とリーマン和の**定義**（到達点①）。証明技術は不要——structure とΣで値を作るだけ。
---   代表点が妥当（leftRepr_isRepr）であることの証明は順序 le_refl を要するので Ch10 で。
+--   代表点が妥当（leftRepr_isRepr）であることの証明は順序 le_refl を要するので Ch11 で。
 -- ============================================================
 
 open Range
@@ -169,7 +169,7 @@ def rightRepr {n : Nat} {a b : Real} (Δ : Partition n a b) : Range n → Real :
 end Partition
 
 -- クリフハンガー: 1 分割（リテラルも除法も不要、自明の極み——なのに increase が
--- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch6 で完成）。
+-- 添字の場合分けなしには書けない。読者版では increase が sorry のまま幕、Ch7 で完成）。
 -- ANCHOR: trivial_partition
 def trivialPartition (a b : Real) (hab : a ≤ b) : Partition 1 a b where
   points := fun i => match i.val with

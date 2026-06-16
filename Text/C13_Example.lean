@@ -1,13 +1,13 @@
--- Text/C12_Example.lean — Ch12 具体例 y=x の n 等分（到達点②）
+-- Text/C13_Example.lean — Ch13 具体例 y=x の n 等分（到達点②）
 -- n 等分割 equalPartition と、[0,1] 上の y=x のリーマン和（(1+1)n²·RS = n²−n）。
--- Ch11 の cast（射）と自作タクティク my_ring/my_abel（Ch8）で貫通する。
-import Text.C11_Numbers
+-- Ch12 の cast（射）と自作タクティク my_ring/my_abel（Ch9）で貫通する。
+import Text.C12_Numbers
 
 noncomputable section
 
 open Range
 
--- （n 等分割 equalPartition とその length・代表点 equalPartitionRepr は Ch11「数の体系（cast）」
+-- （n 等分割 equalPartition とその length・代表点 equalPartitionRepr は Ch12「数の体系（cast）」
 --   へ。分点式が cast と除法、increase が cast の順序系を使うため、cast の直後に置いた。
 --   ここではそれを土台に y=x のリーマン和を計算する。）
 

@@ -1,8 +1,8 @@
--- Text/C16_Example.lean — Ch16 直接証明 ∫x = (b²−a²)/2
+-- Text/C17_Example.lean — Ch17 直接証明 ∫x = (b²−a²)/2
 -- f = id は定義から直接可積分性を示せる稀有な例。中点和が望遠鏡和になり、
 -- 任意のタグとの差は各小区間 ±len/2 → 合計 ±(δ/2)(b−a)。
 -- 監査: sup なし（「定義から直接」は完備性不要——どこで sup が要るのかの対照実験）
-import Text.C15_Unique
+import Text.C16_Unique
 
 noncomputable section
 
@@ -10,7 +10,7 @@ open Classical
 open Range
 
 -- ============================================================
--- §1 代数の小物（my_ring の活躍どころ——Ch8 の道具で短縮する演習）
+-- §1 代数の小物（my_ring の活躍どころ——Ch9 の道具で短縮する演習）
 -- ============================================================
 
 -- 和と差の積（平方の差）
@@ -39,7 +39,7 @@ theorem div_div_mul_cancel (a c d : Real) (hc : c ≠ 0) : a / c / d * c = a / d
       mul_assoc a (Field.inv c) c, Field.inv_mul c hc]
   exact congrArg (· * Field.inv d) (mul_one_b a)
 
--- 端点と中点の距離は半区間（rw のパターン捕獲を避けるため独立補題にする——Ch7 の罠②）
+-- 端点と中点の距離は半区間（rw のパターン捕獲を避けるため独立補題にする——Ch8 の罠②）
 theorem half_dist_hi (p q : Real) : q - (p + q) / (1 + 1) = (q - p) / (1 + 1) := by
   rw [show q - (p + q) / (1 + 1) = (q + q) / (1 + 1) - (p + q) / (1 + 1) from by
         rw [double_half],
@@ -190,7 +190,7 @@ theorem isintegral_id (a b : Real) (hab : a ≤ b) :
 -- ANCHOR_END: isintegral_id
 
 -- ============================================================
--- §4 橋の 2 回目: Integral 関数の値として（Ch12 の (n+1)/(2n) と接続して具体例が閉じる）
+-- §4 橋の 2 回目: Integral 関数の値として（Ch13 の (n+1)/(2n) と接続して具体例が閉じる）
 -- ============================================================
 
 theorem integral_id (a b : Real) (hab : a ≤ b) :

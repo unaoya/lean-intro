@@ -1,8 +1,8 @@
--- Text/C13_Archimedes.lean — Ch13 アルキメデスと探索
+-- Text/C14_Archimedes.lean — Ch14 アルキメデスと探索
 -- 第 II 部の開幕: (1) sup（Skolem 化済み——choice 不要）(2) 探索 has_min（choice 不要・
 -- ただし noncomputable）(3) 分岐 Classical.em（古典論理の入口）。
 -- sup 公理はここで初稼働し、archimedean（白眉①）が出る。素朴定義実験もここ。
-import Text.C12_Example
+import Text.C13_Example
 
 noncomputable section
 
@@ -128,7 +128,7 @@ theorem equalPartition_fine (m : Nat) (a b δ : Real) (hm : m ≠ 0) (hab : a �
     div_right_lt _ _ _ hm_pos h1
   rwa [mul_div_cancel' _ _ (ne_of_gt hm_pos)] at h2
 
--- 任意の細かさの等分割の存在（raw 版。TaggedPartition に束ねた版は Ch14）
+-- 任意の細かさの等分割の存在（raw 版。TaggedPartition に束ねた版は Ch15）
 theorem exists_fine_equalPartition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ) :
     ∃ m, ∃ hm : m ≠ 0,
       ∀ i : Range m, (equalPartition m a b hm hab).length i < δ := by
@@ -142,7 +142,7 @@ theorem exists_fine_equalPartition (a b δ : Real) (hab : a ≤ b) (hδ : 0 < δ
 
 -- ============================================================
 -- §6 素朴定義実験: max / min を if で書くと choice が監査に現れる
---    （Ch10 の両側評価が abs の言い換えだった種明かし。
+--    （Ch11 の両側評価が abs の言い換えだった種明かし。
 --      rmin は発展部の細分機械が証明装置として実際に使う）
 -- ============================================================
 
