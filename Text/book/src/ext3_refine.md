@@ -7,7 +7,7 @@
 
 ## B.1 点の挿入の幾何（E1_Insert）
 
-- find_interval（has_min の応用——Ch11 の探索の実戦）・insertPoint・点/長さ補題・insertPoint_fine（∀-Fine 形が保たれる）
+- find_interval（has_min の応用——Ch12 の探索の実戦）・insertPoint・点/長さ補題・insertPoint_fine（∀-Fine 形が保たれる）
 
 ## B.2 挿入によるリーマン和の変化（E2_InsertBound）
 
@@ -17,7 +17,7 @@
 
 ## B.3 細分比較とエンベロープ（E3_Refine）
 
-- rmin（素朴 if の min——証明装置として不可避。Ch11 の実験の実戦版）・stepAnti（区分定数の原始関数）・望遠鏡和で rs_refine_eq
+- rmin（素朴 if の min——証明装置として不可避。Ch12 の実験の実戦版）・stepAnti（区分定数の原始関数）・望遠鏡和で rs_refine_eq
 - refine_parent（σ 写像の存在）・rs_refine_compare（挿入誤差 θ＋細分比較 B の合成）・rs_compare
 
 ## B.4 独立節: 振動和・|f| の可積分性・区間加法性
