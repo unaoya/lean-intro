@@ -29,11 +29,8 @@
 - [Ch17 直接証明 — ∫x = (b²−a²)/2](ch17_example.md)
 - [Ch18 微積分学の基本定理](ch18_ftc.md)
 
-# 発展部 存在定理への登山（本編はこれに依存しない）
+# 発展 フィルターで統一する（読み物・本編はこれに依存しない）
 
-- [発展 1 連続なら可積分](ext1_summit.md)
-- [発展 2 一様連続性を読む](ext2_unifcont.md)
-- [発展 3 細分の機械 — 挿入・σ 写像・エンベロープ](ext3_refine.md)
-- [発展 4 フィルターで統一する — IsLimAt・ContinuousAt・IsIntegral は同じ概念](ext4_filter.md)
+- [Filter で IsLimAt・ContinuousAt・IsIntegral を統一する — mathlib への橋](ext4_filter.md)
 
 [あとがき — 次の一冊へ](afterword.md)
