@@ -2,9 +2,9 @@
 -- by・ゴール状態・intro/exact/apply/rw/have/show を学び、「タクティクは証明項を書く
 -- 機械」であることを #print で確かめる。等式補題を数本だけ手で証明して道具に慣れる。
 -- 等式コーパス本体は Ch7（C07_Rewrite）、自動化は Ch8、順序と calc は Ch9。
-import Text.C04_Summation
+import Text.C05_Structures
 
--- （One Real bridge は C03 へ前倒し済み＝加群のスカラー単位 1 を Ch4 で使うため）
+-- （One Real bridge は C03 へ前倒し済み＝加群のスカラー単位 1 を Ch5 で使うため）
 
 -- ============================================================
 -- タクティク = 導入/除去規則を「ゴールから逆向きに」適用する機械

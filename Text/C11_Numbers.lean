@@ -11,21 +11,8 @@ open Range
 -- §1 リテラルの一般機構と除法
 -- ============================================================
 
--- 自然数の埋め込み（構造的再帰）
--- ANCHOR: of_nat
-noncomputable def Real.ofNat : Nat → Real
-  | 0 => 0
-  | n + 1 => Real.ofNat n + 1
--- ANCHOR_END: of_nat
-
--- リテラル 2 以上（Ch3 の failed to synthesize がここで消える）
-noncomputable instance (n : Nat) : OfNat Real (n + 2) := ⟨Real.ofNat (n + 2)⟩
-
--- 変数の埋め込み ↑n（リテラル用 OfNat との対比）
-noncomputable instance : NatCast Real := ⟨Real.ofNat⟩
-
--- 除法の記法（等分割の分点式のため）
-noncomputable instance : Div Real := ⟨fun a b => a * Field.inv b⟩
+-- （リテラル機構 Real.ofNat・OfNat・NatCast と除法 Div の「定義」は Ch5「構造と射」へ前倒し。
+--   ここではその defeq の含意と、cast が射であること＝cast 補題の証明本体を扱う。）
 
 -- defeq の観察: 「数の 2 つの建て方」の分かれ目。
 -- cast は代数の 0 と 1 から建てた（代数一次）。重なる点の等式の「強さ」が違う:
@@ -170,11 +157,11 @@ theorem div_right_le (a b c : Real) : 0 < c → a ≤ b → a / c ≤ b / c :=
 -- §3 cast 補題（構成的な部分のみ）
 -- ============================================================
 
--- ofNat の定義（| 0 | n+1）により再帰方程式は rfl
+-- ofNat の定義（| 0 | n+1）により再帰方程式は rfl（Real.ofNat の定義は Ch5「構造と射」）
 theorem succ_ofNat (n : Nat) : Real.ofNat (n + 1) = Real.ofNat n + (1 : Real) := rfl
 
-/-- **順序写像**（順序を保つ写像＝弱単調）。順序集合間の「順序の射」を抽象的に述べる述語。 -/
-def Monotone {α β : Type} [LE α] [LE β] (φ : α → β) : Prop := ∀ a b, a ≤ b → φ a ≤ φ b
+-- （順序写像 Monotone・順序半環の射 IsOrderedSemiringHom の「定義」は Ch5 へ前倒し。
+--   この §3 は「cast がそれらの実例である」＝射であることの証明本体。）
 
 /-- **cast は順序写像**（順序系の基盤）。`b = a + k` の k について帰納し、各ステップ
 `cast m ≤ cast m + 1`（`0 ≤ 1` のみ）で積む。**cast_nonneg を使わず**証明する。 -/
@@ -211,19 +198,9 @@ theorem cast_mul (n m : Nat) : ((n * m : Nat) : Real) = (n : Real) * (m : Real) 
         CommRing.left_distrib, mul_one_b]
 
 -- ============================================================
--- cast は「順序半環の射」: 0・1・+・×・≤ を保つ。
+-- cast が「順序半環の射」（IsOrderedSemiringHom・定義は Ch5）であることの証明と、その帰結。
 --   nonneg・狭義単調・単射は **射の一般論**から出る——cast 固有は cast_le と +/× だけ。
 -- ============================================================
-
--- ANCHOR: cast_hom
-/-- **順序半環の射**: Nat → Real が 0・1・+・×・≤ を保つこと
-（≤ の保存＝順序写像 `Monotone`）。Nat と Real を順序半環とみなしたときの準同型。 -/
-structure IsOrderedSemiringHom (φ : Nat → Real) : Prop where
-  map_zero : φ 0 = 0
-  map_one : φ 1 = 1
-  map_add : ∀ a b, φ (a + b) = φ a + φ b
-  map_mul : ∀ a b, φ (a * b) = φ a * φ b
-  monotone : Monotone φ
 
 namespace IsOrderedSemiringHom
 variable {φ : Nat → Real}
@@ -297,3 +274,50 @@ theorem cast_summation (n : Nat) (f : Range n → Nat) :
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
 #print axioms cast_mul
+
+-- ============================================================
+-- §4 分割の具体例: n 等分割 equalPartition（分点式 points i = a + i·(b−a)/m は Ch5 で例示）。
+--   ここで increase（順序＝広義単調）と両端 left/right（除法）を埋めて Partition を完成させる。
+-- ============================================================
+
+-- ANCHOR: equal_partition
+noncomputable def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    Partition m a b where
+  points := fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)  -- Ch5 の equalPoints と同じ式
+  increase := by
+    intro i
+    apply add_left_le
+    apply div_right_le _ _ _ (cast_pos_of_ne m hm)
+    exact nonneg_mul_nonneg _ _ _ ((nonneg_iff_le a b).mp hab) (cast_le_succ i.val)
+  left := by
+    show a + ((0 : Nat) : Real) * (b - a) / (m : Real) = a
+    show a + (0 : Real) * (b - a) / (m : Real) = a
+    rw [zero_mul', zero_div, add_zero]
+  right := by
+    show a + ((m : Nat) : Real) * (b - a) / (m : Real) = b
+    have hm' : ((m : Nat) : Real) ≠ (0 : Real) := ne_of_gt (cast_pos_of_ne m hm)
+    rw [mul_div_cancel' (m : Real) (b - a) hm']
+    exact add_sub_cancel' a b
+-- ANCHOR_END: equal_partition
+
+theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b)
+    (i : Range m) :
+    (equalPartition m a b hm hab).length i = (b - a) / (m : Real) := by
+  show (a + (((i.val + 1 : Nat)) : Real) * (b - a) / (m : Real)) -
+       (a + ((i.val : Nat) : Real) * (b - a) / (m : Real)) = (b - a) / (m : Real)
+  rw [add_sub_add' a, div_sub_div, mul_sub_mul]
+  show ((((i.val + 1 : Nat)) : Real) - ((i.val : Nat) : Real)) * (b - a) / (m : Real)
+      = (b - a) / (m : Real)
+  rw [show (((i.val + 1 : Nat)) : Real) = ((i.val : Nat) : Real) + 1 from succ_ofNat i.val]
+  rw [add_sub_cancel ((i.val : Nat) : Real) 1, one_mul]
+
+/-- 代表点 = 各小区間の左端（一般の `Partition.leftRepr` を等分割に適用したもの）。 -/
+noncomputable def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    Range m → Real :=
+  (equalPartition m a b hm hab).leftRepr
+
+/-- 等分割の左端タグは代表点系——一般の `Partition.leftRepr_isRepr` の特例（等分割固有の
+計算は不要）。 -/
+theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
+    (equalPartition m a b hm hab).IsRepr (equalPartitionRepr m a b hm hab) :=
+  (equalPartition m a b hm hab).leftRepr_isRepr

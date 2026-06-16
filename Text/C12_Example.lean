@@ -7,51 +7,9 @@ noncomputable section
 
 open Range
 
--- ============================================================
--- §4 n 等分: points i = a + i * (b−a) / m
--- ============================================================
-
--- ANCHOR: equal_partition
-noncomputable def equalPartition (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
-    Partition m a b where
-  points := fun i => a + ((i.val : Nat) : Real) * (b - a) / (m : Real)
-  increase := by
-    intro i
-    apply add_left_le
-    apply div_right_le _ _ _ (cast_pos_of_ne m hm)
-    exact nonneg_mul_nonneg _ _ _ ((nonneg_iff_le a b).mp hab) (cast_le_succ i.val)
-  left := by
-    show a + ((0 : Nat) : Real) * (b - a) / (m : Real) = a
-    show a + (0 : Real) * (b - a) / (m : Real) = a
-    rw [zero_mul', zero_div, add_zero]
-  right := by
-    show a + ((m : Nat) : Real) * (b - a) / (m : Real) = b
-    have hm' : ((m : Nat) : Real) ≠ (0 : Real) := ne_of_gt (cast_pos_of_ne m hm)
-    rw [mul_div_cancel' (m : Real) (b - a) hm']
-    exact add_sub_cancel' a b
--- ANCHOR_END: equal_partition
-
-theorem equalPartition_length (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b)
-    (i : Range m) :
-    (equalPartition m a b hm hab).length i = (b - a) / (m : Real) := by
-  show (a + (((i.val + 1 : Nat)) : Real) * (b - a) / (m : Real)) -
-       (a + ((i.val : Nat) : Real) * (b - a) / (m : Real)) = (b - a) / (m : Real)
-  rw [add_sub_add' a, div_sub_div, mul_sub_mul]
-  show ((((i.val + 1 : Nat)) : Real) - ((i.val : Nat) : Real)) * (b - a) / (m : Real)
-      = (b - a) / (m : Real)
-  rw [show (((i.val + 1 : Nat)) : Real) = ((i.val : Nat) : Real) + 1 from succ_ofNat i.val]
-  rw [add_sub_cancel ((i.val : Nat) : Real) 1, one_mul]
-
-/-- 代表点 = 各小区間の左端（一般の `Partition.leftRepr` を等分割に適用したもの）。 -/
-noncomputable def equalPartitionRepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
-    Range m → Real :=
-  (equalPartition m a b hm hab).leftRepr
-
-/-- 等分割の左端タグは代表点系——一般の `Partition.leftRepr_isRepr` の特例（等分割固有の
-計算は不要）。 -/
-theorem equalPartitionRepr_isrepr (m : Nat) (a b : Real) (hm : m ≠ 0) (hab : a ≤ b) :
-    (equalPartition m a b hm hab).IsRepr (equalPartitionRepr m a b hm hab) :=
-  (equalPartition m a b hm hab).leftRepr_isRepr
+-- （n 等分割 equalPartition とその length・代表点 equalPartitionRepr は Ch11「数の体系（cast）」
+--   へ。分点式が cast と除法、increase が cast の順序系を使うため、cast の直後に置いた。
+--   ここではそれを土台に y=x のリーマン和を計算する。）
 
 -- ============================================================
 -- §5 到達点②: y = x のリーマン和（[0,1] の n 等分・左端タグ）
