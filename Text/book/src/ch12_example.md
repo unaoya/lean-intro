@@ -1,17 +1,17 @@
 # Ch12 具体例 — y = x の n 等分（到達点②）
 
-<!-- 下書き（配置設計版）: 節立てメモ -->
-<!-- 2026-06-15 分割: 旧 Ch11 の y=x 計算部。到達点② を実装で達成（旧 TODO） -->
+<!-- 下書き（配置設計版）: 節立てメモ。本文未執筆。構成v6 -->
+<!-- 構成v6: equalPartition の完成は Ch11 へ。本章は y=x の計算に純化 -->
 
-- 前章からの問い: 数は建った。具体例（y=x のリーマン和）を計算する
+- 前章からの問い: 数は建ち、等分割も完成した。具体例（y=x のリーマン和）を計算する
 - 到達点: [0,1] の n 等分・左端タグで **y=x の RS を閉じた式に**（到達点②）。`(1+1)·n²·RS = n²−n`（⟺ RS=(n−1)/(2n)）
-- 新しい Lean 機能: なし（Ch11 の数＋Ch8 の自作タクティクの応用）
-- コード: C12_Example.lean（§4 equalPartition §5 sum_id_real・riemann_sum_id）
+- 新しい Lean 機能: なし（Ch11 の数・等分割＋Ch8 の自作タクティクの応用）
+- コード: C12_Example.lean（sum_id_real・riemann_sum_id。equalPartition は Ch11 で完成済み）
 
-## 12.1 一般の等分割と代表点
+## 12.1 等分割と代表点の回収（Ch11）
 
-- `equalPartition`（分点 `a + i·(b−a)/m`）の `increase`/`left`/`right` 証明（除法補題の応用）・`equalPartition_length` = (b−a)/m・分点が i/n の確認（show の練習）
-- 代表点は **C05 の一般 `leftRepr`/`rightRepr` を適用**（左端・右端は任意 Partition で IsRepr＝`equalPartitionRepr_isrepr` は `leftRepr_isRepr` の特例）——一般構成を y=x の前に確立
+- **等分割 `equalPartition`（分点 `a + i·(b−a)/m`）は Ch11 で完成済み**——`increase`/`left`/`right` も `equalPartition_length` = (b−a)/m も。ここではそれを [0,1]・左端タグで使うだけ
+- 代表点は Ch4 の一般 `leftRepr`、妥当性は `equalPartitionRepr_isrepr`（Ch10 `leftRepr_isRepr` の特例）
 
 ## 12.2 Nat の恒等式を cast で Real に運ぶ
 
@@ -29,4 +29,4 @@
 
 ## 引き
 
-- 「具体例は計算できた。一般の分割で何が言えるか——性質を証明しよう」
+- 「具体例は計算できた。第 I 部（構成的な世界）はここで閉じる。第 II 部では sup と choice を入れ、積分そのものを定義する——BHK の転調へ」
