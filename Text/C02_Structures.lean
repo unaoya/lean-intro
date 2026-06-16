@@ -33,6 +33,8 @@ example : Add Nat := ⟨fun a b => a * b⟩      -- 乗法も Nat 上の二項�
 #check (Sub Nat)    -- 引き算付き
 #check (LE Nat)     -- 二項関係付き集合（≤ の担い手）
 #check (LT Nat)     -- 二項関係付き集合（< の担い手）
+#check (Add Int)    -- Nat だけでなく Int も core で構造を持つ（数の型は一通り揃う）
+#check (Mul Int)
 -- いずれも `Type`——Add Nat と同じ「構造＝データ」。クラス名が記法と対応し、法則はまだ無い。
 -- mathlib があれば法則付きの Monoid/CommRing/… も借りられるが、本書は core のみ＝法則は
 -- 自分で束ねる（次の §2 の structure・Ch3 の class 階層）
@@ -69,6 +71,19 @@ example (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) :=
   interchange natAdd a b c d
 example (a b c d : Nat) : (a * b) * (c * d) = (a * c) * (b * d) :=
   interchange natMul a b c d
+
+-- ★ Nat だけでなく直積 Nat × Nat にも構造を載せられる（成分ごとの加法）。core は直積に
+-- Add を与えない（§1b 参照）が、CommMonoidStr なら自分で載せられる——すると interchange が
+-- **そのまま**効く（一般化証明の威力が型を超えて広がる）。
+def prodNatAdd : CommMonoidStr (Nat × Nat) where
+  op p q := (p.1 + q.1, p.2 + q.2)
+  op_assoc a b c := by simp [Nat.add_assoc]
+  op_comm a b := by simp [Nat.add_comm]
+
+example (a b c d : Nat × Nat) :
+    prodNatAdd.op (prodNatAdd.op a b) (prodNatAdd.op c d)
+      = prodNatAdd.op (prodNatAdd.op a c) (prodNatAdd.op b d) :=
+  interchange prodNatAdd a b c d
 -- ANCHOR_END: general_proof
 
 -- ============================================================
@@ -96,3 +111,28 @@ example (a b c d : Nat) : (a ⋆ b) ⋆ (c ⋆ d) = (a ⋆ c) ⋆ (b ⋆ d) :=
 -- ANCHOR: and_is_structure
 #print And   -- structure And (a b : Prop) : Prop（⟨h.2, h.1⟩ の ⟨⟩ はこれ）
 -- ANCHOR_END: and_is_structure
+
+-- ============================================================
+-- §4（コラム・予告）型を自分で「作る」2 つの道——帰納型と商
+--   ここまでは既存の型に構造を「載せた」。型そのものを作る道も 2 つある。本格は
+--   Ch4（帰納型＝Nat.rec で Summation）と発展（商で整数の代数）。ここは入口の一望だけ。
+-- ============================================================
+
+-- ANCHOR: type_construction_preview
+-- (a) 帰納型で作る: 構成子を並べて新しい型を定義する（Ch4 の Nat・Summation の予告）
+inductive MyInt where
+  | ofNat   : Nat → MyInt     -- 0, 1, 2, …
+  | negSucc : Nat → MyInt     -- -1, -2, …
+
+-- (b) 商で作る: 同値関係で割る。整数 = (Nat × Nat)/~、(a,b) ~ (c,d) ⟺ a+d = c+b
+--   （直感: (a,b) は差 a−b を表し、(n,n) はすべて 0 と同一視される）
+--   ※ iseqv の反射/対称/推移は omega（Ch8 の自動化）に任せる——ここでは結果だけ借りる
+instance intSetoid : Setoid (Nat × Nat) where
+  r p q := p.1 + q.2 = q.1 + p.2
+  iseqv := ⟨fun _ => by omega, fun h => by omega, fun h1 h2 => by omega⟩
+
+def IntByQuot := Quotient intSetoid
+-- 0 の同一視: (n, n) はどれも (0, 0) と同じ整数（差が 0）
+example (n : Nat) : ((0, 0) : Nat × Nat) ≈ (n, n) := by show (0:Nat) + n = n + 0; omega
+-- well-defined な演算（商の上の加法 = Quotient.lift）の定義は発展で扱う
+-- ANCHOR_END: type_construction_preview
