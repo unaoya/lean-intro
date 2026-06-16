@@ -66,7 +66,37 @@
   (iv) 組み立て `continuous_integrable`（41 行）= **本文完全精読**
   「補題を 2 本引用すれば主定理の証明は明快」という論文読解と同型の経験。`#print axioms` が sorry の混入を許さないので、引用した補題も証明済みであることが保証されている。
 
-### ★ テキスト構成 v5（最新確定・2026-06-16）— 定義先出し／道具先行
+### ★ テキスト構成 v6（最新確定・2026-06-16）— Ch5「数学的構造とその射」を新設
+
+v5 から、ユーザー方針で **Ch4 から加群を外し、新 Ch5「数学的構造とその射」を新設**。Ch4 はリーマン和の定義に専念し、Ch5 で加群（構造）と cast（順序半環の射）の**定義・概念**を扱い、等分割を「分割の具体例」として分点式 equalPoints で例示。**証明本体（順序依存）は道具の後**——cast を「定義（Ch5）／証明本体（Ch11）」、等分割を「分点式（Ch5）／increase 完成（Ch11）」に2層分割する。
+
+| 章 | 内容 | ファイル | 由来（v5）|
+|---|---|---|---|
+| 第 I 部 | | | 監査 [Real, instLOF] |
+| Ch1–3 | 命題・構造・公理（One bridge は C03）| C01–C03 | 不変 |
+| **Ch4** | リーマン和の定義（Range・Summation・Partition・RS・trivialPartition の sorry・**加群なし**）| C04 | v5 Ch4 − Module |
+| **Ch5（新）** | **数学的構造とその射**: 加群 Module＋関数空間誘導 instance・cast 定義（Real.ofNat/OfNat/NatCast/Div）・Monotone・IsOrderedSemiringHom の**定義**＝射の概念・等分割の分点式 equalPoints を例示 | C05 | 加群（v5 Ch4）＋ cast 定義（v5 Ch10）＋ 等分割分点式（v5 Ch11）|
+| Ch6 | タクティク入門 | C06 | v5 Ch5 |
+| Ch7 | 書き換えと 2 つの等しさ | C07 | v5 Ch6 |
+| Ch8 | 自動化と自作タクティク | C08 | v5 Ch7 |
+| Ch9 | 順序と calc | C09 | v5 Ch8 |
+| Ch10 | 帰納法＋加群の線形性＋Σコーパス＋リーマン和の性質（到達点③）| C10 | v5 Ch9 |
+| **Ch11** | 数の体系: cast の証明本体（cast_le/add/mul・順序系・除法）＋**等分割 equalPartition の完成**（increase）| C11 | v5 Ch10 ＋ 等分割 increase（v5 Ch11）|
+| **Ch12** | 具体例 y=x（到達点②）| C12 | v5 Ch11 y=x |
+| 第 II 部 | アルキメデス〜FTC | C13–C17 | v5 C12–C16（番号 +1）|
+
+**v6 の設計判断（v5 からの変更と理由）**:
+1. **加群を Ch4 → Ch5**: 加群は線形性（Ch10）の土台でリーマン和の定義（Ch4）には不要。「数学的構造とその射」として cast と並べる方が自然（Ch2「構造と class」の具体的回収）。
+2. **cast を2層分割**: 定義（Real.ofNat/OfNat/NatCast/Div）と「順序半環の射」の概念（IsOrderedSemiringHom の定義）は順序不使用 → Ch5。cast が射である証明（cast_le/add/mul・順序系）は順序・帰納法の後 → Ch11。実コードで cast_add/mul が rw/induction（tactic）依存と確認したため2層分割が必須。
+3. **等分割を分割の例として早出し**: 分点式 equalPoints（cast＋除法・定義のみ）を Ch5 で例示。完全な Partition（increase が順序＋cast 順序系に依存）は Ch11。依存実測（57補題・道具4章の大半が必要）から、完全前倒しは道具章を分裂させるため不採用（案B＝定義のみ早出し）。
+4. **章数 +1**: Ch5 新設で第 I 部 Ch1–12・第 II 部 Ch13–17。
+5. **監査維持**: cast_mul=[Real,instLOF]・equalPartition=[Real,propext,instLOF]・riemann_sum_id=[Real,propext,Quot.sound,instLOF]（第 I 部古典ゼロ）。
+
+**実装済（2026-06-16）**: コード改番（C05–C16→C06–C17）・新 C05_Structures 作成・加群/cast定義/等分割分点式の移動・ヘッダ番号同期・ビルド clean（43 jobs）・監査確認。**follow-up**: 各章本文の相互参照 ChN（「加群は Ch5」「cast は Ch11」等）・guide §3 章別ブリーフ・SUMMARY。
+
+---
+
+### テキスト構成 v5（2026-06-16・v6 へ更新／素材庫）— 定義先出し／道具先行
 
 ユーザーとの対話（2026-06-16）で確定。**定義（recursor・structure で書ける）と証明（induction・道具が要る）を分離し、定義を先に・道具を中に・証明を後に**置く。これにより v4 で抱えた 3 課題（後述）が一挙に解消する。
 
