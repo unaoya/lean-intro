@@ -34,8 +34,6 @@
 - [発展 1 連続なら可積分](ext1_summit.md)
 - [発展 2 一様連続性を読む](ext2_unifcont.md)
 - [発展 3 細分の機械 — 挿入・σ 写像・エンベロープ](ext3_refine.md)
+- [発展 4 フィルターで統一する — IsLimAt・ContinuousAt・IsIntegral は同じ概念](ext4_filter.md)
 
-# 付録
-
-- [付録 C mathlib への橋](appendix_c.md)
-- [付録 D my_ring を作る — proof by reflection](appendix_d.md)
+[あとがき — 次の一冊へ](afterword.md)

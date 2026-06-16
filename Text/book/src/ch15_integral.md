@@ -20,7 +20,8 @@
 ## 15.3 IsIntegral — 網目の極限
 
 - ∀ε∃δ∀P の 3 段ネスト。杉浦の定義と一字一句対応
-- コラム: 定義の選択肢（Darboux=sup で値が直接書ける／HK=δ を関数に／フィルター=発展節へ）
+- コラム: 定義の選択肢（Darboux=sup で値が直接書ける／HK=δ を関数に／フィルター=発展 4 へ）
+- 📐 **mathlib 対応**: 本書の `IsIntegral` ↔ mathlib の `intervalIntegral`（Bochner 積分ベース）/`BoxIntegral`（HK 系）。本書の `Partition` ↔ `BoxIntegral.TaggedPrepartition`。mathlib は完成品・本書は最小の自作——「公理的存在 vs 定理的存在」（Ch16 一意性の議論）の実例。（mathlib 対応は付録に集約せず**各章で逐一**述べる方針）
 
 ## 15.4 Integral 関数 — dite と choose
 

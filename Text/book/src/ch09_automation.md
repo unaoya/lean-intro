@@ -38,7 +38,14 @@
 - 原子 → **単項式**（整列原子リスト＝積）へ一般化。正規形＝符号付き単項式のリスト。新補題 `nfEval_crossMul`（**分配律**で積を展開＝`left/right_distrib`）・`entEval_entMul`（符号は XNOR）
 - `if`/`==` の Bool 簡約を避け **`applySign`/`xnorB` をパターンマッチ定義**にして defeq を通す（メタの教材的工夫）
 - ANCHOR `my_ring_demo`: `a*(b+c)=a*b+a*c`・`(a+b)*(c+d)=…`・`a*b-b*a=0`（可換）が一行。`(1+1)*(a*b)` のリテラル係数も単項式の重複で扱う。**my_abel を包含**
-- 反射の一般化（多項式正規形・Horner）と mathlib の `ring` 対応は付録 C/D へ
+- 反射の一般化（多項式正規形・Horner）への発展は読み物として触れる
+
+## 9.7 完成と回収 — リフレクションは「証明はプログラム」（旧 付録 D を統合）
+
+- Ch8 で手計算した等式・Ch13 の y=x の代数小物が、ここで作った my_ring/my_abel で **1 行**になる
+- **omega や decide が「どういう種類の物体か」、自分で作ったから分かる**——柱 B（道具を開ける）の到達点。リフレクション＝「**証明はプログラムである**」（Ch1/Ch2 の CH 対応との合流: 項=証明・正規化=計算）
+- 健全性定理（`eval e = nfEval (normalize e)`）が**輸送補題**——反射の心臓。これを帰納法で証明したから `decide` の一致が等式の証明に化ける
+- **mathlib 対応**: mathlib の `ring`/`ring_nf`/`linarith` は同じ発想の本格版（多項式の Horner 正規形・Positivstellensatz）。本書は core だけで「動く最小の ring」を自作した——mathlib があれば借りられるが、**作ると中身が分かる**。`linarith` は §10 の `lin` と対比して読み物に
 
 ## 運用の約束
 
