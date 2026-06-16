@@ -64,8 +64,8 @@ Ch3 の演算子クラス（裸の Add など）に法則を被せていく:
 ## 4.5 根幹の 2 行・class は自動で見つかる（最小機構の実物）
 
 - `#check Real.instLOF`・`inferInstance`・`a + b` が解決される——Ch3 の「class＝自動で見つかる構造」の実物
-- check_failure（ANCHOR `check_failure`）: 今 ℝ には 0 のインスタンスしかない → `(1:Real)`・`(2:Real)` はまだ失敗する（1 は Ch7・2 以上は Ch9 の伏線）。`#check_failure` で伏線がビルドに固定される
-- ⚠ 解決の深い機構・ダイヤモンド事件の**本格**（NatCast の排他分割）は Ch12（数の体系）。ここでは階層の菱形（§3.1）の合流を軽く観察するに留める
+- check_failure（ANCHOR `check_failure`）: 今 ℝ には 0 のインスタンスしかない → `(2:Real)` 以上はまだ失敗する（2 以上は Ch6 の伏線）。`#check_failure` で伏線がビルドに固定される
+- ⚠ 解決の深い機構・ダイヤモンド事件の**本格**（NatCast の排他分割）は Ch12（数の体系）。ここでは階層の菱形（§4.1）の合流を軽く観察するに留める
 
 ## 4.6 最初の実数証明: `<` の 3 兄弟（ANCHOR `three_brothers`）
 

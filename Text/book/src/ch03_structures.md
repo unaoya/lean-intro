@@ -9,24 +9,6 @@
 - コード: C03_Structures.lean（structure_as_data・nat_structures〔Int 含む〕・general_proof〔直積・関数型モノイド含む〕・local_notation・And は structure）
 - **役割分担**: この章は「構造の**機構**」——structure（データとしての構造）・Nat の裸の演算子クラス・一般化証明・class の概念。法則を被せた**階層**（モノイド→体→順序）と実数の公理は Ch4
 
-## 書くべきこと
-
-Subtypeについて書く必要がある。
-Subtypeの作り方と使い方。
-Subtypeの項の作り方と使い方。
-型 a に対し、a上のPropがあればSubtypeが作れる。
-Structureで定義するのと同じ？
-
-Subtypeの例として、nより小さい自然数のなす型を作る。
-これはさらにnを引数にもつ関数であることに注意する。
-Range 0, Range 1などがそれぞれ型である。
-集合論的には{0,1,\ldots,n-1}である。
-Range n \to Range n+1をinclとaddoneの二つ作る。
-incl k = k, addone k = k+1である。
-ただし、条件を満たす証明（Prop型のi < nを型に持つ項）をつける必要がある。
-これは要するにk < nならばk < n+1とk < n ならばk +1 < n + 1である。
-すでに既存の証明が標準ライブラリにあるので流用する。
-
 ## はじめに — この章で説明したいこと（章の地図）
 
 - 自然数全体の集合は `Nat` という型に対応する

@@ -1,5 +1,5 @@
 -- Text/C11_Induction.lean — Ch11 帰納法・加群の線形性・Σ コーパス・リーマン和の性質（到達点③）
--- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch7/7）・
+-- induction で Σ の基本性質コーパス＋Partition の大域単調性を獲得する。等式（Ch7・Ch8）・
 -- 自動化（Ch9）・順序と ≤/< 混在 calc（Ch10）は獲得済みで、ここで帰納法に組み込む。
 -- 注意: この章まで古典論理ゼロ（not_lt_imp_le 等の古典補題は第 II 部）
 import Text.C10_Order
@@ -245,7 +245,7 @@ theorem tag_mem' {n : Nat} {u v : Real} (Δ : Partition n u v) (ξ : Range n →
       _ = v := Δ.right
 
 -- ============================================================
--- リーマン和の性質（旧 Ch14・到達点③）: 線形性・単調性・const・nonneg・両側評価
+-- リーマン和の性質（到達点③）: 線形性・単調性・const・nonneg・両側評価
 --   いずれも Σ コーパス（線形性=合成／単調性=weightedSum_le）の RS への持ち上げ。
 -- ============================================================
 -- 関数空間 Real → Real のベクトル空間（f + g・-f・c • f が中置）は Ch11 で導入済。
@@ -295,10 +295,10 @@ theorem riemann_sum_sub (f g : Real → Real) {n : Nat} {u v : Real}
   exact h
 
 -- ============================================================
--- §2 性質 3: const（望遠鏡和の快感。length_sum は C07）
+-- §2 性質 3: const（望遠鏡和の快感。length_sum は本章（C11））
 -- ============================================================
 
-/-- 性質 3（定数）: 定数関数のリーマン和は `c·(v-u)`。`length_sum`（C07）を消費する。 -/
+/-- 性質 3（定数）: 定数関数のリーマン和は `c·(v-u)`。`length_sum`（本章 C11）を消費する。 -/
 theorem riemann_sum_const {n : Nat} {u v : Real} (Δ : Partition n u v)
     (ξ : Range n → Real) (c : Real) :
     RiemannSum (fun _ => c) Δ ξ = c * (v - u) := by
@@ -337,7 +337,7 @@ theorem riemann_sum_nonneg (f : Real → Real) {n : Nat} {u v : Real}
   rwa [riemann_sum_const Δ ξ 0, show (0 : Real) * (v - u) = 0 from by my_ring] at h
 
 -- ============================================================
--- §4 性質 5: 両側評価（abs を使わない。生の不等式 2 本——述語 NearLe への昇格は発展部）
+-- §4 性質 5: 両側評価（abs を使わない。生の不等式 2 本——述語 NearLe への昇格は発展演習）
 -- ============================================================
 
 /-- 性質 5（上側）: 区間上 `f ≤ c` なら `RS f ≤ c·(v-u)`。**単調性の系**（上を定数 `c` で抑える・
@@ -362,7 +362,7 @@ theorem const_le_rs {n : Nat} {u v : Real} (Δ : Partition n u v)
 #print axioms riemann_sum_nonneg
 #print axioms rs_le_const
 
--- 代表点系であること（旧 C05 の証明部・順序 le_refl を要するのでここ＝Ch11 に置く）。
+-- 代表点系であること（順序 le_refl を要するのでここ＝Ch11 に置く）。
 namespace Partition
 
 /-- 左端タグは代表点系（左端は自分の小区間の左端そのもの・右端は increase で）。 -/

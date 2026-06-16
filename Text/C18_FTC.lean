@@ -86,7 +86,9 @@ theorem le_isintegral_of_le {f : Real → Real} {u v J c : Real} (huv : u ≤ v)
 
 -- ============================================================
 -- §3 核 ftc_core: 連続なら、跨ぎ形の差分商が f(x) に収束する
---    必要なのは: 連続性@x・定数積分・両側評価。存在定理も加法性も一意性も不要
+--    必要なのは: 連続性@x・定数積分・両側評価。一意性・加法性・integral の値構成は不要。
+--    ただし fine 分割の存在（exists_fine_partition）は archimedean を経由し sup を使う
+--    （#print axioms ftc_core に sup 公理が現れるのはこのため——局所的な核でも完備性は入る）
 -- ============================================================
 
 -- 注: hax / hxb は証明に不要（跨ぎの仮定 u ≤ x ≤ v が全てを運ぶ——核は完全に局所的）
@@ -172,5 +174,5 @@ theorem ftc_of_integrable (f : Real → Real) (a b x : Real) (hax : a ≤ x) (hx
 #print axioms archimedean         -- sup が初稼働（上限公理から有限性）
 #print axioms isintegral_id       -- choice あり・sup なし（直接証明は完備性不要）
 #print axioms integral_unique     -- 一意性 = ε/2 ＋ 非空性（アルキメデスの値段）
-#print axioms ftc_core            -- 核（一意性フリー・完全に局所的）
+#print axioms ftc_core            -- 核（一意性・加法性・値構成フリー。ただし sup は exists_fine_partition 経由で入る）
 #print axioms ftc_of_integrable   -- 実体化（橋 1 回）で全公理が揃う

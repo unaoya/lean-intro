@@ -4,7 +4,7 @@
 
 - 前章からの問い: 定義から直接、積分をひとつ計算できるか
 - 到達点: isintegral_id・integral_id。貫通具体例（Ch9）が閉じる
-- 新しい Lean 機能: なし（総合演習 III——第 I 部の道具＋Ch15–15 の概念の合奏）
+- 新しい Lean 機能: なし（総合演習 III——第 I 部の道具＋Ch15–16 の概念の合奏）
 - コード: C17_Example.lean（Proto/Example の sum_id 除く全部 → ~200 行）
 
 ## 17.1 なぜ id は直接いけるのか

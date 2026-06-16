@@ -270,7 +270,6 @@ theorem cast_pos_of_ne (m : Nat) (hm : m ≠ 0) : (0 : Real) < (m : Real) := by
 theorem cast_summation (n : Nat) (f : Range n → Nat) :
     ((Summation n f : Nat) : Real) = Summation n (fun i => ((f i : Nat) : Real)) :=
   cast_isHom.map_summation n f
--- ANCHOR_END: cast_hom
 
 -- 章末監査: 古典論理ゼロ（[Real, Real.instLOF] のみ・cast の射性も構成的）
 #print axioms cast_mul

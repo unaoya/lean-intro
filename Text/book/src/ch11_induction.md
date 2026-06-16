@@ -1,7 +1,7 @@
 # Ch11 帰納法 — 加群の線形性・Σ コーパス・リーマン和の性質（到達点③）
 
-<!-- 下書き（配置設計版）: 節立てと内容の配置メモのみ。本文未執筆。構成v6 -->
-<!-- 構成v6: 旧 Ch14「リーマン和の性質」を本章後半に統合（性質は cast 不要で帰納法章に置ける） -->
+<!-- 下書き（配置設計版）: 節立てと内容の配置メモのみ。本文未執筆。構成v7 -->
+<!-- 構成v7: 旧 Ch14「リーマン和の性質」を本章後半に統合（性質は cast 不要で帰納法章に置ける） -->
 
 - 前章からの問い: スカラーの代数は揃った。だが Σ（有限和）の性質と、リーマン和の性質は項数 n の帰納法が要る
 - 到達点: 帰納法で Σ 補題コーパス＋Partition の大域単調性を証明し、**加群の線形性**（Ch6 で定義した Module・IsLinearMap の実例）を積み上げ、**リーマン和の性質 5 本（到達点③）**まで到達する。第 I 部古典ゼロの監査
@@ -21,7 +21,7 @@
 
 ## 11.3 ボス戦: telescope_sum
 
-- 最初の本格的帰納法証明。Σ(g(i+1)−g(i)) = g(n)−g(0)（Ch8 の telescope_2 が部品。→ §10.8 length_sum・Ch17 中点和）
+- 最初の本格的帰納法証明。Σ(g(i+1)−g(i)) = g(n)−g(0)（Ch8 の telescope_2 が部品。→ §11.8 length_sum・Ch17 中点和）
 
 ## 11.4 Partition の基本性質 — 読者自身の構造への帰納法
 
@@ -33,7 +33,7 @@
 
 - additive_summation と summation_mul_left の 2 本は、数学者の言葉では「有限数列のなすベクトル空間上の線形形式」という **1 つの主張**——そう言い直してみる（ANCHOR `summation_linear`）
 - **加群 Module は Ch6 で定義済み**（`Range n → Real` も `Real → Real` も funModule で自動的に加群）。`summation_isLinear` の証明が **corpus の 2 本をペアにするだけ**であることを見る——「概念（Ch6 の IsLinearMap）を定義すると、すでに証明していたことが 1 つの主張に束ねられる」
-- mathlib 対応（Module・LinearMap・Finset.sum の線形性）は付録 C へ
+- mathlib 対応（Module・LinearMap・Finset.sum の線形性）は発展 ext4_filter へ
 
 ## 11.6 線形性を積み上げる: Σ → 重みつき Σ →（引き戻し）→ RS（ANCHOR `weighted_summation`）
 
@@ -47,23 +47,23 @@
 ## 11.7 RS は f について線形写像 — 塔の合成で 1 行
 
 - **被積分関数の代数を中置で**: 関数空間 `Real → Real` の加群（Ch6 funModule）＋ Sub で `RS(f + g)`・`RS(c • f)`・`RS(-f)`・`RS(f - g)` と書く（点ごと演算・`(f+g) x = f x + g x` は rfl）。一般化した my_abel もこの関数空間でそのまま動く（順序は無いので lin は不可）
-- **§10.6 の塔を合成して帰着**（一気に証明しない）: `riemann_sum_isLinear = isLinear_comp (weightedSum_isLinear Δ.length) (precompose_isLinear ξ)` の**合成 1 行**
+- **§11.6 の塔を合成して帰着**（一気に証明しない）: `riemann_sum_isLinear = isLinear_comp (weightedSum_isLinear Δ.length) (precompose_isLinear ξ)` の**合成 1 行**
 - **加法 `RS(f + g)=RS f+RS g`・スカラー倍 `RS(c • f)=c·RS f` は射影**（`.1`/`.2`）で 1 行・**符号と差はそこから出る系**
 - Σ→重みつきΣ→RS の 3 層対応（積分への対応の予告）
 
 ## 11.8 const — 望遠鏡和の快感
 
-- `length_sum`（Σ length = b − a・§10.4 の telescope の回収）を const が消費。`riemann_sum_const`（定数関数の RS = c(b−a)）
+- `length_sum`（Σ length = b − a・§11.3 の telescope の回収）を const が消費。`riemann_sum_const`（定数関数の RS = c(b−a)）
 
 ## 11.9 単調性 — riemann_sum_le（nonneg・両側評価の親）
 
-- **RS の単調性 `f ≤ g (区間上) ⇒ RS f ≤ RS g`（IsRepr 必須）を中心に据える**。§10.6 の重みつき Σ の単調性 `weightedSum_le`（重み = length ≥ 0）に帰着——線形性が「合成で帰着」だったのと並行に、**単調性も Σ→重みつきΣ→RS と積み上がる**
+- **RS の単調性 `f ≤ g (区間上) ⇒ RS f ≤ RS g`（IsRepr 必須）を中心に据える**。§11.6 の重みつき Σ の単調性 `weightedSum_le`（重み = length ≥ 0）に帰着——線形性が「合成で帰着」だったのと並行に、**単調性も Σ→重みつきΣ→RS と積み上がる**
 - nonneg・両側評価は**この特殊化**: nonneg ＝ 下を `const 0` で・上側 ＝ 上を `const c` で・下側 ＝ 下を `const c` で。各々 `riemann_sum_le` ＋ `riemann_sum_const` で 2 行
 
 ## 11.10 nonneg — 反例が「なぜ IsRepr が必須か」を実演する
 
 - **単調性 `riemann_sum_le` の系**（`const 0` との比較）。IsRepr（代表点の妥当性）は **Ch5 で定義済**。ここでは**使い**、タグを区間外にすると非負が**壊れる反例**で「妥当性条件が飾りでない」ことを見せる
-- 使う道具: `tag_mem'`・`points_mono`・`length_nonneg`——いずれも §10.4 で証明済
+- 使う道具: `tag_mem'`・`points_mono`・`length_nonneg`——いずれも §11.4 で証明済
 
 ## 11.11 両側評価 rs_bound
 
@@ -78,7 +78,7 @@
 ## 11.13 章末監査 — 第 I 部の総決算
 
 - 全定理の `#print axioms` が [Real, instLOF]（＋propext/Quot.sound の説明は最小限に留め Ch15 へ）
-- 第 I 部は**構成的**——その意味の予告（BHK の転調は Ch14–14 で）
+- 第 I 部は**構成的**——その意味の予告（BHK の転調は Ch14 で）
 
 ## 演習
 

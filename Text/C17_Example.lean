@@ -76,7 +76,7 @@ theorem degenerate_sum {u : Real} (P : TaggedPartition u u) (f : Real → Real) 
 -- §3 isintegral_id: 中点和の望遠鏡和による直接証明
 --    中点タグなら RS は厳密に (b²−a²)/2。任意のタグとの差は
 --    各小区間で ±len/2、合計 ±(δ/2)(b−a) に収まる。
---    （仕上げは両側のまま——NearLe 述語への昇格は発展部）
+--    （仕上げは両側のまま——NearLe 述語への昇格は発展演習）
 -- ============================================================
 
 -- ANCHOR: isintegral_id

@@ -1,6 +1,6 @@
 # Ch5 リーマン和の定義 — 帰納型・構造的再帰・structure（到達点①）
 
-<!-- 下書き（配置設計版）: 節立てと内容の配置メモのみ。本文未執筆。構成v6 -->
+<!-- 下書き（配置設計版）: 節立てと内容の配置メモのみ。本文未執筆。構成v7 -->
 
 - 前章からの問い: 有限和と分割をデータとしてどう表すか
 - 到達点: Range・Summation・Partition・RiemannSum が読めて書ける（**到達点①＝リーマン和の定義が書ける**）。CH 対応表が完結する。ただし trivialPartition の `increase` が sorry のまま 1 つ残って幕
@@ -41,7 +41,7 @@ increaseの照明が面倒？（実は簡単ではない？）
 - **Range 固有の項と関数**（ANCHOR `range_intro`）: Subtype の基本動作（`⟨値,証明⟩` で導入・`.val` で除去）は Ch2 既出。ここは Range で復習しつつ、**Range「から」の関数**（射影 `i.val`）と **Range「へ」の関数**（値＋証明を添える）を `incl`/`addone` へ繋ぐ
 - **依存型の限界の予告**: `Range 3` からの関数を `i.val` の `0/1/2` で場合分けすると、`i.val < 3` ゆえ 3 枝で尽きるはずなのに **Nat 全体の網羅にもう 1 枝（到達不能なダミー）が要る**——型 `Range 3` だけからは Lean が「i.val は 2 以下」を読めない。証明を使って網羅を絞るのは後の章（§5.12 trivialPartition も同じ構図——だから `increase` が sorry になる）
 - incl / addone（ANCHOR `range_funcs`）は **Range「への」関数の実戦**——`Range n` の項から `Range (n+1)` の項を作る（値は同じ/+1、添える証明だけ既存補題 `Nat.lt_succ_of_lt`/`Nat.succ_lt_succ` で作り替える）。隣接分点を安全に参照する 2 つの埋め込み
-- **名前空間を作る（namespace 縦糸 2/3）**: `namespace Range … end Range` で囲むと `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に束ね、衝突を避け、所属を名前で示す。Ch4＝既存の名前空間を読む（アクセス）の対＝**自分で作る**。`open` で省く・dot 記法の旨味はこの章の後半（§4.8）
+- **名前空間を作る（namespace 縦糸 2/3）**: `namespace Range … end Range` で囲むと `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に束ね、衝突を避け、所属を名前で示す。Ch4＝既存の名前空間を読む（アクセス）の対＝**自分で作る**。`open` で省く・dot 記法の旨味はこの章の後半（§5.8）
 
 ## 5.4 Summation — 構造的再帰
 
@@ -72,9 +72,9 @@ increaseの照明が面倒？（実は簡単ではない？）
 
 ## 5.8 名前空間の旨味 — open と dot 記法（namespace 縦糸 3/3）
 
-- **旨味 1（`open Range`）**: §4.3 で `Range.incl`/`Range.addone` と名付けたが、`open Range` でこのファイルでは接頭辞 `Range.` を省いて `incl`/`addone` と書ける（Partition のフィールドが多用する）
+- **旨味 1（`open Range`）**: §5.3 で `Range.incl`/`Range.addone` と名付けたが、`open Range` でこのファイルでは接頭辞 `Range.` を省いて `incl`/`addone` と書ける（Partition のフィールドが多用する）
 - **旨味 2（dot 記法 `Δ.length`）**: `length` を `namespace Partition` に置くと `Δ : Partition n a b` に対し `Δ.length i`（＝`Partition.length Δ i`）と書ける。Lean は `Δ` の型 `Partition …` を見て同名 namespace から `length` を探し `Δ` を第 1 引数に差し込む。`Δ.points`・`Δ.IsRepr`・`Δ.leftRepr` も全部これ
-- **縦糸の回収**: Ch4 アクセス → Ch5 作る → **Ch5 後半 開いて省く＋dot 記法**。3 段で名前空間の使い道が一周する
+- **縦糸の回収**: Ch4 アクセス → Ch5 作る → **§5.8 開いて省く＋dot 記法**。3 段で名前空間の使い道が一周する
 
 ## 5.9 リーマン和の定義は 1 行
 
@@ -92,14 +92,13 @@ increaseの照明が面倒？（実は簡単ではない？）
 
 ## 5.12 クリフハンガー: trivialPartition
 
-- 1 分割（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める（ANCHOR `trivial_partition`）。`points` は **`match i.val with | 0 => a | _+1 => b`**——Nat の zero/succ で分岐（§4.6 のパターンマッチ・Summation と同じスタイル。if-then-else は Decidable を陰に持ち込むので避ける）。`left`/`right` は `rfl` で通る
-- だが `increase` は **添字の場合分けなしに書けない**——読者版では **sorry のまま幕**（Ch7 タクティク入門の初仕事で埋める）
+- 1 分割（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める（ANCHOR `trivial_partition`）。`points` は **`match i.val with | 0 => a | _+1 => b`**——Nat の zero/succ で分岐（§5.6 のパターンマッチ・Summation と同じスタイル。if-then-else は Decidable を陰に持ち込むので避ける）。`left`/`right` は `rfl` で通る
 
 ## 演習
 
 - Range の操作（incl/addone の値の確認を show で）・小さい n での Summation の手計算
 - **型シグネチャの設計**（本文素材）:
-  - Summation の契約は最小の `[Add α] [Zero α]`（二項演算とゼロの値）。**意味論のクラス（Zero/One）とリテラル整形の窓口（OfNat）の分離**を本文で——core には Zero/One と一方向 bridge（Zero.toOfNat0/One.toOfNat1）が mathlib から昇格して入っており、本書は公理の zero を `instance : Zero Real` で登録するだけ（C03 の ANCHOR: zero_bridge）。「bridge は一方向・値は defeq」＝**良い菱形の規律**（Ch4 の悪い菱形トイデモの回収。数の建て方の本格論は cast 定義 Ch6・証明 Ch12）
+  - Summation の契約は最小の `[Add α] [Zero α]`（二項演算とゼロの値）。**意味論のクラス（Zero/One）とリテラル整形の窓口（OfNat）の分離**を本文で——core には Zero/One と一方向 bridge（Zero.toOfNat0/One.toOfNat1）が mathlib から昇格して入っており、本書は公理の zero を `instance : Zero Real` で登録するだけ（C04 の ANCHOR: zero_bridge）。「bridge は一方向・値は defeq」＝**良い菱形の規律**（Ch4 の悪い菱形トイデモの回収。数の建て方の本格論は cast 定義 Ch6・証明 Ch12）
   - 演習: `n` を implicit にできるか？ 変えてみて何が起きるか（依存型の見せ場が消える・rw の制御）——implicit 引数は Ch3 で読み、Ch5 で自分の定義に書き、Ch7 で機構を種明かしする 3 段配置
 - コラム: mathlib の Σ 事情——`List.sum` は `[Add][Zero]` で足りるのに `Finset.sum` は AddCommMonoid を要求する（Finset＝順列で割った商なので well-definedness に可換性・結合性が要る）。**添字集合の表現を緩くすると代数の契約が重くなる**——「表現の選択」の糸との交差点
 

@@ -1,7 +1,7 @@
 # Ch12 数の体系 — cast の証明本体・除法・等分割の完成
 
-<!-- 下書き（配置設計版）: 節立てメモ。本文未執筆。構成v6 -->
-<!-- 構成v6: cast の「定義」(Real.ofNat/OfNat/NatCast/Div・射の概念)は Ch6 へ前倒し。
+<!-- 下書き（配置設計版）: 節立てメモ。本文未執筆。構成v7 -->
+<!-- 構成v7: cast の「定義」(Real.ofNat/OfNat/NatCast/Div・射の概念)は Ch6 へ前倒し。
      本章は道具(Ch7-10)が揃ったので「cast が射であることの証明本体」と等分割の完成を扱う -->
 
 - 前章からの問い: Ch6 で cast と等分割の分点式を**定義**した。その性質（射であること・等分割の単調性）を、道具が揃った今**証明**する
@@ -33,8 +33,8 @@
 ## 12.4 等分割の完成 — equalPartition（Ch6 の分点式に証明を与える）
 
 - Ch6 で分点式 `equalPoints m a b = a + i·(b−a)/m` を**定義**した。ここで道具が揃ったので、それを完全な `Partition` に組み上げる（ANCHOR `equal_partition`）:
-  - `increase`（広義単調）: `add_left_le` → `div_right_le`（cast_pos_of_ne）→ `nonneg_mul_nonneg`（`nonneg_iff_le` ＋ `cast_le_succ`）——**§11.3 の cast 順序系がここで効く**
-  - `left`/`right`（両端 = a, b）: zero_mul・zero_div・`mul_div_cancel'`（除法補題 §11.2）
+  - `increase`（広義単調）: `add_left_le` → `div_right_le`（cast_pos_of_ne）→ `nonneg_mul_nonneg`（`nonneg_iff_le` ＋ `cast_le_succ`）——**§12.3 の cast 順序系がここで効く**
+  - `left`/`right`（両端 = a, b）: zero_mul・zero_div・`mul_div_cancel'`（除法補題 §12.2）
   - `equalPartition_length` = (b−a)/m（telescope・succ_ofNat・my_ring）
 - 代表点は **Ch5 の一般 `leftRepr`/`rightRepr` を適用**（`equalPartitionRepr_isrepr` は Ch11 の `leftRepr_isRepr` の特例）——一般構成を y=x の前に確立
 

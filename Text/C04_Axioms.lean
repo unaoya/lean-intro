@@ -42,7 +42,7 @@ class Field (α : Type) extends CommRing α where
 
 -- 注: zero/add_assoc/add_comm/zero_add/add_zero は AddCommMonoid へ移ったが、
 -- extends が親フィールドのアクセサ `AddCommMonoid.zero` 等を自動生成するので、
--- Ch7/7/8 の既存参照（`AddCommMonoid.zero_add` 等）はそのまま温存される。
+-- Ch7・Ch8 の既存参照（`AddCommMonoid.zero_add` 等）はそのまま温存される。
 
 -- 順序の階層（補題が成り立つ最小構造を Ch10 で活用するための中間クラス）。
 -- 順序モノイド（加法と順序）→ 順序群（符号も）→ 順序体（乗法も）→ 全順序体（線形性）。
@@ -104,15 +104,14 @@ axiom Real.sup_lub (S : Real → Prop) (hne : ∃ x, S x)
 
 -- ゼロの窓口クラス: core の `Zero`（mathlib から昇格）に公理の zero を登録する。
 -- リテラル 0 へは core の一方向 bridge `Zero.toOfNat0 : [Zero α] → OfNat α 0` が配線する。
--- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形は C03 のトイデモ参照）。
--- リテラル 1 以上と NatCast は Ch12 まで導入しない
+-- 良い菱形の規律: 経路は一方向・値は defeq（悪い菱形のデモは C12 の DiamondIncident）。
 -- ANCHOR: zero_bridge
 noncomputable instance : Zero Real := ⟨AddCommMonoid.zero⟩
 -- ANCHOR_END: zero_bridge
 
 -- 1 の窓口: core の `One` に公理の one を登録（リテラル 1 は bridge One.toOfNat1 経由）。
 -- 0 と同じく Ch4 で導入する——加群（Ch5）のスカラー単位 1 で使うため前倒し。
--- 2 以上のリテラルと NatCast は数の体系（Ch11）まで導入しない。
+-- 2 以上のリテラルと NatCast は Ch6（C06_Structures）で導入する。
 noncomputable instance : One Real := ⟨MulCommMonoid.one⟩
 
 -- length の引き算（階層にあるのは Neg。中置 a - b はここで定義）
@@ -162,10 +161,10 @@ theorem lt_irrefl (a : Real) : ¬ (a < a) := fun h => h.2 rfl
 #check fun (a b : Real) => a + b
 #check fun (a b : Real) => a ≤ b
 
--- 今 Real に登録された数のインスタンスは 0 と 1 だけ（2 以上は Ch11 数の体系で）。
+-- 今 Real に登録された数のインスタンスは 0 と 1 だけ（2 以上は Ch6 C06_Structures で）。
 -- #check_failure は「失敗すること」自体を検査する——伏線がビルドで保証される
 -- ANCHOR: check_failure
 #check (0 : Real)         -- 通る（Σ の基底・上で Zero bridge を導入済み）
 #check (1 : Real)         -- 通る（加群のスカラー単位・上で One bridge を導入済み）
-#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch11 で）
+#check_failure (2 : Real) -- failed to synthesize OfNat Real 2（2 以上は Ch6 で）
 -- ANCHOR_END: check_failure
