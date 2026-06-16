@@ -2,19 +2,41 @@
 
 <!-- 下書き（配置設計版）: 節立てと内容の配置メモ。read-axioms 章（2026-06-15 スワップで Ch2 から入替） -->
 
-- 前章からの問い: 道具（構造と class）は揃った。実数の公理をどう読むか
+- 前章からの問い: 構造の機構と Nat の裸の演算子クラスは揃った。それに**法則を被せた階層**で実数の公理をどう読むか
 - 到達点: C03_Axioms.lean の全行が「読める」。最初の実数証明が書ける
-- 新しい Lean 機能: 依存型【鍵1】・∀/∃=Π/Σ・Prop vs Type・universe【鍵2】・axiom・namespace/open
+- 新しい Lean 機能: class の階層（extends の塔）・依存型【鍵1】・∀/∃=Π/Σ・Prop vs Type・universe【鍵2】・axiom・namespace/open
 - コード: C03_Axioms.lean（階層・公理5本・zero_bridge・根幹2行・check_failure・three_brothers）
+- **役割分担**: この章は「法則を被せた**階層**」——Ch2 の演算子クラス（Add 等）に結合律・可換律…を被せて class で積み上げ（モノイド→群→環→体→順序）、実数を全順序体として読む。依存型・∀∃・universe・ダイヤモンドもここ
 
 > 執筆メモ（ユーザー・relocate 元 ch02）:
 > - 実数の公理を書くことが目標。実数を構成するのではない（デデキンド切断やコーシー列の話はしない）。杉浦も公理的にやる。一言で言えば完備全順序体。
 > - 一気にやると多すぎるので段階的に。まず群の公理から（Ch2 で見た構造の積み上げ）。
 
-## 3.1 階層クラスを「読む」（ANCHOR `hierarchy`）
+## ここで書くべきこと
 
-- AddCommMonoid → AddCommGroup → CommRing → Field → …（順序を被せて）→ LinearOrderedField の extends の塔を読む。Ch2 の「構造＝データ」の見方で「公理を束ねたレコードの型」として読める
+目標は微積分学の基本定理だが、実数は公理的に扱う。
+集合論的に構成するわけではない。
+一言で言えば、完備な全順序体の理論である。
+完備性（あるいは連続性）は後で扱うことにして、
+ここでは全順序体（あるいはそのような数学的構造）をleanでどのように扱うかの一例を紹介する。
+実際にはmathlibを用いるのがいい。
+mathlibそのものではないが、それに近い実装。
+
+（Natが標準ライブラリで持つ構造 Add/Mul/Zero/One/Sub/LE/LT＝演算子クラスは Ch2 §2.2b に移動。
+　名前が notation と対応することも Ch2 で。ここではそれを受けて、法則を被せた階層を class で積む。）
+
+Ch2 の演算子クラス（裸の Add など）に法則を被せていく:
+モノイド、群、環、体、それらと整合的な順序構造。
+これらを順に拡張する（extends の塔）。
+最後にダイヤモンド（同じ型に構造が 2 経路で載るときの合流の規律）。
+
+
+
+## 3.1 階層クラスを「読む」— 演算子クラスに法則を被せる（ANCHOR `hierarchy`）
+
+- **Ch2 の Nat 演算子クラス（裸の `Add`）に法則を被せる**: `class AddCommMonoid extends Add` は「`Add`（二項演算）＋結合律・可換律・単位律」を束ねた class。AddCommMonoid → AddCommGroup（逆元）→ CommRing（乗法）→ Field（逆元）→（順序を被せて）→ LinearOrderedField の extends の塔を読む。Ch2 の「構造＝データ」「class＝自動で見つかる構造」の見方で「公理を束ねたレコードの型」として読める
 - 加法は「可換モノイド（逆元なし）→ 可換群（逆元あり）」の 2 段で積む——**補題が成り立つ最小構造**を分ける土台（活用は Ch9）。順序の中間クラス（OrderedAddCommMonoid 等）はコードに在るが、Ch3 では LinearOrderedField を**頂点として一括で**読み、最小構造の使い分けは Ch9 へ送る
+- **階層の菱形（ダイヤモンドの予告）**: 順序を被せる段の `OrderedAddCommGroup extends AddCommGroup, OrderedAddCommMonoid` で親 `AddCommMonoid` が 2 経路で来ても **1 つに合流する**のが extends の規律（同じ構造が 2 度載らない）。NatCast での本格的なダイヤモンド事件は Ch11
 - 公理の編集という行為: 杉浦の R1〜R17 列挙との対比（公理設計の論点表: 0 はデータ・sup は Skolem 化・列挙でなく束）
 
 ## 3.2 公理 5 本（ANCHOR `axioms`）
@@ -43,7 +65,7 @@
 
 - `#check Real.instLOF`・`inferInstance`・`a + b` が解決される——Ch2 の「class＝自動で見つかる構造」の実物
 - check_failure（ANCHOR `check_failure`）: 今 ℝ には 0 のインスタンスしかない → `(1:Real)`・`(2:Real)` はまだ失敗する（1 は Ch6・2 以上は Ch8 の伏線）。`#check_failure` で伏線がビルドに固定される
-- ⚠ 解決の深い機構・ダイヤモンド事件は Ch8（NatCast の排他分割の動機として後置）
+- ⚠ 解決の深い機構・ダイヤモンド事件の**本格**（NatCast の排他分割）は Ch11（数の体系）。ここでは階層の菱形（§3.1）の合流を軽く観察するに留める
 
 ## 3.6 最初の実数証明: `<` の 3 兄弟（ANCHOR `three_brothers`）
 
