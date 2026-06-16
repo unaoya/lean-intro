@@ -53,9 +53,9 @@ increaseの照明が面倒？（実は簡単ではない？）
 
 ## 5.3 Range — 証明を抱えた添字
 
-- `Range n := { i : Nat // i < n }`（Subtype＝依存和の実物、CH 表 ∃ 行の Type 側親戚）。`Range 0`・`Range 1`… がそれぞれ型（集合論の {0,…,n−1}）・`n` を引数に取る関数でもある
-- **Subtype の項と関数の基本動作**（ANCHOR `range_intro`）: 項を作る = 値＋「範囲内」の証明を `⟨2, …⟩` で組む（導入）／取り出す = `.val`（除去）。**Range「から」の関数**（domain が Range・射影 `i.val`）と **Range「へ」の関数**（codomain が Range・値＋証明を添える）の 2 方向を最小例で見せる
-- **依存型の限界の予告**: `Range 3` からの関数を `i.val` の `0/1/2` で場合分けすると、`i.val < 3` ゆえ 3 枝で尽きるはずなのに **Nat 全体の網羅にもう 1 枝（到達不能なダミー）が要る**——型 `Range 3` だけからは Lean が「i.val は 2 以下」を読めない。証明を使って網羅を絞るのは後の章（§4.12 trivialPartition も同じ構図——だから `increase` が sorry になる）
+- `Range n := { i : Nat // i < n }`（**Ch2 で見た Subtype（依存和・∃ の Type 側）の実例**）。`Range 0`・`Range 1`… がそれぞれ型（集合論の {0,…,n−1}）・`n` を引数に取る関数でもある
+- **Range 固有の項と関数**（ANCHOR `range_intro`）: Subtype の基本動作（`⟨値,証明⟩` で導入・`.val` で除去）は Ch2 既出。ここは Range で復習しつつ、**Range「から」の関数**（射影 `i.val`）と **Range「へ」の関数**（値＋証明を添える）を `incl`/`addone` へ繋ぐ
+- **依存型の限界の予告**: `Range 3` からの関数を `i.val` の `0/1/2` で場合分けすると、`i.val < 3` ゆえ 3 枝で尽きるはずなのに **Nat 全体の網羅にもう 1 枝（到達不能なダミー）が要る**——型 `Range 3` だけからは Lean が「i.val は 2 以下」を読めない。証明を使って網羅を絞るのは後の章（§5.12 trivialPartition も同じ構図——だから `increase` が sorry になる）
 - incl / addone（ANCHOR `range_funcs`）は **Range「への」関数の実戦**——`Range n` の項から `Range (n+1)` の項を作る（値は同じ/+1、添える証明だけ既存補題 `Nat.lt_succ_of_lt`/`Nat.succ_lt_succ` で作り替える）。隣接分点を安全に参照する 2 つの埋め込み
 - **名前空間を作る（namespace 縦糸 2/3）**: `namespace Range … end Range` で囲むと `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に束ね、衝突を避け、所属を名前で示す。Ch4＝既存の名前空間を読む（アクセス）の対＝**自分で作る**。`open` で省く・dot 記法の旨味はこの章の後半（§4.8）
 

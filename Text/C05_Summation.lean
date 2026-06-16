@@ -1,7 +1,7 @@
 -- Text/C05_Summation.lean — Ch5 帰納型と構造的再帰・分割とリーマン和の定義（到達点①）
 import Text.C04_Axioms
 
--- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物）
+-- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物・概念は Ch2 既出）
 -- ANCHOR: range
 def Range (n : Nat) := { i : Nat // i < n }
 -- ANCHOR_END: range
