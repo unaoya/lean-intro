@@ -12,7 +12,7 @@
 ## 12.1 defeq の綻び — cast 1 = 1 は rfl で死ぬ（Ch6 の回収）
 
 - cast の定義（`Real.ofNat`・OfNat 2 以上・NatCast・Div）は **Ch6 で済み**。ここはその defeq の含意から（ANCHOR `cast_defeq`）: `Real.ofNat 0 = 0 := rfl` は通り、`Real.ofNat 1 = 0 + 1 := rfl` で中身が見え、`#check_failure (rfl : Real.ofNat 1 = 1)` で **defeq でないことがビルドで検証**（Ch8「2 種の等しさ」の実戦）。`cast_one` は命題的に証明する
-- **数の 2 つの建て方とダイヤモンドの規律**: 0/1 は代数のフィールドが一次、cast はその上。リテラルは 0（Ch4）/1（Ch4 One bridge）/2 以上（Ch6 `Real.ofNat`）で**担当を排他分割**——mathlib `Nat.AtLeastTwo` の手作り版。全リテラルを ofNat 経由にすると one 系の rfl が死ぬ（演習: 試して壊す）。**ダイヤモンド事件**（ANCHOR `diamond`）。菱形の縦糸: Ch4 悪い菱形→Ch4/Ch6 良い配線→本章 排他分割→付録 C
+- **数の 2 つの建て方とダイヤモンドの規律**: 0/1 は代数のフィールドが一次、cast はその上。リテラルは 0（Ch4）/1（Ch4 One bridge）/2 以上（Ch6 `Real.ofNat`）で**担当を排他分割**——mathlib `Nat.AtLeastTwo` の手作り版。全リテラルを ofNat 経由にすると one 系の rfl が死ぬ（演習: 試して壊す）。**ダイヤモンド事件**（ANCHOR `diamond`）。菱形の縦糸: Ch4 良い菱形の規律→本章 排他分割＋ダイヤモンド事件（DiamondIncident）→mathlib の Nat.AtLeastTwo（各章の mathlib 注記）
 
 ## 12.2 除法の補題と自作タクティク my_field
 
