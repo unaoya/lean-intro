@@ -93,6 +93,7 @@ increaseの照明が面倒？（実は簡単ではない？）
 ## 5.12 クリフハンガー: trivialPartition
 
 - 1 分割（分点 a・b——リテラルも除法も不要、自明の極み）を書き始める（ANCHOR `trivial_partition`）。`points` は **`match i.val with | 0 => a | _+1 => b`**——Nat の zero/succ で分岐（§5.6 のパターンマッチ・Summation と同じスタイル。if-then-else は Decidable を陰に持ち込むので避ける）。`left`/`right` は `rfl` で通る
+- だが `increase` は添字の場合分けなしに書けない。**著者版（コード本体）は increase を完成させてあるが、読者版では `increase := sorry` のまま幕**——Ch7 タクティク入門の初仕事で読者自身が埋める演習にする（クリフハンガー）
 
 ## 演習
 

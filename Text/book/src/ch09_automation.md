@@ -8,6 +8,7 @@
 - 新しい Lean 機能: simp / simp only・omega・**ac_rfl**（Std.Associative/Commutative）・**メタプログラミング**（inductive 構文・elab・isDefEq による反射）
 - コード: C09_Automation.lean（§1-3 バニラ・§5 my_abel・§6 my_ring——全デモが実ビルドで通る）
 - ⚠ mathlib の ring/abel/linarith は**無い**（unknown tactic）ので、すべて自作する
+- ⚠ **読み方の指針**: §9.1–9.3（simp/omega/ac_rfl のバニラ）が本線。**§9.4 以降（proof by reflection・メタプログラミング）は「道具を開ける」柱 B に関心がある読者向けで、初読では飛ばしてよい**（自作タクティクは以後の章で使うが、中身を知らなくても使える）
 
 ## 9.1 simp — 自分の補題を渡して畳む
 

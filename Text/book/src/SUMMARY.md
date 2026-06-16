@@ -12,14 +12,14 @@
 - [Ch3 数学的構造と class の仕組み — structure と一般化](ch03_structures.md)
 - [Ch4 実数を公理で読む — 依存型・量化子・universe](ch04_axioms.md)
 - [Ch5 リーマン和の定義 — 帰納型・構造的再帰・structure（到達点①）](ch05_riemannsum.md)
-- [Ch6 数学的構造とその射 — 加群・順序半環の射 cast・分割の例](ch06_structures.md)
+- [Ch6 構造の射 — 加群・順序半環の射 cast・関数空間](ch06_morphisms.md)
 - [Ch7 タクティク入門 — tactic mode の機構と信頼](ch07_tactic.md)
 - [Ch8 書き換えと 2 つの等しさ — rw と defeq](ch08_rewrite.md)
 - [Ch9 自動化と自作タクティク — simp・omega・my_ring](ch09_automation.md)
 - [Ch10 順序と calc — ≤/< のスカラー代数](ch10_order.md)
-- [Ch11 帰納法 — 加群の線形性・Σ コーパス・リーマン和の性質（到達点③）](ch11_induction.md)
+- [Ch11 帰納法 — 加群の線形性・Σ コーパス・リーマン和の性質（到達点②）](ch11_induction.md)
 - [Ch12 数の体系 — cast の証明本体・除法・等分割の完成](ch12_numbers.md)
-- [Ch13 具体例 — y = x の n 等分（到達点②）](ch13_example.md)
+- [Ch13 具体例 — y = x の n 等分（到達点③）](ch13_example.md)
 
 # 第 II 部 積分と FTC（古典的な世界）
 

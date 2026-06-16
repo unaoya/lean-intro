@@ -1,11 +1,11 @@
-# Ch6 数学的構造とその射 — 加群・順序半環の射 cast・分割の例
+# Ch6 構造の射 — 加群・順序半環の射 cast・関数空間
 
 <!-- 下書き（配置設計版）: 節立てと内容の配置メモのみ。本文未執筆。構成v6 で新設した章 -->
 
 - 前章からの問い: リーマン和は定義できた。和や分割が住む**数学的構造**はどう書くか
 - 到達点: 加群（Real 上の Module）・順序半環の射（cast）を**定義として**持ち、関数空間が自動で加群になる仕組みを見る。分割の具体例（等分割）の分点式を見る。**ここは「構造と射の輪郭」を term で描く章——tactic も順序補題もまだ使わない**
 - 新しい Lean 機能: class の再訪（Ch3 の構造観の具体化）・**誘導 instance**（行き先から構造を持ち上げる）・term mode の構造定義（`funext` で点ごと）・cast/リテラルの定義（OfNat/NatCast/Div）・述語による「射」の抽象（Monotone・IsOrderedSemiringHom）
-- コード: C06_Structures.lean（Module＋funModule・IsLinearMap・Real.ofNat/OfNat/NatCast/Div・Monotone・IsOrderedSemiringHom・equalPoints）
+- コード: C06_Morphisms.lean（Module＋funModule・IsLinearMap・Real.ofNat/OfNat/NatCast/Div・Monotone・IsOrderedSemiringHom・equalPoints）
 - ⚠ 設計の核: ここは**定義と概念だけ**。証明本体は順序・帰納法が要るので後回し——Σ/リーマン和の線形性は Ch11、cast が射である証明（≤/+/× を保つ）と等分割の完成は Ch12
 
 ## 6.1 加群 — Real 上の Module（構造）

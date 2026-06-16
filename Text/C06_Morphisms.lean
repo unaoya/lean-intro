@@ -1,4 +1,4 @@
--- Text/C06_Structures.lean — Ch6 数学的構造とその射（加群・順序半環の射 cast・分割の例）
+-- Text/C06_Morphisms.lean — Ch6 構造の射（加群・順序半環の射 cast・関数空間）
 -- Ch3 で「構造＝データ・class＝自動で見つかる構造」を学んだ。ここでは具体的な数学的構造を
 -- **定義として**並べる: 加群（Real 上の Module）とその射（線形写像 IsLinearMap）・順序半環の射
 -- （cast）・分割の具体例（等分割の points formula）。
