@@ -1,14 +1,13 @@
--- テキスト用 Lean ソースの umbrella。`lake build Text` でビルドする。
--- 構成 v7（2026-06-16）:
---   第 I 部 = C01–C13 の線形 import 連鎖（命題=型 → 型の構成 → 構造と class → 実数 →
---     リーマン和の定義 → 数学的構造とその射 → 道具 4 章 → 帰納法+性質 → 数の体系 → y=x）。
---     到達点②＝C13 y=x・到達点③＝C11 性質
---   第 II 部 = C14–C18（アルキメデス→積分→一意性→直接計算→FTC ftc_of_integrable）
---   発展部 = ext4「フィルターで統一」のみ（mathlib 橋の読み物・コード未実装）。連続⇒可積分の
---     大規模証明（旧 E1–E5）は教材から外し、参照実装も削除した（2026-06-16）。
--- C01 は葉。C02_Types 以降は連鎖で入る（C18_FTC が終端）。
+-- テキスト用 Lean ソースの umbrella（第二部以降）。`lake build Text` でビルドする。
+-- 構成 v8（2026-06-17）:
+--   第一部「型と項で証明する」= Text/book/src/part1/（Ch1_Proposition〜Ch5_Calc・md と lean を共置）。
+--     lean_lib «TextI»（`lake build TextI`）で別ターゲット。命題=型 → 型を作る → 依存関数 →
+--     帰納型と再帰 → calc。
+--   第二部「リーマン和と道具」= C03_Structures〜C13_Example（構造と class → 実数 → リーマン和 →
+--     構造の射 → 道具 4 章 → 帰納法+性質 → 数の体系 → y=x）。
+--   第三部「積分と FTC」= C14_Archimedes〜C18_FTC。
+--   発展部 = ext4「フィルターで統一」（mathlib 橋の読み物・コード未実装）。
+-- C03_Structures は第一部 Ch2_Types（TextI）を import。連鎖で C18_FTC が終端。
 -- Text/Proto/ は試作の記録（M1–M7、設計書参照）としてそのまま温存している。
-import Text.C01_FirstProofs
-import Text.C02_Types
 import Text.C03_Structures
 import Text.C18_FTC

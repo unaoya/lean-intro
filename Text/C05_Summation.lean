@@ -2,7 +2,7 @@
 -- Ch2 で型の構成（Range＝Subtype・帰納型・recursor）を見た。ここではその構造的再帰で有限和
 -- Summation を定義し、分割（structure Partition）とリーマン和へ組み上げる（到達点①）。
 import Text.C04_Axioms      -- 実数・階層クラス
-import Text.C02_Types       -- Range（Ch2 の Subtype 実例）を Σ の添字に使う
+import Ch2_Types            -- Range（Ch2 の Subtype 実例）を Σ の添字に使う
 
 -- 帰納的定義の入門: 自然数からの写像を「zero でどうなるか／succ でどうなるか」の 2 段で定める
 -- （Ch2 で見た Nat.rec の実演）。まず簡単な例 sumTo n = 0 + 1 + … + n から始める。

@@ -32,3 +32,8 @@ lean_lib «Calculus» where
 -- 教材（Text/ 配下、MyProject 非依存・デフォルトビルド対象外）
 lean_lib «Text» where
   globs := #[.andSubmodules `Text, .one `Text]
+
+-- 教材 第一部「型と項で証明する」（Text/book/src/part1/ に md と lean を共置）
+lean_lib «TextI» where
+  srcDir := "Text/book/src/part1"
+  roots := #[`Ch1_Proposition, `Ch2_Types]  -- Ch3〜Ch5 は作成しだい追加
