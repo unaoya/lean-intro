@@ -51,9 +51,30 @@ example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
 -- ANCHOR_END: sum
 
 -- ============================================================
--- §3 関数 α → β: 関数型・依存関数型 (x:α)→β x・命題の →/∀ は型理論のもう一本の原始
---   （dependent function）。第一部 Ch3 でまとめて扱う。
+-- §3 関数 α → β と依存関数型 (x : α) → β x（型理論のもう一本の原始 dependent function）
+--   関数型は集合論では α×β の部分集合だが、型理論では**プリミティブ**。本当のプリミティブは
+--   依存関数型 Π で、命題の →・∀ もすべてこの依存関数（Ch2 で命題側とパラレル・Ch4 末で2原始を確認）。
 -- ============================================================
+
+-- 関数型 α → β: 導入 fun（関数を作る）・除去 並置＝関数適用（`f n`）
+-- ANCHOR: arrow
+example : Nat → Nat := fun n => n + 1
+example (f : Nat → Nat) (n : Nat) : Nat := f n
+-- ANCHOR_END: arrow
+
+-- 依存関数型 (x : α) → β x が真のプリミティブ（行き先 β が引数 x に依存）
+-- ANCHOR: dependent
+#check (Nat → Nat)                 -- 非依存の関数型
+#check ((n : Nat) → Fin (n + 1))   -- 依存関数型（Fin は core の有限型・下の §3d Range と同型）
+#check (fun n : Nat => (0 : Fin (n + 1)))   -- (n : Nat) → Fin (n + 1)
+-- ANCHOR_END: dependent
+
+-- 命題の → と ∀ も依存関数（Ch2 で命題側とパラレルに回収）
+-- ANCHOR: prop_as_function
+example (A B : Prop) (f : A → B) (a : A) : B := f a   -- → は関数（適用 f a）
+#check (∀ n : Nat, n = n)                              -- ∀ は codomain が Prop の依存関数
+example : ∀ n : Nat, n = n := fun n => Eq.refl n
+-- ANCHOR_END: prop_as_function
 
 -- ============================================================
 -- §3b Subtype {x : α // p x}: 値と「述語 p を満たす証明」を束ねる（∃ の Type 側）
@@ -93,7 +114,9 @@ example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
 -- ANCHOR_END: sigma
 
 -- ============================================================
--- §3d Range n = {i : Nat // i < n}: Subtype の実例（Ch5 の Σ の添字に使う）
+-- §3d Range n = {i : Nat // i < n}: Subtype の実例（Ch4 の Σ の添字に使う・core の Fin n と同型）
+--   core には同じ役割の Fin n（structure { val : Nat, isLt : val < n }）があるが、ここでは
+--   Subtype の実例として Range を自作し「述語を満たす値」を明示する（第二部 Summation の添字）。
 -- ============================================================
 
 -- ANCHOR: range
