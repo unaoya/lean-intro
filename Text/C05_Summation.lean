@@ -3,7 +3,7 @@
 -- 証明した。本章はその sumTo を添字つき族 Range n → α の有限和 Summation に一般化し、分割
 -- （structure Partition）とリーマン和へ組み上げる（到達点①）。Range は第一部 Ch2 の Subtype 実例。
 import Text.C04_Axioms      -- 実数・階層クラス
-import Ch2_Types            -- Range（第一部 Ch2 の Subtype 実例）を Σ の添字に使う
+import Ch1_Types            -- Range（第一部 Ch1 の Subtype 実例）を Σ の添字に使う
 
 -- 有限和。契約は最小（二項演算とゼロの値 = [Add α] [Zero α]）。
 -- 第一部 Ch4 の sumTo の (B)＝依存関数型の項作りがここで効く: motive C n = (Range n → α) → α が

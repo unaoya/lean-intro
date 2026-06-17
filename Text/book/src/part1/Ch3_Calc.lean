@@ -2,7 +2,7 @@
 -- calc は「等式を 1 本ずつ繋ぐ」記法だが、その実体は Eq.trans（`.trans`）の連鎖の項。
 -- Ch4 で定義した sumTo の閉じた式を calc で証明し、最後に「calc も項を作る記法」だと種明かしする。
 -- パターンマッチ（→ brecOn・Ch4）と calc（→ Eq.trans）——記法はみな項を作る糖衣（CH 対応）。
-import Ch4_InductiveType
+import Ch2_Proposition
 
 -- ============================================================
 -- §5.1 calc ウォームアップ: 等式を 1 本ずつ繋ぐ（term mode・by は使わない）
@@ -33,29 +33,7 @@ theorem nat_interchange (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) 
 -- ANCHOR_END: nat_interchange
 
 -- ============================================================
--- §5.3 和の公式を calc で: 2·sumTo n = n(n+1)（Ch4 の sumTo を使う）
---   sumTo の再帰方程式に沿った帰納（| 0 | n+1）で各段を calc で繋ぐ。除法 n(n+1)/2 は Nat の
---   切り捨てが絡むので、まず 2 を払った形 2·sumTo n = n(n+1) を示してから 2 で割るのが素直。
--- ============================================================
-
--- ANCHOR: sum_to_formula
-theorem two_mul_sumTo : (n : Nat) → 2 * sumTo n = n * (n + 1)
-  | 0 => rfl
-  | n + 1 =>
-    calc 2 * sumTo (n + 1)
-        = 2 * (sumTo n + (n + 1))     := rfl                                   -- sumTo の定義
-      _ = 2 * sumTo n + 2 * (n + 1)   := Nat.left_distrib 2 (sumTo n) (n + 1)   -- 分配
-      _ = n * (n + 1) + 2 * (n + 1)   := congrArg (· + 2 * (n + 1)) (two_mul_sumTo n)  -- 帰納法の仮定
-      _ = (n + 2) * (n + 1)           := (Nat.add_mul n 2 (n + 1)).symm         -- 括り直し
-      _ = (n + 1) * (n + 1 + 1)       := Nat.mul_comm (n + 2) (n + 1)           -- 可換（n+2 ≡ n+1+1）
-
-theorem sumTo_formula (n : Nat) : sumTo n = n * (n + 1) / 2 :=
-  (Nat.mul_div_cancel_left (sumTo n) (Nat.succ_pos 1)).symm.trans
-    (congrArg (· / 2) (two_mul_sumTo n))
--- ANCHOR_END: sum_to_formula
-
--- ============================================================
--- §5.4 calc も項を作る: calc ≡ Eq.trans の連鎖
+-- §5.3 calc も項を作る: calc ≡ Eq.trans の連鎖
 -- ============================================================
 
 -- ANCHOR: calc_is_term

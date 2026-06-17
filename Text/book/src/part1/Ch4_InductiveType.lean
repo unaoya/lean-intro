@@ -3,7 +3,7 @@
 -- ここではその「使い方」＝除去規則 recursor を見て、再帰的な帰納型 Nat 上に sumTo を定義し、
 -- パターンマッチが recursor の糖衣であることを種明かしする。最後に #print で論理結合子が
 -- すべて帰納型だったことを確認し、Ch3 の依存関数と合わせて「論理の2原始」が揃う。
-import Ch3_DependentFunction
+import Ch3_Calc
 
 -- ============================================================
 -- §4.1 帰納型を「使う」: 除去規則 recursor
@@ -68,5 +68,27 @@ theorem sumTo_eq : (n : Nat) → sumTo n = sumTo' n
 #print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——Ch2 §2 の和と同じ
 #print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——Ch2 Subtype と同じ
 #print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
--- 結論: **論理 = 依存関数（→ ∀ ¬・Ch3）＋ 帰納型（∧ ∨ ∃ ⊥ = ・Ch4）**。型理論の2原始だけで尽きる。
+-- 結論: **論理 = 依存関数（→ ∀ ¬・Ch1）＋ 帰納型（∧ ∨ ∃ ⊥ = ・本章）**。型理論の2原始だけで尽きる。
 -- ANCHOR_END: ch_punchline
+
+-- ============================================================
+-- §4.5 最終目標: 1 から n までの和の公式を calc で（Ch3 で学んだ calc を使う）
+--   sumTo の再帰方程式に沿った帰納（| 0 | n+1）で各段を calc で繋ぐ。除法 n(n+1)/2 は Nat の
+--   切り捨てが絡むので、まず 2 を払った形 2·sumTo n = n(n+1) を示してから 2 で割るのが素直。
+-- ============================================================
+
+-- ANCHOR: sum_to_formula
+theorem two_mul_sumTo : (n : Nat) → 2 * sumTo n = n * (n + 1)
+  | 0 => rfl
+  | n + 1 =>
+    calc 2 * sumTo (n + 1)
+        = 2 * (sumTo n + (n + 1))     := rfl                                   -- sumTo の定義
+      _ = 2 * sumTo n + 2 * (n + 1)   := Nat.left_distrib 2 (sumTo n) (n + 1)   -- 分配
+      _ = n * (n + 1) + 2 * (n + 1)   := congrArg (· + 2 * (n + 1)) (two_mul_sumTo n)  -- 帰納法の仮定
+      _ = (n + 2) * (n + 1)           := (Nat.add_mul n 2 (n + 1)).symm         -- 括り直し
+      _ = (n + 1) * (n + 1 + 1)       := Nat.mul_comm (n + 2) (n + 1)           -- 可換（n+2 ≡ n+1+1）
+
+theorem sumTo_formula (n : Nat) : sumTo n = n * (n + 1) / 2 :=
+  (Nat.mul_div_cancel_left (sumTo n) (Nat.succ_pos 1)).symm.trans
+    (congrArg (· / 2) (two_mul_sumTo n))
+-- ANCHOR_END: sum_to_formula

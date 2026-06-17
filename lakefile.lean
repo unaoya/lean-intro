@@ -36,4 +36,4 @@ lean_lib «Text» where
 -- 教材 第一部「型と項で証明する」（Text/book/src/part1/ に md と lean を共置）
 lean_lib «TextI» where
   srcDir := "Text/book/src/part1"
-  roots := #[`Ch1_Proposition, `Ch2_Types, `Ch3_DependentFunction, `Ch4_InductiveType, `Ch5_Calc]
+  roots := #[`Ch1_Types, `Ch2_Proposition, `Ch3_Calc, `Ch4_InductiveType]  -- Ch3_DependentFunction は Ch1_Types に統合
