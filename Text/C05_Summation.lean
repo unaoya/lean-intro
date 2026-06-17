@@ -52,6 +52,14 @@ example : sumTo 3 = sumTo' 3 := rfl
 theorem sumTo_eq : (n : Nat) → sumTo n = sumTo' n
   | 0 => rfl
   | n + 1 => congrArg (· + (n + 1)) (sumTo_eq n)
+
+-- calc も同じ穴の狢——「等式の項」を組み立てる記法。2 段の calc は Eq.trans（`.trans`）の
+-- 連鎖に **rfl で等しい**（calc が作っているのは 1 個の等式の項そのもの）:
+example (a b c : Nat) (h1 : a = b) (h2 : b = c) :
+    (calc a = b := h1
+          _ = c := h2) = h1.trans h2 := rfl
+-- だから §5.1 の two_mul_sumTo の calc も、各段の証明を Eq.trans でつないだ 1 個の項にすぎない。
+-- パターンマッチ・calc・(後の) タクティク——記法はみな「項を作る」ための糖衣（CH 対応: 項＝証明）。
 -- ANCHOR_END: recursor_reveal
 
 -- 有限和。契約は最小（二項演算とゼロの値 = [Add α] [Zero α]）。

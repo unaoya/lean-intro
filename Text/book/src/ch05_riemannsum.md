@@ -34,6 +34,7 @@ Summationの定義。パターンまっちによる定義。Natは直和では�
 - **パターンマッチ `| 0 | n+1` は `Nat.rec`（Ch2）の糖衣**: `#print sumTo` すると `fun x => Nat.brecOn x sumTo._f`——`Nat.rec` から作られる「強帰納」版 `Nat.brecOn`（succ の段でそれまでの全部の値を使える）に翻訳されている
 - 生の `Nat.rec` 直書き版 `sumTo'` を並べる: パターンマッチ版と**外延的には同じ関数**だが**定義的には別物**（`brecOn ≠ rec`）。具体値 `sumTo 3 = sumTo' 3` は `rfl`、だが一般の n は defeq で繋がらず `sumTo n = sumTo' n` は **induction で証明**する（`congrArg`）
 - 🪟 窓: 「計算で一致するのに rfl で繋がらない」＝**defeq と命題等式「=」の違い**の最初の手応え（Ch7/8 の「2 つの等しさ」への布石）
+- **calc も項を作っている**: 2 段の calc `(calc a = b := h1 _ = c := h2)` は `h1.trans h2`（`Eq.trans`）に **rfl で等しい**——§5.1 の two_mul_sumTo の calc も、各段を `Eq.trans` でつないだ **1 個の等式の項**にすぎない。パターンマッチ（→ `brecOn`）・calc（→ `Eq.trans`）・（後の）タクティク——**記法はみな「項を作る」ための糖衣**（CH 対応＝項＝証明の現れ。calc 初出は Ch1・タクティクの種明かしは Ch7 へ）
 
 ## 5.2 Summation — 構造的再帰（ANCHOR `summation`）
 
