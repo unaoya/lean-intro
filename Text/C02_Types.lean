@@ -109,6 +109,46 @@ example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
 -- ANCHOR_END: sigma
 
 -- ============================================================
+-- §3d Range n = {i : Nat // i < n}: Subtype の実例（Ch5 の Σ の添字に使う）
+-- ============================================================
+
+-- ANCHOR: range
+def Range (n : Nat) := { i : Nat // i < n }
+-- ANCHOR_END: range
+
+-- ANCHOR: range_intro
+-- Range の「項」と「関数」の基本動作（§3b Subtype の導入と除去の実例）:
+--   項を作る = 値と「範囲内」の証明を ⟨_, _⟩ で組む（導入）／取り出す = .val（除去）
+example : Range 3 := ⟨2, Nat.lt_succ_self 2⟩      -- 値 2 ＋ 証明 2 < 3（= 2 < 2+1）
+example (i : Range 3) : Nat := i.val              -- Range「から」の関数（domain が Range・射影）
+-- Range 3「から」の関数を i.val の 0/1/2 で場合分け。i.val < 3 ゆえ 0/1/2 で尽きるが、
+-- 型 `Range 3` だけからは Lean にそれが分からない——Nat 全体の網羅に最後の枝が要る（依存型の限界）
+example (i : Range 3) : Nat := match i.val with
+  | 0 => 10
+  | 1 => 20
+  | 2 => 30
+  | _ => 0                                        -- i.val < 3 ゆえ到達しない（網羅性のためのダミー）
+-- Range「へ」の関数（codomain が Range）は値を作り範囲内の証明を添える——下の incl/addone が実戦
+-- ANCHOR_END: range_intro
+
+-- ANCHOR: range_funcs
+-- 名前空間を**作る**（Ch1 で読んだ既存の名前空間アクセスの対）: `namespace Range … end Range` で
+--   囲むと、中で定義した `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に
+--   束ね、衝突を避け、所属を名前で示す。（後で `open Range` で接頭辞を省ける——Ch5 の分割定義で実演）
+namespace Range
+
+-- incl/addone は「Range への関数」の実戦（Range n の項から Range (n+1) の項を作る——値は同じ / +1、
+-- 添える「範囲内」の証明だけを既存補題 Nat.lt_succ_of_lt / Nat.succ_lt_succ で作り替える）
+def incl {n : Nat} : Range n → Range (n + 1) :=
+  fun k => ⟨k.val, Nat.lt_succ_of_lt k.property⟩
+
+def addone {n : Nat} : Range n → Range (n + 1) :=
+  fun k => ⟨k.val + 1, Nat.succ_lt_succ k.property⟩
+
+end Range
+-- ANCHOR_END: range_funcs
+
+-- ============================================================
 -- §4 帰納型で型を作る: 有限集合 Three とその上の関数
 -- ============================================================
 
@@ -136,6 +176,30 @@ def pick : Bool → Three
   | true  => .a
   | false => .c
 -- ANCHOR_END: finite
+
+-- ============================================================
+-- §4b 帰納型を「使う」: 除去規則 recursor と、論理結合子の正体（#print 種明かし）
+--   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
+--   構成子が再帰的な引数を持つ（Nat の succ）と、その分だけ「帰納法の仮定 (IH)」を受け取る——
+--   再帰の有無が cases（Or・有限型）と induction（Nat）を分ける（Ch5 の Σ で実演）。
+-- ============================================================
+
+-- ANCHOR: eliminators
+#check @Or.rec    -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
+#check @Nat.rec   -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
+                  --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
+-- ANCHOR_END: eliminators
+
+-- #print で「論理結合子はすべて帰納型（または依存関数）だった」を実機確認する——CH 対応の核心
+-- ANCHOR: ch_punchline
+#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）——§1 の積と同じ
+#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——§2 の和と同じ
+#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——§3b の Subtype と同じ
+#print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
+-- → と ∀ だけは帰納型ではなく依存関数（Π）。これだけが帰納型と別格の原始:
+#check fun (A B : Prop) => A → B          -- 非依存の関数型（→）
+#check fun (P : Nat → Prop) => ∀ n, P n   -- 依存関数型（∀）
+-- ANCHOR_END: ch_punchline
 
 -- ============================================================
 -- §5 商 Quotient: 同値関係で割る（整数 (Nat×Nat)/~ の予告）

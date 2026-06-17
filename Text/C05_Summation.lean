@@ -1,43 +1,17 @@
--- Text/C05_Summation.lean — Ch5 帰納型と構造的再帰・分割とリーマン和の定義（到達点①）
-import Text.C04_Axioms
+-- Text/C05_Summation.lean — Ch5 リーマン和の定義 — 構造的再帰（Summation）と structure（到達点①）
+-- Ch2 で型の構成（Range＝Subtype・帰納型・recursor）を見た。ここではその構造的再帰で有限和
+-- Summation を定義し、分割（structure Partition）とリーマン和へ組み上げる（到達点①）。
+import Text.C04_Axioms      -- 実数・階層クラス
+import Text.C02_Types       -- Range（Ch2 の Subtype 実例）を Σ の添字に使う
 
--- 「n 未満の自然数」: 値と範囲内である証明の同梱（Subtype = 依存和の実物・概念は Ch2 既出）
--- ANCHOR: range
-def Range (n : Nat) := { i : Nat // i < n }
--- ANCHOR_END: range
-
--- ANCHOR: range_intro
--- Range の「項」と「関数」の基本動作（Subtype の導入と除去）:
---   項を作る = 値と「範囲内」の証明を ⟨_, _⟩ で組む（導入）／取り出す = .val（除去）
-example : Range 3 := ⟨2, Nat.lt_succ_self 2⟩      -- 値 2 ＋ 証明 2 < 3（= 2 < 2+1）
-example (i : Range 3) : Nat := i.val              -- Range「から」の関数（domain が Range・射影）
--- Range 3「から」の関数を i.val の 0/1/2 で場合分け。i.val < 3 ゆえ 0/1/2 で尽きるが、
--- 型 `Range 3` だけからは Lean にそれが分からない——Nat 全体の網羅に最後の枝が要る（依存型の限界）
-example (i : Range 3) : Nat := match i.val with
-  | 0 => 10
-  | 1 => 20
-  | 2 => 30
-  | _ => 0                                        -- i.val < 3 ゆえ到達しない（網羅性のためのダミー）
--- Range「へ」の関数（codomain が Range）は値を作り範囲内の証明を添える——下の incl/addone が実戦
--- ANCHOR_END: range_intro
-
--- ANCHOR: range_funcs
--- 名前空間を**作る**（Ch4 の「アクセス」の対）: `namespace Range … end Range` で囲むと、
---   中で定義した `incl` は外から `Range.incl` という名前になる。Range に関わる操作を
---   1 つの接頭辞の下に束ね、名前の衝突を避け、所属を名前で示す。
---   （この後 `open Range` すれば接頭辞 `Range.` を省ける——それが旨味。下の分割定義で実演。）
-namespace Range
-
--- incl/addone は「Range への関数」の実戦（Range n の項から Range (n+1) の項を作る——
--- 値は同じ / +1、添える「範囲内」の証明だけを既存補題で作り替える）。隣接分点の安全な参照
-def incl {n : Nat} : Range n → Range (n + 1) :=
-  fun k => ⟨k.val, Nat.lt_succ_of_lt k.property⟩
-
-def addone {n : Nat} : Range n → Range (n + 1) :=
-  fun k => ⟨k.val + 1, Nat.succ_lt_succ k.property⟩
-
-end Range
--- ANCHOR_END: range_funcs
+-- 帰納的定義の入門: 自然数からの写像を「zero でどうなるか／succ でどうなるか」の 2 段で定める
+-- （Ch2 で見た Nat.rec の実演）。まず簡単な例 sumTo n = 0 + 1 + … + n から始める。
+-- ANCHOR: sum_to
+def sumTo : Nat → Nat
+  | 0     => 0
+  | n + 1 => sumTo n + (n + 1)   -- succ の段で「前の結果 sumTo n」に n+1 を足す
+example : sumTo 3 = 6 := rfl     -- 0+1+2+3 = 6（再帰方程式は定義どおり rfl で計算される）
+-- ANCHOR_END: sum_to
 
 -- 有限和。契約は最小（二項演算とゼロの値 = [Add α] [Zero α]）。
 -- 基底の `0` は C02 の bridge（Zero → OfNat）経由で Zero.zero に defeq。
@@ -57,43 +31,6 @@ theorem summation_succ {α : Type} [Add α] [Zero α] (n : Nat) (f : Range (n + 
     Summation (n + 1) f
       = Summation n (fun k => f (Range.incl k)) + f ⟨n, Nat.lt_succ_self n⟩ := rfl
 -- ANCHOR_END: summation_rfl
-
--- ============================================================
--- 帰納型を「証明で使う」: 除去規則（eliminator = recursor）
---   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
---   除去規則は同じ形だが、**構成子が再帰的な引数を持つと、その分だけ「結果の予測」
---   ＝帰納法の仮定 (IH) を受け取る**。再帰の有無が cases と induction を分ける:
---     ・非再帰（Or・And・Subtype）の除去 = 場合分け `cases`（IH 無し）。Ch1 の `.elim`
---       （or_swap・and_or_distrib）が既にこれ——∨ の除去規則の適用だった。
---     ・再帰（Nat）の除去 = `induction`（succ の段で motive n = IH を受け取る）。
---   下の 2 つの型を並べると、IH が「再帰している箇所」にちょうど現れるのが見える。
--- ============================================================
-
--- ANCHOR: eliminators
-#check @Or.rec    -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
-#check @Nat.rec   -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
-                  --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
--- ANCHOR_END: eliminators
-
--- ============================================================
--- CH 対応のパンチライン: 論理 = 依存関数（Π）＋ 帰納型、それぞれの導入/除去だけ
---   Ch1・Ch4 で見た結合子は、Lean では 2 つの原始に還元される:
---     ・→ と ∀ は **依存関数（Π 型）**。導入 = `fun`（λ）・除去 = 適用。
---       違いは codomain が引数に依存するかだけ（→ は非依存・∀ は依存）。¬A = A → False も関数。
---     ・∧ ∨ ∃ ⊥ ⊤ = は **帰納型**。導入 = 構成子・除去 = recursor（cases/induction）。
---   だから「依存関数の導入/除去（λ/適用）」と「帰納型の導入/除去（構成子/recursor）」だけで
---   論理はすべて書ける。#print で「これらは帰納型」が、#check で「→/∀ は Π」が見える:
--- ============================================================
-
--- ANCHOR: ch_punchline
-#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）
-#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）
-#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）
-#print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
--- → と ∀ は帰納型ではなく Π（依存関数）。これだけが帰納型と別格の原始:
-#check fun (A B : Prop) => A → B          -- 非依存の関数型（→）
-#check fun (P : Nat → Prop) => ∀ n, P n   -- 依存関数型（∀）
--- ANCHOR_END: ch_punchline
 
 -- ============================================================
 -- Summation について証明する（予告）: 定義した recursor をそのまま証明に使う
