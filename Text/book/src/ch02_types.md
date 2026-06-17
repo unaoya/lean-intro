@@ -85,12 +85,25 @@ Subtype の第 2 成分は**証明** `p x : Prop` だった。これを一般の
 
 **Subtype との関係・気になる点**。`Subtype` は「依存和の第 2 成分が `Prop`（命題）である特別な場合」と見える。ここで一つ引っかかる：「*証明*（Prop の住人）も、型の族 `β x` のメンバーに選べてよいのか？」——答えは yes だ。Lean では **`Prop` は `Sort 0`・`Type` は `Sort (u+1)`** と、同じ `Sort` 階層に**地続き**に並んでいる。第 2 成分に証明（Prop）を選べば Subtype、一般の型（Type）を選べば本来の Σ。この「Prop と Type の地続き性」——なぜ命題の宇宙だけ特別なのか——は Ch4 の universe で正面から扱う。
 
+## 2.3d Range n — Subtype の実例（Ch5 の Σ の添字）（ANCHOR `range`/`range_intro`/`range_funcs`）
+
+- `Range n = {i : Nat // i < n}`（§2.3b Subtype そのもの）。`Range 0`・`Range 1`… がそれぞれ型（集合論の {0,…,n−1}）・`n` を引数に取る関数でもある
+- 項と関数の基本（ANCHOR `range_intro`）: 項 = `⟨2, …⟩`（導入）／射影 `.val`（除去）。**Range「から」**（射影）と **Range「へ」**（値＋証明）の 2 方向。`Range 3` の `i.val` を 0/1/2 で場合分けすると到達不能なダミー枝が要る（依存型の限界——証明で網羅を絞るのは後の章）
+- incl / addone（ANCHOR `range_funcs`）は **Range「への」関数の実戦**（`Range n` → `Range (n+1)`・証明だけ作り替え）。namespace を**作る**（Ch1/Ch4 でアクセスした名前空間の対）——`open` の旨味は Ch5 で
+- Ch5 の Summation の添字に使うので、ここで作っておく
+
 ## 2.4 帰納型で型を作る — 有限集合 Three とその上の関数（ANCHOR `finite`）
 
 - 導入（Three「への」関数＝構成子）: `inductive Three | a | b | c`（3 つの住人を並べた有限集合 ≅ {0,1,2}）
 - 除去（Three「からの」関数）: パターンマッチで各構成子を捌く（`label : Three → Nat`＝有限集合上の自然数値関数）
 - Three「への」関数（別の型から）も構成子で（`pick : Bool → Three`）
 - 🪟 窓: 「型を作る→そこから/への関数」が論理結合子の導入/除去と同じ——CH 対応がここで具体に見える
+
+## 2.4b 帰納型を「使う」 — recursor と #print 種明かし（ANCHOR `eliminators`/`ch_punchline`）
+
+- **除去規則 recursor**（ANCHOR `eliminators`）: どの帰納型にも導入規則（構成子）と除去規則（recursor）がある。`#check @Or.rec`（IH 無し＝cases）と `#check @Nat.rec`（succ の段で motive n = IH を受け取る＝induction）を並べ、**再帰の有無が cases と induction を分ける**のを型で見せる
+- **#print 種明かし**（ANCHOR `ch_punchline`）: `#print And`/`Or`/`Exists`/`False` で「論理結合子はすべて帰納型（構成子＋recursor）」、`#check fun A B => A → B`/`fun P => ∀ n, P n` で「→/∀ は依存関数（Π）」を実機確認。**論理 = 依存関数（→ ∀ ¬）＋ 帰納型（∧ ∨ ∃ ⊥ ⊤ =）**——2 つの原始の導入/除去規則だけで尽きる（Ch1 の CH 表のパンチラインを回収）
+- これが Ch5 の Summation（`Nat.rec` で定義し induction で証明する）への布石
 
 ## 2.5 商 Quotient — 同値関係で割る（整数 (Nat×Nat)/~ の予告）（ANCHOR `quotient`）
 
