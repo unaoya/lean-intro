@@ -1,7 +1,7 @@
--- Text/C02_Types.lean — Ch2 型を作る（型の構成と CH 対応）
--- Ch1 で「命題＝型・証明＝項」を見た。ここでは型を「作る」基本手段——積・和・関数・帰納型・
--- 商——を並べ、それぞれの「導入（項を作る＝その型への関数）」と「除去（項を使う＝その型からの
--- 関数）」を、命題の論理結合子（∧・∨・→）と対比する。これが Curry-Howard 対応の骨格。
+-- Text/book/src/part1/Ch1_Types.lean — 第一部 Ch1 型を作る（型の構成・依存関数）
+-- 型を「作る」基本手段——積・和・関数・依存関数・部分型・依存和・帰納型——を並べ、それぞれの
+-- 「導入（項を作る＝その型への関数）」と「除去（項を使う＝その型からの関数）」を見る。次章 Ch2 で
+-- 命題の論理結合子（∧・∨・→・¬・∀・∃）をこれと**パラレル**に並べ、Curry-Howard 対応を回収する。
 -- 後で intro/cases/⟨⟩ が型と命題の両方で同じタクティクとして効く（Ch4 で recursor 種明かし）。
 
 -- ============================================================
@@ -191,23 +191,8 @@ def pick : Bool → Three
 -- ============================================================
 
 -- ============================================================
--- §5 商 Quotient: 同値関係で割る（整数 (Nat×Nat)/~ の予告）
+-- 商 Quotient（整数 (Nat×Nat)/~ の構成例）は第一部では扱わず、第二部以降で扱う。
 -- ============================================================
-
--- ANCHOR: quotient
--- 整数 = (Nat × Nat)/~、(a,b) ~ (c,d) ⟺ a+d = c+b（直感: (a,b) は差 a−b・(n,n) は 0）
---   ※ iseqv（反射/対称/推移）は omega（Ch9 の自動化）に任せる——ここでは結果だけ借りる
-instance intSetoid : Setoid (Nat × Nat) where
-  r p q := p.1 + q.2 = q.1 + p.2
-  iseqv := ⟨fun _ => by omega, fun h => by omega, fun h1 h2 => by omega⟩
-
-def IntByQuot := Quotient intSetoid
--- 導入（IntByQuot「への」関数）: Quotient.mk（代表を入れる）
-example : IntByQuot := Quotient.mk intSetoid (3, 1)   -- 整数 2（= 3 − 1）
--- 0 の同一視: (n,n) はどれも (0,0) と同じ整数（差が 0）
-example (n : Nat) : ((0, 0) : Nat × Nat) ≈ (n, n) := by show (0:Nat) + n = n + 0; omega
--- 除去（IntByQuot「からの」関数）: Quotient.lift（well-defined を示して使う）は発展で
--- ANCHOR_END: quotient
 
 -- ============================================================
 -- §6 まとめ: 導入＝その型「へ」・除去＝その型「から」——型も命題も同じ機構
@@ -220,4 +205,4 @@ example (n : Nat) : ((0, 0) : Nat × Nat) ≈ (n, n) := by show (0:Nat) + n = n 
 -- 型と命題の両方で同じタクティクとして効く（Ch5 で recursor として種明かし・Ch7 で実戦）。
 #check @Prod        -- 積（×）
 #check @Sum         -- 和（⊕）
-#check @Quotient    -- 商
+#check @Subtype     -- 部分型（∃ の Type 側）
