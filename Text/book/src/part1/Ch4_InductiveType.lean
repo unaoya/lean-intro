@@ -1,8 +1,8 @@
 -- Text/book/src/part1/Ch4_InductiveType.lean — 第一部 Ch4 帰納型と再帰（inductive type）
--- 型理論の2つの基本のもう一本が **inductive type**（帰納型）。Ch2 で Three を「作った」。
+-- 型理論の2つの基本のもう一本が **inductive type**（帰納型）。Ch1 で Three を「作った」。
 -- ここではその「使い方」＝除去規則 recursor を見て、再帰的な帰納型 Nat 上に sumTo を定義し、
 -- パターンマッチが recursor の糖衣であることを種明かしする。最後に #print で論理結合子が
--- すべて帰納型だったことを確認し、Ch3 の依存関数と合わせて「論理の2原始」が揃う。
+-- すべて帰納型だったことを確認し、Ch1 の依存関数と合わせて「論理の2原始」が揃う。
 import Ch3_Calc
 
 -- ============================================================
@@ -13,7 +13,7 @@ import Ch3_Calc
 -- ============================================================
 
 -- ANCHOR: eliminators
-#check @Three.rec  -- Ch2 で作った有限型 Three の除去規則（各構成子 a/b/c の場合を与える・IH 無し）
+#check @Three.rec  -- Ch1 で作った有限型 Three の除去規則（各構成子 a/b/c の場合を与える・IH 無し）
 #check @Or.rec     -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
 #check @Nat.rec    -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
                    --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
@@ -38,7 +38,7 @@ example : sumTo 3 = 6 := rfl     -- 0+1+2+3 = 6（再帰方程式は定義どお
 --   (B) 依存関数型の項作り: `(n : Nat) → C n` の項を zero（C 0 の項）と succ（C n の項 ih から
 --       C (n+1) の項）で組むこと＝Nat.rec の motive C。sumTo は C n = Nat（定数）なので (B) が退化し
 --       (A) だけが純粋に見える（依存 (B) が効く Summation は第二部）。
---   Ch3 の依存関数（motive C は依存関数）と Ch4 の帰納型（Nat.rec）がここで出会う。
+--   Ch1 の依存関数（motive C は依存関数）と Ch4 の帰納型（Nat.rec）がここで出会う。
 -- ============================================================
 
 -- ANCHOR: recursor_reveal
@@ -60,15 +60,15 @@ theorem sumTo_eq : (n : Nat) → sumTo n = sumTo' n
 
 -- ============================================================
 -- §4.4 論理結合子の正体: #print 種明かし（帰納型の柱の完成）
---   Ch3 で →・∀ が依存関数だと見た。残りの ∧∨∃⊥= はすべて帰納型——これで論理の2原始が揃う。
+--   Ch1 で →・∀ が依存関数だと見た。残りの ∧∨∃⊥= はすべて帰納型——これで論理の2原始が揃う。
 -- ============================================================
 
 -- ANCHOR: ch_punchline
-#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）——Ch2 §1 の積と同じ
-#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——Ch2 §2 の和と同じ
-#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——Ch2 Subtype と同じ
+#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）——Ch1 §1 の積と同じ
+#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——Ch1 §2 の和と同じ
+#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——Ch1 Subtype と同じ
 #print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
--- 結論: **論理 = 依存関数（→ ∀ ¬・Ch1）＋ 帰納型（∧ ∨ ∃ ⊥ = ・本章）**。型理論の2原始だけで尽きる。
+-- 結論: **論理 = 依存関数（→ ∀ ¬・Ch1 §3）＋ 帰納型（∧ ∨ ∃ ⊥ = ・本章）**。型理論の2原始だけで尽きる。
 -- ANCHOR_END: ch_punchline
 
 -- ============================================================

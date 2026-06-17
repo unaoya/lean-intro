@@ -45,7 +45,7 @@ example (b : Bool) : Nat ⊕ Bool := Sum.inr b
 def sumToNat (s : Nat ⊕ Bool) : Nat := match s with
   | Sum.inl n => n
   | Sum.inr b => if b then 1 else 0
--- 対比: 命題の ∨ も同じ（正式には Or.inl/Or.inr で導入・Or.elim で除去）——Ch1 の or_swap がこれ
+-- 対比: 命題の ∨ も同じ（正式には Or.inl/Or.inr で導入・Or.elim で除去）——Ch2 の or_swap がこれ
 #check @Or.inl         -- {a b : Prop} → a → a ∨ b
 example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
 -- ANCHOR_END: sum
@@ -92,7 +92,7 @@ example (s : {n : Nat // n < 5}) : Nat := s.val
 example (s : {n : Nat // n < 5}) : s.val < 5 := s.property
 -- 対比: 命題の ∃ も同じ依存ペア（⟨witness, proof⟩ で導入）。Subtype は「∃ をデータに格上げ」した
 -- 型——∃ x, p x は証明（Prop）、{x // p x} は値が取り出せるデータ（Type）。Range n = {i // i < n}
--- （Ch5 の添字）はこの実例
+-- （第二部 Summation の添字）はこの実例
 -- ANCHOR_END: subtype
 
 -- ============================================================
@@ -110,11 +110,11 @@ example : Σ n : Nat, Fin (n + 1) := ⟨2, 0⟩            -- n=2 と Fin 3 の�
 example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
 -- ⚠ 気になる点: Subtype では第 2 成分が Prop。「Prop も型の族のメンバーになれる」——Prop は
 -- Sort 0・Type は Sort (u+1) で**地続き**（Sort 階層）。第 2 成分に証明（Prop）を選べば Subtype、
--- 一般の型（Type）を選べば本来の Σ。この Prop と Type の地続き性は Ch4 の universe で正面から扱う
+-- 一般の型（Type）を選べば本来の Σ。この Prop と Type の地続き性は第二部の universe で正面から扱う
 -- ANCHOR_END: sigma
 
 -- ============================================================
--- §3d Range n = {i : Nat // i < n}: Subtype の実例（Ch4 の Σ の添字に使う・core の Fin n と同型）
+-- §3d Range n = {i : Nat // i < n}: Subtype の実例（第二部 Summation の添字に使う・core の Fin n と同型）
 --   core には同じ役割の Fin n（structure { val : Nat, isLt : val < n }）があるが、ここでは
 --   Subtype の実例として Range を自作し「述語を満たす値」を明示する（第二部 Summation の添字）。
 -- ============================================================
@@ -141,7 +141,7 @@ example (i : Range 3) : Nat := match i.val with
 -- ANCHOR: range_funcs
 -- 名前空間を**作る**（Ch1 で読んだ既存の名前空間アクセスの対）: `namespace Range … end Range` で
 --   囲むと、中で定義した `incl` は外から `Range.incl` になる。Range に関わる操作を 1 つの接頭辞に
---   束ね、衝突を避け、所属を名前で示す。（後で `open Range` で接頭辞を省ける——Ch5 の分割定義で実演）
+--   束ね、衝突を避け、所属を名前で示す。（後で `open Range` で接頭辞を省ける——第二部 Summation の分割定義で実演）
 namespace Range
 
 -- incl/addone は「Range への関数」の実戦（Range n の項から Range (n+1) の項を作る——値は同じ / +1、
@@ -202,7 +202,7 @@ def pick : Bool → Three
 --   導入 = 項を作る = その型「への」関数（⟨⟩・inl/inr・fun・構成子）
 --   除去 = 項を使う = その型「からの」関数（.1/.2・match・適用・パターンマッチ）
 -- Curry-Howard 対応:「型 ↔ 命題・項 ↔ 証明」。だから後で intro/cases/⟨⟩ が
--- 型と命題の両方で同じタクティクとして効く（Ch5 で recursor として種明かし・Ch7 で実戦）。
+-- 型と命題の両方で同じタクティクとして効く（Ch4 で recursor として種明かし・第II部 Ch7 で実戦）。
 #check @Prod        -- 積（×）
 #check @Sum         -- 和（⊕）
 #check @Subtype     -- 部分型（∃ の Type 側）

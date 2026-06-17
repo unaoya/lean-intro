@@ -1,6 +1,6 @@
--- Text/book/src/part1/Ch5_Calc.lean — 第一部 Ch5 calc（等式の証明も項）
+-- Text/book/src/part1/Ch3_Calc.lean — 第一部 Ch3 calc（等式の証明も項）
 -- calc は「等式を 1 本ずつ繋ぐ」記法だが、その実体は Eq.trans（`.trans`）の連鎖の項。
--- Ch4 で定義した sumTo の閉じた式を calc で証明し、最後に「calc も項を作る記法」だと種明かしする。
+-- calc の基本（等式を項で繋ぐ・calc≡Eq.trans）を扱い、Ch4 の和の公式（sum_to_formula）の道具立てにする。
 -- パターンマッチ（→ brecOn・Ch4）と calc（→ Eq.trans）——記法はみな項を作る糖衣（CH 対応）。
 import Ch2_Proposition
 

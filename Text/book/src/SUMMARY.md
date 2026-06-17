@@ -4,15 +4,13 @@
 
 # 第一部 型と項で証明する
 
-<!-- 構成v7（2026-06-16 確定・Ch2「型を作る（型の構成と CH 対応）」新設）。md は配置設計版・本文未執筆 -->
-<!-- 第一部 md 再構成（2026-06-17）: ch01_term.md → part1/ch1_proposition.md、ch02_types.md → part1/ch2_types.md。Ch3–Ch5 新設 -->
+<!-- 構成v9（2026-06-17 確定・第一部を4章に再編）。md は配置設計版・本文未執筆 -->
 
 - [Ch0 環境構築](ch00_setup.md)
-- [Ch1 命題=型・証明=項](part1/ch1_proposition.md)
-- [Ch2 型を作る](part1/ch2_types.md)
-- [Ch3 依存関数（dependent function）](part1/ch3_dependent.md)
-- [Ch4 帰納型と再帰（inductive type）](part1/ch4_induction.md)
-- [Ch5 calc — 等式の証明も項](part1/ch5_calc.md)
+- [Ch1 型を作る — 型の構成と依存関数](part1/ch1_types.md)
+- [Ch2 命題 — 論理結合子の導入則と除去則](part1/ch2_proposition.md)
+- [Ch3 calc — 等式の証明も項](part1/ch3_calc.md)
+- [Ch4 帰納型と再帰 — 和の公式（到達点）](part1/ch4_induction.md)
 
 # 第二部 リーマン和と道具
 
