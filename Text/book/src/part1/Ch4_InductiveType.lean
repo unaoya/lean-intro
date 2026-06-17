@@ -1,0 +1,72 @@
+-- Text/book/src/part1/Ch4_InductiveType.lean — 第一部 Ch4 帰納型と再帰（inductive type）
+-- 型理論の2つの基本のもう一本が **inductive type**（帰納型）。Ch2 で Three を「作った」。
+-- ここではその「使い方」＝除去規則 recursor を見て、再帰的な帰納型 Nat 上に sumTo を定義し、
+-- パターンマッチが recursor の糖衣であることを種明かしする。最後に #print で論理結合子が
+-- すべて帰納型だったことを確認し、Ch3 の依存関数と合わせて「論理の2原始」が揃う。
+import Ch3_DependentFunction
+
+-- ============================================================
+-- §4.1 帰納型を「使う」: 除去規則 recursor
+--   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
+--   構成子が再帰的な引数を持つ（Nat の succ）と、その分だけ「帰納法の仮定 (IH)」を受け取る——
+--   再帰の有無が cases（Or・有限型 Three）と induction（Nat）を分ける。
+-- ============================================================
+
+-- ANCHOR: eliminators
+#check @Three.rec  -- Ch2 で作った有限型 Three の除去規則（各構成子 a/b/c の場合を与える・IH 無し）
+#check @Or.rec     -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
+#check @Nat.rec    -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
+                   --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
+-- ANCHOR_END: eliminators
+
+-- ============================================================
+-- §4.2 構造的再帰の入門: sumTo（Nat 上の再帰関数）
+-- ============================================================
+
+-- 帰納的定義の入門: 自然数からの写像を「zero でどうなるか／succ でどうなるか」の2段で定める
+-- （上の Nat.rec の実演）。まず簡単な例 sumTo n = 0 + 1 + … + n から始める。
+-- ANCHOR: sum_to
+def sumTo : Nat → Nat
+  | 0     => 0
+  | n + 1 => sumTo n + (n + 1)   -- succ の段で「前の結果 sumTo n」に n+1 を足す
+example : sumTo 3 = 6 := rfl     -- 0+1+2+3 = 6（再帰方程式は定義どおり rfl で計算される）
+-- ANCHOR_END: sum_to
+
+-- ============================================================
+-- §4.3 パターンマッチの種明かし: 再帰(A)と依存関数型(B)を切り分ける
+--   (A) 再帰: succ の段で「前の値 ih」を使うこと。sumTo はこれ**だけ**——戻り値の型 Nat は n に依らない。
+--   (B) 依存関数型の項作り: `(n : Nat) → C n` の項を zero（C 0 の項）と succ（C n の項 ih から
+--       C (n+1) の項）で組むこと＝Nat.rec の motive C。sumTo は C n = Nat（定数）なので (B) が退化し
+--       (A) だけが純粋に見える（依存 (B) が効く Summation は第二部）。
+--   Ch3 の依存関数（motive C は依存関数）と Ch4 の帰納型（Nat.rec）がここで出会う。
+-- ============================================================
+
+-- ANCHOR: recursor_reveal
+-- 生の Nat.rec で sumTo を書き下すと（パターンマッチが内部で組んでいる「種」）:
+def sumTo' : Nat → Nat :=
+  fun n => Nat.rec 0 (fun n ih => ih + (n + 1)) n
+
+-- パターンマッチ版 sumTo を #print すると `fun x => Nat.brecOn x sumTo._f`——Nat.rec から作られる
+-- 「強帰納」版 Nat.brecOn（succ の段でそれまでの全部の値を使える）に翻訳されている:
+#print sumTo
+-- 生 rec 版 sumTo' とは外延的に同じ関数だが、定義的には別物（brecOn ≠ rec）。具体値なら計算で一致:
+example : sumTo 3 = sumTo' 3 := rfl
+-- だが一般の n では defeq で繋がらず、命題等式として induction で証明する必要がある
+-- （defeq と「=」の違いの予告——第二部の 2 つの等しさへ）:
+theorem sumTo_eq : (n : Nat) → sumTo n = sumTo' n
+  | 0 => rfl
+  | n + 1 => congrArg (· + (n + 1)) (sumTo_eq n)
+-- ANCHOR_END: recursor_reveal
+
+-- ============================================================
+-- §4.4 論理結合子の正体: #print 種明かし（帰納型の柱の完成）
+--   Ch3 で →・∀ が依存関数だと見た。残りの ∧∨∃⊥= はすべて帰納型——これで論理の2原始が揃う。
+-- ============================================================
+
+-- ANCHOR: ch_punchline
+#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）——Ch2 §1 の積と同じ
+#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——Ch2 §2 の和と同じ
+#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——Ch2 Subtype と同じ
+#print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
+-- 結論: **論理 = 依存関数（→ ∀ ¬・Ch3）＋ 帰納型（∧ ∨ ∃ ⊥ = ・Ch4）**。型理論の2原始だけで尽きる。
+-- ANCHOR_END: ch_punchline
