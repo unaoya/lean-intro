@@ -10,12 +10,22 @@ import Text.C01_FirstProofs
 -- ============================================================
 
 -- ANCHOR: product
--- 導入（項を作る＝α×β「への」関数）: ⟨a, b⟩
+-- 「正式な」導入は Prod.mk: α と β の項から α × β の項を作る関数
+#check @Prod.mk        -- {α β} → α → β → α × β（2 引数の関数として読める）
+example (a : Nat) (b : Bool) : Nat × Bool := Prod.mk a b
+-- `⟨a, b⟩` は Prod.mk a b の略記（anonymous constructor——型から構成子を推論して埋める）
 example (a : Nat) (b : Bool) : Nat × Bool := ⟨a, b⟩
--- 除去（項を使う＝α×β「からの」関数）: .1 / .2
+-- 「正式な」除去は Prod.fst / Prod.snd: α × β の項から各成分を取り出す関数
+#check @Prod.fst       -- {α β} → α × β → α
+#check @Prod.snd       -- {α β} → α × β → β
+example (p : Nat × Bool) : Nat := Prod.fst p
+example (p : Nat × Bool) : Bool := Prod.snd p
+-- `p.fst`/`p.1`・`p.snd`/`p.2` は Prod.fst p / Prod.snd p の略記（dot 記法）
+example (p : Nat × Bool) : Nat := p.fst
 example (p : Nat × Bool) : Nat := p.1
 example (p : Nat × Bool) : Bool := p.2
--- 対比: 命題の ∧ も同じ機構（A ∧ B を ⟨h1, h2⟩ で作り .1/.2 で使う）——Ch1 の ⟨h.2, h.1⟩ がこれ
+-- 対比: 命題の ∧ も同じ機構（正式には And.intro で作り And.left/And.right で使う・⟨⟩/.1/.2 は略記）
+#check @And.intro      -- {a b : Prop} → a → b → a ∧ b
 example (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩
 -- ANCHOR_END: product
 
@@ -24,14 +34,20 @@ example (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩
 -- ============================================================
 
 -- ANCHOR: sum
--- 導入（α⊕β「への」関数）: Sum.inl / Sum.inr
+-- 集合論の「直和」α ⊔ β（disjoint union）に対応する型: α の項にも β の項にも「左/右」のタグを
+-- 付けて 1 つの型に集める——どちらから来たかを忘れない（だから disjoint）。
+-- 「正式な」導入は Sum.inl / Sum.inr——α（または β）から α ⊕ β への**自然な射（包含）**:
+#check @Sum.inl        -- {α β} → α → α ⊕ β（α を左成分として包む射）
+#check @Sum.inr        -- {α β} → β → α ⊕ β（β を右成分として包む射）
 example (a : Nat) : Nat ⊕ Bool := Sum.inl a
 example (b : Bool) : Nat ⊕ Bool := Sum.inr b
--- 除去（α⊕β「からの」関数）: 場合分け（match）
+-- 「正式な」除去は場合分け（match——どちらの射で作られたかで分岐）。集合論で「α⊔β 上の関数は
+-- α 上の関数と β 上の関数の対で決まる」（直和の普遍性）のと同じ:
 def sumToNat (s : Nat ⊕ Bool) : Nat := match s with
   | Sum.inl n => n
   | Sum.inr b => if b then 1 else 0
--- 対比: 命題の ∨ も同じ（Or.inl/inr で導入・.elim で除去）——Ch1 の or_swap がこれ
+-- 対比: 命題の ∨ も同じ（正式には Or.inl/Or.inr で導入・Or.elim で除去）——Ch1 の or_swap がこれ
+#check @Or.inl         -- {a b : Prop} → a → a ∨ b
 example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
 -- ANCHOR_END: sum
 
@@ -40,29 +56,57 @@ example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
 -- ============================================================
 
 -- ANCHOR: arrow
--- 導入（α→β「への」関数＝関数そのもの）: fun
+-- 関数型 α → β は集合論では「α×β の部分集合（グラフ）」として作られるが、型理論では**プリミティブ**
+-- （他から構成しない原始概念）。さらに本当のプリミティブは**依存関数型 (x : α) → β x**——行き先の
+-- 型 β が引数 x に依存してよい関数。α → β は「β が x に依存しない」特別な場合にすぎない。
+#check (Nat → Nat)              -- 非依存の関数型
+#check ((n : Nat) → Fin (n+1))  -- 依存関数型（行き先 Fin (n+1) が引数 n に依存）
+-- 「正式な」導入は fun（λ・関数を作る）。除去は**並置＝関数適用**——スペースで項が並んでいるものは
+-- すべて関数適用と読む（`f n` は「f を n に適用」）:
 example : Nat → Nat := fun n => n + 1
--- 除去（使う）: 適用
 example (f : Nat → Nat) (n : Nat) : Nat := f n
--- 対比: 命題の → も同じ関数（A → B の証明は fun で作り適用で使う）——型も命題も → は関数
+-- 対比: 命題の → も同じ関数（A → B の証明は fun で作り適用 `f a` で使う）——型も命題も → は関数
 example (A B : Prop) (f : A → B) (a : A) : B := f a
+-- ∀ も依存関数型そのもの: `∀ x, P x` は `(x : α) → P x`（codomain が Prop の依存関数・Ch4 で再会）
+#check (∀ n : Nat, n = n)
 -- ANCHOR_END: arrow
 
 -- ============================================================
--- §3b 依存和 Subtype {x : α // p x} ↔ ∃: 値と「述語を満たす証明」を束ねる
---   関数 α→β の codomain が値に依存しない「非依存」だったのに対し、ここから「依存」へ。
+-- §3b Subtype {x : α // p x}: 値と「述語 p を満たす証明」を束ねる（∃ の Type 側）
 -- ============================================================
 
 -- ANCHOR: subtype
--- 導入（Subtype「への」関数）: ⟨値, 証明⟩（値と「述語 p を満たす証明」の組）
-example : {n : Nat // n < 5} := ⟨3, by omega⟩
--- 除去（Subtype「からの」関数）: .val（値を取り出す）/ .property（証明を取り出す）
+-- {x : α // p x} は「述語 p を満たす α の項」の型（p : α → Prop）。
+-- 「正式な」導入は Subtype.mk: 値 x と「p x の証明」のペア
+#check @Subtype.mk     -- {α} {p : α → Prop} → (val : α) → p val → {x // p x}
+example : {n : Nat // n < 5} := Subtype.mk 3 (by omega)
+example : {n : Nat // n < 5} := ⟨3, by omega⟩          -- ⟨_, _⟩ は Subtype.mk の略記
+-- 「正式な」除去は .val（値）/ .property（証明）
+#check @Subtype.val    -- {α} {p} → {x // p x} → α
 example (s : {n : Nat // n < 5}) : Nat := s.val
 example (s : {n : Nat // n < 5}) : s.val < 5 := s.property
--- 対比: 命題の ∃ も同じ依存和（`⟨witness, proof⟩` で導入・場合分け/.choose で除去）。
--- CH 表の ∃ 行——Subtype は「∃ をデータに格上げ」した型。Range n = {i : Nat // i < n}
--- （Ch5 の添字）はこの Subtype の実例で、Ch4 の sup 公理の証人も同じ依存和
+-- 対比: 命題の ∃ も同じ依存ペア（⟨witness, proof⟩ で導入）。Subtype は「∃ をデータに格上げ」した
+-- 型——∃ x, p x は証明（Prop）、{x // p x} は値が取り出せるデータ（Type）。Range n = {i // i < n}
+-- （Ch5 の添字）はこの実例
 -- ANCHOR_END: subtype
+
+-- ============================================================
+-- §3c 依存和 Σ x : α, β x: Subtype の一般化——第 2 成分を「証明」から「型の族」へ
+-- ============================================================
+
+-- ANCHOR: sigma
+-- Subtype の第 2 成分は**証明** p x : Prop だった。これを一般の**型** β x : Type にすると
+-- 依存和 Σ x : α, β x になる。集合論では「族 {β x}_x の直和（disjoint union）」——各 x ごとの
+-- 集合 β x を x でタグ付けして集めたもの。**Subtype は β x が Prop（命題）である特別な場合**。
+#check @Sigma.mk       -- {α} {β : α → Type} → (fst : α) → β fst → Σ x, β x
+-- 例: 「n と、Fin (n+1) の項」のペア（第 2 成分の型 Fin (n+1) が第 1 成分 n に依存）
+example : Σ n : Nat, Fin (n + 1) := ⟨2, 0⟩            -- n=2 と Fin 3 の項 0
+-- 除去: .1（第 1 成分）/ .2（第 2 成分・その型は .1 に依存）
+example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
+-- ⚠ 気になる点: Subtype では第 2 成分が Prop。「Prop も型の族のメンバーになれる」——Prop は
+-- Sort 0・Type は Sort (u+1) で**地続き**（Sort 階層）。第 2 成分に証明（Prop）を選べば Subtype、
+-- 一般の型（Type）を選べば本来の Σ。この Prop と Type の地続き性は Ch4 の universe で正面から扱う
+-- ANCHOR_END: sigma
 
 -- ============================================================
 -- §4 帰納型で型を作る: 有限集合 Three とその上の関数
@@ -75,11 +119,17 @@ inductive Three where
   | b
   | c
 
+#check Three
+#check Three.a
+
 -- 除去（Three「からの」関数）: パターンマッチで各構成子を捌く（有限集合上の自然数値関数）
 def label : Three → Nat
   | .a => 0
   | .b => 1
   | .c => 2
+
+#check label Three.a
+#check label .a
 
 -- Three「への」関数（別の型から作る）も構成子で
 def pick : Bool → Three
