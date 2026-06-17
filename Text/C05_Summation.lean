@@ -13,7 +13,50 @@ def sumTo : Nat → Nat
 example : sumTo 3 = 6 := rfl     -- 0+1+2+3 = 6（再帰方程式は定義どおり rfl で計算される）
 -- ANCHOR_END: sum_to
 
+-- 1+2+…+n の閉じた式。tactic を使わず term（calc）で証明する——sumTo の再帰方程式に沿った
+-- 帰納（| 0 | n+1）で各段を calc で繋ぐ。除法 n(n+1)/2 は Nat の切り捨てが絡むので、
+-- まず 2 を払った形 2·sumTo n = n(n+1) を示してから 2 で割るのが素直。
+-- ANCHOR: sum_to_formula
+theorem two_mul_sumTo : (n : Nat) → 2 * sumTo n = n * (n + 1)
+  | 0 => rfl
+  | n + 1 =>
+    calc 2 * sumTo (n + 1)
+        = 2 * (sumTo n + (n + 1))     := rfl                                   -- sumTo の定義
+      _ = 2 * sumTo n + 2 * (n + 1)   := Nat.left_distrib 2 (sumTo n) (n + 1)   -- 分配
+      _ = n * (n + 1) + 2 * (n + 1)   := congrArg (· + 2 * (n + 1)) (two_mul_sumTo n)  -- 帰納法の仮定
+      _ = (n + 2) * (n + 1)           := (Nat.add_mul n 2 (n + 1)).symm         -- 括り直し
+      _ = (n + 1) * (n + 1 + 1)       := Nat.mul_comm (n + 2) (n + 1)           -- 可換（n+2 ≡ n+1+1）
+
+theorem sumTo_formula (n : Nat) : sumTo n = n * (n + 1) / 2 :=
+  (Nat.mul_div_cancel_left (sumTo n) (Nat.succ_pos 1)).symm.trans
+    (congrArg (· / 2) (two_mul_sumTo n))
+-- ANCHOR_END: sum_to_formula
+
+-- 種明かし: パターンマッチ記法は recursor（Ch2 の Nat.rec）の糖衣。ここで 2 つの問題を切り分ける。
+--   (A) 再帰: succ の段で「前の値 ih」を使うこと。sumTo はこれ**だけ**——戻り値の型 Nat は n に依らない。
+--   (B) 依存関数型の項作り: `(n : Nat) → C n` の項を zero（C 0 の項）と succ（C n の項 ih から
+--       C (n+1) の項）で組むこと＝Nat.rec の motive C。sumTo は C n = Nat（定数）なので (B) が退化し、
+--       (A) だけが純粋に見える。Summation では C n = (Range n → α) → α が n に依存し (B) が効く（下）。
+-- ANCHOR: recursor_reveal
+-- 生の Nat.rec で sumTo を書き下すと（パターンマッチが内部で組んでいる「種」）:
+def sumTo' : Nat → Nat :=
+  fun n => Nat.rec 0 (fun n ih => ih + (n + 1)) n
+
+-- パターンマッチ版 sumTo を #print すると `fun x => Nat.brecOn x sumTo._f`——Nat.rec から作られる
+-- 「強帰納」版 Nat.brecOn（succ の段でそれまでの全部の値を使える）に翻訳されている:
+#print sumTo
+-- 生 rec 版 sumTo' とは外延的に同じ関数だが、定義的には別物（brecOn ≠ rec）。具体値なら計算で一致:
+example : sumTo 3 = sumTo' 3 := rfl
+-- だが一般の n では defeq で繋がらず、命題等式として induction で証明する必要がある
+-- （defeq と「=」の違いの予告——Ch7/8 の 2 つの等しさへ）:
+theorem sumTo_eq : (n : Nat) → sumTo n = sumTo' n
+  | 0 => rfl
+  | n + 1 => congrArg (· + (n + 1)) (sumTo_eq n)
+-- ANCHOR_END: recursor_reveal
+
 -- 有限和。契約は最小（二項演算とゼロの値 = [Add α] [Zero α]）。
+-- ここで sumTo の (B)＝依存関数型の項作りが効く: motive C n = (Range n → α) → α が n に依存し、
+-- zero で C 0 の項（空和 0）、succ で C n の項 ih から C (n+1) の項を組む（sumTo と同じ Nat.rec の枠組み）。
 -- 基底の `0` は C02 の bridge（Zero → OfNat）経由で Zero.zero に defeq。
 -- 添字つき族に対して定義する（List でない理由は本文の設計議論）
 -- ANCHOR: summation

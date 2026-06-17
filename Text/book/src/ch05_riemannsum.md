@@ -17,15 +17,28 @@ Summationの定義。パターンまっちによる定義。Natは直和では�
 
 分割、代表点を定義すればリーマン和が定義できる。分割や代表点もstructureとして定義する。分割の例として自明な分割がある。等分割もあるが後で。increaseの照明が面倒？（実は簡単ではない？）あと自然数と実数を結びつける必要があるので。
 
-## 5.1 帰納的定義の入門 — sumTo（ANCHOR `sum_to`）
+## 5.1 帰納的定義の入門 — sumTo（ANCHOR `sum_to`/`sum_to_formula`）
 
 - Ch2 で `Nat.rec`（自然数からの写像を「zero でどうなるか／succ でどうなるか」で定める）を見た。その最小の実演として `sumTo n = 0+1+…+n` を書く: zero で 0、succ で「前の結果 `sumTo n` に n+1 を足す」
 - 再帰方程式は `rfl` で計算される（`sumTo 3 = 6`）——defeq の予告編
 - ねらい: いきなり Summation（添字つき族の和）は複雑なので、まず Nat → Nat の素朴な再帰で zero/succ の形を体に入れる
+- **閉じた式 `2·sumTo n = n(n+1)`**（ANCHOR `sum_to_formula`）を **tactic なし・term（calc）**で証明する: sumTo の再帰方程式に沿った帰納（`| 0 | n+1`）で各段を calc で繋ぐ（分配 `Nat.left_distrib` → 帰納法の仮定 `congrArg` → 括り直し `Nat.add_mul` → 可換 `Nat.mul_comm`）。最後は `n+2` と `(n+1)+1` が **defeq** なので 1 段減る
+- 除法版 `sumTo n = n(n+1)/2` も term で従う（2 を払った式を 2 で割る `Nat.mul_div_cancel_left`）。Nat の `/` は切り捨てなので「先に 2 を払う」のが定石
+- 縦糸: `summation_all_zero`（§5.4）と同じ term 帰納のスタイル——「定義した再帰を、その定義に沿った帰納で証明する」を sumTo 自身で一度踏む
+
+## 5.1b パターンマッチの種明かし — 再帰と依存関数型を切り分ける（ANCHOR `recursor_reveal`）
+
+- **2 つの問題を分ける**:
+  - **(A) 再帰**: succ の段で「前の値 `ih`」を使うこと。sumTo は**これだけ**——戻り値の型 `Nat` は n に依らない
+  - **(B) 依存関数型の項作り**: `(n : Nat) → C n` の項を zero（`C 0` の項）と succ（`C n` の項 `ih` から `C (n+1)` の項）で組むこと＝`Nat.rec` の **motive** `C`。sumTo は `C n = Nat`（定数）なので (B) が退化し (A) だけが純粋に見える。Summation（§5.2）で `C n = Range n → α → α` が n に依存し (B) が効く
+- **パターンマッチ `| 0 | n+1` は `Nat.rec`（Ch2）の糖衣**: `#print sumTo` すると `fun x => Nat.brecOn x sumTo._f`——`Nat.rec` から作られる「強帰納」版 `Nat.brecOn`（succ の段でそれまでの全部の値を使える）に翻訳されている
+- 生の `Nat.rec` 直書き版 `sumTo'` を並べる: パターンマッチ版と**外延的には同じ関数**だが**定義的には別物**（`brecOn ≠ rec`）。具体値 `sumTo 3 = sumTo' 3` は `rfl`、だが一般の n は defeq で繋がらず `sumTo n = sumTo' n` は **induction で証明**する（`congrArg`）
+- 🪟 窓: 「計算で一致するのに rfl で繋がらない」＝**defeq と命題等式「=」の違い**の最初の手応え（Ch7/8 の「2 つの等しさ」への布石）
 
 ## 5.2 Summation — 構造的再帰（ANCHOR `summation`）
 
 - `(n : Nat) → (Range n → α) → α`（Range は Ch2 の Subtype 実例）。型自体が依存関数の実物。sumTo を「添字つき族 `Range n → α` の和」へ一般化したもの
+- ここで §5.1b の **(B) 依存関数型の項作り**が効く: motive `C n = (Range n → α) → α` が n に依存し、zero で `C 0` の項（空和 0）、succ で `C n` の項 `ih` から `C (n+1)` の項を組む。**再帰 (A) はそのまま・依存 (B) が加わった**——sumTo（非依存）との差分はこの一点
 - パターンマッチ（zero/succ）による定義: zero で `0`、succ で「`Range n` 部分の和 ＋ 端の項 `f ⟨n, …⟩`」（`Range.incl` で添字を埋め込む）
 - コラム: なぜ List でないのか（表現の選択の損得勘定表——長さは型へ・整合性命題は消す）
 
