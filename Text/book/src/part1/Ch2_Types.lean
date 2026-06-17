@@ -52,24 +52,9 @@ example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
 -- ANCHOR_END: sum
 
 -- ============================================================
--- §3 関数 α → β ↔ →: 関数を作る／適用する
+-- §3 関数 α → β: 関数型・依存関数型 (x:α)→β x・命題の →/∀ は型理論のもう一本の原始
+--   （dependent function）。第一部 Ch3 でまとめて扱う。
 -- ============================================================
-
--- ANCHOR: arrow
--- 関数型 α → β は集合論では「α×β の部分集合（グラフ）」として作られるが、型理論では**プリミティブ**
--- （他から構成しない原始概念）。さらに本当のプリミティブは**依存関数型 (x : α) → β x**——行き先の
--- 型 β が引数 x に依存してよい関数。α → β は「β が x に依存しない」特別な場合にすぎない。
-#check (Nat → Nat)              -- 非依存の関数型
-#check ((n : Nat) → Fin (n+1))  -- 依存関数型（行き先 Fin (n+1) が引数 n に依存）
--- 「正式な」導入は fun（λ・関数を作る）。除去は**並置＝関数適用**——スペースで項が並んでいるものは
--- すべて関数適用と読む（`f n` は「f を n に適用」）:
-example : Nat → Nat := fun n => n + 1
-example (f : Nat → Nat) (n : Nat) : Nat := f n
--- 対比: 命題の → も同じ関数（A → B の証明は fun で作り適用 `f a` で使う）——型も命題も → は関数
-example (A B : Prop) (f : A → B) (a : A) : B := f a
--- ∀ も依存関数型そのもの: `∀ x, P x` は `(x : α) → P x`（codomain が Prop の依存関数・Ch4 で再会）
-#check (∀ n : Nat, n = n)
--- ANCHOR_END: arrow
 
 -- ============================================================
 -- §3b Subtype {x : α // p x}: 値と「述語 p を満たす証明」を束ねる（∃ の Type 側）
@@ -178,28 +163,10 @@ def pick : Bool → Three
 -- ANCHOR_END: finite
 
 -- ============================================================
--- §4b 帰納型を「使う」: 除去規則 recursor と、論理結合子の正体（#print 種明かし）
---   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
---   構成子が再帰的な引数を持つ（Nat の succ）と、その分だけ「帰納法の仮定 (IH)」を受け取る——
---   再帰の有無が cases（Or・有限型）と induction（Nat）を分ける（Ch5 の Σ で実演）。
+-- §4b 帰納型を「使う」: 除去規則 recursor と #print 種明かし（論理結合子の正体）は、
+--   第一部 Ch4（inductive type）でまとめて扱う。Three（§4）はここで「作り」、Ch4 でその
+--   recursor を見る——「2 章で型を作り → 4 章でその使い方（recursor）」という配置。
 -- ============================================================
-
--- ANCHOR: eliminators
-#check @Or.rec    -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
-#check @Nat.rec   -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
-                  --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
--- ANCHOR_END: eliminators
-
--- #print で「論理結合子はすべて帰納型（または依存関数）だった」を実機確認する——CH 対応の核心
--- ANCHOR: ch_punchline
-#print And      -- structure（構成子 intro 1 つ・除去 .1 .2 = And.rec）——§1 の積と同じ
-#print Or       -- inductive（構成子 inl/inr・除去 .elim = Or.rec）——§2 の和と同じ
-#print Exists   -- inductive（構成子 intro 1 つ・依存・除去 .elim = Exists.rec）——§3b の Subtype と同じ
-#print False    -- inductive（構成子 0・除去 False.elim = 爆発律）
--- → と ∀ だけは帰納型ではなく依存関数（Π）。これだけが帰納型と別格の原始:
-#check fun (A B : Prop) => A → B          -- 非依存の関数型（→）
-#check fun (P : Nat → Prop) => ∀ n, P n   -- 依存関数型（∀）
--- ANCHOR_END: ch_punchline
 
 -- ============================================================
 -- §5 商 Quotient: 同値関係で割る（整数 (Nat×Nat)/~ の予告）
