@@ -3,3 +3,8 @@ title = "Lean で読む・書く・開ける微積分 — 公理 5 本から微�
 authors = ["梅崎直也"]
 language = "ja"
 src = "src"
+
+# mdbook 出力を Text の外（Tsudoi6/book-html）へ。src/part1/ の .lean がコピーされても
+# lake の lean_lib «Text»（Text/ 配下を glob）に拾われないようにするため。
+[build]
+build-dir = "../../book-html"

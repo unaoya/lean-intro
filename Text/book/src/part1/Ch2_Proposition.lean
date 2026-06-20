@@ -5,9 +5,14 @@
 -- Ch1 の型の導入除去とまったく同じ機構——これが Curry-Howard 対応（命題＝型・証明＝項）。
 import Ch1_Types  -- 型（Ch1 の ×⊕→Π…）と命題（∧∨→¬∀∃）をパラレルに読む
 
--- 最初の証明: 命題 1=1 の証明は項 Eq.refl 1（証明＝項の最小例）
+-- 最初の証明: 命題 0=0 の証明は項 Eq.refl 0（証明＝項の最小例）
 -- ANCHOR: my_first_theorem
-theorem my_first_theorem : 1 = 1 := Eq.refl 1
+theorem my_first_theorem : 0 = 0 := Eq.refl 0
+theorem my_first_theorem' : 0 = 0 := rfl
+theorem my_second_theorem : 1 + 1 = 2 := rfl
+theorem my_second_theorem' : 3 + 1 = 4 := rfl
+theorem my_second_theorem'' (n : Nat) : n + 1 = n.succ := rfl
+-- theorem my_second_theorem''' (n : Nat) : 1 + n = n.succ := rfl
 -- ANCHOR_END: my_first_theorem
 
 -- ============================================================

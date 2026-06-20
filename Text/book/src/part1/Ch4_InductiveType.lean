@@ -6,6 +6,35 @@
 import Ch3_Calc
 
 -- ============================================================
+-- §4.0 帰納型で型を作る: 有限集合 Three とその上の関数（導入＝構成子）
+-- ============================================================
+
+-- ANCHOR: finite
+-- 導入（Three「への」関数＝構成子）: 3 つの住人を構成子で並べた有限集合（≅ {0,1,2}）
+inductive Three where
+  | a
+  | b
+  | c
+
+#check Three
+#check Three.a
+
+-- 除去（Three「からの」関数）: パターンマッチで各構成子を捌く（有限集合上の自然数値関数）
+def label : Three → Nat
+  | .a => 0
+  | .b => 1
+  | .c => 2
+
+#check label Three.a
+#check label .a
+
+-- Three「への」関数（別の型から作る）も構成子で
+def pick : Bool → Three
+  | true  => .a
+  | false => .c
+-- ANCHOR_END: finite
+
+-- ============================================================
 -- §4.1 帰納型を「使う」: 除去規則 recursor
 --   どの帰納型にも 導入規則（構成子＝値を作る）と 除去規則（recursor＝値を使う）がある。
 --   構成子が再帰的な引数を持つ（Nat の succ）と、その分だけ「帰納法の仮定 (IH)」を受け取る——
@@ -13,7 +42,7 @@ import Ch3_Calc
 -- ============================================================
 
 -- ANCHOR: eliminators
-#check @Three.rec  -- Ch1 で作った有限型 Three の除去規則（各構成子 a/b/c の場合を与える・IH 無し）
+#check @Three.rec  -- 上の §4.0 で作った有限型 Three の除去規則（各構成子 a/b/c の場合を与える・IH 無し）
 #check @Or.rec     -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
 #check @Nat.rec    -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
                    --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
