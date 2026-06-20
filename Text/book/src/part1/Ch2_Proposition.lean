@@ -1,11 +1,12 @@
 -- Text/book/src/part1/Ch2_Proposition.lean — 第一部 Ch2 命題（論理結合子の導入則・除去則）
 -- Ch1 で型を「作る」基本手段（積×・和⊕・関数→・依存関数Π・部分型・依存和Σ）を見た。本章は
--- 命題の論理結合子（∧・∨・→・¬・∀・∃）を、Ch1 の型構成と**一対一でパラレル**に並べる。
+-- 命題の論理結合子（→・∧・∨・¬・∀・∃）を、Ch1 の型構成と**一対一でパラレル**に並べる。
 -- 各結合子に「導入則（その命題を作る＝項を構成）」と「除去則（その命題を使う）」があり、それは
 -- Ch1 の型の導入除去とまったく同じ機構——これが Curry-Howard 対応（命題＝型・証明＝項）。
+-- いちばん基本の「ならば →」（＝関数）から始める。
 import Ch1_Types  -- 型（Ch1 の ×⊕→Π…）と命題（∧∨→¬∀∃）をパラレルに読む
 
--- 最初の証明: 命題 0=0 の証明は項 Eq.refl 0（証明＝項の最小例）
+-- 最初の証明: 命題 0=0 の証明は項 Eq.refl 0（証明＝項の最小例）。計算で閉じる等式は rfl
 -- ANCHOR: my_first_theorem
 theorem my_first_theorem : 0 = 0 := Eq.refl 0
 theorem my_first_theorem' : 0 = 0 := rfl
@@ -16,27 +17,9 @@ theorem my_second_theorem'' (n : Nat) : n + 1 = n.succ := rfl
 -- ANCHOR_END: my_first_theorem
 
 -- ============================================================
--- §2.1 かつ ∧ ↔ 積 ×（Ch1 §1）
---   導入則 = And.intro（⟨_, _⟩ で 2 つの証明を組む）／除去則 = .1 / .2（射影）。Ch1 の Prod と同じ。
--- ============================================================
--- ANCHOR: and_intro_elim
-example (A B : Prop) (a : A) (b : B) : A ∧ B := And.intro a b      -- 正式な導入 And.intro
-theorem and_swap (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩    -- 除去 .2/.1・導入 ⟨,⟩（略記）
--- ANCHOR_END: and_intro_elim
-
--- ============================================================
--- §2.2 または ∨ ↔ 和 ⊕（Ch1 §2）
---   導入則 = Or.inl / Or.inr（2 つの構成子）／除去則 = .elim（場合分け＝cases）。∨ は非再帰なので
---   帰納法の仮定 (IH) は無い（「除去則=recursor」「再帰なら IH=induction」の全体像は Ch4）。
--- ============================================================
--- ANCHOR: or_intro_elim
-theorem or_intro_left (A B : Prop) (a : A) : A ∨ B := Or.inl a     -- 導入 Or.inl
-theorem or_swap (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl  -- 除去 .elim（場合分け）
--- ANCHOR_END: or_intro_elim
-
--- ============================================================
--- §2.3 ならば → ↔ 関数型 α→β（Ch1 §3）
---   導入則 = fun（λ抽象＝関数を作る）／除去則 = 適用（modus ponens は関数適用）。Ch1 の関数と同じ。
+-- §2.1 ならば → ↔ 関数型 α→β（Ch1 §3）
+--   いちばん基本: → は関数そのもの。導入則 = fun（λ抽象＝関数を作る）／除去則 = 適用
+--   （modus ponens は関数適用）。「A→B を証明するには A から B を作る関数を与える」。
 -- ============================================================
 -- ANCHOR: imp_intro_elim
 theorem modus_ponens (A B : Prop) (h : A → B) (a : A) : B := h a   -- 除去 = 適用
@@ -44,13 +27,37 @@ theorem imp_trans (A B C : Prop) (hab : A → B) (hbc : B → C) : A → C := fu
 -- ANCHOR_END: imp_intro_elim
 
 -- ============================================================
+-- §2.2 かつ ∧ ↔ 積 ×（Ch1 §1）
+--   導入則 = And.intro（⟨_, _⟩ で 2 つの証明を組む）／除去則 = .1 / .2（射影）。Ch1 の Prod と同じ。
+--   「A∧B を証明するには A の証明と B の証明の組を与える」「A∧B が仮定なら A も B も使える」。
+-- ============================================================
+-- ANCHOR: and_intro_elim
+example (A B : Prop) (a : A) (b : B) : A ∧ B := And.intro a b      -- 正式な導入 And.intro
+theorem and_swap (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩    -- 除去 .2/.1・導入 ⟨,⟩（略記）
+-- ANCHOR_END: and_intro_elim
+
+-- ============================================================
+-- §2.3 または ∨ ↔ 和 ⊕（Ch1 §2）
+--   導入則 = Or.inl / Or.inr（2 つの構成子）／除去則 = .elim（場合分け＝cases）。∨ は非再帰なので
+--   帰納法の仮定 (IH) は無い（「除去則=recursor」「再帰なら IH=induction」の全体像は Ch4）。
+--   「A∨B を証明するには A か B のどちらかを与える」「(A∨B) から C を示すには A→C と B→C を与える」。
+-- ============================================================
+-- ANCHOR: or_intro_elim
+theorem or_intro_left (A B : Prop) (a : A) : A ∨ B := Or.inl a     -- 導入 Or.inl
+theorem or_swap (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl  -- 除去 .elim（場合分け）
+-- ANCHOR_END: or_intro_elim
+
+-- ============================================================
 -- §2.4 否定 ¬ ↔ → False
 --   ¬A = A → False（False への関数）。だから ¬ も**関数**（導入=fun・除去=適用）。False（⊥）は
---   構成子 0 の帰納型——除去 False.elim = 爆発律（全体像は Ch4）。
+--   構成子 0 個の帰納型（Ch1 の Empty に対応）——除去 False.elim = 爆発律（全体像は Ch4）。
 -- ============================================================
 -- ANCHOR: neg
 theorem double_neg_intro (A : Prop) (a : A) : ¬¬A := fun na => na a
 theorem modus_tollens (A B : Prop) (h : A → B) (nb : ¬B) : ¬A := fun a => nb (h a)
+-- 具体例: ¬(0 = 1)。¬ は「→ False」なので、仮定 h : 0 = 1 から False を作る関数を書けばよい。
+--   Nat.noConfusion は「異なる構成子（0 と succ）は等しくない」から矛盾 False を取り出す
+theorem not_zero_eq_one : ¬(0 = 1) := fun h => Nat.noConfusion h
 -- ANCHOR_END: neg
 
 -- ============================================================

@@ -5,8 +5,20 @@
 - 前章からの問い: Ch3 で calc を習得した。型理論の2原始のもう一本——帰納型の**使い方**（除去規則 recursor）を正面から扱う
 - 到達点: recursor の型を読め、パターンマッチが recursor の糖衣であることを確認し、論理結合子が全て帰納型であることを `#print` で実機確認できる。**最終目標: 1 から n までの和の公式 `sum_to_formula` を Ch3 の calc で証明する**
 - 新しい Lean 機能: `Nat.rec`・`#check @T.rec`・`#print`・構造的再帰 `| 0 | n+1`・`Nat.brecOn`
-- コード: Ch4_InductiveType.lean（eliminators・sum_to・recursor_reveal・ch_punchline・sum_to_formula）
+- コード: Ch4_InductiveType.lean（finite・eliminators・sum_to・recursor_reveal・ch_punchline・sum_to_formula）
 - Ch1 の依存関数と合わせて「論理の2原始」が揃う
+
+## 4.0 帰納型で型を作る — 有限集合 Three
+
+`inductive` キーワードを使うと、構成子を並べるだけで新しい型が作れる。
+
+```lean
+{{#include Ch4_InductiveType.lean:finite}}
+```
+
+- **導入**（Three「への」関数）: 構成子 `.a`・`.b`・`.c` がそのまま Three の住人を作る
+- **除去**（Three「からの」関数）: `match` でパターンマッチし、各構成子の場合を捌く（`label`・`pick` がその例）
+- `Three` は構成子が 3 個の有限型（≅ {0,1,2}）。再帰的な引数を持たないので帰納法の仮定（IH）は不要——次の §4.1 で recursor を並べたときにこれが明確になる
 
 ## 4.1 帰納型を「使う」 — recursor（除去規則）
 
@@ -14,7 +26,7 @@
 {{#include Ch4_InductiveType.lean:eliminators}}
 ```
 
-どの帰納型にも**導入規則**（構成子＝値を作る）と**除去規則**（recursor＝値を使う）がある。`#check @Or.rec` と `#check @Nat.rec` を並べると、**再帰の有無が cases（Or・有限型 Three）と induction（Nat）を分ける**のが型から直接見える:
+どの帰納型にも**導入規則**（構成子＝値を作る）と**除去規則**（recursor＝値を使う）がある。§4.0 で作った `Three` も含め `#check @Or.rec` と `#check @Nat.rec` を並べると、**再帰の有無が cases（Or・有限型 Three）と induction（Nat）を分ける**のが型から直接見える:
 
 - `Or.rec` は「`a → C` と `b → C` を受け取り `a ∨ b → C` を返す」——IH が無い（cases）
 - `Nat.rec` は「zero での `motive 0` と、succ の段での `motive n → motive (n+1)` を受け取る」——`motive n` が帰納法の仮定 IH（Nat が再帰的な型だから）

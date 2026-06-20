@@ -5,7 +5,7 @@
 - 前章からの問い: Lean に入門した。型とはそもそも何か——どう「作る」のか
 - 到達点: 基本的な型の構成（積・和・関数型・依存関数・部分型・依存和・帰納型）を一望し、各構成の **「導入（項を作る＝その型への関数）」と「除去（項を使う＝その型からの関数）」** を見る。次章 Ch2 で命題の論理結合子（∧・∨・→・¬・∀・∃）をこれとパラレルに並べ、**Curry-Howard 対応の骨格**を回収する
 - 新しい Lean 機能: `Prod ×`・`Sum ⊕`・関数型 `→`・依存関数型 `(x : α) → β x`・`Subtype`・`Sigma`・`inductive`（有限集合）／導入 `⟨⟩`・`inl`/`inr`・`fun`・構成子／除去 `.1`/`.2`・`match`・適用
-- コード: Ch1_Types.lean（commands・product・sum・arrow・dependent・prop_as_function・subtype・sigma・range・finite）
+- コード: Ch1_Types.lean（commands・basic_types・product・sum・arrow・dependent・prop_as_function・subtype・sigma・range）
 - ★ **縦糸**: 「導入＝その型へ・除去＝その型から」が型と命題で**同じ機構**。後で `intro`/`cases`/`⟨⟩` が型と命題の両方で同じタクティク（Ch4 で recursor として種明かし）
 - **役割分担**: 商（Quotient）は第一部では扱わない。帰納型の再帰と recursor の本格は Ch4。型に**構造を載せる**のは第II部 Ch3
 
@@ -29,7 +29,19 @@
 - `#check`: 式の**型**を表示する（コマンド・証明には影響しない）
 - `#print`: 定義の**中身**を表示する（後でパターンマッチや構成子の正体を覗くのに使う）
 
-## 1.1 積 α × β — ペアを作る・取り出す
+## 1.1 基本的な型 — 空の型 Empty・数の型 Nat/Int/Rat
+
+型を「構成する」前に、core（Lean の標準ライブラリ）に最初から用意されている型をいくつか見る。
+
+```lean
+{{#include Ch1_Types.lean:basic_types}}
+```
+
+- **Empty**: 構成子が 0 個——項が 1 つも作れない型。Curry-Howard 対応で命題 `False` に対応する（「あり得ない前提から何でも導ける」＝爆発律は `Empty.elim` として現れる）
+- **Nat・Int・Rat**: 自然数・整数・有理数はすべて core にある（mathlib 不要）。`Nat` は `zero`/`succ` の帰納型で、Ch4 で再会する
+- **Fin n**: `{ val : Nat // val < n }` 相当の有限型も core にある。下の §1.4d Range n と同型
+
+## 1.2 積 α × β — ペアを作る・取り出す
 
 二つの型 `α`・`β` から、その**直積** `α × β`（ペアの型）が作れる。
 
@@ -39,7 +51,7 @@
 
 **項を作る（導入）**。正式には `Prod.mk`（`#check @Prod.mk` → `α → β → α × β`）。普段書く `⟨a, b⟩` はその略記。**項を使う（除去）**は `Prod.fst`・`Prod.snd`（`p.1`・`p.2`）。命題の `∧` も全く同じ機構——次章 Ch2 でパラレルに確認する。
 
-## 1.2 和 α ⊕ β — どちらかを入れる・場合分けで取り出す
+## 1.3 和 α ⊕ β — どちらかを入れる・場合分けで取り出す
 
 ```lean
 {{#include Ch1_Types.lean:sum}}
@@ -47,7 +59,7 @@
 
 **導入**は `Sum.inl`・`Sum.inr`（包含写像）。**除去**は `match`（場合分け＝直和の普遍性）。命題の `∨` とのパラレルは Ch2 で確認する。
 
-## 1.3 関数型 α → β と依存関数型 (x : α) → β x
+## 1.4 関数型 α → β と依存関数型 (x : α) → β x
 
 関数型は型理論では**プリミティブ**（集合論の「グラフ」から定義せず原始概念として扱う）。本当のプリミティブは**依存関数型 Π** で、非依存の `α → β` はその特別な場合にすぎない。
 
@@ -65,7 +77,7 @@
 
 **導入**は `fun`（λ）、**除去**は関数適用（並置 `f x`）。命題の `→` と `∀` もこの依存関数だ——Ch2 でパラレルに、Ch4 末で「論理の2原始」として確認する。
 
-## 1.3b Subtype `{x : α // p x}` — 値と「条件を満たす証明」を束ねる
+## 1.4b Subtype `{x : α // p x}` — 値と「条件を満たす証明」を束ねる
 
 ```lean
 {{#include Ch1_Types.lean:subtype}}
@@ -73,7 +85,7 @@
 
 `{x : α // p x}` は述語 `p : α → Prop` を満たす `α` の項だけを集めた型（集合論の部分集合の型版）。**導入**は `Subtype.mk`（`⟨val, proof⟩`）、**除去**は `.val`・`.property`。命題の `∃` とのパラレルは Ch2 で確認する。
 
-## 1.3c 依存和 Σ x : α, β x — Subtype の一般化（族の直和）
+## 1.4c 依存和 Σ x : α, β x — Subtype の一般化（族の直和）
 
 ```lean
 {{#include Ch1_Types.lean:sigma}}
@@ -81,7 +93,7 @@
 
 第 2 成分を「証明（Prop）」から「型の族（Type）」に一般化したもの。`Subtype` は `β x` が `Prop` である特別な場合。
 
-## 1.3d Range n — Subtype の実例（core の Fin n と同型）
+## 1.4d Range n — Subtype の実例（core の Fin n と同型）
 
 ```lean
 {{#include Ch1_Types.lean:range}}
@@ -95,15 +107,9 @@
 {{#include Ch1_Types.lean:range_funcs}}
 ```
 
-`Range n = {i : Nat // i < n}` は Subtype の具体例。core の `Fin n`（`structure { val : Nat, isLt : val < n }`）と同型だが、ここでは「述語を満たす値」を明示するために自作する。第II部 Summation の添字型として再登場する。
+`Range n = {i : Nat // i < n}` は Subtype の具体例。core の `Fin n`（`structure { val : Nat, isLt : val < n }`）と同型だが、ここでは「述語を満たす値」を明示するために自作する。第II部 Summation の添字型として再登場する。§1.1 で `Fin n` が core にあることを確認した。
 
-## 1.4 帰納型で型を作る — 有限集合 Three
-
-```lean
-{{#include Ch1_Types.lean:finite}}
-```
-
-`inductive Three | a | b | c`——3 つの構成子で有限集合（≅ {0,1,2}）を作る。**導入**（Three「への」関数）は構成子、**除去**（Three「からの」関数）はパターンマッチ。recursor と `#print` による種明かしは Ch4 でまとめて扱う。
+帰納型の自作（`inductive Three` など）とその recursor は Ch4 で扱う。
 
 ## 1.5 まとめ — 導入＝その型へ・除去＝その型から（CH 対応）
 
@@ -118,7 +124,7 @@ Curry-Howard 対応:「型 ↔ 命題・項 ↔ 証明」——次章 Ch2 で命
 
 - `Nat × Bool` の項を作る/分解する・`Nat ⊕ Bool` の場合分け
 - `{n : Nat // n < 10}` の項を作り `.val` で値を取り出す
-- `Three` 上の別の関数（`Three → Bool` 等）
+- `Three` 上の別の関数（`Three → Bool` 等）——`Three` の定義は Ch4 §4.0
 
 ## 引き
 
