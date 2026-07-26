@@ -17,7 +17,15 @@ inductive Three where
   | c
 
 #check Three
+#print Three
 #check Three.a
+#print Three.a
+
+#check Three.noConfusion
+#check Three.noConfusionType
+
+#check Three.rec
+#check Nat.rec
 
 -- 除去（Three「からの」関数）: パターンマッチで各構成子を捌く（有限集合上の自然数値関数）
 def label : Three → Nat
@@ -27,12 +35,31 @@ def label : Three → Nat
 
 #check label Three.a
 #check label .a
+#check label
+#print label
+
+#check @Three.rec (fun _ => Nat) 0 1 2
+-- def label' : Three → Nat := @Three.rec (fun _ => Nat) 0 1 2
+-- example : label = @Three.rec (fun _ => Nat) 0 1 2 := rfl
+example : label = @Three.rec (fun _ => Nat) 0 1 2 := by
+  funext x
+  match x with
+  | .a => rfl
+  | .b => rfl
+  | .c => rfl
 
 -- Three「への」関数（別の型から作る）も構成子で
 def pick : Bool → Three
   | true  => .a
   | false => .c
 -- ANCHOR_END: finite
+
+#check Empty
+#check Empty.elim
+#check @Empty.elim Nat
+example (f g : Empty → Nat) : f = g := by
+  ext x
+  sorry
 
 -- ============================================================
 -- §4.1 帰納型を「使う」: 除去規則 recursor
@@ -46,6 +73,8 @@ def pick : Bool → Three
 #check @Or.rec     -- (a → C) → (b → C) → (a ∨ b) → C        ← 各構成子の引数だけ・IH 無し（=cases）
 #check @Nat.rec    -- motive 0 → ((n) → motive n → motive (n+1)) → (n) → motive n
                    --                        ↑ motive n = 帰納法の仮定 IH（Nat が再帰だから）
+-- def label' : Three → Nat :=
+--   @Three.rec (fun _ => Nat) 0 1 2
 -- ANCHOR_END: eliminators
 
 -- ============================================================
@@ -116,6 +145,16 @@ theorem two_mul_sumTo : (n : Nat) → 2 * sumTo n = n * (n + 1)
       _ = n * (n + 1) + 2 * (n + 1)   := congrArg (· + 2 * (n + 1)) (two_mul_sumTo n)  -- 帰納法の仮定
       _ = (n + 2) * (n + 1)           := (Nat.add_mul n 2 (n + 1)).symm         -- 括り直し
       _ = (n + 1) * (n + 1 + 1)       := Nat.mul_comm (n + 2) (n + 1)           -- 可換（n+2 ≡ n+1+1）
+
+#print two_mul_sumTo
+
+theorem two_mul_sumTo' : ∀ (n : Nat), 2 * sumTo n = n * (n + 1) :=
+  fun x ↦ Nat.brecOn x two_mul_sumTo._f
+
+#check two_mul_sumTo._f
+
+theorem two_mul_sumTo'' : ∀ (n : Nat), 2 * sumTo n = n * (n + 1) :=
+  fun x ↦ Nat.brecOn x (fun x f => sorry)
 
 theorem sumTo_formula (n : Nat) : sumTo n = n * (n + 1) / 2 :=
   (Nat.mul_div_cancel_left (sumTo n) (Nat.succ_pos 1)).symm.trans

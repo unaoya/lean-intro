@@ -23,13 +23,19 @@ example : Nat → Nat := fun n => n + n
 --   「命題＝型・証明＝項」だから定義と証明は同じ仕組み——論理結合子としては Ch2 で本格的に扱う
 theorem two_plus_two : 2 + 2 = 4 := rfl
 
+theorem zero_eq_one : 0 = 1 := sorry
+
 -- `#check`: 式の**型**を表示する（コマンド・証明には影響しない）
 #check myNumber        -- Nat
 #check double          -- Nat → Nat
 #check two_plus_two    -- 2 + 2 = 4（命題そのものが型）
+#check Nat
+#check 0
+#check 0 = 0
 
 -- `#print`: 定義の**中身**を表示する（後でパターンマッチや構成子の正体を覗くのに使う）
 #print double
+#print two_plus_two
 -- ANCHOR_END: commands
 
 -- ============================================================
@@ -41,7 +47,11 @@ theorem two_plus_two : 2 + 2 = 4 := rfl
 -- 空集合に対応する型 Empty: 構成子が 0 個＝**項が 1 つも作れない**型（CH 対応で命題 False に対応）
 #check Empty
 -- Empty からはどんな型へも関数がある（項が無いので「あり得ない入力」に何でも返せる＝爆発律のデータ版）
-#check (@Empty.elim : (C : Sort _) → Empty → C)
+#check Empty.elim
+-- 関数の一意性
+def unique (α : Type) (f g : Empty → α) : f = g :=
+  funext fun x ↦ Empty.elim x
+#check funext
 
 -- 数の型はすべて core にある（mathlib 不要）: 自然数 Nat・整数 Int・有理数 Rat
 #check Nat       -- 自然数 0,1,2,…（帰納型 zero/succ——Ch4 で再会）
@@ -52,6 +62,10 @@ example : Int := -5
 example : Rat := 1 / 2
 -- 有限型 Fin n（structure { val, isLt }）も core にある（下の §3d Range と同型）
 #check (Fin 3)
+#check Fin
+#print Nat
+#print Int
+#print Rat
 -- ANCHOR_END: basic_types
 
 -- ============================================================
@@ -61,21 +75,42 @@ example : Rat := 1 / 2
 -- ANCHOR: product
 -- 「正式な」導入は Prod.mk: α と β の項から α × β の項を作る関数
 #check @Prod.mk        -- {α β} → α → β → α × β（2 引数の関数として読める）
+#check Prod
+#print Prod
+#print Prod.mk
+#check Prod Nat Bool
+#check Nat × Bool
+
+example : (Prod Nat Bool) = (Nat × Bool) := rfl
+example (α β : Type) : (Prod α β) = (α × β) := rfl
+
 example (a : Nat) (b : Bool) : Nat × Bool := Prod.mk a b
 -- `⟨a, b⟩` は Prod.mk a b の略記（anonymous constructor——型から構成子を推論して埋める）
 example (a : Nat) (b : Bool) : Nat × Bool := ⟨a, b⟩
 -- 「正式な」除去は Prod.fst / Prod.snd: α × β の項から各成分を取り出す関数
 #check @Prod.fst       -- {α β} → α × β → α
 #check @Prod.snd       -- {α β} → α × β → β
+#check @Prod.fst Nat Bool
+#check Prod.fst
+#check Prod.fst ⟨1, true⟩
 example (p : Nat × Bool) : Nat := Prod.fst p
 example (p : Nat × Bool) : Bool := Prod.snd p
 -- `p.fst`/`p.1`・`p.snd`/`p.2` は Prod.fst p / Prod.snd p の略記（dot 記法）
 example (p : Nat × Bool) : Nat := p.fst
 example (p : Nat × Bool) : Nat := p.1
 example (p : Nat × Bool) : Bool := p.2
+example (p : Nat × Bool) : p.1 = p.fst := rfl
+
 -- 対比: 命題の ∧ も同じ機構（正式には And.intro で作り And.left/And.right で使う・⟨⟩/.1/.2 は略記）
 #check @And.intro      -- {a b : Prop} → a → b → a ∧ b
 example (A B : Prop) (h : A ∧ B) : B ∧ A := ⟨h.2, h.1⟩
+
+def NatPair : Type := Nat × Nat
+def add : NatPair → Nat := fun ⟨a,b⟩ => a + b
+def add' : NatPair → Nat := fun a => a.1 + a.2
+example : add = add' := rfl
+#print add
+#print add'
 -- ANCHOR_END: product
 
 -- ============================================================
@@ -98,6 +133,8 @@ def sumToNat (s : Nat ⊕ Bool) : Nat := match s with
 -- 対比: 命題の ∨ も同じ（正式には Or.inl/Or.inr で導入・Or.elim で除去）——Ch2 の or_swap がこれ
 #check @Or.inl         -- {a b : Prop} → a → a ∨ b
 example (A B : Prop) (h : A ∨ B) : B ∨ A := h.elim Or.inr Or.inl
+
+#check Sum.rec
 -- ANCHOR_END: sum
 
 -- ============================================================
@@ -115,6 +152,7 @@ example (f : Nat → Nat) (n : Nat) : Nat := f n
 -- 依存関数型 (x : α) → β x が真のプリミティブ（行き先 β が引数 x に依存）
 -- ANCHOR: dependent
 #check (Nat → Nat)                 -- 非依存の関数型
+-- #print (Nat → Nat)
 #check ((n : Nat) → Fin (n + 1))   -- 依存関数型（Fin は core の有限型・下の §3d Range と同型）
 #check (fun n : Nat => (0 : Fin (n + 1)))   -- (n : Nat) → Fin (n + 1)
 -- ANCHOR_END: dependent
@@ -134,10 +172,13 @@ example : ∀ n : Nat, n = n := fun n => Eq.refl n
 -- {x : α // p x} は「述語 p を満たす α の項」の型（p : α → Prop）。
 -- 「正式な」導入は Subtype.mk: 値 x と「p x の証明」のペア
 #check @Subtype.mk     -- {α} {p : α → Prop} → (val : α) → p val → {x // p x}
+#check Subtype
+#print Subtype
 example : {n : Nat // n < 5} := Subtype.mk 3 (by omega)
 example : {n : Nat // n < 5} := ⟨3, by omega⟩          -- ⟨_, _⟩ は Subtype.mk の略記
 -- 「正式な」除去は .val（値）/ .property（証明）
 #check @Subtype.val    -- {α} {p} → {x // p x} → α
+#print Subtype.val
 example (s : {n : Nat // n < 5}) : Nat := s.val
 example (s : {n : Nat // n < 5}) : s.val < 5 := s.property
 -- 対比: 命題の ∃ も同じ依存ペア（⟨witness, proof⟩ で導入）。Subtype は「∃ をデータに格上げ」した
@@ -155,6 +196,8 @@ example (s : {n : Nat // n < 5}) : s.val < 5 := s.property
 -- 集合 β x を x でタグ付けして集めたもの。**Subtype は β x が Prop（命題）である特別な場合**。
 #check @Sigma.mk       -- {α} {β : α → Type} → (fst : α) → β fst → Σ x, β x
 -- 例: 「n と、Fin (n+1) の項」のペア（第 2 成分の型 Fin (n+1) が第 1 成分 n に依存）
+#check Σ n : Nat, Fin (n + 1)
+#check (n : Nat) × Fin (n + 1)
 example : Σ n : Nat, Fin (n + 1) := ⟨2, 0⟩            -- n=2 と Fin 3 の項 0
 -- 除去: .1（第 1 成分）/ .2（第 2 成分・その型は .1 に依存）
 example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
@@ -171,6 +214,11 @@ example (s : Σ n : Nat, Fin (n + 1)) : Nat := s.1
 
 -- ANCHOR: range
 def Range (n : Nat) := { i : Nat // i < n }
+def Range' : Nat → Type := fun (n : Nat) => { i : Nat // i < n }
+#check Range
+#print Range
+#check Range'
+#print Range'
 -- ANCHOR_END: range
 
 -- ANCHOR: range_intro
@@ -199,8 +247,14 @@ namespace Range
 def incl {n : Nat} : Range n → Range (n + 1) :=
   fun k => ⟨k.val, Nat.lt_succ_of_lt k.property⟩
 
+#check Nat.lt_succ_of_lt
+#print Nat.lt_succ_of_lt
+
 def addone {n : Nat} : Range n → Range (n + 1) :=
   fun k => ⟨k.val + 1, Nat.succ_lt_succ k.property⟩
+
+#check Nat.succ_lt_succ
+#print Nat.succ_lt_succ
 
 end Range
 -- ANCHOR_END: range_funcs

@@ -15,6 +15,21 @@ theorem add_swap_left (a b c : Nat) : a + (b + c) = b + (a + c) :=
       = (a + b) + c := (Nat.add_assoc a b c).symm
     _ = (b + a) + c := congrArg (fun x => x + c) (Nat.add_comm a b)
     _ = b + (a + c) := Nat.add_assoc b a c
+
+#print add_swap_left
+#check trans
+#check Nat.add_assoc
+#check congrArg
+#check Nat.add_comm
+
+theorem add_swap_left' (a b c : Nat) : a + (b + c) = (b + a) + c :=
+  calc a + (b + c)
+      = (a + b) + c := (Nat.add_assoc a b c).symm
+    _ = (b + a) + c := congrArg (fun x => x + c) (Nat.add_comm a b)
+
+#print add_swap_left'
+#check trans
+
 -- ANCHOR_END: calc_warmup
 
 -- ============================================================
@@ -30,6 +45,8 @@ theorem nat_interchange (a b c d : Nat) : (a + b) + (c + d) = (a + c) + (b + d) 
     _ = a + ((c + b) + d) := congrArg (fun x => a + (x + d)) (Nat.add_comm b c)
     _ = a + (c + (b + d)) := congrArg (fun x => a + x) (Nat.add_assoc c b d)
     _ = (a + c) + (b + d) := (Nat.add_assoc a c (b + d)).symm
+
+#print nat_interchange
 -- ANCHOR_END: nat_interchange
 
 -- ============================================================
@@ -45,6 +62,18 @@ example (a b c : Nat) (h1 : a = b) (h2 : b = c) :
 -- だから §5.3 の two_mul_sumTo の calc も、各段の証明を Eq.trans でつないだ 1 個の項にすぎない。
 -- パターンマッチ（→ Nat.brecOn・Ch4）・calc（→ Eq.trans）・(後の) タクティク——記法はみな
 -- 「項を作る」ための糖衣（CH 対応: 項＝証明）。
+theorem hoge (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c :=
+  calc
+  a = b := h1
+  _ = c := h2
+#print hoge
+#check instTransEq
+#check instTransEq Eq
+#check Eq.trans
+theorem hoge' (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c :=
+  trans h1 h2
+theorem hoge'' (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c :=
+  h1.trans h2
 -- ANCHOR_END: calc_is_term
 
 -- ============================================================
@@ -59,5 +88,8 @@ theorem nat_interchange_mul (a b c d : Nat) : (a * b) * (c * d) = (a * c) * (b *
     _ = a * ((c * b) * d) := congrArg (fun x => a * (x * d)) (Nat.mul_comm b c)
     _ = a * (c * (b * d)) := congrArg (fun x => a * x) (Nat.mul_assoc c b d)
     _ = (a * c) * (b * d) := (Nat.mul_assoc a c (b * d)).symm
+
+#check congrArg
+#check Eq.symm
 
 end Solutions

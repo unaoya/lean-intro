@@ -9,7 +9,9 @@ import Ch1_Types  -- 型（Ch1 の ×⊕→Π…）と命題（∧∨→¬∀∃
 -- 最初の証明: 命題 0=0 の証明は項 Eq.refl 0（証明＝項の最小例）。計算で閉じる等式は rfl
 -- ANCHOR: my_first_theorem
 theorem my_first_theorem : 0 = 0 := Eq.refl 0
+#check Eq.refl
 theorem my_first_theorem' : 0 = 0 := rfl
+#check rfl
 theorem my_second_theorem : 1 + 1 = 2 := rfl
 theorem my_second_theorem' : 3 + 1 = 4 := rfl
 theorem my_second_theorem'' (n : Nat) : n + 1 = n.succ := rfl
