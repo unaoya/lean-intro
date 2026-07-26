@@ -1,12 +1,12 @@
 # Summary
 
-[序章 — 挑戦状](ch00_intro.md)
+[序章 — 挑戦状](part1/ch00_intro.md)
 
 # 第一部 型と項で証明する
 
 <!-- 構成v9（2026-06-17 確定・第一部を4章に再編）。md は配置設計版・本文未執筆 -->
 
-- [Ch0 環境構築](ch00_setup.md)
+- [Ch0 環境構築](part1/ch00_setup.md)
 - [Ch1 型を作る — 型の構成と依存関数](part1/ch1_types.md)
 - [Ch2 命題 — 論理結合子の導入則と除去則](part1/ch2_proposition.md)
 - [Ch3 calc — 等式の証明も項](part1/ch3_calc.md)
