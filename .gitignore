@@ -1,5 +1,3 @@
 /.lake
 .DS_Store
-*.synctex.gz
-AxiomCheck*.lean
 book-html/
