@@ -37,3 +37,8 @@ lean_lib «Text» where
 lean_lib «TextI» where
   srcDir := "Text/book/src/part1"
   roots := #[`Ch1_Types, `Ch2_Proposition, `Ch3_Calc, `Ch4_InductiveType]  -- Ch3_DependentFunction は Ch1_Types に統合
+
+-- 別教材（Top/ 配下、mathlib 非依存・標準ライブラリのみ・デフォルトビルド対象外）
+lean_lib «Top» where
+  srcDir := "Top"
+  roots := #[`Test]
