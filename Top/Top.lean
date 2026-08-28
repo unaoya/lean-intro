@@ -7,6 +7,23 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 そのために必要なものだけを、必要になった順に足していく。
 
 標準ライブラリには数学でいう「集合」がないので、まずそこから作る。
+
+## この定理を信じるには何を信じればよいか
+
+末尾の定理 `Homeomorph.ofContinuousBijective` を信じるのに必要なのは、次の3つだけである。
+
+1. Lean の型検査器が正しいこと（`CH.lean` の8節で見た「証明の検査＝型検査」）
+2. このファイルに書いた**定義**が、意図した数学的概念を写していること
+3. 末尾の `#print axioms` に表示される3つの公理
+
+証明そのものは信じる必要がない。途中の議論がどれだけ長く込み入っていても、
+型検査を通った時点で検査は済んでいる。
+
+このうち機械が保証**できない**のは 2 だけである。定義が間違っていれば、
+そこから証明した定理は意図と違うことを言っている。だからこのファイルでは、
+すべての定義を1ファイルに収めて目視で監査できる分量に保ち
+（mathlib を使わないのはこのためでもある）、主要な定義には
+よく知る例・事実がそこから出ることを確かめる「定義の確認」を添えてある。
 -/
 
 universe u v
@@ -206,6 +223,21 @@ theorem isOpen_interFin : ∀ (n : Nat) (W : Fin n → Set X), (∀ i, IsOpen (W
 /-- 閉集合: 補集合が開。 -/
 def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 
+/-! ### 定義の確認
+
+型検査が見ているのは「`IsOpen` が3公理を満たす」ことだけで、
+`TopologicalSpace` という定義が数学の位相空間の定義を写しているかどうかは
+機械では確かめられない（冒頭の 2）。その代わりに、
+よく知る例が定義を満たすことを見ておく。
+-/
+
+/-- 離散位相: すべての部分集合が開。どんな型にも入る、いちばん簡単な位相。 -/
+@[reducible] def discrete (X : Type u) : TopologicalSpace X where
+  IsOpen _ := True
+  isOpen_univ := trivial
+  isOpen_inter := fun _ _ _ _ => trivial
+  isOpen_sUnion := fun _ _ => trivial
+
 /-! ## 4. 連続写像
 
 「近くの点を近くに送る」を開集合だけで言い換えたのが次の定義。
@@ -215,10 +247,26 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 -- 空間はすべて同じ universe `u` に揃えておく。
 -- コンパクト性の定義で添字の型 `I` を `Type u` に取るため、ここを揃えないと
 -- 「`X` がコンパクト」と「`f '' X` がコンパクト」で universe がずれて型が合わなくなる。
-variable {Y : Type u} [TopologicalSpace Y]
+variable {Y : Type u} [TopologicalSpace Y] {Z : Type u} [TopologicalSpace Z]
 
 /-- 連続写像: 開集合の逆像がつねに開。 -/
 def Continuous (f : X → Y) : Prop := ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
+
+/-! ### 定義の確認
+
+連続の定義についても、よく知る事実がここから出ることを見ておく。
+どちらも証明は1行で、逆像が定義上ぴったり重なることを使うだけ。
+-/
+
+/-- 恒等写像は連続。`(fun x => x) ⁻¹' s` は `s` そのものなので、仮定をそのまま返せばよい。 -/
+theorem continuous_id : Continuous (fun x : X => x) :=
+  fun _ hs => hs
+
+/-- 連続写像の合成は連続。
+`(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。 -/
+theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
+    Continuous (fun x => g (f x)) :=
+  fun s hs => hf _ (hg s hs)
 
 /-! ## 5. ハウスドルフ空間
 
@@ -438,8 +486,12 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
       (fun x => hbij.1 (Classical.choose_spec (hbij.2 (f x))))
       (fun y => Classical.choose_spec (hbij.2 y))
 
--- 使った公理の確認。`sorry` は使っていない。
+-- 使った公理の確認。冒頭の「信じるもの」の 3 がこれで、`sorry` は使っていない。
 -- 集合を関数として定義したので命題の外延性 `propext` を、
 -- 点ごとの選択・背理法・逆写像の構成に `Classical.choice` を使っている。
 -- （`funext` は Lean では `Quot.sound` から導かれる定理なので、公理として現れない。）
 #print axioms Homeomorph.ofContinuousBijective
+
+/-! 余力があれば、発展演習 `Extra.lean` へ（解答は `ExtraSol.lean`）。
+位相空間の圏と自由忘却随伴を組み立て、最後にこのファイルの主定理の
+ハウスドルフという仮定が外せないことを反例で確かめる。 -/
