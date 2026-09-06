@@ -53,11 +53,12 @@ hr { border: none; border-top: 1px solid var(--border); }
 <main>
 <pre class="lean"><code><span class="kw">import</span> Top</code></pre>
 <h1>発展演習: 位相空間の圏と自由忘却随伴</h1>
-<p><code>Top.lean</code> まで読み終えた人のための演習問題。題材は次の3つ。</p>
+<p><code>Top.lean</code> まで読み終えた人のための演習問題。題材は次の4つ。</p>
 <ul>
 <li>密着位相・離散位相と、その普遍性</li>
 <li>位相空間の圏と、離散・密着・忘却の3つの関手</li>
 <li>自由忘却随伴 「離散 ⊣ 忘却 ⊣ 密着」</li>
+<li>位相空間の別定義（閉集合系・閉包作用素・近傍系・ネット）と等価性（Part 5）</li>
 </ul>
 <p>最後に、これらを使って **<code>Top.lean</code> の主定理のハウスドルフという仮定が外せないこと**を反例で確かめる。</p>
 <h2>進め方</h2>
@@ -301,6 +302,231 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="cm">-- ヒント: 離散側で開集合 `{b | b = true}` を考える。その逆像は自分自身だが、</span>
 <span class="cm">-- 密着位相の開集合は `∅` と `univ` だけなので、どちらの場合も矛盾する。</span>
 <span class="cm">-- （ここに theorem を書く）</span></code></pre>
+<h2>Part 5（さらに発展）: 位相空間の別定義と等価性</h2>
+<p><code>TopologicalSpace</code>（開集合系）は位相の唯一の定義ではない。この Part では</p>
+<ul>
+<li>A: <strong>閉集合系</strong>（<code>ClosedTopology</code>）</li>
+<li>B: <strong>Kuratowski の閉包作用素</strong>（<code>KuratowskiClosure</code>）</li>
+<li>C: <strong>近傍系</strong>（<code>NeighborhoodSystem</code>）</li>
+<li>D: <strong>ネット</strong>による閉集合の特徴づけ（こちらは公理化ではなく特徴づけ）</li>
+</ul>
+<p>を形式化し、A〜C が開集合系と<strong>等価</strong>であることを、Part 3 で作った <code>Cat.Equiv</code> を「構造どうしの全単射」として使って示す。</p>
+<p>等価性の証明には「同じ <code>IsOpen</code> を持つ2つの <code>TopologicalSpace</code> は等しい」という外延性補題が要る。証明フィールドは proof irrelevance により等しさに影響しないので、述語フィールドの一致だけから構造全体の等しさが出る（下の <code>ext&#x27;</code>。この形の補題は各構造に対して与えておく）。</p>
+<p>この Part の <code>#check</code> は表示の注記を省く（読み方はこれまでと同じ）。</p>
+<pre class="lean"><code><span class="doc">/-- 集合族の共通部分。`sUnion` の双対。 -/</span>
+<span class="kw">def</span> Set.sInter {α : <span class="sort">Type</span>} (S : Set (Set α)) : Set α := {a | ∀ s ∈ S, a ∈ s}
+
+<span class="doc">/-- 前置記法 `⋂₀ S`。 -/</span>
+<span class="kw">prefix</span>:110 &quot;⋂₀ &quot; =&gt; Set.sInter
+
+<span class="doc">/-- 包含の反対称性。集合の等式を示す基本手段（以下で多用する）。 -/</span>
+<span class="kw">lemma</span> Set.subset_antisymm {α : <span class="sort">Type</span>} {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
+  Set.ext <span class="kw">fun</span> a =&gt; ⟨<span class="kw">fun</span> ha =&gt; h₁ a ha, <span class="kw">fun</span> ha =&gt; h₂ a ha⟩
+
+<span class="doc">/-- 同じ `IsOpen` を持つ位相は等しい。`cases` で両者を分解すると、</span>
+<span class="doc">述語の一致を代入した残りは証明フィールドだけになり、</span>
+<span class="doc">proof irrelevance により `rfl` で閉じる。 -/</span>
+<span class="kw">theorem</span> TopologicalSpace.ext&#x27; {X : <span class="sort">Type</span>} {t₁ t₂ : TopologicalSpace X}
+    (h : t₁.IsOpen = t₂.IsOpen) : t₁ = t₂ := <span class="kw">by</span>
+  <span class="kw">cases</span> t₁; <span class="kw">cases</span> t₂; <span class="kw">cases</span> h; rfl
+
+<span class="doc">/-- 問題14: 補集合の基本法則を示せ（ド・モルガンを含む6本）。</span>
+<span class="doc">`compl_inter` と `compl_sInter` には古典論理（`by_cases` か</span>
+<span class="doc">`Classical.byContradiction`）が要る。どこで要るのか意識しながら書くこと。 -/</span>
+<span class="kw">lemma</span> Set.compl_univ {α : <span class="sort">Type</span>} : (Set.univ : Set α)ᶜ = ∅ := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> Set.compl_empty {α : <span class="sort">Type</span>} : (∅ : Set α)ᶜ = Set.univ := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> Set.compl_union {α : <span class="sort">Type</span>} (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> Set.compl_inter {α : <span class="sort">Type</span>} (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> Set.compl_sUnion {α : <span class="sort">Type</span>} (S : Set (Set α)) :
+    (⋃₀ S)ᶜ = ⋂₀ (Set.compl &#x27;&#x27; S) := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> Set.compl_sInter {α : <span class="sort">Type</span>} (S : Set (Set α)) :
+    (⋂₀ S)ᶜ = ⋃₀ (Set.compl &#x27;&#x27; S) := <span class="sorry">sorry</span></code></pre>
+<h3>A: 閉集合系</h3>
+<pre class="lean"><code><span class="doc">/-- 閉集合系による位相の公理化。開集合系の公理の双対になっている。 -/</span>
+<span class="kw">structure</span> ClosedTopology (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- その集合が閉集合であるという述語。 -/</span>
+  IsClosed (s : Set X) : <span class="sort">Prop</span>
+<span class="doc">  /-- 空集合は閉。 -/</span>
+  isClosed_empty : IsClosed ∅
+<span class="doc">  /-- 2つの閉集合の合併は閉。 -/</span>
+  isClosed_union (s t : Set X) (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∪ t)
+<span class="doc">  /-- 閉集合をいくつ集めて共通部分を取っても閉。 -/</span>
+  isClosed_sInter (S : Set (Set X)) (h : ∀ s ∈ S, IsClosed s) : IsClosed (⋂₀ S)
+
+<span class="kw">theorem</span> ClosedTopology.ext&#x27; {X : <span class="sort">Type</span>} {c₁ c₂ : ClosedTopology X}
+    (h : c₁.IsClosed = c₂.IsClosed) : c₁ = c₂ := <span class="kw">by</span>
+  <span class="kw">cases</span> c₁; <span class="kw">cases</span> c₂; <span class="kw">cases</span> h; rfl
+
+<span class="doc">/-- 問題15: 閉集合系から開集合系を作れ（開 = 補集合が閉）。問題14を使う。 -/</span>
+@[reducible] <span class="kw">def</span> ClosedTopology.toTop {X : <span class="sort">Type</span>} (c : ClosedTopology X) : TopologicalSpace X <span class="kw">where</span>
+  IsOpen s := c.IsClosed sᶜ
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題16: 開集合系から閉集合系を作れ（閉 = 補集合が開）。 -/</span>
+<span class="kw">def</span> TopologicalSpace.toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : ClosedTopology X <span class="kw">where</span>
+  IsClosed s := t.IsOpen sᶜ
+  isClosed_empty := <span class="sorry">sorry</span>
+  isClosed_union := <span class="sorry">sorry</span>
+  isClosed_sInter := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題17: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。</span>
+<span class="doc">ヒント: `ext&#x27;` → `funext` → `show` で二重補集合の形に読み替えて `compl_compl`。 -/</span>
+<span class="kw">theorem</span> toTop_toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toClosed.toTop = t := <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> toClosed_toTop {X : <span class="sort">Type</span>} (c : ClosedTopology X) : c.toTop.toClosed = c := <span class="sorry">sorry</span>
+
+<span class="kw">def</span> topEquivClosed (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (ClosedTopology X) := <span class="sorry">sorry</span></code></pre>
+<h3>B: Kuratowski の閉包作用素</h3>
+<pre class="lean"><code><span class="doc">/-- Kuratowski の閉包公理。「閉包」の振る舞いだけで位相を決める。 -/</span>
+<span class="kw">structure</span> KuratowskiClosure (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 閉包作用素。 -/</span>
+  cl (s : Set X) : Set X
+<span class="doc">  /-- 空集合の閉包は空。 -/</span>
+  cl_empty : cl ∅ = ∅
+<span class="doc">  /-- 拡大性: もとの集合を含む。 -/</span>
+  subset_cl (s : Set X) : s ⊆ cl s
+<span class="doc">  /-- 有限合併の保存。 -/</span>
+  cl_union (s t : Set X) : cl (s ∪ t) = cl s ∪ cl t
+<span class="doc">  /-- 冪等性: 2回閉包しても変わらない。 -/</span>
+  cl_cl (s : Set X) : cl (cl s) = cl s
+
+<span class="kw">theorem</span> KuratowskiClosure.ext&#x27; {X : <span class="sort">Type</span>} {k₁ k₂ : KuratowskiClosure X}
+    (h : k₁.cl = k₂.cl) : k₁ = k₂ := <span class="kw">by</span>
+  <span class="kw">cases</span> k₁; <span class="kw">cases</span> k₂; <span class="kw">cases</span> h; rfl
+
+<span class="doc">/-- 位相から定める閉包: `s` を含む閉集合すべての共通部分。 -/</span>
+<span class="kw">def</span> TopologicalSpace.closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) : Set X :=
+  ⋂₀ {u | t.IsOpen uᶜ ∧ s ⊆ u}
+
+<span class="doc">/-- 問題18: 閉包の基本性質4本を示せ。</span>
+<span class="doc">`closure_isClosed` には問題14の `compl_sInter` が要る。 -/</span>
+<span class="kw">lemma</span> TopologicalSpace.subset_closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) :
+    s ⊆ t.closure s := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> TopologicalSpace.closure_min {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s u : Set X}
+    (hu : t.IsOpen uᶜ) (hsu : s ⊆ u) : t.closure s ⊆ u := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> TopologicalSpace.closure_isClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) :
+    t.IsOpen (t.closure s)ᶜ := <span class="sorry">sorry</span>
+
+<span class="kw">lemma</span> TopologicalSpace.closure_mono {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s u : Set X}
+    (h : s ⊆ u) : t.closure s ⊆ t.closure u := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題19: 閉包公理から単調性を導け。使ってよいのは `cl_union` だけ。</span>
+<span class="doc">ヒント: `s ⊆ t` なら `s ∪ t = t`。 -/</span>
+<span class="kw">lemma</span> KuratowskiClosure.mono {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) {s t : Set X}
+    (h : s ⊆ t) : k.cl s ⊆ k.cl t := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題20: 閉包作用素から開集合系を作れ（開 = 補集合が `cl` の不動点）。</span>
+<span class="doc">`isOpen_sUnion` が山場: `subset_antisymm` と `mono` を使う。 -/</span>
+@[reducible] <span class="kw">def</span> KuratowskiClosure.toTop {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) : TopologicalSpace X <span class="kw">where</span>
+  IsOpen s := k.cl sᶜ = sᶜ
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題21: 位相から閉包作用素を作れ。問題18の4本を使う。 -/</span>
+<span class="kw">def</span> TopologicalSpace.toKur {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : KuratowskiClosure X <span class="kw">where</span>
+  cl := t.closure
+  cl_empty := <span class="sorry">sorry</span>
+  subset_cl := <span class="sorry">sorry</span>
+  cl_union := <span class="sorry">sorry</span>
+  cl_cl := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題22: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。 -/</span>
+<span class="kw">theorem</span> toKur_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toKur.toTop = t := <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> toTop_toKur {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) : k.toTop.toKur = k := <span class="sorry">sorry</span>
+
+<span class="kw">def</span> topEquivKur (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (KuratowskiClosure X) := <span class="sorry">sorry</span></code></pre>
+<h3>C: 近傍系</h3>
+<pre class="lean"><code><span class="doc">/-- 近傍系による位相の公理化（ハウスドルフ流）。 -/</span>
+<span class="kw">structure</span> NeighborhoodSystem (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 各点に、その「近傍」の族を割り当てる。 -/</span>
+  N (x : X) : Set (Set X)
+<span class="doc">  /-- 全体集合はどの点の近傍でもある。 -/</span>
+  univ_mem (x : X) : Set.univ ∈ N x
+<span class="doc">  /-- 近傍はその点を含む。 -/</span>
+  mem_of (x : X) (U : Set X) (h : U ∈ N x) : x ∈ U
+<span class="doc">  /-- 近傍を含む集合は近傍。 -/</span>
+  superset (x : X) (U V : Set X) (hU : U ∈ N x) (hUV : U ⊆ V) : V ∈ N x
+<span class="doc">  /-- 2つの近傍の共通部分は近傍。 -/</span>
+  inter (x : X) (U V : Set X) (hU : U ∈ N x) (hV : V ∈ N x) : U ∩ V ∈ N x
+<span class="doc">  /-- 近傍 `U` の中には「その各点にとっても `U` が近傍」となる近傍 `V` がある。 -/</span>
+  interior (x : X) (U : Set X) (h : U ∈ N x) : ∃ V ∈ N x, ∀ y ∈ V, U ∈ N y
+
+<span class="kw">theorem</span> NeighborhoodSystem.ext&#x27; {X : <span class="sort">Type</span>} {n₁ n₂ : NeighborhoodSystem X}
+    (h : n₁.N = n₂.N) : n₁ = n₂ := <span class="kw">by</span>
+  <span class="kw">cases</span> n₁; <span class="kw">cases</span> n₂; <span class="kw">cases</span> h; rfl
+
+<span class="doc">/-- 問題23: 近傍系から開集合系を作れ（開 = 自分の各点の近傍である集合）。 -/</span>
+@[reducible] <span class="kw">def</span> NeighborhoodSystem.toTop {X : <span class="sort">Type</span>} (n : NeighborhoodSystem X) : TopologicalSpace X <span class="kw">where</span>
+  IsOpen s := ∀ x ∈ s, s ∈ n.N x
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題24: 開集合系から近傍系を作れ（近傍 = 開集合を間に挟んで点を含む集合）。 -/</span>
+<span class="kw">def</span> TopologicalSpace.toNbhd {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : NeighborhoodSystem X <span class="kw">where</span>
+  N x := {U | ∃ V, t.IsOpen V ∧ x ∈ V ∧ V ⊆ U}
+  univ_mem := <span class="sorry">sorry</span>
+  mem_of := <span class="sorry">sorry</span>
+  superset := <span class="sorry">sorry</span>
+  inter := <span class="sorry">sorry</span>
+  interior := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題25: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。</span>
+<span class="doc">片方は `Top.lean` の `isOpen_of_nhds` がそのまま効く。</span>
+<span class="doc">もう片方の鍵は `W := {y | U ∈ N y}` が開になること（`interior` 公理を使う）。 -/</span>
+<span class="kw">theorem</span> toNbhd_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toNbhd.toTop = t := <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> toTop_toNbhd {X : <span class="sort">Type</span>} (n : NeighborhoodSystem X) : n.toTop.toNbhd = n := <span class="sorry">sorry</span>
+
+<span class="kw">def</span> topEquivNbhd (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (NeighborhoodSystem X) := <span class="sorry">sorry</span></code></pre>
+<h3>D: ネットによる閉集合の特徴づけ</h3>
+<pre class="lean"><code><span class="doc">/-- 有向な添字: 空でなく、どの2元にも上界がある。 -/</span>
+<span class="kw">structure</span> DirectedIndex : <span class="sort">Type</span> 1 <span class="kw">where</span>
+<span class="doc">  /-- 添字の型。 -/</span>
+  ι : <span class="sort">Type</span>
+<span class="doc">  /-- 「後」の関係。 -/</span>
+  le : ι → ι → <span class="sort">Prop</span>
+<span class="doc">  /-- 空でない。 -/</span>
+  inhabited : Nonempty ι
+<span class="doc">  /-- どの2元にも共通の「後」がある。 -/</span>
+  upper (i j : ι) : ∃ k, le i k ∧ le j k
+
+<span class="doc">/-- ネット `net : D.ι → X` が点 `a` に収束する:</span>
+<span class="doc">`a` のどの開近傍にも、ある添字から先はすべて入る。 -/</span>
+<span class="kw">def</span> Converges {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (D : DirectedIndex)
+    (net : D.ι → X) (a : X) : <span class="sort">Prop</span> :=
+  ∀ U, t.IsOpen U → a ∈ U → ∃ d, ∀ e, D.le d e → net e ∈ U
+
+<span class="doc">/-- 問題26: 閉集合の中のネットの極限は、その閉集合に入ることを示せ。</span>
+<span class="doc">ヒント: `upper d d` で「d 以後」の添字を1つ取る。 -/</span>
+<span class="kw">theorem</span> nets_of_isClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
+    (hs : t.IsOpen sᶜ) (D : DirectedIndex) (net : D.ι → X)
+    (hnet : ∀ e, net e ∈ s) {a : X} (hconv : Converges t D net a) : a ∈ s := <span class="sorry">sorry</span>
+
+<span class="doc">/-- 問題27: 逆——中のネットの極限で閉じている集合は閉であることを示せ。</span>
+<span class="doc"></span>
+<span class="doc">方針: `isOpen_of_nhds` に持ち込む。`a ∈ sᶜ` の開近傍が取れないと仮定すると、</span>
+<span class="doc">`a` の**どの**開近傍も `s` と交わる。そこで添字型を</span>
+<span class="doc">「`a` の開近傍の全体」（部分型）とし、包含の逆向きで有向にして、</span>
+<span class="doc">各近傍から `s` の点を `Classical.choose` で**選んで**ネットを作ると、</span>
+<span class="doc">それは `a` に収束し、仮定から `a ∈ s` となって矛盾する。</span>
+<span class="doc">`Top.lean` の補題2（選択を避けた）と対照的に、ここでは選択が本質的に要る。</span>
+<span class="doc">できたら `#print axioms` で確認せよ。 -/</span>
+<span class="kw">theorem</span> isClosed_of_nets {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
+    (h : ∀ (D : DirectedIndex) (net : D.ι → X), (∀ e, net e ∈ s) →
+         ∀ a, Converges t D net a → a ∈ s) :
+    t.IsOpen sᶜ := <span class="sorry">sorry</span></code></pre>
 </main>
 <nav><span><a href="top.html">← Top</a></span><a href="index.html">目次</a><span></span></nav>
 </body>

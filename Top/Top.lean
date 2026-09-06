@@ -34,7 +34,7 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 これは関数型 `名前 : A → B → C` と**同じ型の別表示**である。
 `def f (n : α) : β := …` と `def f : α → β := fun n => …` が同じ宣言の2通りの
 書き方である（`Intro.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
-括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 5節。
+括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 4節。
 -/
 
 /-! ## 1. 集合
@@ -49,7 +49,7 @@ def Set (α : Type) : Type := α → Prop
 #check Set
 -- 表示: `Set (α : Type) : Type`
 -- 読み: 型 α を受け取って型を返す。つまり `Set : Type → Type` という
--- 「型を受け取って型を返す関数」である（`Intro.lean` 4節の `Fin` と同じ形）。
+-- 「型を受け取って型を返す関数」である（`Intro.lean` 5節の `Fin` と同じ形）。
 
 -- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は
 -- キャストなしでそのまま関数として適用できる。型検査が定義を展開して照合する。
@@ -88,7 +88,7 @@ variable {α : Type}
     error: failed to synthesize instance of type class
       Membership Nat (Set Nat)
 
-と断られる（`Intro.lean` 5節で見た「登録簿にない」エラー）。
+と断られる（`Intro.lean` 4節で見た「登録簿にない」エラー）。
 以下、クラスごとに `instance` 登録し、直後にその記法が使えるようになったことを
 `#check` で確認していく。`⟨…⟩` はクラスの構成子にフィールドの中身を渡す書き方。
 -/
@@ -177,7 +177,7 @@ def sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 prefix:110 "⋃₀ " => Set.sUnion
 
 /-- 添字づけられた集合族 `U : I → Set α` の合併。
-族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 4節）。 -/
+族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 5節）。 -/
 def iUnion {I : Type} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 #check iUnion
@@ -261,7 +261,7 @@ theorem compl_compl (s : Set α) : sᶜᶜ = s :=
 #check compl_compl
 -- 表示: `Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s`
 -- 読み: どの集合 `s` にも適用できる等式。`∀ s, …` と書くのと `(s : Set α)` を
--- 引数に取るのは同じこと（`Intro.lean` 4節: ∀ は依存関数型）。
+-- 引数に取るのは同じこと（`Intro.lean` 5節: ∀ は依存関数型）。
 
 /-- 2つの合併は「2つだけからなる族」の合併に書き直せる。
 `{u | u = s ∨ u = t}` は要素が `s` と `t` の2つ（だけ）の集合族。
@@ -294,7 +294,7 @@ theorem union_eq_sUnion (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} 
 -/
 
 /-- `n` 個の集合 `W 0, …, W (n-1)` の共通部分。
-`Nat` の構造にそったパターンマッチ（`Intro.lean` 5節）で定義する:
+`Nat` の構造にそったパターンマッチ（`Intro.lean` 4節）で定義する:
 `0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。
 `fun i => W i.succ` は添字を1つずらして「残りの族」を作っている。 -/
 def interFin : (n : Nat) → (Fin n → Set α) → Set α
@@ -382,7 +382,7 @@ macro_rules
 
 /-- 位相空間の構造。「どの部分集合を開と呼ぶか」のデータ `IsOpen` と、
 それが満たすべき3公理を `class` で束ねる（データ＋性質という構成は
-`Intro.lean` 5節の structure/class と同じ）。
+`Intro.lean` 4節の structure/class と同じ）。
 
 `class` にしたので、以後 `[TopologicalSpace X]` と角括弧で書くだけで
 「`X` に載っている位相」がインスタンス引数として暗黙に渡る。
@@ -521,7 +521,7 @@ theorem continuous_id : Continuous (fun x : X => x) :=
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
-名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 5節）。 -/
+名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 4節）。 -/
 theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) :=
   fun s hs => hf _ (hg s hs)

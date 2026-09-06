@@ -63,6 +63,16 @@ theorem applyImp (h : p → q) (hp : p) : q := h hp
 -- `theorem` とは「命題という型の項（＝証明）を作る `def`」にほかならない。
 -- 以下のすべての対でも、この形は変わらない。
 
+/-! ### ✏ 練習
+
+型側と命題側を**同じ字面**で書けることを、自分の手で確かめる。
+
+1. 「2回適用」を両方の世界で書け:
+   `def apply2 : (α → α) → α → α` と `theorem applyTwice : (p → p) → p → p`。
+2. 「A より B、B より C」の連鎖 `theorem chain : (p → q) → (q → r) → p → r` を
+   項で書け。
+-/
+
 /-! ## 2. 直積型と「かつ」
 
 **導入**: `⟨a, b⟩` で作る。両方の成分を揃えれば組が作れる。
@@ -89,6 +99,12 @@ def swapProd : α × β → β × α := fun x => ⟨x.2, x.1⟩
 theorem swapAnd : p ∧ q → q ∧ p := fun h => ⟨h.2, h.1⟩
 
 #check swapAnd
+
+/-! ### ✏ 練習
+
+1. `theorem and_left : p ∧ q → p` と型側の対応物 `def fst' : α × β → α` を書き比べよ。
+2. `theorem and_assoc' : (p ∧ q) ∧ r → p ∧ (q ∧ r)` を `⟨…⟩` と `.1` `.2` で書け。
+-/
 
 /-! ## 3. 直和型と「または」
 
@@ -140,6 +156,13 @@ theorem elimOr : p ∨ q → (p → r) → (q → r) → r := fun h f g =>
 
 #check elimOr
 
+/-! ### ✏ 練習
+
+1. `theorem or_idem : p ∨ p → p` を `match` で書け（どちらの札でも中身は同じ）。
+2. `theorem or_map : (p → q) → p ∨ r → q ∨ r` を書け
+   （札を見て、左のときだけ関数を適用する）。
+-/
+
 /-! ## 4. 空の型と「⊥」
 
 項が1つもない型が `Empty`、証明が1つもない命題が `False`。
@@ -166,6 +189,15 @@ theorem elimFalse : False → p := fun h => h.elim
 theorem notIntro (h : p → False) : ¬p := h
 
 #check notIntro
+
+/-! ### ✏ 練習
+
+1. `theorem noContra : p → ¬p → q` を書け。ヒント: `¬p` は `p → False` なので、
+   適用すると `False` が出る。あとは `.elim`。
+2. `theorem dni : p → ¬¬p` を書け（二重否定の**導入**。ほとんど1語で書ける）。
+   書けたら、逆向き `¬¬p → p` にも挑戦して、**書けない**ことを確かめよ。
+   なぜ書けないか（そしてどう書くか）は `Top.lean` の公理の節で分かる。
+-/
 
 /-! ## 5. 依存積と「すべての」
 
@@ -199,6 +231,12 @@ theorem applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 
 #check applyForall
 
+/-! ### ✏ 練習
+
+1. `theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a` を
+   書け（各点で証明を組にするだけ）。
+-/
+
 /-! ## 6. 依存和と「存在する」
 
 直積 `α × β` を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和
@@ -231,6 +269,12 @@ theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
   fun f a b => f ⟨a, b⟩
 
 #check curryExists
+
+/-! ### ✏ 練習
+
+1. `theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a` を
+   書け（証人はそのまま、根拠だけ差し替える）。
+-/
 
 /-! ## 7. 導入と除去のまとめ
 
@@ -381,6 +425,13 @@ example {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
     or definition name, but `h` is a proof of MyEq a b
 
 と断られる。逆に言えば、それだけの違いしかない。
+-/
+
+/-! ### ✏ 練習
+
+1. `example : 1 ≤ 3` を `Nat.le` の構成子**だけ**で書け（`step` は何回要るか）。
+2. 本文の `MyEq.symm` にならって、`MyEq.trans` を自分で証明せよ
+   （`h₂` を `cases` すれば `h₁` がそのまま答えになる）。
 -/
 
 /-! ## 9. 証明を読んで納得するとは何をすることか
@@ -535,6 +586,15 @@ theorem isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) 
 | 「∎」 | 型検査が通ること |
 -/
 
+/-! ### ✏ 練習
+
+1. `theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)` を `isEven_double` に
+   ならって書け（証人は `n`、根拠は `rfl` で済む——なぜ済むのかも考えること）。
+2. 「n が偶数なら n + 2 も偶数」を、本文と同じ3段構え
+   （ふつうの証明 → 詳細版 → 項）で自分で書け。
+   ヒント: 証人は `k + 1`。式変形の最後は `Nat.mul_succ` の対称形が使える。
+-/
+
 /-! ## 10. 型検査が証明の検査になる
 
 前節の見方から、この教材の中心の主張が出る。
@@ -575,6 +635,14 @@ Lean は、埋められていない仮定 `1 ≤ n` を名指しで要求して�
 なお、型検査が保証するのは「主張したことを証明した」ことまでで、
 「主張が意図した数学を言えている」ことは保証しない。この点は
 `Top.lean` の冒頭で扱う。
+-/
+
+/-! ### ✏ 練習
+
+1. `n + 1 - 1 = n` は（`n - 1 + 1 = n` と違って）すべての `n` で正しい。
+   `#check @Nat.add_sub_cancel` でライブラリの補題の形を調べ、
+   これを使って `example : ∀ n : Nat, n + 1 - 1 = n` を証明せよ。
+   今度は穴が残らないことを確かめること。
 -/
 
 /-! ## 11. 対応のずれ
@@ -633,6 +701,12 @@ theorem orElimToProp (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
 
 #check orElimToProp
 
+/-! ### ✏ 練習
+
+1. 本文の `existsFst` の例を自分の環境で実際に書いてみて、
+   エラーメッセージを自分の目で確かめよ。
+-/
+
 /-! ## 12. タクティク — 証明のもう1つの書き方
 
 ここまで、証明はすべて項として直接書いてきた。Lean にはもう1つの流儀があり、
@@ -675,4 +749,10 @@ theorem swapAnd' : p ∧ q → q ∧ p := by
 * `show t` — ゴールを定義上等しい形 `t` に読み替える
 * `have h : t := e` — 補助的な項に名前を付けて続ける
 * `by_cases h : p` — `p` が成り立つ場合と否定の場合に分ける（古典論理）
+-/
+
+/-! ### ✏ 練習
+
+1. `swapOr` をタクティク（`intro`・`cases`・`exact`）で書き直し、
+   `#print` で生成された項を本文の `swapOr` と見比べよ。
 -/

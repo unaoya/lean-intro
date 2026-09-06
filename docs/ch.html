@@ -100,6 +100,12 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="cm">-- 「コロンの右に書いたものを持つ項を、`:=` の右に差し出す」という同じ形をしている。</span>
 <span class="cm">-- `theorem` とは「命題という型の項（＝証明）を作る `def`」にほかならない。</span>
 <span class="cm">-- 以下のすべての対でも、この形は変わらない。</span></code></pre>
+<h3>✏ 練習</h3>
+<p>型側と命題側を<strong>同じ字面</strong>で書けることを、自分の手で確かめる。</p>
+<ol>
+<li>「2回適用」を両方の世界で書け: <code>def apply2 : (α → α) → α → α</code> と <code>theorem applyTwice : (p → p) → p → p</code>。</li>
+<li>「A より B、B より C」の連鎖 <code>theorem chain : (p → q) → (q → r) → p → r</code> を項で書け。</li>
+</ol>
 <h2>2. 直積型と「かつ」</h2>
 <p><strong>導入</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</p>
 <p><strong>除去</strong>: <code>.1</code> と <code>.2</code> で取り出す。組からは各成分が取れる。 <code>p ∧ q</code> からは <code>p</code> も <code>q</code> も取れる。</p>
@@ -120,6 +126,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">theorem</span> swapAnd : p ∧ q → q ∧ p := <span class="kw">fun</span> h =&gt; ⟨h.2, h.1⟩
 
 <span class="kw">#check</span> swapAnd</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem and_left : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; : α × β → α</code> を書き比べよ。</li>
+<li><code>theorem and_assoc&#x27; : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.1</code> <code>.2</code> で書け。</li>
+</ol>
 <h2>3. 直和型と「または」</h2>
 <p><strong>導入</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</p>
 <p><strong>除去</strong>: 場合分け（<code>match</code>）。和の項を使うには、左のときと右のときの両方について行き先を用意する必要がある。「または」を使うときに場合分けするのと同じ。</p>
@@ -162,6 +173,11 @@ hr { border: none; border-top: 1px solid var(--border); }
   | .inr hq =&gt; g hq
 
 <span class="kw">#check</span> elimOr</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem or_idem : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</li>
+<li><code>theorem or_map : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</li>
+</ol>
 <h2>4. 空の型と「⊥」</h2>
 <p>項が1つもない型が <code>Empty</code>、証明が1つもない命題が <code>False</code>。</p>
 <p><strong>導入</strong>: <strong>ない</strong>。これが空であることの意味そのもので、作り方が用意されていないから項（証明）が存在しない。</p>
@@ -180,6 +196,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">theorem</span> notIntro (h : p → False) : ¬p := h
 
 <span class="kw">#check</span> notIntro</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem noContra : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
+<li><code>theorem dni : p → ¬¬p</code> を書け（二重否定の<strong>導入</strong>。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。なぜ書けないか（そしてどう書くか）は <code>Top.lean</code> の公理の節で分かる。</li>
+</ol>
 <h2>5. 依存積と「すべての」</h2>
 <p>関数型 <code>α → β</code> を一般化して、行き先の型が入力ごとに変わってよいことにしたのが依存積 <code>(a : α) → P a</code>。<code>P : α → Type v</code> は「<code>α</code> の各点に型を割り当てるもの」。</p>
 <p>命題側で対応するのは全称量化 <code>∀ a, Q a</code>。 <code>Q : α → Prop</code> は「<code>α</code> の各点に命題を割り当てるもの」で、形はまったく同じ。</p>
@@ -203,6 +224,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">theorem</span> applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 
 <span class="kw">#check</span> applyForall</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
+</ol>
 <h2>6. 依存和と「存在する」</h2>
 <p>直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>。命題側で対応するのが存在量化 <code>∃ a, Q a</code>。</p>
 <p><strong>導入</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</p>
@@ -227,6 +252,10 @@ hr { border: none; border-top: 1px solid var(--border); }
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> curryExists</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
+</ol>
 <h2>7. 導入と除去のまとめ</h2>
 <p>作り方（導入）と使い方（除去）を並べると、左右で同じ形をしていることが見える。</p>
 <table>
@@ -309,6 +338,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>error: Invalid rewrite argument: Expected an equality or iff proof
 or definition name, but `h` is a proof of MyEq a b</code></pre>
 <p>と断られる。逆に言えば、それだけの違いしかない。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</li>
+<li>本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>cases</code> すれば <code>h₁</code> がそのまま答えになる）。</li>
+</ol>
 <h2>9. 証明を読んで納得するとは何をすることか</h2>
 <p>数学の証明は、書かれ、読まれ、読んだ人が「正しい」と納得することで機能する。では、証明を読んで納得するとき、読者は何をしているのだろうか。</p>
 <p>こうモデル化できる。読者は<strong>文脈</strong>——いま使ってよいものの一覧（定理の仮定・既知の定理・ここまでに導いた事実）——を持って読み進める。そして各文で、次のような確認をしている。</p>
@@ -398,6 +432,11 @@ or definition name, but `h` is a proof of MyEq a b</code></pre>
 <tr><td>「明らか」</td><td><code>rfl</code>（計算で両辺が一致するときだけ書ける）</td></tr>
 <tr><td>「∎」</td><td>型検査が通ること</td></tr>
 </tbody></table>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)</code> を <code>isEven_double</code> にならって書け（証人は <code>n</code>、根拠は <code>rfl</code> で済む——なぜ済むのかも考えること）。</li>
+<li>「n が偶数なら n + 2 も偶数」を、本文と同じ3段構え（ふつうの証明 → 詳細版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</li>
+</ol>
 <h2>10. 型検査が証明の検査になる</h2>
 <p>前節の見方から、この教材の中心の主張が出る。</p>
 <p>証明は項なのだから、「証明が正しいか」は「項が主張どおりの型を持つか」という <strong>型検査</strong>の問題になる。型検査は機械的な計算であり、Lean はすべての宣言に対してそれを実行している。だから、ファイルがエラーなしに受理された時点で、そこに書かれた全定理の検査は済んでいる。</p>
@@ -413,6 +452,10 @@ n : Nat
 <pre class="lean"><code><span class="kw">#eval</span> (0 : Nat) - 1 + 1   <span class="cm">-- 1 になる。`n = 0` が反例であることの計算による確認</span></code></pre>
 <p>紙の上では「明らか」の一言で通ってしまう仮定の飛ばしが、型検査では<strong>埋まらない穴</strong>として必ず現れる。仮定を使うにはその証明を項として差し出すしかなく、検査器は穴の残った項を受理しない。これが「Lean が受理した＝証明が検証された」と考えてよい理由である。</p>
 <p>なお、型検査が保証するのは「主張したことを証明した」ことまでで、「主張が意図した数学を言えている」ことは保証しない。この点は <code>Top.lean</code> の冒頭で扱う。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>n + 1 - 1 = n</code> は（<code>n - 1 + 1 = n</code> と違って）すべての <code>n</code> で正しい。 <code>#check @Nat.add_sub_cancel</code> でライブラリの補題の形を調べ、これを使って <code>example : ∀ n : Nat, n + 1 - 1 = n</code> を証明せよ。今度は穴が残らないことを確かめること。</li>
+</ol>
 <h2>11. 対応のずれ</h2>
 <p>対応は完全ではない。証明は「あるかないか」だけが問題で中身は区別されない（同じ命題の2つの証明は等しいものとして扱われる）のに対し、項は中身が区別される。この差が、除去のところに現れる。</p>
 <p>依存和からは第一成分を取り出せるが、存在量化からは取り出せない。</p>
@@ -462,6 +505,10 @@ n : Nat
 <span class="kw">theorem</span> orElimToProp (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
 
 <span class="kw">#check</span> orElimToProp</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li>本文の <code>existsFst</code> の例を自分の環境で実際に書いてみて、エラーメッセージを自分の目で確かめよ。</li>
+</ol>
 <h2>12. タクティク — 証明のもう1つの書き方</h2>
 <p>ここまで、証明はすべて項として直接書いてきた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 2節の <code>swapAnd</code> をタクティクで書き直してみる。</p>
 <pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; : p ∧ q → q ∧ p := <span class="kw">by</span>
@@ -487,6 +534,10 @@ n : Nat
 <li><code>have h : t := e</code> — 補助的な項に名前を付けて続ける</li>
 <li><code>by_cases h : p</code> — <code>p</code> が成り立つ場合と否定の場合に分ける（古典論理）</li>
 </ul>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、 <code>#print</code> で生成された項を本文の <code>swapOr</code> と見比べよ。</li>
+</ol>
 </main>
 <nav><span><a href="intro.html">← Intro</a></span><a href="index.html">目次</a><span><a href="top.html">Top →</a></span></nav>
 </body>
