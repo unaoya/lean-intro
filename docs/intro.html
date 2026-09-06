@@ -63,6 +63,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="kw">#check</span> 3         <span class="cm">-- 3 : Nat</span>
 <span class="kw">#check</span> 3 + 4     <span class="cm">-- 3 + 4 : Nat</span>
 <span class="kw">#check</span> true      <span class="cm">-- Bool.true : Bool</span></code></pre>
+<p>この表示を、読むたびに自分で確かめられるようにしておきたい。そのために以後、 <strong>ざっくり</strong>版と<strong>正確には</strong>版を併記する。正確な版は初読では飛ばしてよい。</p>
+<ul>
+<li><code>3 : Nat</code> — <strong>ざっくり</strong>: 数字はそのまま自然数の項。 <strong>正確には</strong>: 数字は記法であり、期待される型に応じて読み方が決まる（4節の補足と5節で見る）。何も指定がなければ <code>Nat</code> と読まれる。</li>
+<li><code>3 + 4 : Nat</code> — <strong>ざっくり</strong>: <code>+</code> は <code>Nat → Nat → Nat</code> という型の関数だとみなしてよい。<code>Nat</code> の項を2つ渡すから、結果も <code>Nat</code> （この計算の規則は3節で正式に述べる）。 <strong>正確には</strong>: <code>+</code> の正体は汎用の演算 <code>HAdd.hAdd</code> で、「どの型の足し算か」は登録簿（5節の instance）から決まる。それを <code>Nat</code> に特殊化した姿がざっくり版である。</li>
+</ul>
 <p>すべての項はちょうど1つの型を持つ。ここで重要なのは、<strong>型もまた項である</strong>こと。 <code>Nat</code> 自身も <code>Type</code> という型を持つ項であり、<code>Type</code> も <code>Type 1</code> を持つ項である。</p>
 <pre class="lean"><code><span class="kw">#check</span> Nat       <span class="cm">-- Nat : Type</span>
 <span class="kw">#check</span> <span class="sort">Type</span>      <span class="cm">-- Type : Type 1</span>
@@ -72,6 +77,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>最後の <code>Prop</code> は命題たちの住む宇宙。つまり**命題も、<code>Prop</code> という型を持つ項**である。</p>
 <pre class="lean"><code><span class="kw">#check</span> 1 + 1 = 2   <span class="cm">-- 1 + 1 = 2 : Prop</span>
 <span class="kw">#check</span> 2 &lt; 1       <span class="cm">-- 2 &lt; 1 : Prop</span></code></pre>
+<p>この2つも確かめられる。<strong>ざっくり</strong>: <code>=</code> や <code>&lt;</code> は <code>Nat → Nat → Prop</code> という型の関数とみなせばよい。<code>1 + 1 : Nat</code> と <code>2 : Nat</code> を渡すから <code>1 + 1 = 2 : Prop</code>。 <strong>正確には</strong>: <code>=</code> はどの型でも使える <code>Eq : α → α → Prop</code>（<code>α</code> は両辺の型から決まる暗黙引数。定義そのものは <code>CH.lean</code> の8節で見る）、 <code>&lt;</code> は型ごとに登録簿で意味が決まる演算である。</p>
 <p><code>2 &lt; 1</code> のような偽の命題も、命題としては立派な項であることに注意。真であるとは「その命題の証明がある」ことであり、それは次の節で見る。</p>
 <p>型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、これがあるから「型を受け取る関数」「型を返す関数」が書ける（4節）。</p>
 <h2>2. def と theorem — 項に名前を付ける</h2>
@@ -144,17 +150,19 @@ def plus (a b : Nat) : Nat := a + b                  -- 引数を名前ごと左
 <h3>型は部分項から機械的に計算できる</h3>
 <p>2節で「型検査が走る」と述べた。その中身をここで見ておく。適用についての規則はただ1つである:</p>
 <pre class="quote"><code>f : A → B　かつ　a : A　ならば　f a : B</code></pre>
-<p>複雑な項の型も、部分項の型にこの規則を繰り返し当てるだけで決まる。例えば <code>double (plus 3 4)</code> なら:</p>
+<p>この規則は、型の計算式であると同時に、<strong>適用が合法かどうかの検査</strong>でもある。 <code>f a</code> と書いてよいのは、<code>f</code> の型が矢印型 <code>A → B</code> であり、<strong>かつ</strong>引数 <code>a</code> の型がその定義域 <code>A</code> と一致するときだけ。この2点を照合して初めて、適用が合法だと分かり、結果の型 <code>B</code> が読み取れる。</p>
+<p>例えば <code>double (plus 3 4)</code> なら:</p>
 <ol>
 <li><code>3 : Nat</code>、<code>4 : Nat</code>（数リテラル）</li>
 <li><code>plus : Nat → Nat → Nat</code>（宣言でそう決めた）</li>
-<li>規則より <code>plus 3 : Nat → Nat</code></li>
-<li>もう一度規則より <code>plus 3 4 : Nat</code></li>
-<li><code>double : Nat → Nat</code> だから <code>double (plus 3 4) : Nat</code></li>
+<li><code>plus 3</code> — 照合: <code>plus</code> の型は矢印型 <code>Nat → (Nat → Nat)</code> で、定義域は <code>Nat</code>。引数は <code>3 : Nat</code> だから一致する。よってこの適用は<strong>合法</strong>で、型は矢印の右側 <code>Nat → Nat</code></li>
+<li><code>plus 3 4</code> — 照合: <code>plus 3 : Nat → Nat</code> の定義域 <code>Nat</code> に <code>4 : Nat</code> が一致。合法で、型は <code>Nat</code></li>
+<li><code>double (plus 3 4)</code> — 照合: <code>double : Nat → Nat</code> の定義域 <code>Nat</code> に、部分項の型 <code>plus 3 4 : Nat</code> が一致。合法で、型は <code>Nat</code></li>
 </ol>
-<p>どの段階でも、見ているのは<strong>直下の部分項の型と規則1つだけ</strong>である。この局所的な計算を項全体に再帰的に行うのが型検査で、項がどれだけ大きくなっても手順は変わらない。</p>
+<p>どの段階でも、見ているのは<strong>直下の部分項の型と規則1つだけ</strong>であり、段階ごとに「一致するか」の照合が1回ずつ入っている。すべての照合が通ったときにだけ、項の全体に型が付く——つまり「型が付く」ことと「その項が意味を成す書き方である」ことは同じである。この局所的な検査を項全体に再帰的に行うのが型検査で、項がどれだけ大きくなっても手順は変わらない。</p>
+<p>1節の <code>3 + 4 : Nat</code> も、ざっくり版の <code>+ : Nat → Nat → Nat</code> を使えば同じ手順で確かめられる。そして以後に出てくる <code>#check</code> の表示は<strong>すべて</strong>、「宣言された型」と「この規則」だけで、同じように自分の手で検算できる。</p>
 <pre class="lean"><code><span class="kw">#check</span> double (plus 3 4)   <span class="cm">-- 表示: double (plus 3 4) : Nat</span></code></pre>
-<p>途中で規則が合わなければ、破れた場所がそのままエラーになる。 <code>double</code> に（数ではなく）関数 <code>plus</code> を渡してみると:</p>
+<p>照合が失敗すれば、破れた場所がそのままエラーになる。 <code>double</code> に（数ではなく）関数 <code>plus</code> を渡してみると:</p>
 <pre class="quote"><code>#check double plus
 
 error: Application type mismatch: The argument
@@ -177,6 +185,26 @@ but is expected to have type
 
 <span class="kw">#check</span> last 2     <span class="cm">-- last 2 : Fin (2 + 1)</span>
 <span class="kw">#check</span> last 9     <span class="cm">-- last 9 : Fin (9 + 1)</span></code></pre>
+<h3>補足: では <code>2 : Fin 3</code> なのか？</h3>
+<p>「<code>Fin 3</code> は 3 未満の自然数の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 1節で見たとおり<strong>項はちょうど1つの型を持ち</strong>、型どうしは集合のように重ならない。 <code>Fin 3</code> は <code>Nat</code> の部分集合ではなく、「値と、それが 3 未満だという証明の組」からなる<strong>別の型</strong>である。</p>
+<p>まぎらわしいことに、<code>(2 : Fin 3)</code> という書き方自体は通ってしまう:</p>
+<pre class="lean"><code><span class="kw">#check</span> (2 : Nat)     <span class="cm">-- 表示: 2 : Nat</span>
+<span class="kw">#check</span> (2 : Fin 3)   <span class="cm">-- 表示: 2 : Fin 3</span></code></pre>
+<p>これは数字 <code>2</code> が<strong>記法</strong>であり、期待される型に応じて別々の項に読まれるからである（<code>Fin</code> 用の読み方が登録されている。仕組みは5節で見る instance）。 <code>(2 : Nat)</code> は自然数の項、<code>(2 : Fin 3)</code> は組 <code>⟨2, 証明⟩</code> の略記で、 <strong>同じ字面の、別の項</strong>なのである。所属判定をしているのではない証拠に、 <code>(5 : Fin 3)</code> すら通り、3 で割った<strong>余り</strong>として読まれる:</p>
+<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 3)    <span class="cm">-- 2 になる（リテラルの読みは登録された読み方次第）</span>
+
+<span class="cm">-- 確認: `(2 : Fin 3)` の第一成分（値）を `.val` で取り出すと自然数の `2` に戻る</span>
+<span class="kw">example</span> : (2 : Fin 3).val = 2 := rfl</code></pre>
+<p>2つの <code>2</code> を等号で結ぼうとすると、面白いことが起きる:</p>
+<pre class="lean"><code><span class="kw">#check</span> (2 : Nat) = (2 : Fin 3)   <span class="cm">-- 表示: 2 = ↑2 : Prop</span></code></pre>
+<p>型エラーにはならないが、右辺に <code>↑</code> が付いた。これは<strong>強制</strong>（coercion）の印で、 Lean が <code>Fin 3 → Nat</code> の写像（<code>.val</code>）を自動で挟み、「<code>Nat</code> の世界に持ち上げてから比べる」形に読み替えている。逆向きはそうはいかない。<code>Fin 3</code> を期待する場所に <code>(2 : Nat)</code> を渡すと:</p>
+<pre class="quote"><code>error: Application type mismatch: The argument
+  2
+has type
+  Nat
+but is expected to have type
+  Fin 3</code></pre>
+<p><code>Nat → Fin 3</code> の向きには「3 未満」という証明が要るので、自動では埋められない。まとめると、<code>Fin 3</code> と <code>Nat</code> の関係は「部分集合と全体」ではなく、 **写像 <code>.val</code> で結ばれた別々の型**である。</p>
 <p>ふつうの関数型はこの特殊な場合にすぎない: <code>α → β</code> は、行き先が入力に依存しない <code>(_ : α) → β</code> の略記である。</p>
 <p>型を返す関数が書けるのと同様に、<strong>命題を返す関数</strong>も書ける。数学でいう述語である。</p>
 <pre class="lean"><code><span class="kw">def</span> IsZero : Nat → <span class="sort">Prop</span> := <span class="kw">fun</span> n =&gt; n = 0
@@ -334,8 +362,39 @@ but is expected to have type
 <span class="kw">#check</span> zeroPair
 
 <span class="kw">#eval</span> (zeroPair Nat).fst   <span class="cm">-- 0</span></code></pre>
+<h3>自作型にもインスタンスを与える</h3>
+<p>クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。この節で作った <code>Point</code> にゼロを登録してみる。</p>
+<pre class="lean"><code><span class="kw">instance</span> : HasZero Point <span class="kw">where</span>
+  zero := ⟨0, 0⟩
+
+<span class="cm">-- 登録した瞬間から、`HasZero` を使う汎用の道具がすべて `Point` でも使えるようになる</span>
+<span class="kw">#check</span> zeroPair Point   <span class="cm">-- 表示: zeroPair Point : Pair Point Point</span>
+<span class="kw">example</span> : (zeroPair Point).fst = Point.mk 0 0 := rfl</code></pre>
+<h3>数字の記法もクラスで動いている</h3>
+<p>4節の補足で「数字リテラルは、期待される型に応じて読み方が登録された記法だ」と述べた。その登録簿の正体もクラスで、標準ライブラリの <code>OfNat</code> である:</p>
+<pre class="quote"><code>class OfNat (α : Type u) (n : Nat) where
+  ofNat : α</code></pre>
+<p>つまり <code>(0 : Point)</code> と書けるようにしたければ、<code>OfNat Point 0</code> を登録すればよい:</p>
+<pre class="lean"><code><span class="kw">instance</span> : OfNat Point 0 <span class="kw">where</span>
+  ofNat := HasZero.zero
+
+<span class="kw">#check</span> (0 : Point)   <span class="cm">-- 表示: 0 : Point（記法 `0` が Point でも通るようになった）</span>
+<span class="kw">example</span> : (0 : Point) = Point.mk 0 0 := rfl</code></pre>
+<p>4節の補足で <code>(2 : Fin 3)</code> が通ったのも、<code>Fin</code> にこの <code>OfNat</code> のインスタンスがあらかじめ用意されていたからである。記法の意味は登録簿が決めている。</p>
+<h3>インスタンスを受け取る定理</h3>
+<p>インスタンス引数は <code>def</code> だけでなく <code>theorem</code> にも書ける。「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:</p>
+<pre class="lean"><code><span class="kw">theorem</span> zeroPair_fst (α : <span class="sort">Type</span>) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
+
+<span class="kw">#check</span> zeroPair_fst
+<span class="cm">-- 表示: `zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero`</span>
+<span class="cm">-- 読み: 使うときは `α` を指定するだけでよく、`HasZero α` の項は</span>
+<span class="cm">-- 登録簿から自動で供給される。</span>
+
+<span class="cm">-- 登録済みの型なら、どれにでも同じ定理が適用できる</span>
+<span class="kw">example</span> : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
+<span class="kw">example</span> : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point</code></pre>
 <h2>6. 型と集合のアナロジー</h2>
-<p>ここまでに出てきた型を、集合の言葉で見直しておく。「型 ↔ 集合、項 ↔ 要素」という対応で眺めると、型を作る部品はどれも、見慣れた集合の構成に対応している。</p>
+<p>ここまでに出てきた型を、集合の言葉で見直しておく。「型 ↔ 集合、項 ↔ 要素」という対応で眺めると、型を作る部品はどれも、見慣れた集合の構成に対応している。ただしアナロジーには限界もある。集合と違って型どうしは重ならない—— <code>Fin 3</code> は <code>Nat</code> の部分集合ではない（4節の補足）。</p>
 <table>
 <thead><tr><th>型</th><th>集合</th></tr></thead>
 <tbody>
