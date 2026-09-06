@@ -34,7 +34,7 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 これは関数型 `名前 : A → B → C` と**同じ型の別表示**である。
 `def f (n : α) : β := …` と `def f : α → β := fun n => …` が同じ宣言の2通りの
 書き方である（`Intro.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
-括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 6節。
+括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 7節。
 -/
 
 /-! ## 1. 集合
@@ -521,7 +521,7 @@ theorem continuous_id : Continuous (fun x : X => x) :=
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
-名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 6節）。 -/
+名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 9節）。 -/
 theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) :=
   fun s hs => hf _ (hg s hs)

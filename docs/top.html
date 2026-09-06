@@ -66,7 +66,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>このうち機械が保証<strong>できない</strong>のは 2 だけである。定義が間違っていれば、そこから証明した定理は意図と違うことを言っている。だからこのファイルでは、すべての定義を1ファイルに収めて目視で監査できる分量に保ち（mathlib を使わないのはこのためでもある）、主要な定義にはよく知る例・事実がそこから出ることを確かめる「定義の確認」を添えてある。</p>
 <h2>読み方: 各宣言のあとの <code>#check</code></h2>
 <p>各宣言の直後に <code>#check 名前</code> を置き、その表示を <code>-- 表示:</code> に書き添えてある。「いま何がどんな型で手に入ったか」を宣言ごとに確認しながら読んでほしい。</p>
-<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> <code>[ ]</code> の違いは <code>Intro.lean</code> 6節。</p>
+<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> <code>[ ]</code> の違いは <code>Intro.lean</code> 7節。</p>
 <h2>1. 集合</h2>
 <p><code>α</code> の部分集合を「<code>α</code> の要素を受け取って命題を返す関数」として定義する。 <code>s : Set α</code> と <code>a : α</code> に対し、<code>s a</code> が「<code>a</code> は <code>s</code> に属する」という命題そのものになる。</p>
 <pre class="lean"><code><span class="doc">/-- `α` の部分集合の型。実体は述語 `α → Prop` そのもので、新しいデータは何もない。 -/</span>
@@ -489,7 +489,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="doc">/-- 連続写像の合成は連続。</span>
 <span class="doc">`(g ∘ f) ⁻¹&#x27; s` が `f ⁻¹&#x27; (g ⁻¹&#x27; s)` と定義上等しいので、引き戻しを2回続けるだけ。</span>
-<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 6節）。 -/</span>
+<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 9節）。 -/</span>
 <span class="kw">theorem</span> Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (<span class="kw">fun</span> x =&gt; g (f x)) :=
   <span class="kw">fun</span> s hs =&gt; hf _ (hg s hs)
