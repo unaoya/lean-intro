@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>発展演習: 位相空間の圏と自由忘却随伴</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e; }
+}
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<nav><span><a href="top.html">← Top</a></span><a href="index.html">目次</a><span></span></nav>
+<main>
+<pre class="lean"><code><span class="kw">import</span> Top</code></pre>
+<h1>発展演習: 位相空間の圏と自由忘却随伴</h1>
+<p><code>Top.lean</code> まで読み終えた人のための演習問題。題材は次の3つ。</p>
+<ul>
+<li>密着位相・離散位相と、その普遍性</li>
+<li>位相空間の圏と、離散・密着・忘却の3つの関手</li>
+<li>自由忘却随伴 「離散 ⊣ 忘却 ⊣ 密着」</li>
+</ul>
+<p>最後に、これらを使って **<code>Top.lean</code> の主定理のハウスドルフという仮定が外せないこと**を反例で確かめる。</p>
+<h2>進め方</h2>
+<ul>
+<li><code>sorry</code> と書かれた場所を自分の証明・構成で置き換える。 <code>sorry</code> が残っているとビルド時に警告が出るので、消えたら完成。</li>
+<li>「主張も自分で書く」問題は、コメントの指示に従って宣言ごと自分で書く。</li>
+<li>構造の定義（<code>Category</code> など）は与えてある。ただし <code>Functor</code> のように「まず自分で設計してから見比べよ」とある定義は、先に紙に書いてみることを勧める。</li>
+<li>解答は <code>ExtraSol.lean</code> にある。</li>
+<li>各宣言の直後の <code>#check</code> には、<code>Top.lean</code> と同じ流儀で「表示」と「読み」を添えてある。</li>
+</ul>
+<h2>記法の補足</h2>
+<p><code>Top.lean</code> の <code>Continuous</code> は位相をインスタンス引数で受け取るので、 1つの型に別の位相を載せて論じるには <code>@</code> で位相を明示する。例えば <code>@Continuous X (discrete X) Y tY f</code> は「<code>X</code> に離散位相を入れたとき <code>f</code> は連続」。</p>
+<h2>Part 1: 密着位相</h2>
+<p>離散位相（<code>Top.lean</code> の <code>discrete</code>、すべての部分集合が開）の対極として、開集合が <code>∅</code> と <code>univ</code> しかない位相を<strong>密着位相</strong>という。</p>
+<pre class="lean"><code><span class="doc">/-- 問題1: 密着位相が位相の3公理を満たすことを示せ。</span>
+<span class="doc"></span>
+<span class="doc">ヒント: `isOpen_sUnion` では「`S` のどれかが `univ` か、全部 `∅` か」で</span>
+<span class="doc">場合分けする（`by_cases`）。 -/</span>
+@[reducible] <span class="kw">def</span> indiscrete (X : <span class="sort">Type</span>) : TopologicalSpace X <span class="kw">where</span>
+  IsOpen s := s = ∅ ∨ s = Set.univ
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> indiscrete
+<span class="cm">-- 表示: `indiscrete (X : Type) : TopologicalSpace X`</span>
+<span class="cm">-- 読み: `discrete` と同じ形——型を受け取って位相そのものを返す関数。</span>
+
+<span class="doc">/-- 問題2: 離散位相からの写像はすべて連続であることを示せ。</span>
+<span class="doc"></span>
+<span class="doc">離散位相では何もかも開なので、逆像の開性はただで手に入る。 -/</span>
+<span class="kw">theorem</span> continuous_from_discrete {X Y : <span class="sort">Type</span>} [tY : TopologicalSpace Y] (f : X → Y) :
+    @Continuous X (discrete X) Y tY f :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> continuous_from_discrete
+<span class="cm">-- 表示: `continuous_from_discrete {X Y : Type} [tY : TopologicalSpace Y] (f : X → Y) :</span>
+<span class="cm">--        Continuous f`</span>
+<span class="cm">-- 読み: 表示では暗黙・インスタンス引数が省かれるので、結論がただの `Continuous f` に</span>
+<span class="cm">-- 見える。実際の主張は `@Continuous X (discrete X) Y tY f` で、`X` 側が離散位相で</span>
+<span class="cm">-- あることは表示からは読めない。`@` 付きの主張は `#check` の表示だけでは</span>
+<span class="cm">-- 区別できないことに注意。</span>
+
+<span class="doc">/-- 問題3: 密着位相への写像はすべて連続であることを示せ。</span>
+<span class="doc"></span>
+<span class="doc">ヒント: 逆像を取る前に開集合は `∅` か `univ` しかない。</span>
+<span class="doc">`f ⁻¹&#x27; ∅` と `f ⁻¹&#x27; Set.univ` は定義上それぞれ `∅` と `univ` に等しい。 -/</span>
+<span class="kw">theorem</span> continuous_to_indiscrete {X Y : <span class="sort">Type</span>} [tX : TopologicalSpace X] (f : X → Y) :
+    @Continuous X tX Y (indiscrete Y) f :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> continuous_to_indiscrete
+<span class="cm">-- 表示: `continuous_to_indiscrete {X Y : Type} [tX : TopologicalSpace X] (f : X → Y) :</span>
+<span class="cm">--        Continuous f`</span>
+<span class="cm">-- 読み: 同様に、実際の主張は `@Continuous X tX Y (indiscrete Y) f`（`Y` 側が密着位相）。</span>
+
+<span class="cm">-- 問題4（主張も自分で書く）:</span>
+<span class="cm">-- 「密着位相を入れた `Bool` はハウスドルフでない」を形式化し、証明せよ。</span>
+<span class="cm">-- ヒント: 否定 `¬p` は `p → False`（`CH.lean` 4節）。</span>
+<span class="cm">-- `true` と `false` を分離する開集合の組が取れたとして、矛盾を導く。</span>
+<span class="cm">-- （ここに theorem を書く）</span></code></pre>
+<h2>Part 2: 圏と関手</h2>
+<p>「対象」と「射」、恒等射と合成、そして3つの法則。圏の定義は次のとおり与える。 <code>Obj</code> と <code>Hom</code> が<strong>データ</strong>、<code>id_comp</code> 以下が<strong>性質</strong>という構成は、 <code>TopologicalSpace</code> の定義（<code>IsOpen</code> がデータ、3公理が性質）と同じ形をしている。</p>
+<p>なお <code>Functor</code> という名前は標準ライブラリと衝突するので、この部の定義は名前空間 <code>Cat</code> に入れる。</p>
+<pre class="lean"><code><span class="kw">namespace</span> Cat
+
+<span class="kw">structure</span> Category <span class="kw">where</span>
+<span class="doc">  /-- 対象の集まり。`Type 1` なのは、対象として `Type` の全体を入れたいから。 -/</span>
+  Obj : <span class="sort">Type</span> 1
+<span class="doc">  /-- 対象 `A` から `B` への射の型。 -/</span>
+  Hom : Obj → Obj → <span class="sort">Type</span>
+<span class="doc">  /-- 恒等射。 -/</span>
+  id : (A : Obj) → Hom A A
+<span class="doc">  /-- 合成は図式順: `comp f g` は「`f` してから `g`」。 -/</span>
+  comp : {A B C : Obj} → Hom A B → Hom B C → Hom A C
+<span class="doc">  /-- 恒等射は合成の左単位。 -/</span>
+  id_comp : ∀ {A B : Obj} (f : Hom A B), comp (id A) f = f
+<span class="doc">  /-- 恒等射は合成の右単位。 -/</span>
+  comp_id : ∀ {A B : Obj} (f : Hom A B), comp f (id B) = f
+<span class="doc">  /-- 合成の結合律。 -/</span>
+  assoc : ∀ {A B C D : Obj} (f : Hom A B) (g : Hom B C) (h : Hom C D),
+    comp (comp f g) h = comp f (comp g h)
+
+<span <span class="kw">class</span>="kw">#check</span> Category
+<span class="cm">-- 表示: `Cat.Category : Type 2`</span>
+<span class="cm">-- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。</span>
+<span class="cm">-- `Intro.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span>
+
+<span class="doc">/-- 問題5: 型の圏を作れ。対象は型、射は関数。</span>
+<span class="doc"></span>
+<span class="doc">法則の証明はすべて `rfl` で済むはず。なぜ済むのかも考えてみること</span>
+<span class="doc">（関数の合成は定義上結合的である）。 -/</span>
+@[reducible] <span class="kw">def</span> TypeCat : Category :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> TypeCat
+<span class="cm">-- 表示: `Cat.TypeCat : Category`</span>
+<span class="cm">-- 読み: 「圏」という型の項が1つ手に入った。</span>
+
+<span class="doc">/-- 位相空間の圏の対象: 台の型と、その上の位相を束ねたもの。</span>
+<span class="doc"></span>
+<span class="doc">`attribute [instance] TopSpace.str` としておくと、`A : TopSpace` に対して</span>
+<span class="doc">`A.carrier` 上の位相が自動で見つかるようになり、`Continuous f` とだけ書ける。 -/</span>
+<span class="kw">structure</span> TopSpace : <span class="sort">Type</span> 1 <span class="kw">where</span>
+<span class="doc">  /-- 台の型。 -/</span>
+  carrier : <span class="sort">Type</span>
+<span class="doc">  /-- 台の上の位相。 -/</span>
+  str : TopologicalSpace carrier
+
+<span <span class="kw">class</span>="kw">#check</span> TopSpace
+<span class="cm">-- 表示: `Cat.TopSpace : Type 1`</span>
+<span class="cm">-- 読み: 台の型（`Type` の項）をフィールドに含むので、`Type` でなく `Type 1` に住む。</span>
+
+<span class="kw">attribute</span> [<span class="kw">instance</span>] TopSpace.str
+
+<span class="doc">/-- 問題6: 位相空間の圏を作れ。対象は `TopSpace`、</span>
+<span class="doc">射は「関数と、その連続性の証明の組」`{ f : A.carrier → B.carrier // Continuous f }`。</span>
+<span class="doc"></span>
+<span class="doc">これは `CH.lean` 6節の依存和そのもの（`Subtype`）である。</span>
+<span class="doc">ヒント: 恒等射は `continuous_id`、合成は `Continuous.comp`。</span>
+<span class="doc">射の等しさは `Subtype.ext`（第一成分が等しければ等しい）で示す。 -/</span>
+@[reducible] <span class="kw">def</span> TopCat : Category :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> TopCat
+<span class="cm">-- 表示: `Cat.TopCat : Category`</span></code></pre>
+<h3>関手</h3>
+<p>圏から圏への「構造を保つ対応」。対象の対応 <code>obj</code> と射の対応 <code>map</code> からなり、恒等射と合成を保つ。まず自分でこの structure を設計してから、下と見比べよ。</p>
+<pre class="lean"><code><span class="kw">structure</span> Functor (C D : Category) <span class="kw">where</span>
+<span class="doc">  /-- 対象の対応。 -/</span>
+  obj : C.Obj → D.Obj
+<span class="doc">  /-- 射の対応。行き先の型が `obj` に依存していることに注意（依存関数型）。 -/</span>
+  map : {A B : C.Obj} → C.Hom A B → D.Hom (obj A) (obj B)
+<span class="doc">  /-- 恒等射を恒等射に写す。 -/</span>
+  map_id : ∀ A : C.Obj, map (C.id A) = D.id (obj A)
+<span class="doc">  /-- 合成を合成に写す。 -/</span>
+  map_comp : ∀ {A B E : C.Obj} (f : C.Hom A B) (g : C.Hom B E),
+    map (C.comp f g) = D.comp (map f) (map g)
+
+<span <span class="kw">class</span>="kw">#check</span> Functor
+<span class="cm">-- 表示: `Cat.Functor (C D : Category) : Type 1`</span>
+<span class="cm">-- 読み: 2つの圏を受け取って「その間の関手全体の型」を返す。</span>
+
+<span class="doc">/-- 問題7: 忘却関手 `U : Top → Type` を作れ。位相を忘れて台の型だけを残す。 -/</span>
+@[reducible] <span class="kw">def</span> forgetful : Functor TopCat TypeCat :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> forgetful
+<span class="cm">-- 表示: `Cat.forgetful : Functor TopCat TypeCat`</span>
+
+<span class="doc">/-- 問題8: 離散関手 `D : Type → Top` を作れ。型に離散位相を載せる。</span>
+<span class="doc">射の行き先（任意の写像が連続になること）は問題2で作った。</span>
+<span class="doc"></span>
+<span class="doc">ヒント: 行き先の位相はインスタンス探索では見つからないので、</span>
+<span class="doc">`continuous_from_discrete (tY := discrete _) f` のように名前付き引数で明示する。 -/</span>
+@[reducible] <span class="kw">def</span> discreteFunctor : Functor TypeCat TopCat :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> discreteFunctor
+<span class="cm">-- 表示: `Cat.discreteFunctor : Functor TypeCat TopCat`</span>
+
+<span class="doc">/-- 問題9: 密着関手 `I : Type → Top` を作れ。型に密着位相を載せる。</span>
+<span class="doc">射の行き先は問題3で作った。 -/</span>
+@[reducible] <span class="kw">def</span> indiscreteFunctor : Functor TypeCat TopCat :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> indiscreteFunctor
+<span class="cm">-- 表示: `Cat.indiscreteFunctor : Functor TypeCat TopCat`</span></code></pre>
+<h2>Part 3: 随伴</h2>
+<p>関手 <code>F : C → D</code> と <code>G : D → C</code> が随伴 <code>F ⊣ G</code> であるとは、 hom 集合の間に自然な全単射</p>
+<pre class="quote"><code>Hom_D(F A, B) ≃ Hom_C(A, G B)</code></pre>
+<p>があること。全単射は <code>Top.lean</code> の <code>Homeomorph</code> と同じ形の structure で表す。「自然」の意味は <code>Adjunction</code> の2つの等式（<code>f</code> を前に合成してから対応させても、対応させてから合成しても同じ、およびその <code>h</code> 版）。</p>
+<pre class="lean"><code><span class="kw">structure</span> Equiv (α β : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 順方向の写像。 -/</span>
+  toFun : α → β
+<span class="doc">  /-- 逆方向の写像。 -/</span>
+  invFun : β → α
+<span class="doc">  /-- 往復すると戻る（`α` 側）。 -/</span>
+  left_inv : ∀ a, invFun (toFun a) = a
+<span class="doc">  /-- 往復すると戻る（`β` 側）。 -/</span>
+  right_inv : ∀ b, toFun (invFun b) = b
+
+<span <span class="kw">class</span>="kw">#check</span> Equiv
+<span class="cm">-- 表示: `Cat.Equiv (α β : Type) : Type`</span>
+
+<span class="kw">structure</span> Adjunction {C D : Category} (F : Functor C D) (G : Functor D C) <span class="kw">where</span>
+<span class="doc">  /-- hom 集合の全単射 `Hom_D(F A, B) ≃ Hom_C(A, G B)`。 -/</span>
+  homEquiv : (A : C.Obj) → (B : D.Obj) → Equiv (D.Hom (F.obj A) B) (C.Hom A (G.obj B))
+<span class="doc">  /-- 自然性（`A` 側）: 射 `f` を先に合成してから対応させても、</span>
+<span class="doc">  対応させてから合成しても同じ。 -/</span>
+  naturality_left :
+    ∀ {A&#x27; A : C.Obj} {B : D.Obj} (f : C.Hom A&#x27; A) (g : D.Hom (F.obj A) B),
+      (homEquiv A&#x27; B).toFun (D.comp (F.map f) g) = C.comp f ((homEquiv A B).toFun g)
+<span class="doc">  /-- 自然性（`B` 側）。 -/</span>
+  naturality_right :
+    ∀ {A : C.Obj} {B B&#x27; : D.Obj} (g : D.Hom (F.obj A) B) (h : D.Hom B B&#x27;),
+      (homEquiv A B&#x27;).toFun (D.comp g h) = C.comp ((homEquiv A B).toFun g) (G.map h)
+
+<span <span class="kw">class</span>="kw">#check</span> Adjunction
+<span class="cm">-- 表示: `Cat.Adjunction {C D : Category} (F : Functor C D) (G : Functor D C) : Type 1`</span>
+<span class="cm">-- 読み: 圏 `C` `D` は関手 `F` `G` の型から決まるので暗黙引数。</span>
+
+<span class="doc">/-- 問題10: 随伴「離散 ⊣ 忘却」を作れ。</span>
+<span class="doc"></span>
+<span class="doc">`Hom_Top(D X, A) ≃ Hom_Type(X, U A)`: 左辺の射は「連続な写像」、</span>
+<span class="doc">右辺の射は「ただの写像」だが、離散位相からはどんな写像も連続（問題2）なので、</span>
+<span class="doc">この対応の実体は「同じ関数を右へ左へ読み替えるだけ」である。</span>
+<span class="doc">自然性も含め、ほとんどの証明が `rfl` か `Subtype.ext rfl` で済むはず。 -/</span>
+<span class="kw">def</span> discreteAdj : Adjunction discreteFunctor forgetful :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> discreteAdj
+<span class="cm">-- 表示: `Cat.discreteAdj : Adjunction discreteFunctor forgetful`</span>
+<span class="cm">-- 読み: 型がそのまま「離散 ⊣ 忘却」と読める。</span>
+
+<span class="doc">/-- 問題11: 随伴「忘却 ⊣ 密着」を作れ。問題10と対称的。</span>
+<span class="doc"></span>
+<span class="doc">これで 離散 ⊣ 忘却 ⊣ 密着 という3連随伴ができたことになる。</span>
+<span class="doc">離散位相が「もっとも細かい位相」、密着位相が「もっとも粗い位相」であることの</span>
+<span class="doc">圏論的な言い換えである。 -/</span>
+<span class="kw">def</span> indiscreteAdj : Adjunction forgetful indiscreteFunctor :=
+  <span class="sorry">sorry</span>
+
+<span <span class="kw">class</span>="kw">#check</span> indiscreteAdj
+<span class="cm">-- 表示: `Cat.indiscreteAdj : Adjunction forgetful indiscreteFunctor`</span>
+<span class="cm">-- 読み: こちらは「忘却 ⊣ 密着」。合わせて 離散 ⊣ 忘却 ⊣ 密着。</span>
+
+<span class="kw">end</span> Cat</code></pre>
+<h2>Part 4（発展）: 反例 — 主定理の仮定は外せない</h2>
+<p><code>Top.lean</code> の主定理は「コンパクト空間から<strong>ハウスドルフ空間</strong>への連続全単射は同相」。ハウスドルフという仮定を外すと成り立たないことを、ここまでの道具で確かめる。</p>
+<p>反例は恒等写像 <code>id : (Bool, 離散) → (Bool, 密着)</code>。これは連続（問題3）かつ全単射で、定義域はコンパクト（問題12）だが、逆写像（これも <code>id</code>）は連続でない（問題13）。つまり同相ではない。主定理と見比べると、足りないのは終域のハウスドルフ性だけである（問題4）。</p>
+<pre class="lean"><code><span class="cm">-- 問題12（主張も自分で書く）:</span>
+<span class="cm">-- 「離散位相を入れた `Bool` はコンパクト」を形式化し、証明せよ。</span>
+<span class="cm">-- ヒント: 開被覆から `true` を覆う番号と `false` を覆う番号を1つずつ取り、</span>
+<span class="cm">-- その2つからなる添字集合を使う。有限性の証人は `Fin 2` からの関数で作る。</span>
+<span class="cm">-- `CompactSpace.mk` のインスタンス引数も `@` で明示する必要がある。</span>
+<span class="cm">-- （ここに theorem を書く）</span>
+
+<span class="cm">-- 問題13（主張も自分で書く）:</span>
+<span class="cm">-- 「恒等写像 `(Bool, 密着) → (Bool, 離散)` は連続でない」を形式化し、証明せよ。</span>
+<span class="cm">-- ヒント: 離散側で開集合 `{b | b = true}` を考える。その逆像は自分自身だが、</span>
+<span class="cm">-- 密着位相の開集合は `∅` と `univ` だけなので、どちらの場合も矛盾する。</span>
+<span class="cm">-- （ここに theorem を書く）</span></code></pre>
+</main>
+<nav><span><a href="top.html">← Top</a></span><a href="index.html">目次</a><span></span></nav>
+</body>
+</html>
