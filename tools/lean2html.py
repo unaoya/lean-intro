@@ -172,19 +172,28 @@ KEYWORDS = (
     "section|open|export|import|syntax|macro_rules|macro|prefix|infixl|"
     "infixr|postfix|noncomputable|deriving|attribute|axiom|sorry"
 )
-KW_RE = re.compile(r"(?<![\w_.'])(" + KEYWORDS + r")(?![\w_'])")
-SORT_RE = re.compile(r"(?<![\w_.'])(Type|Prop|Sort)(?![\w_'])")
-CMD_RE = re.compile(r"(#check|#print|#eval|#guard)")
+# 1パスで全トークンを拾う（逐次置換だと、挿入した span の中の
+# `class` などの語が次の置換に誤マッチしてタグを壊す）
+TOKEN_RE = re.compile(
+    r"(?P<cmd>#check|#print|#eval|#guard)"
+    r"|(?<![\w_.'])(?P<kw>" + KEYWORDS + r")(?![\w_'])"
+    r"|(?<![\w_.'])(?P<sort>Type|Prop|Sort)(?![\w_'])"
+)
+
+
+def _token_repl(m: re.Match) -> str:
+    if m.group("cmd"):
+        return f'<span class="kw">{m.group("cmd")}</span>'
+    if m.group("kw"):
+        w = m.group("kw")
+        cls = "sorry" if w == "sorry" else "kw"
+        return f'<span class="{cls}">{w}</span>'
+    return f'<span class="sort">{m.group("sort")}</span>'
 
 
 def hl_code_part(code: str) -> str:
-    """コード片（コメント以外）のハイライト。エスケープしてから span を差す。"""
-    e = html.escape(code)
-    e = CMD_RE.sub(r'<span class="kw">\1</span>', e)
-    e = KW_RE.sub(lambda m: f'<span class="kw">{m.group(1)}</span>'
-                  if m.group(1) != "sorry" else '<span class="sorry">sorry</span>', e)
-    e = SORT_RE.sub(r'<span class="sort">\1</span>', e)
-    return e
+    """コード片（コメント以外）のハイライト。エスケープしてから1パスで span を差す。"""
+    return TOKEN_RE.sub(_token_repl, html.escape(code))
 
 
 def render_code(lines: list[str]) -> str:
