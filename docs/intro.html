@@ -134,11 +134,26 @@ but is expected to have type
 </ol>
 <h2>3. 関数</h2>
 <p>まず関数の<strong>型</strong>から。<code>Nat → Nat</code> は「<code>Nat</code> から <code>Nat</code> への関数の型」を表す。一般に、型 <code>A</code> と型 <code>B</code> から、新しい型 <code>A → B</code>——「<code>A</code> から <code>B</code> への関数の型」——が作れる。つまり矢印 <code>→</code> は、<strong>2つの型から新しい型を1つ作る操作</strong>を表す記号である。それ自体が具体的な関数を定めるのではない。集合の言葉でいえば、<code>A → B</code> は写像全体の集合 Map(A, B)（Hom(A, B)、B^A などとも書かれるもの）と同じ役割を持つ。</p>
-<p>そして関数そのもの（<code>A → B</code> 型の項）は、<code>fun</code> という記法で記述される項によって定義できる: <code>fun x =&gt; e</code> は「<code>x</code> を受け取って <code>e</code> を返す関数」である。</p>
+<h3>fun 記法 — 関数を項として書く</h3>
+<p>関数そのもの（<code>A → B</code> 型の項）は、<code>fun</code> という記法で記述される項によって定義できる: <code>fun x =&gt; e</code> は「<code>x</code> を受け取って <code>e</code> を返す関数」である。</p>
+<p>この項の型は、次のように決まる。<code>fun x =&gt; e</code> を読むとき、Lean は引数 <code>x</code> の型と本体 <code>e</code> の型を<strong>同時に</strong>検査する。<code>x</code> の型が <code>A</code> で、そのもとで本体 <code>e</code> の型が <code>B</code> ならば、<code>fun x =&gt; e</code> は関数型 <code>A → B</code> の項になる。「引数を仮に置いて、そのもとで本体を検査する」というこの形は、含意 <code>p → q</code> の証明の形として <code>CH.lean</code> にそのまま現れる。</p>
+<p>名前を付けて定義してみる:</p>
 <pre class="lean"><code><span class="kw">def</span> double : Nat → Nat := <span class="kw">fun</span> n =&gt; n + n
 
-<span class="kw">#check</span> double    <span class="cm">-- double : Nat → Nat</span></code></pre>
+<span class="kw">#check</span> double</code></pre>
+<pre class="quote"><code>double : Nat → Nat</code></pre>
 <p>本体に出てきた <code>+</code>（1節で先取りした）について一言だけ注意しておく。 <code>+</code> は <strong>notation（記法）</strong>であり、その意味は <strong>class／instance</strong> という仕組みで型ごとに決まっている（仕組みは7節で説明する）。ここでは <code>Nat</code> に対して使っており、「2つの <code>Nat</code> から <code>Nat</code> を作る演算」と思えばよい。</p>
+<p>この <code>def</code> を受理する前の型検査では、2節と同じ照合が走っている。コロンの右に注釈した型 <code>Nat → Nat</code> から「引数は <code>n : Nat</code>」と仮に置き、そのもとで本体 <code>n + n</code> の型が行き先の <code>Nat</code> になるかを調べる。つまり **<code>fun</code> 記法で書かれた項の型が、注釈した関数型と一致するか**が検査されている。</p>
+<p>一致しなければ、もちろん受理されない。本体の型を間違えてみると:</p>
+<pre class="quote"><code>def bad2 : Nat → Nat := fun n =&gt; true</code></pre>
+<p>これはエラーになり、Infoview には次のように表示される:</p>
+<pre class="quote"><code>error: Type mismatch
+  true
+has type
+  Bool
+but is expected to have type
+  Nat</code></pre>
+<p>「本体 <code>true</code> の型 <code>Bool</code> が、注釈から要求される行き先の型 <code>Nat</code> と一致しない」という報告である。</p>
 <h3>適用の書き方</h3>
 <p>関数を使うには、<code>double 21</code> のように<strong>関数と引数を並べて</strong>書く（括弧は不要）。数学で「f(x)」と書くとき、私たちは f が関数で x がその定義域の元であることを前提している。Lean の <code>f x</code> も同じ約束の記法で、 **<code>f</code> が関数型を持ち、<code>x</code> がその定義域の型を持つこと**を要求する。</p>
 <p>実際 <code>double 21</code> と書くと、Lean は2つのことを確かめる:</p>
@@ -147,12 +162,13 @@ but is expected to have type
 <li><code>21</code> の型は <code>Nat</code>——定義域と一致する</li>
 </ol>
 <p>この2点が通るから <code>double 21</code> は<strong>合法な書き方</strong>であり、結果の型は矢印の右側の <code>Nat</code> になる。この確認こそが、型検査という機能の中身である。</p>
-<pre class="lean"><code><span class="kw">#eval</span> double 21    <span class="cm">-- 42</span></code></pre>
-<p><code>fun</code> の側の型検査も見ておく。<code>fun n =&gt; n + n</code> が型 <code>Nat → Nat</code> を持つかを調べるときは、引数を <code>n : Nat</code> と<strong>仮に置いて</strong>、そのもとで本体 <code>n + n</code> の型が <code>Nat</code> になるかを調べる。「仮定を置いて中身を検査する」というこの形は、含意 <code>p → q</code> の証明の形として <code>CH.lean</code> にそのまま現れる。</p>
+<pre class="lean"><code><span class="kw">#eval</span> double 21</code></pre>
+<pre class="quote"><code>42</code></pre>
 <pre class="lean"><code><span class="doc">/-- 引数を左に書く糖衣構文。上の `double` と同じもの。 -/</span>
 <span class="kw">def</span> double&#x27; (n : Nat) : Nat := n + n
 
-<span class="kw">#check</span> double&#x27;   <span class="cm">-- double&#x27; (n : Nat) : Nat</span></code></pre>
+<span class="kw">#check</span> double&#x27;</code></pre>
+<pre class="quote"><code>double&#x27; (n : Nat) : Nat</code></pre>
 <h3>表示の読み方: binder 形式</h3>
 <p>いま <code>#check double&#x27;</code> の表示が <code>double&#x27; (n : Nat) : Nat</code> となったことに注意。これは「引数の列をコロンの左に並べ、最後に結果の型を書く」<strong>binder 形式</strong>の表示で、<code>#check</code> が関数を表示するときの標準の形である。</p>
 <pre class="quote"><code>double  : Nat → Nat            （矢印形式）
