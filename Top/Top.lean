@@ -65,7 +65,7 @@ def setOf {α : Type} (p : α → Prop) : Set α := p
 -- 型としては `setOf : (α → Prop) → Set α` と読めばよい。
 
 /-- 内包記法。`{a | p a}` と書いたら `setOf fun a => p a` の略記とする。
-`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 6節）。 -/
+`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 7節）。 -/
 syntax "{" ident " | " term "}" : term
 
 -- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は
@@ -74,7 +74,7 @@ syntax "{" ident " | " term "}" : term
 macro_rules
   | `({ $x:ident | $p }) => `(setOf fun $x => $p)
 
--- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 6節）
+-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 7節）
 namespace Set
 
 -- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる

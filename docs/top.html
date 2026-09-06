@@ -91,7 +91,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="cm">-- 型としては `setOf : (α → Prop) → Set α` と読めばよい。</span>
 
 <span class="doc">/-- 内包記法。`{a | p a}` と書いたら `setOf fun a =&gt; p a` の略記とする。</span>
-<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 6節）。 -/</span>
+<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 7節）。 -/</span>
 <span class="kw">syntax</span> &quot;{&quot; ident &quot; | &quot; term &quot;}&quot; : term
 
 <span class="cm">-- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は</span>
@@ -100,7 +100,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">macro_rules</span>
   | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)
 
-<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 6節）</span>
+<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 7節）</span>
 <span class="kw">namespace</span> Set
 
 <span class="cm">-- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる</span>

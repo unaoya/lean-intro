@@ -141,6 +141,29 @@ def plus (a b : Nat) : Nat := a + b                  -- 引数を名前ごと左
 <span class="kw">def</span> addMul (a b c : Nat) : Nat := a + b * c
 
 <span class="kw">#check</span> addMul      <span class="cm">-- addMul (a b c : Nat) : Nat（binder 形式の表示）</span></code></pre>
+<h3>型は部分項から機械的に計算できる</h3>
+<p>2節で「型検査が走る」と述べた。その中身をここで見ておく。適用についての規則はただ1つである:</p>
+<pre class="quote"><code>f : A → B　かつ　a : A　ならば　f a : B</code></pre>
+<p>複雑な項の型も、部分項の型にこの規則を繰り返し当てるだけで決まる。例えば <code>double (plus 3 4)</code> なら:</p>
+<ol>
+<li><code>3 : Nat</code>、<code>4 : Nat</code>（数リテラル）</li>
+<li><code>plus : Nat → Nat → Nat</code>（宣言でそう決めた）</li>
+<li>規則より <code>plus 3 : Nat → Nat</code></li>
+<li>もう一度規則より <code>plus 3 4 : Nat</code></li>
+<li><code>double : Nat → Nat</code> だから <code>double (plus 3 4) : Nat</code></li>
+</ol>
+<p>どの段階でも、見ているのは<strong>直下の部分項の型と規則1つだけ</strong>である。この局所的な計算を項全体に再帰的に行うのが型検査で、項がどれだけ大きくなっても手順は変わらない。</p>
+<pre class="lean"><code><span class="kw">#check</span> double (plus 3 4)   <span class="cm">-- 表示: double (plus 3 4) : Nat</span></code></pre>
+<p>途中で規則が合わなければ、破れた場所がそのままエラーになる。 <code>double</code> に（数ではなく）関数 <code>plus</code> を渡してみると:</p>
+<pre class="quote"><code>#check double plus
+
+error: Application type mismatch: The argument
+  plus
+has type
+  Nat → Nat → Nat
+but is expected to have type
+  Nat</code></pre>
+<p>「引数の型 <code>Nat → Nat → Nat</code> が、要求される型 <code>Nat</code> と合わない」と、規則が破れた部分項を名指しで教えてくれる。</p>
 <h2>4. 依存関数型</h2>
 <p>1節で見たとおり型も項なので、<strong>型を返す関数</strong>が書ける。例えば標準ライブラリの <code>Fin</code> は「<code>n</code> 未満の自然数の型」を返す関数である。</p>
 <pre class="lean"><code><span class="kw">#check</span> Fin        <span class="cm">-- Fin (n : Nat) : Type  （つまり Fin : Nat → Type）</span>
@@ -266,7 +289,7 @@ def plus (a b : Nat) : Nat := a + b                  -- 引数を名前ごと左
 </ul>
 <pre class="lean"><code><span class="kw">#check</span> Pair.mk 1 true   <span class="cm">-- { fst := 1, snd := true } : Pair Nat Bool （暗黙引数が埋まった）</span></code></pre>
 <h3>ドット記法</h3>
-<p>名前空間（6節）に置かれた関数は、ドットを挟んだ短い書き方で呼べる。向きの違う2つの用法があるので、ここでまとめて押さえておく。</p>
+<p>名前空間（7節）に置かれた関数は、ドットを挟んだ短い書き方で呼べる。向きの違う2つの用法があるので、ここでまとめて押さえておく。</p>
 <p><strong>値の後ろに付けるドット</strong>: <code>p : Point</code> に対して <code>p.x</code> と書くと、Lean は「<code>p</code> の型の名前 <code>Point</code> の名前空間から <code>x</code> を探し、<code>p</code> を最初の <code>Point</code> 型の引数として渡す」と解釈する。つまり <code>p.x</code> は <code>Point.x p</code> の略記。自動生成されるフィールドに限らず、<code>Point.〜</code> という名前の関数なら何でも使える。</p>
 <pre class="lean"><code><span class="doc">/-- ドット記法の実演用: 成分を入れ替える関数。名前を `Point.swap` にしたので</span>
 <span class="doc">`p.swap` と呼べるようになる。 -/</span>
@@ -311,7 +334,35 @@ def plus (a b : Nat) : Nat := a + b                  -- 引数を名前ごと左
 <span class="kw">#check</span> zeroPair
 
 <span class="kw">#eval</span> (zeroPair Nat).fst   <span class="cm">-- 0</span></code></pre>
-<h2>6. 宣言を支える小物 — variable・namespace・記法</h2>
+<h2>6. 型と集合のアナロジー</h2>
+<p>ここまでに出てきた型を、集合の言葉で見直しておく。「型 ↔ 集合、項 ↔ 要素」という対応で眺めると、型を作る部品はどれも、見慣れた集合の構成に対応している。</p>
+<table>
+<thead><tr><th>型</th><th>集合</th></tr></thead>
+<tbody>
+<tr><td><code>A → B</code></td><td>写像全体の集合。Map(A, B)、Hom(A, B)、B^A などと書かれるもの</td></tr>
+<tr><td>列挙型 <code>Signal</code></td><td>有限集合 {red, yellow, green}</td></tr>
+<tr><td><code>MySum α β</code></td><td>直和（非交和）α ⊔ β</td></tr>
+<tr><td><code>Point</code>、<code>Pair α β</code></td><td>直積 Nat × Nat、α × β</td></tr>
+<tr><td><code>(a : α) → P a</code></td><td>集合族の直積 ∏ₐ P a（下述）</td></tr>
+</tbody></table>
+<h3>帰納型は「直和」と「直積」の重ね合わせ</h3>
+<p>帰納型の一般形は、集合の言葉ではこう読める:</p>
+<pre class="quote"><code>(構成子1の引数たちの直積) ⊔ (構成子2の引数たちの直積) ⊔ …</code></pre>
+<p>つまり<strong>構成子の個数が直和の項数を、各構成子の引数が直積の因子を</strong>与える。</p>
+<ul>
+<li><code>Signal</code> — 引数なしの構成子が3つ: 1 ⊔ 1 ⊔ 1（3点集合）</li>
+<li><code>MySum α β</code> — 1引数の構成子が2つ: α ⊔ β（直和だけが現れる）</li>
+<li><code>Point</code> — 2引数の構成子が1つ: Nat × Nat（直和が1項に退化して、直積だけが現れる）</li>
+<li>構成子が0個なら空集合（<code>CH.lean</code> に出てくる <code>Empty</code> や <code>False</code>）</li>
+</ul>
+<p>だから「structure は直積」（5節）と「帰納型は直和のようなもの」は矛盾しない。直和を<strong>使って</strong>直積を定義しているのではなく、構成子の<strong>個数</strong>と構成子の<strong>引数</strong>という直交した2つの軸が、それぞれ直和と直積に対応している。</p>
+<p>再帰的な帰納型には但し書きが要る。<code>MyNat</code> に上の読みを当てると</p>
+<pre class="quote"><code>MyNat ≅ 1 ⊔ MyNat   （zero の分の1点 ⊔ succ の引数の分）</code></pre>
+<p>と、右辺に自分自身が現れる。この場合の帰納型は「この方程式を満たす<strong>最小</strong>の集合」と読む。最小性は、「<code>zero</code> に <code>succ</code> を有限回重ねたものがすべてで、それ以外にない」という5節の説明の言い替えである。</p>
+<h3>依存版: 族の直積と族の直和</h3>
+<p>依存関数型 <code>(a : α) → P a</code> は、集合族 {P a} の<strong>直積</strong> ∏ₐ P a に当たる。その項は「各 a に P a の要素を1つずつ選ぶ、選び方」だからである。 <code>α → β</code> ＝ B^A（すべての因子が同じ直積、すなわち冪）の、因子が点ごとに変わってよい一般化になっている。</p>
+<p>直積があれば、<strong>族の直和</strong> ∐ₐ P a——「どの a か」の札付きで各 P a の要素を集めたもの——も考えたくなる。これに当たる型もあり、<strong>依存和</strong> <code>(a : α) × P a</code> と書く。 <code>Pair</code>（直積）と <code>MySum</code>（直和）の共通の一般化であり、<code>CH.lean</code> の6節で主役になる。</p>
+<h2>7. 宣言を支える小物 — variable・namespace・記法</h2>
 <p>最後に、<code>CH.lean</code> と <code>Top.lean</code> の見た目を決めている構文を3つ紹介する。（証明を書くもう1つの流儀「タクティク」は <code>CH.lean</code> の最後で扱う。）</p>
 <h3>variable — 共通の引数の前置き</h3>
 <p>同じ引数を宣言のたびに書くかわりに、<code>variable</code> でまとめて前置きしておける。以後の宣言は、その変数を<strong>実際に使ったときだけ</strong>引数として受け取る。</p>
