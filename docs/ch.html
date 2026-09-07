@@ -53,6 +53,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <main>
 <pre class="lean"><code><span class="kw">import</span> Intro</code></pre>
 <h1>型と命題の対応（Curry–Howard 対応）の雰囲気</h1>
+<p><code>Intro.lean</code> の目標1は「項の型を推測する——それは機械的にできる」だった。このファイルの目標は<strong>目標2</strong>: その同じ仕組みが、<strong>定理の証明の検証にそのまま使える</strong>ことを納得することである。</p>
 <p>Lean には「型の世界」と「命題の世界」があり、この2つはよく似ている。</p>
 <ul>
 <li>型 <code>α</code> に対しては、項 <code>a : α</code> を<strong>作る</strong>。</li>
