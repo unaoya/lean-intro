@@ -354,7 +354,7 @@ def Set.sInter {α : Type} (S : Set (Set α)) : Set α := {a | ∀ s ∈ S, a �
 prefix:110 "⋂₀ " => Set.sInter
 
 /-- 包含の反対称性。集合の等式を示す基本手段。 -/
-lemma Set.subset_antisymm {α : Type} {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
+theorem Set.subset_antisymm {α : Type} {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
   Set.ext fun a => ⟨fun ha => h₁ a ha, fun ha => h₂ a ha⟩
 
 /-- 同じ `IsOpen` を持つ位相は等しい。証明フィールドは proof irrelevance により
@@ -364,17 +364,17 @@ theorem TopologicalSpace.ext' {X : Type} {t₁ t₂ : TopologicalSpace X}
   cases t₁; cases t₂; cases h; rfl
 
 /-- 問題14: 補集合の基本法則（ド・モルガンを含む6本）。 -/
-lemma Set.compl_univ {α : Type} : (Set.univ : Set α)ᶜ = ∅ :=
+theorem Set.compl_univ {α : Type} : (Set.univ : Set α)ᶜ = ∅ :=
   Set.ext fun _ => ⟨fun h => h trivial, fun h => False.elim h⟩
 
-lemma Set.compl_empty {α : Type} : (∅ : Set α)ᶜ = Set.univ :=
+theorem Set.compl_empty {α : Type} : (∅ : Set α)ᶜ = Set.univ :=
   Set.ext fun _ => ⟨fun _ => trivial, fun _ h => h⟩
 
-lemma Set.compl_union {α : Type} (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
+theorem Set.compl_union {α : Type} (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   Set.ext fun _ => ⟨fun h => ⟨fun hs => h (Or.inl hs), fun ht => h (Or.inr ht)⟩,
     fun h hu => match hu with | Or.inl hs => h.1 hs | Or.inr ht => h.2 ht⟩
 
-lemma Set.compl_inter {α : Type} (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ := by
+theorem Set.compl_inter {α : Type} (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ := by
   apply Set.ext
   intro a
   constructor
@@ -387,7 +387,7 @@ lemma Set.compl_inter {α : Type} (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ 
     | inl h => exact h hc.1
     | inr h => exact h hc.2
 
-lemma Set.compl_sUnion {α : Type} (S : Set (Set α)) :
+theorem Set.compl_sUnion {α : Type} (S : Set (Set α)) :
     (⋃₀ S)ᶜ = ⋂₀ (Set.compl '' S) := by
   apply Set.ext
   intro a
@@ -400,7 +400,7 @@ lemma Set.compl_sUnion {α : Type} (S : Set (Set α)) :
   · intro h ⟨s, hsS, has⟩
     exact h sᶜ ⟨s, hsS, rfl⟩ has
 
-lemma Set.compl_sInter {α : Type} (S : Set (Set α)) :
+theorem Set.compl_sInter {α : Type} (S : Set (Set α)) :
     (⋂₀ S)ᶜ = ⋃₀ (Set.compl '' S) := by
   apply Set.ext
   intro a
@@ -505,15 +505,15 @@ def TopologicalSpace.closure {X : Type} (t : TopologicalSpace X) (s : Set X) : S
   ⋂₀ {u | t.IsOpen uᶜ ∧ s ⊆ u}
 
 /-- 問題18の準備（解答側）: 位相から定めた閉包の基本性質4本。 -/
-lemma TopologicalSpace.subset_closure {X : Type} (t : TopologicalSpace X) (s : Set X) :
+theorem TopologicalSpace.subset_closure {X : Type} (t : TopologicalSpace X) (s : Set X) :
     s ⊆ t.closure s :=
   fun a ha _ hu => hu.2 a ha
 
-lemma TopologicalSpace.closure_min {X : Type} (t : TopologicalSpace X) {s u : Set X}
+theorem TopologicalSpace.closure_min {X : Type} (t : TopologicalSpace X) {s u : Set X}
     (hu : t.IsOpen uᶜ) (hsu : s ⊆ u) : t.closure s ⊆ u :=
   fun _ ha => ha u ⟨hu, hsu⟩
 
-lemma TopologicalSpace.closure_isClosed {X : Type} (t : TopologicalSpace X) (s : Set X) :
+theorem TopologicalSpace.closure_isClosed {X : Type} (t : TopologicalSpace X) (s : Set X) :
     t.IsOpen (t.closure s)ᶜ := by
   show t.IsOpen (⋂₀ {u | t.IsOpen uᶜ ∧ s ⊆ u})ᶜ
   rw [Set.compl_sInter]
@@ -522,12 +522,12 @@ lemma TopologicalSpace.closure_isClosed {X : Type} (t : TopologicalSpace X) (s :
   rw [← huv]
   exact hu.1
 
-lemma TopologicalSpace.closure_mono {X : Type} (t : TopologicalSpace X) {s u : Set X}
+theorem TopologicalSpace.closure_mono {X : Type} (t : TopologicalSpace X) {s u : Set X}
     (h : s ⊆ u) : t.closure s ⊆ t.closure u :=
   t.closure_min (t.closure_isClosed u) fun a ha => t.subset_closure u a (h a ha)
 
 /-- 問題19: 閉包公理から単調性が出る（合併の保存だけから）。 -/
-lemma KuratowskiClosure.mono {X : Type} (k : KuratowskiClosure X) {s t : Set X}
+theorem KuratowskiClosure.mono {X : Type} (k : KuratowskiClosure X) {s t : Set X}
     (h : s ⊆ t) : k.cl s ⊆ k.cl t := by
   have hst : s ∪ t = t :=
     Set.subset_antisymm
@@ -775,7 +775,7 @@ theorem isClosed_of_nets {X : Type} (t : TopologicalSpace X) {s : Set X}
 /-! ## Part 6: 誘導位相 — 押し出しと引き戻し（解答） -/
 
 /-- 問題28: 逆像は族の合併と交換する。 -/
-lemma Set.preimage_sUnion {α β : Type} (f : α → β) (S : Set (Set β)) :
+theorem Set.preimage_sUnion {α β : Type} (f : α → β) (S : Set (Set β)) :
     f ⁻¹' (⋃₀ S) = ⋃₀ (Set.preimage f '' S) := by
   apply Set.ext
   intro a
@@ -1000,7 +1000,7 @@ theorem finalTopology_empty {X : Type} {Y : Empty → Type}
   exact ⟨fun _ => trivial, fun _ i => i.elim⟩
 
 /-- 問題40: 全射なら「逆像を取ってから像を取る」と元に戻る。 -/
-lemma Set.image_preimage_of_surjective {α β : Type} {f : α → β}
+theorem Set.image_preimage_of_surjective {α β : Type} {f : α → β}
     (hf : Function.Surjective f) (u : Set β) : f '' (f ⁻¹' u) = u := by
   apply Set.ext
   intro b

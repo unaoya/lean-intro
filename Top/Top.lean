@@ -12,29 +12,49 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 
 末尾の定理 `Homeomorph.ofContinuousBijective` を信じるのに必要なのは、次の3つだけである。
 
-1. Lean の型検査器が正しいこと（`CH.lean` の10節で見た「証明の検査＝型検査」）
+1. Lean の**カーネル**が正しいこと。エラボレータやタクティクがどれだけ複雑でも、
+   最後に項を検査するのはカーネルの小さな規則集だけである（`CH.lean` の10節）
 2. このファイルに書いた**定義**が、意図した数学的概念を写していること
 3. 末尾の `#print axioms` に表示される3つの公理
 
 証明そのものは信じる必要がない。途中の議論がどれだけ長く込み入っていても、
 型検査を通った時点で検査は済んでいる。
 
-このうち機械が保証**できない**のは 2 だけである。定義が間違っていれば、
+機械が直接保証してくれるのは、「1 を信頼したうえで、書かれた証明が主張どおりの
+型を持つ」ことと、「3 にどの公理が入っているかの列挙」である。
+1 と 3 は信頼の**基盤**として明示的に引き受けるものであり、
+2 は人間が読んで監査するしかない。定義が間違っていれば、
 そこから証明した定理は意図と違うことを言っている。だからこのファイルでは、
 すべての定義を1ファイルに収めて目視で監査できる分量に保ち
 （mathlib を使わないのはこのためでもある）、主要な定義には
 よく知る例・事実がそこから出ることを確かめる「定義の確認」を添えてある。
 
-## 読み方: 各宣言のあとの `#check`
+## 読み方: 主要な宣言のあとの `#check`
 
-各宣言の直後に `#check 名前` を置き、その表示を `-- 表示:` に書き添えてある。
-「いま何がどんな型で手に入ったか」を宣言ごとに確認しながら読んでほしい。
+主要な名前付きの定義・定理の直後に `#check 名前` を置き、その表示を
+`Intro.lean` と同じ Infoview 風の枠で書き添えてある。
+`Intro.lean` 以来の読み方——表示を見る前に
+「いま何がどんな型で手に入るはずか」を**予想**してから確かめる——を、
+ここでも続けてほしい。
 
 表示は `名前 (x : A) (y : B) : C` という「引数の列 : 結果の型」の形をとる。
 これは関数型 `名前 : A → B → C` と**同じ型の別表示**である。
 `def f (n : α) : β := …` と `def f : α → β := fun n => …` が同じ宣言の2通りの
 書き方である（`Intro.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
 括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 6節。
+
+## 読み方: タクティク証明の記号
+
+証明は `CH.lean` 12節のタクティクで書く。同節の早見表にない記号を挙げておく:
+
+* `·` — 場合分けなどで生じた**サブゴールごと**の証明の区切り
+* `t₁; t₂` — `t₁` を実行してから、続けて `t₂` を実行する
+* `rw [h] at hmem` — ゴールではなく**仮定** `hmem` の側を書き換える
+* `refine ⟨…, ?_, ?_⟩` — 項の形を先に与え、あとで埋める部分を `?_` の穴にする
+* `cases i using Fin.cases` — 場合分けに使う分解のしかた（除去原理）を名指しする
+* `h ▸ e` — 等式 `h` で `e` の型を書き換える（`rw` の項版）
+
+初出の箇所にも、それぞれ短い説明を添えてある。
 -/
 
 /-! ## 1. 集合
@@ -47,9 +67,13 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 def Set (α : Type) : Type := α → Prop
 
 #check Set
--- 表示: `Set (α : Type) : Type`
--- 読み: 型 α を受け取って型を返す。つまり `Set : Type → Type` という
--- 「型を受け取って型を返す関数」である（`Intro.lean` 7節の `Fin` と同じ形）。
+
+/-!
+    Set (α : Type) : Type
+
+型 α を受け取って型を返す。つまり `Set : Type → Type` という
+「型を受け取って型を返す関数」である（`Intro.lean` 7節の `Fin` と同じ形）。
+-/
 
 -- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は
 -- キャストなしでそのまま関数として適用できる。型検査が定義を展開して照合する。
@@ -60,9 +84,13 @@ example (A : Set Nat) (n : Nat) : Prop := A n
 def setOf {α : Type} (p : α → Prop) : Set α := p
 
 #check setOf
--- 表示: `setOf {α : Type} (p : α → Prop) : Set α`
--- 読み: `{α : Type}` は暗黙引数（書かなくても `p` の型から決まる）。
--- 型としては `setOf : (α → Prop) → Set α` と読めばよい。
+
+/-!
+    setOf {α : Type} (p : α → Prop) : Set α
+
+`{α : Type}` は暗黙引数（書かなくても `p` の型から決まる）。
+型としては `setOf : (α → Prop) → Set α` と読めばよい。
+-/
 
 /-- 内包記法。`{a | p a}` と書いたら `setOf fun a => p a` の略記とする。
 `syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 8節）。 -/
@@ -97,10 +125,14 @@ variable {α : Type}
 instance : Membership α (Set α) := ⟨fun s a => s a⟩
 
 #check (1 : Nat) ∈ ({n | n = 1} : Set Nat)
--- 表示: `1 ∈ setOf fun n ↦ n = 1 : Prop`
--- 読み: 型が `Prop` と付いた＝ `∈` の登録に成功している。なお表示が
--- `{n | n = 1}` に戻らないのは、自作した記法が構文解析（読む方向）専用で、
--- 表示（書く方向）の規則までは作っていないから。展開先の `setOf …` がそのまま見えている。
+
+/-!
+    1 ∈ setOf fun n ↦ n = 1 : Prop
+
+型が `Prop` と付いた＝ `∈` の登録に成功している。なお表示が
+`{n | n = 1}` に戻らないのは、自作した記法が構文解析（読む方向）専用で、
+表示（書く方向）の規則までは作っていないから。展開先の `setOf …` がそのまま見えている。
+-/
 
 -- さらに確認: `1 ∈ {n | n = 1}` は定義上そのまま命題 `1 = 1` なので `rfl` で閉じる
 example : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl
@@ -108,22 +140,44 @@ example : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl
 /-- 包含 `s ⊆ t`: `s` のどの要素も `t` に属する。全称と含意だけで書ける。 -/
 instance : HasSubset (Set α) := ⟨fun s t => ∀ a, a ∈ s → a ∈ t⟩
 
-#check ({n | n = 1} : Set Nat) ⊆ {n | n = 2}   -- 型は Prop
+#check ({n | n = 1} : Set Nat) ⊆ {n | n = 2}
+
+/-!
+    (setOf fun n ↦ n = 1) ⊆ setOf fun n ↦ n = 2 : Prop
+
+型は Prop
+-/
 
 /-- 共通部分 `s ∩ t`: 両方に属する点の全体（「かつ」）。 -/
 instance : Inter (Set α) := ⟨fun s t => {a | a ∈ s ∧ a ∈ t}⟩
 
-#check ({n | n = 1} : Set Nat) ∩ {n | n = 2}   -- 型は Set Nat（命題でなく集合）
+#check ({n | n = 1} : Set Nat) ∩ {n | n = 2}
+
+/-!
+    (setOf fun n ↦ n = 1) ∩ setOf fun n ↦ n = 2 : Set Nat
+
+型は Set Nat（命題でなく集合）
+-/
 
 /-- 合併 `s ∪ t`: どちらかに属する点の全体（「または」）。 -/
 instance : Union (Set α) := ⟨fun s t => {a | a ∈ s ∨ a ∈ t}⟩
 
-#check ({n | n = 1} : Set Nat) ∪ {n | n = 2}   -- 型は Set Nat
+#check ({n | n = 1} : Set Nat) ∪ {n | n = 2}
+
+/-!
+    (setOf fun n ↦ n = 1) ∪ setOf fun n ↦ n = 2 : Set Nat
+
+型は Set Nat
+-/
 
 /-- 空集合 `∅`: どの点も属さない集合。中身は「つねに `False` を返す述語」。 -/
 instance : EmptyCollection (Set α) := ⟨{_a | False}⟩
 
-#check (∅ : Set Nat)   -- 表示: `∅ : Set Nat`
+#check (∅ : Set Nat)
+
+/-!
+    ∅ : Set Nat
+-/
 
 /-!
 `instance` は名前のない宣言だが、実際には Lean が自動で命名している。
@@ -136,9 +190,13 @@ instance : EmptyCollection (Set α) := ⟨{_a | False}⟩
 def univ : Set α := {_a | True}
 
 #check univ
--- 表示: `Set.univ {α : Type} : Set α`
--- 読み: namespace の中で宣言したのでフルネームは `Set.univ`。
--- 明示引数はなく、暗黙の `α` は使う場面の期待される型から決まる。
+
+/-!
+    Set.univ {α : Type} : Set α
+
+namespace の中で宣言したのでフルネームは `Set.univ`。
+明示引数はなく、暗黙の `α` は使う場面の期待される型から決まる。
+-/
 
 -- 確認: `a ∈ univ` は定義上 `True` なので、その構成子 `trivial` で閉じる
 example : (0 : Nat) ∈ (univ : Set Nat) := trivial
@@ -147,8 +205,12 @@ example : (0 : Nat) ∈ (univ : Set Nat) := trivial
 def compl (s : Set α) : Set α := {a | a ∉ s}
 
 #check compl
--- 表示: `Set.compl {α : Type} (s : Set α) : Set α`
--- 読み: 集合を受け取って集合を返す。`compl : Set α → Set α` と同じこと。
+
+/-!
+    Set.compl {α : Type} (s : Set α) : Set α
+
+集合を受け取って集合を返す。`compl : Set α → Set α` と同じこと。
+-/
 
 /-- 後置記法 `sᶜ`。`max` は最も強い結合を表す（結合の強さは後でまとめて確認する）。 -/
 postfix:max "ᶜ" => Set.compl
@@ -158,9 +220,13 @@ postfix:max "ᶜ" => Set.compl
 def image {β : Type} (f : α → β) (s : Set α) : Set β := {b | ∃ a, a ∈ s ∧ f a = b}
 
 #check image
--- 表示: `Set.image {α β : Type} (f : α → β) (s : Set α) : Set β`
--- 読み: 明示引数が2つ並ぶカリー化された関数。
--- `image : (α → β) → Set α → Set β` と読み替えられる。
+
+/-!
+    Set.image {α β : Type} (f : α → β) (s : Set α) : Set β
+
+明示引数が2つ並ぶカリー化された関数。
+`image : (α → β) → Set α → Set β` と読み替えられる。
+-/
 
 /-- 中置記法 `f '' s`。数字 `80` は結合の強さ。 -/
 infixl:80 " '' " => Set.image
@@ -170,8 +236,12 @@ infixl:80 " '' " => Set.image
 def sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 
 #check sUnion
--- 表示: `Set.sUnion {α : Type} (S : Set (Set α)) : Set α`
--- 読み: 引数の型が `Set (Set α)`＝「集合の集合」であることに注意。
+
+/-!
+    Set.sUnion {α : Type} (S : Set (Set α)) : Set α
+
+引数の型が `Set (Set α)`＝「集合の集合」であることに注意。
+-/
 
 /-- 前置記法 `⋃₀ S`。 -/
 prefix:110 "⋃₀ " => Set.sUnion
@@ -181,21 +251,32 @@ prefix:110 "⋃₀ " => Set.sUnion
 def iUnion {I : Type} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 #check iUnion
--- 表示: `Set.iUnion {α I : Type} (U : I → Set α) : Set α`
--- 読み: 暗黙引数が `α` と `I` の2つ。どちらも `U` の型から決まるので書かずに済む。
+
+/-!
+    Set.iUnion {α I : Type} (U : I → Set α) : Set α
+
+暗黙引数が `α` と `I` の2つ。どちらも `U` の型から決まるので書かずに済む。
+-/
 
 /-- 添字を `J ⊆ I` に制限した合併。「部分族の合併」を表す。 -/
 def biUnion {I : Type} (J : Set I) (U : I → Set α) : Set α := {a | ∃ i, i ∈ J ∧ a ∈ U i}
 
 #check biUnion
--- 表示: `Set.biUnion {α I : Type} (J : Set I) (U : I → Set α) : Set α`
+
+/-!
+    Set.biUnion {α I : Type} (J : Set I) (U : I → Set α) : Set α
+-/
 
 /-- 逆像。`f ⁻¹' s` は、`f` で送ると `s` に入る点の全体。 -/
 def preimage {β : Type} (f : α → β) (s : Set β) : Set α := {a | f a ∈ s}
 
 #check preimage
--- 表示: `Set.preimage {α β : Type} (f : α → β) (s : Set β) : Set α`
--- 読み: `image` と見比べると `Set β → Set α` で、集合の移動が `f` と**逆向き**。
+
+/-!
+    Set.preimage {α β : Type} (f : α → β) (s : Set β) : Set α
+
+`image` と見比べると `Set β → Set α` で、集合の移動が `f` と**逆向き**。
+-/
 
 /-- 中置記法 `f ⁻¹' s`。 -/
 infixl:80 " ⁻¹' " => Set.preimage
@@ -224,12 +305,20 @@ example (s t u : Set Nat) : s ∩ t ∪ u = (s ∩ t) ∪ u := rfl
 「`Fin n` で番号づけられる」がそのまま「点が有限個しかない」を意味する。
 
 `f` は `s` の外の点を拾ってもよい（`Fin n` と `s` の全単射までは要求しない）。
-「高々 `n` 個」で十分であり、こうしておくと部分集合の有限性がただちに従う。 -/
+「高々 `n` 個」で十分であり、こうしておくと部分集合の有限性がただちに従う。
+
+書き方を2つ: `∃ (n : Nat) (f : Fin n → α), P` は `∃ n, ∃ f, P` の略記、
+`∀ a ∈ s, P a` は `∀ a, a ∈ s → P a` の略記である
+（どちらも `#check` の表示では展開された形で見える）。 -/
 def Finite (s : Set α) : Prop := ∃ (n : Nat) (f : Fin n → α), ∀ a ∈ s, ∃ i, f i = a
 
 #check Finite
--- 表示: `Set.Finite {α : Type} (s : Set α) : Prop`
--- 読み: 結果が `Prop`。つまりこれは集合の**性質**（集合を受け取って命題を返す述語）。
+
+/-!
+    Set.Finite {α : Type} (s : Set α) : Prop
+
+結果が `Prop`。つまりこれは集合の**性質**（集合を受け取って命題を返す述語）。
+-/
 
 /-- 空集合は有限。`n = 0` とし、拾う関数には `Fin.elim0`（`Fin 0` は空の型なので、
 そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` の導入（`CH.lean` 6節）。 -/
@@ -237,21 +326,35 @@ theorem Finite.empty : (∅ : Set α).Finite :=
   ⟨0, Fin.elim0, fun _ ha => False.elim ha⟩
 
 #check Finite.empty
--- 表示: `Set.Finite.empty {α : Type} : ∅.Finite`
--- 読み: 仮定なしの定理。`∅.Finite` はドット記法の表示で `Set.Finite ∅` のこと。
--- 定理の #check は「証明済みの命題」を型として見せてくれる。
+
+/-!
+    Set.Finite.empty {α : Type} : ∅.Finite
+
+仮定なしの定理。`∅.Finite` はドット記法の表示で `Set.Finite ∅` のこと。
+定理の #check は「証明済みの命題」を型として見せてくれる。
+-/
 
 /-- 外延性: 属する要素が一致する集合は等しい。
 関数の外延性 `funext` と命題の外延性 `propext` から従う
-（集合を関数として定義したことの代金をここで払う）。
+（集合を関数として定義したことの代金をここで払う）。この場面に特殊化した型は
+
+    funext  : (∀ a, s a = t a) → s = t
+    propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)
+
+で、証明項 `funext fun a => propext (h a)` は、この2つを型どおりに
+組み合わせただけである。
 以後、集合の等式を示すときは `apply Set.ext` で「要素ごとの同値」に還元する。 -/
 theorem ext {s t : Set α} (h : ∀ a, a ∈ s ↔ a ∈ t) : s = t :=
   funext fun a => propext (h a)
 
 #check ext
--- 表示: `Set.ext {α : Type} {s t : Set α} (h : ∀ (a : α), a ∈ s ↔ a ∈ t) : s = t`
--- 読み: 定理の型は「仮定 → 結論」の関数型。仮定 `h` を渡すと結論 `s = t` の証明が返る。
--- `s t` が暗黙なのは、`h` の型に現れるので自動で決まるから。
+
+/-!
+    Set.ext {α : Type} {s t : Set α} (h : ∀ (a : α), a ∈ s ↔ a ∈ t) : s = t
+
+定理の型は「仮定 → 結論」の関数型。仮定 `h` を渡すと結論 `s = t` の証明が返る。
+`s t` が暗黙なのは、`h` の型に現れるので自動で決まるから。
+-/
 
 /-- 二重補集合。ここで初めて古典論理を使う:
 `Classical.byContradiction : (¬p → False) → p` は背理法そのものである。 -/
@@ -259,9 +362,13 @@ theorem compl_compl (s : Set α) : sᶜᶜ = s :=
   ext fun _ => ⟨fun h => Classical.byContradiction h, fun h hn => hn h⟩
 
 #check compl_compl
--- 表示: `Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s`
--- 読み: どの集合 `s` にも適用できる等式。`∀ s, …` と書くのと `(s : Set α)` を
--- 引数に取るのは同じこと（`Intro.lean` 7節: ∀ は依存関数型）。
+
+/-!
+    Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s
+
+どの集合 `s` にも適用できる等式。`∀ s, …` と書くのと `(s : Set α)` を
+引数に取るのは同じこと（`CH.lean` 5節: ∀ は依存関数型の記法）。
+-/
 
 /-- 2つの合併は「2つだけからなる族」の合併に書き直せる。
 `{u | u = s ∨ u = t}` は要素が `s` と `t` の2つ（だけ）の集合族。
@@ -283,9 +390,12 @@ theorem union_eq_sUnion (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} 
     | inr h => exact Or.inr (h ▸ hau)
 
 #check union_eq_sUnion
--- 表示: `Set.union_eq_sUnion {α : Type} (s t : Set α) :
---        s ∪ t = ⋃₀ setOf fun u ↦ u = s ∨ u = t`
--- 読み: 内包記法は表示では展開先の `setOf` の形で見える（前述）。
+
+/-!
+    Set.union_eq_sUnion {α : Type} (s t : Set α) : s ∪ t = ⋃₀ setOf fun u ↦ u = s ∨ u = t
+
+内包記法は表示では展開先の `setOf` の形で見える（前述）。
+-/
 
 /-! ### 有限個の共通部分
 
@@ -302,10 +412,14 @@ def interFin : (n : Nat) → (Fin n → Set α) → Set α
   | n + 1, W => W 0 ∩ interFin n fun i => W i.succ
 
 #check interFin
--- 表示: `Set.interFin {α : Type} (n : Nat) : (Fin n → Set α) → Set α`
--- 読み: 表示に binder 形式（`(n : Nat)`）と矢印形式（`→`）が**混ざっている**が、
--- どちらも同じ関数型の表示にすぎない。全体としては
--- `interFin : (n : Nat) → (Fin n → Set α) → Set α` という2引数関数である。
+
+/-!
+    Set.interFin {α : Type} (n : Nat) : (Fin n → Set α) → Set α
+
+表示に binder 形式（`(n : Nat)`）と矢印形式（`→`）が**混ざっている**が、
+どちらも同じ関数型の表示にすぎない。全体としては
+`interFin : (n : Nat) → (Fin n → Set α) → Set α` という2引数関数である。
+-/
 
 /-- すべての `W i` に入る点は共通部分に入る。
 定義と同じ再帰の形で証明を書く——**再帰で書いた証明が数学的帰納法**である。
@@ -316,10 +430,13 @@ theorem mem_interFin : ∀ (n : Nat) (W : Fin n → Set α) (a : α), (∀ i, a 
   | n + 1, _, a, h => ⟨h 0, mem_interFin n _ a fun i => h i.succ⟩
 
 #check mem_interFin
--- 表示: `Set.mem_interFin {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) :
---        (∀ (i : Fin n), a ∈ W i) → a ∈ interFin n W`
--- 読み: 引数3つのあと、「仮定 → 結論」。長い表示は適当な位置で折り返されるが
--- 意味は変わらない。
+
+/-!
+    Set.mem_interFin {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : (∀ (i : Fin n), a ∈ W i) → a ∈ interFin n W
+
+引数3つのあと、「仮定 → 結論」。長い表示は適当な位置で折り返されるが
+意味は変わらない。
+-/
 
 /-- 共通部分に入る点は、すべての `W i` に入る（逆向き）。
 `n = 0` では示すべき添字がそもそもない（`Fin 0` は空）ので `Fin.elim0`。
@@ -334,16 +451,20 @@ theorem interFin_mem : ∀ (n : Nat) (W : Fin n → Set α) (a : α), a ∈ inte
       | succ j => exact interFin_mem n _ a h.2 j
 
 #check interFin_mem
--- 表示: `Set.interFin_mem {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) :
---        a ∈ interFin n W → ∀ (i : Fin n), a ∈ W i`
--- 読み: `mem_interFin` と仮定・結論が入れ替わっている。2つ合わせて同値。
+
+/-!
+    Set.interFin_mem {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : a ∈ interFin n W → ∀ (i : Fin n), a ∈ W i
+
+`mem_interFin` と仮定・結論が入れ替わっている。2つ合わせて同値。
+-/
 
 end Set
 
 /-! ## 2. 全単射
 
 目標の「連続全単射」を述べるために要る。
-`Function.Injective`（`∀ ⦃a b⦄, f a = f b → a = b`）と
+`Function.Injective`（`∀ ⦃a b⦄, f a = f b → a = b`。括弧 `⦃ ⦄` は
+暗黙引数 `{ }` の変種で、この教材では `∀ a b, f a = f b → a = b` と読んでよい）と
 `Function.Surjective`（`∀ b, ∃ a, f a = b`）は標準ライブラリにあるので、
 全単射だけを定義する。
 -/
@@ -363,8 +484,12 @@ structure Function.Bijective {α β : Type} (f : α → β) : Prop where
   surjective : Function.Surjective f
 
 #check Function.Bijective
--- 表示: `Function.Bijective {α β : Type} (f : α → β) : Prop`
--- 読み: 写像の性質（写像を受け取って命題を返す）。
+
+/-!
+    Function.Bijective {α β : Type} (f : α → β) : Prop
+
+写像の性質（写像を受け取って命題を返す）。
+-/
 
 /-- `⋃ i, U i` で族全体の合併を表す。 -/
 syntax:110 "⋃ " ident ", " term : term
@@ -374,6 +499,13 @@ syntax:110 "⋃ " ident " ∈ " term:110 ", " term : term
 macro_rules
   | `(⋃ $i, $U) => `(Set.iUnion fun $i => $U)
   | `(⋃ $i ∈ $J, $U) => `(Set.biUnion $J fun $i => $U)
+
+/-!
+注意: この `⋃` も `setOf` と同じく**読む方向だけ**の記法なので、`#check` の
+表示では展開先の `Set.iUnion fun i ↦ …`／`J.biUnion fun i ↦ …` が見える。
+同様に、`∀ a ∈ s, P` は `∀ (a : X), a ∈ s → P` に、`a ∉ K` は `¬a ∈ K` に
+開かれて表示される。以後の表示の枠は、この**展開後の形**で書いてある。
+-/
 
 /-! ## 3. 位相空間
 
@@ -400,9 +532,13 @@ class TopologicalSpace (X : Type) where
   isOpen_sUnion (S : Set (Set X)) (h : ∀ s ∈ S, IsOpen s) : IsOpen (⋃₀ S)
 
 #check TopologicalSpace
--- 表示: `TopologicalSpace (X : Type) : Type`
--- 読み: クラスも「型を受け取って型を返す関数」。`TopologicalSpace X` は
--- 「`X` 上の位相全体の型」で、その項1つが位相1つに当たる。
+
+/-!
+    TopologicalSpace (X : Type) : Type
+
+クラスも「型を受け取って型を返す関数」。`TopologicalSpace X` は
+「`X` 上の位相全体の型」で、その項1つが位相1つに当たる。
+-/
 
 -- `export` で `TopologicalSpace.IsOpen` などを接頭辞なしの `IsOpen` で書けるようにする
 export TopologicalSpace (IsOpen isOpen_univ isOpen_inter isOpen_sUnion)
@@ -428,9 +564,13 @@ theorem isOpen_empty : IsOpen (∅ : Set X) := by
   exact isOpen_sUnion _ fun _ hs => False.elim hs
 
 #check isOpen_empty
--- 表示: `isOpen_empty {X : Type} [TopologicalSpace X] : IsOpen ∅`
--- 読み: `[TopologicalSpace X]` がインスタンス引数として表示に現れる。
--- 結論の `IsOpen ∅` がどの位相の話かは、この引数が決めている。
+
+/-!
+    isOpen_empty {X : Type} [TopologicalSpace X] : IsOpen ∅
+
+`[TopologicalSpace X]` がインスタンス引数として表示に現れる。
+結論の `IsOpen ∅` がどの位相の話かは、この引数が決めている。
+-/
 
 /-- 2つの開集合の合併も開。公理は「集合族の合併」の形なので、
 まず補題 `Set.union_eq_sUnion` で合併を族の合併に書き換えてから公理を適用する。
@@ -443,9 +583,12 @@ theorem isOpen_union {s t : Set X} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s �
   | inr h => rw [h]; exact ht
 
 #check isOpen_union
--- 表示: `isOpen_union {X : Type} [TopologicalSpace X] {s t : Set X}
---        (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∪ t)`
--- 読み: 明示引数は証明2つだけ。`s t` は `hs ht` の型から決まるので暗黙。
+
+/-!
+    isOpen_union {X : Type} [TopologicalSpace X] {s t : Set X} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∪ t)
+
+明示引数は証明2つだけ。`s t` は `hs ht` の型から決まるので暗黙。
+-/
 
 /-- 有限個の開集合の共通部分は開。`n` についての再帰で、公理の「2つの共通部分」を繰り返す。
 
@@ -457,15 +600,22 @@ theorem isOpen_interFin : ∀ (n : Nat) (W : Fin n → Set X), (∀ i, IsOpen (W
   | n + 1, _, h => isOpen_inter _ _ (h 0) (isOpen_interFin n _ fun i => h i.succ)
 
 #check isOpen_interFin
--- 表示: `isOpen_interFin {X : Type} [TopologicalSpace X] (n : Nat) (W : Fin n → Set X) :
---        (∀ (i : Fin n), IsOpen (W i)) → IsOpen (Set.interFin n W)`
+
+/-!
+    isOpen_interFin {X : Type} [TopologicalSpace X] (n : Nat) (W : Fin n → Set X) :
+      (∀ (i : Fin n), IsOpen (W i)) → IsOpen (Set.interFin n W)
+-/
 
 /-- 閉集合: 補集合が開。原始概念は開集合だけなので、閉はこれで定義するほかない。 -/
 def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 
 #check IsClosed
--- 表示: `IsClosed {X : Type} [TopologicalSpace X] (s : Set X) : Prop`
--- 読み: `IsOpen` と同じ形の、集合の性質。
+
+/-!
+    IsClosed {X : Type} [TopologicalSpace X] (s : Set X) : Prop
+
+`IsOpen` と同じ形の、集合の性質。
+-/
 
 /-! ### 定義の確認
 
@@ -477,7 +627,10 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 
 /-- 離散位相: すべての部分集合が開。どんな型にも入る、いちばん簡単な位相。
 `where` 構文でクラスの各フィールドを埋めて、`TopologicalSpace X` の項を作る。
-公理側はすべて `True` の証明なので `trivial` で済む。 -/
+公理側はすべて `True` の証明なので `trivial` で済む。
+頭の `@[reducible]` は**属性**（宣言に付ける印）で、「この定義は必要に応じて
+いつでも展開してよい」という指定。`Extra.lean` の instance 探索で効いてくるだけ
+なので、ここでは気にしなくてよい。 -/
 @[reducible] def discrete (X : Type) : TopologicalSpace X where
   IsOpen _ := True
   isOpen_univ := trivial
@@ -485,8 +638,12 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
   isOpen_sUnion := fun _ _ => trivial
 
 #check discrete
--- 表示: `discrete (X : Type) : TopologicalSpace X`
--- 読み: 型を受け取って**位相そのもの**（`TopologicalSpace X` の項）を返す関数。
+
+/-!
+    discrete (X : Type) : TopologicalSpace X
+
+型を受け取って**位相そのもの**（`TopologicalSpace X` の項）を返す関数。
+-/
 
 /-! ## 4. 連続写像
 
@@ -500,10 +657,13 @@ variable {Y : Type} [TopologicalSpace Y] {Z : Type} [TopologicalSpace Z]
 def Continuous (f : X → Y) : Prop := ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 
 #check Continuous
--- 表示: `Continuous {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y]
---        (f : X → Y) : Prop`
--- 読み: 両側の空間それぞれにインスタンス引数が付く。「`f` が連続」という命題は、
--- 実は「どの位相に関してか」を2つ暗黙に抱えている。
+
+/-!
+    Continuous {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] (f : X → Y) : Prop
+
+両側の空間それぞれにインスタンス引数が付く。「`f` が連続」という命題は、
+実は「どの位相に関してか」を2つ暗黙に抱えている。
+-/
 
 /-! ### 定義の確認
 
@@ -516,8 +676,12 @@ theorem continuous_id : Continuous (fun x : X => x) :=
   fun _ hs => hs
 
 #check continuous_id
--- 表示: `continuous_id {X : Type} [TopologicalSpace X] : Continuous fun x => x`
--- 読み: 仮定なしの定理。結論の中の `fun x => x` が恒等写像。
+
+/-!
+    continuous_id {X : Type} [TopologicalSpace X] : Continuous fun x ↦ x
+
+仮定なしの定理。結論の中の `fun x ↦ x` が恒等写像。
+-/
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
@@ -527,11 +691,14 @@ theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Co
   fun s hs => hf _ (hg s hs)
 
 #check Continuous.comp
--- 表示: `Continuous.comp {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y]
---        {Z : Type} [TopologicalSpace Z] {g : Y → Z} {f : X → Y}
---        (hg : Continuous g) (hf : Continuous f) : Continuous fun x => g (f x)`
--- 読み: 空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 `hg` `hf` の2つで、
--- 先に適用される `f` の連続性が**後ろ**に来る（合成の記法 `g ∘ f` と同じ順）。
+
+/-!
+    Continuous.comp {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {Z : Type} [TopologicalSpace Z]
+      {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) : Continuous fun x ↦ g (f x)
+
+空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 `hg` `hf` の2つで、
+先に適用される `f` の連続性が**後ろ**に来る（合成の記法 `g ∘ f` と同じ順）。
+-/
 
 /-! ## 5. ハウスドルフ空間
 
@@ -550,8 +717,12 @@ class Hausdorff (X : Type) [TopologicalSpace X] : Prop where
     ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ∩ V = ∅
 
 #check Hausdorff
--- 表示: `Hausdorff (X : Type) [TopologicalSpace X] : Prop`
--- 読み: `TopologicalSpace X : Type`（データ）と違い、こちらは結果が `Prop`（性質）。
+
+/-!
+    Hausdorff (X : Type) [TopologicalSpace X] : Prop
+
+`TopologicalSpace X : Type`（データ）と違い、こちらは結果が `Prop`（性質）。
+-/
 
 /-! ## 6. コンパクト
 
@@ -577,8 +748,12 @@ def IsCompact (K : Set X) : Prop :=
     ∃ J : Set I, J.Finite ∧ K ⊆ (⋃ i ∈ J, U i)
 
 #check IsCompact
--- 表示: `IsCompact {X : Type} [TopologicalSpace X] (K : Set X) : Prop`
--- 読み: 表示は短いが、定義の中身は上のとおり `∀` が3つ重なった命題である。
+
+/-!
+    IsCompact {X : Type} [TopologicalSpace X] (K : Set X) : Prop
+
+表示は短いが、定義の中身は上のとおり `∀` が3つ重なった命題である。
+-/
 
 /-- 空間そのものがコンパクトであること: 全体集合 `univ` がコンパクト集合である。
 `Hausdorff` と同じく、命題1つだけの `class : Prop`。 -/
@@ -586,7 +761,10 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
   isCompact_univ : IsCompact (Set.univ : Set X)
 
 #check CompactSpace
--- 表示: `CompactSpace (X : Type) [TopologicalSpace X] : Prop`
+
+/-!
+    CompactSpace (X : Type) [TopologicalSpace X] : Prop
+-/
 
 /-! ## 7. 補題1: コンパクト集合の連続像はコンパクト
 
@@ -599,34 +777,32 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
 1 と 3 は位相と無関係な、像と逆像についての一般的な補題である。
 有限性は受け取った `J` をそのまま使い回すだけなので、`Fin n` を開ける必要はない。
 
-なお、細かい補題には `theorem` のかわりに `lemma` と書きたいところだが、
-`lemma` という宣言は core Lean にはない（mathlib がマクロとして定義している）。
-中身は `theorem` の別名にすぎないので、自分でも作れる。以下の補題で使う。
+なお mathlib では、細かい補題を `theorem` の同義語 `lemma` で宣言する慣例が
+あるが、`lemma` は core Lean にはない（mathlib がマクロで定義している）。
+この教材では一貫して `theorem` を使う。
 -/
-
-/-- `lemma` 宣言を `theorem` の別名として自作する。
-`declModifiers` は docstring などの修飾部、`declId`・`declSig`・`declVal` は
-名前・シグネチャ・本体に対応する構文カテゴリ。 -/
-macro mods:declModifiers "lemma" d:declId sig:declSig val:declVal : command =>
-  `($mods:declModifiers theorem $d $sig $val)
 
 /-- 像が族で覆われるなら、元の集合は逆像の族で覆われる（方針の 1）。
 位相と無関係な補題なので、節の変数 `X Y`（位相つき）ではなく
 新しい型変数 `α β` で述べる。 -/
-lemma Set.subset_preimage_iUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
+theorem Set.subset_preimage_iUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
     {U : I → Set β} (h : f '' K ⊆ ⋃ i, U i) : K ⊆ ⋃ i, f ⁻¹' U i := by
   intro x hx
   have ⟨i, hi⟩ := h (f x) ⟨x, hx, rfl⟩
   exact ⟨i, hi⟩
 
 #check Set.subset_preimage_iUnion
--- 表示: `Set.subset_preimage_iUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
---        {U : I → Set β} (h : f '' K ⊆ ⋃ i, U i) : K ⊆ ⋃ i, f ⁻¹' U i`
--- 読み: 位相のインスタンス引数が付いていない＝純粋に集合の補題である。
+
+/-!
+    Set.subset_preimage_iUnion {α β : Type} {f : α → β} {K : Set α} {I : Type} {U : I → Set β}
+      (h : f '' K ⊆ Set.iUnion fun i ↦ U i) : K ⊆ Set.iUnion fun i ↦ f ⁻¹' U i
+
+位相のインスタンス引数が付いていない＝純粋に集合の補題である。
+-/
 
 /-- 逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。
 証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（`CH.lean` 6節）。 -/
-lemma Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
+theorem Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
     {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹' U i) : f '' K ⊆ ⋃ i ∈ J, U i := by
   intro b hb
   have ⟨x, hx, hfx⟩ := hb
@@ -634,10 +810,15 @@ lemma Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : 
   exact ⟨i, hiJ, hfx ▸ hxi⟩
 
 #check Set.image_subset_biUnion
--- 表示: `Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
---        {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹' U i) : f '' K ⊆ ⋃ i ∈ J, U i`
+
+/-!
+    Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type} {J : Set I} {U : I → Set β}
+      (h : K ⊆ J.biUnion fun i ↦ f ⁻¹' U i) : f '' K ⊆ J.biUnion fun i ↦ U i
+-/
 
 /-- 補題1: コンパクト集合の連続像はコンパクト。方針の3歩をそのまま並べる。
+下の `#check` を見る前に、この主張が「引数の列 : 結果」としてどう並ぶかを
+予想してみてほしい。
 名前が `IsCompact.image` なので、`hK : IsCompact K` に対し `hK.image hf` と書ける。 -/
 theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
     IsCompact (f '' K) := by
@@ -647,10 +828,14 @@ theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Conti
   exact ⟨J, hJ, Set.image_subset_biUnion hsub⟩
 
 #check IsCompact.image
--- 表示: `IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y]
---        {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) : IsCompact (f '' K)`
--- 読み: 数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、
--- そのまま「証明を2つ受け取って証明を返す関数」の型になっている。
+
+/-!
+    IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {K : Set X} (hK : IsCompact K)
+      {f : X → Y} (hf : Continuous f) : IsCompact (f '' K)
+
+数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、
+そのまま「証明を2つ受け取って証明を返す関数」の型になっている。
+-/
 
 /-! ## 8. 補題2: ハウスドルフ空間のコンパクト集合は閉
 
@@ -663,15 +848,16 @@ theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Conti
 
 2 の中身: `K` の各点 `x` は `y` とハウスドルフ性で分離できる。分離する開集合の組を
 点ごとに**1つ選ぶ**のではなく、「`y` を分離する開集合の組」の**全体**を添字型にして
-`K` を覆う。必要なデータ（`V` 側と分離性の証明）が添字自身に抱き合わされているので、
-選択公理を使わずに済む。コンパクト性で組を有限個に間引き、
+`K` を覆う。必要なデータ（`y` 側の開集合と分離性の証明）が添字自身に
+抱き合わされているので、選択公理を使わずに済む。この「分離データの束」を
+まず名前付きの structure として定義してから、補題に進む。コンパクト性で組を有限個に間引き、
 その `V` 側の有限交叉（`interFin`）を `W` とする。
 無限個の共通部分では開とは限らないので、有限に減らせたことが本質的に効いている。
 -/
 
 /-- 各点が開近傍ごと入っている集合は開（方針の 1）。
 `s` は「`s` に含まれる開集合すべて」の合併に等しくなるので、合併の公理が使える。 -/
-lemma isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
+theorem isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
     IsOpen s := by
   have heq : s = ⋃₀ {W | IsOpen W ∧ W ⊆ s} := by
     apply Set.ext
@@ -686,53 +872,83 @@ lemma isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W �
   exact isOpen_sUnion _ fun _ hW => hW.1
 
 #check isOpen_of_nhds
--- 表示: `isOpen_of_nhds {X : Type} [TopologicalSpace X] {s : Set X}
---        (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) : IsOpen s`
+
+/-!
+    isOpen_of_nhds {X : Type} [TopologicalSpace X] {s : Set X} (h : ∀ (a : X), a ∈ s → ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
+      IsOpen s
+-/
+
+/-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`
+と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側
+として使い、`right` は `y` を含み、2つは交わらない。フィールドの型が前の
+フィールドに依存している（`Intro.lean` 5節）ことにも注意。 -/
+structure SeparatingPair (y : Y) where
+  /-- 分離の `K` 側の開集合。 -/
+  left : Set Y
+  /-- 分離の `y` 側の開集合。 -/
+  right : Set Y
+  isOpen_left : IsOpen left
+  isOpen_right : IsOpen right
+  mem_right : y ∈ right
+  disjoint : left ∩ right = ∅
+
+#check SeparatingPair
+
+/-!
+    SeparatingPair {Y : Type} [TopologicalSpace Y] (y : Y) : Type
+
+点ごとに「分離データ」の型が決まる。項は6つのフィールド
+（開集合2つ＋証明4つ）の束で、`s.left` や `s.disjoint` で取り出す。
+-/
 
 /-- コンパクト集合 `K` の外の点は、`K` と交わらない開近傍を持つ（方針の 2）。
 
-被覆の添字型には部分型（`CH.lean` 6節の依存和）
-
-    {p : Set Y × Set Y // IsOpen p.1 ∧ IsOpen p.2 ∧ y ∈ p.2 ∧ p.1 ∩ p.2 = ∅}
-
-を使う。つまり添字は「開集合の組」と「それが `y` を分離しているという証明」の
-抱き合わせであり、被覆の各成分が自分の `V` と分離性を持参してくる。
-`hK` へは `(I := …)` という名前付き引数で添字型を明示して渡す。 -/
-lemma IsCompact.exists_disjoint_nhds [Hausdorff Y] {K : Set Y} (hK : IsCompact K)
+被覆の**添字型**として、いま定義した `SeparatingPair y` をそのまま使う。
+つまり添字は「開集合の組」と「それが `y` を分離しているという証明」の
+抱き合わせであり、被覆の各成分が自分の `right` と分離性を持参してくる。
+被覆であること自体は、型注釈つきの `hcov` として先に切り出す——型を書いておけば
+そこから読める、という本教材の方法の実演である（`⋃` 記法は束縛子に型注釈を
+付けられないので、ここは展開先の `Set.iUnion` を直接書く）。 -/
+theorem IsCompact.exists_disjoint_nhds [Hausdorff Y] {K : Set Y} (hK : IsCompact K)
     {y : Y} (hy : y ∉ K) : ∃ W, IsOpen W ∧ y ∈ W ∧ ∀ a ∈ W, a ∉ K := by
-  -- `K` を「`y` を分離する組の `U` 側」たちで覆い、コンパクト性で有限個に間引く
-  have ⟨J, hJ, hsub⟩ := hK
-      (I := {p : Set Y × Set Y // IsOpen p.1 ∧ IsOpen p.2 ∧ y ∈ p.2 ∧ p.1 ∩ p.2 = ∅})
-      (fun i => i.val.1) (fun i => i.property.1)
-      (fun x hx => by
-        have hne : x ≠ y := fun h => hy (h ▸ hx)
-        have ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := Hausdorff.separate x y hne
-        exact ⟨⟨(U, V), hU, hV, hyV, hUV⟩, hxU⟩)
-  -- `J` は有限なので `Fin n` で番号づけ、対応する `V` 側の有限交叉を `W` とする
+  -- `K` のどの点 `x` も `y` と分離できる。分離データ自身を添字と思えば `K` は覆われる
+  have hcov : K ⊆ Set.iUnion fun i : SeparatingPair y => i.left := fun x hx => by
+    have hne : x ≠ y := fun h => hy (h ▸ hx)
+    have ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := Hausdorff.separate x y hne
+    exact ⟨⟨U, V, hU, hV, hyV, hUV⟩, hxU⟩
+  -- コンパクト性で有限個に間引く（最初のラムダの束縛子に添字型を書いて伝える）
+  have ⟨J, hJ, hsub⟩ := hK (fun i : SeparatingPair y => i.left) (fun i => i.isOpen_left) hcov
+  -- `J` は有限なので `Fin n` で番号づけ、対応する `right` 側の有限交叉を `W` とする
   have ⟨n, g, hg⟩ := hJ
-  refine ⟨Set.interFin n fun k => (g k).val.2, ?_, ?_, ?_⟩
+  refine ⟨Set.interFin n fun k => (g k).right, ?_, ?_, ?_⟩
   · -- 有限個の開集合の共通部分は開
-    exact isOpen_interFin n _ fun k => (g k).property.2.1
-  · -- `y` はどの `V` にも入っている
-    exact Set.mem_interFin n _ y fun k => (g k).property.2.2.1
-  · -- `W` が `K` と交わったとすると、ある組の `U` と `V` の両方に入る点ができて矛盾
+    exact isOpen_interFin n _ fun k => (g k).isOpen_right
+  · -- `y` はどの `right` にも入っている
+    exact Set.mem_interFin n _ y fun k => (g k).mem_right
+  · -- `W` が `K` と交わったとすると、ある組の `left` と `right` の両方に入る点ができて矛盾
     intro a ha haK
     have ⟨i, hiJ, hai⟩ := hsub a haK
     have ⟨k, hk⟩ := hg i hiJ
-    have hav : a ∈ (g k).val.2 := Set.interFin_mem n _ a ha k
-    have hau : a ∈ (g k).val.1 := by rw [hk]; exact hai
-    have hmem : a ∈ (g k).val.1 ∩ (g k).val.2 := ⟨hau, hav⟩
-    rw [(g k).property.2.2.2] at hmem
+    have hav : a ∈ (g k).right := Set.interFin_mem n _ a ha k
+    have hau : a ∈ (g k).left := by rw [hk]; exact hai
+    have hmem : a ∈ (g k).left ∩ (g k).right := ⟨hau, hav⟩
+    rw [(g k).disjoint] at hmem
     exact hmem
 
 #check IsCompact.exists_disjoint_nhds
--- 表示: `IsCompact.exists_disjoint_nhds {Y : Type} [TopologicalSpace Y] [Hausdorff Y]
---        {K : Set Y} (hK : IsCompact K) {y : Y} (hy : y ∉ K) :
---        ∃ W, IsOpen W ∧ y ∈ W ∧ ∀ a ∈ W, a ∉ K`
+
+/-!
+    IsCompact.exists_disjoint_nhds {Y : Type} [TopologicalSpace Y] [Hausdorff Y] {K : Set Y} (hK : IsCompact K) {y : Y}
+      (hy : ¬y ∈ K) : ∃ W, IsOpen W ∧ y ∈ W ∧ ∀ (a : Y), a ∈ W → ¬a ∈ K
+-/
 
 -- 確認: この補題は選択公理どころか `Classical.choice` にも依存していない
 -- （`propext` のみ）。データを添字に抱き合わせた効果がここに現れている。
 #print axioms IsCompact.exists_disjoint_nhds
+
+/-!
+    'IsCompact.exists_disjoint_nhds' depends on axioms: [propext]
+-/
 
 /-- 補題2: ハウスドルフ空間のコンパクト集合は閉。上の2つの補題を合わせるだけ。 -/
 theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K := by
@@ -742,10 +958,13 @@ theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClos
   exact ⟨W, hW, hyW, hWK⟩
 
 #check IsCompact.isClosed
--- 表示: `IsCompact.isClosed {Y : Type} [TopologicalSpace Y] [Hausdorff Y]
---        {K : Set Y} (hK : IsCompact K) : IsClosed K`
--- 読み: 「空間がハウスドルフ」という仮定は `[Hausdorff Y]` という
--- インスタンス引数の形で現れる（証明も登録簿から探される）。
+
+/-!
+    IsCompact.isClosed {Y : Type} [TopologicalSpace Y] [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K
+
+「空間がハウスドルフ」という仮定は `[Hausdorff Y]` という
+インスタンス引数の形で現れる（証明も登録簿から探される）。
+-/
 
 /-! ## 9. 補題3: コンパクト空間の閉集合はコンパクト
 
@@ -762,8 +981,10 @@ theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClos
 -/
 
 /-- 被覆の各成分に `Cᶜ` を足せば空間全体を覆う（方針の 1）。
-`I` が空でないという仮定は、`C` の外の点をどれかの成分に割り当てるために要る。 -/
-lemma Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type} {U : I → Set α}
+`I` が空でないという仮定は、`C` の外の点をどれかの成分に割り当てるために要る。
+`Nonempty I` は「`I` の項が少なくとも1つある」という命題で、構成子は `⟨i⟩`、
+使うときは `have ⟨i⟩ := hI` と分解する（証明の中でそうしている）。 -/
+theorem Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type} {U : I → Set α}
     (hcov : C ⊆ ⋃ i, U i) (hI : Nonempty I) :
     (Set.univ : Set α) ⊆ ⋃ i, U i ∪ Cᶜ := by
   intro x _
@@ -774,22 +995,27 @@ lemma Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type} {U 
     exact ⟨i, Or.inr hx⟩
 
 #check Set.univ_subset_iUnion_union_compl
--- 表示: `Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type}
---        {U : I → Set α} (hcov : C ⊆ ⋃ i, U i) (hI : Nonempty I) :
---        Set.univ ⊆ ⋃ i, U i ∪ Cᶜ`
+
+/-!
+    Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type} {U : I → Set α} (hcov : C ⊆ Set.iUnion fun i ↦ U i)
+      (hI : Nonempty I) : Set.univ ⊆ Set.iUnion fun i ↦ U i ∪ Cᶜ
+-/
 
 /-- 全体が `U i ∪ Cᶜ` たちで覆われるなら、`C` は `U` だけで覆われる（方針の 3）。 -/
-lemma Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I}
+theorem Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I}
     {U : I → Set α} (hsub : (Set.univ : Set α) ⊆ ⋃ i ∈ J, U i ∪ Cᶜ) : C ⊆ ⋃ i ∈ J, U i := by
   intro x hx
   have ⟨i, hiJ, hi⟩ := hsub x trivial
   cases hi with
   | inl h => exact ⟨i, hiJ, h⟩
-  | inr h => exact absurd hx h
+  | inr h => exact (h hx).elim
 
 #check Set.subset_biUnion_of_compl
--- 表示: `Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I}
---        {U : I → Set α} (hsub : Set.univ ⊆ ⋃ i ∈ J, U i ∪ Cᶜ) : C ⊆ ⋃ i ∈ J, U i`
+
+/-!
+    Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I} {U : I → Set α}
+      (hsub : Set.univ ⊆ J.biUnion fun i ↦ U i ∪ Cᶜ) : C ⊆ J.biUnion fun i ↦ U i
+-/
 
 /-- 補題3: コンパクト空間の閉集合はコンパクト。
 `by_cases` は「成り立つ場合」と「成り立たない場合」の古典論理による場合分け。 -/
@@ -805,12 +1031,15 @@ theorem IsClosed.isCompact [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCo
     refine ⟨∅, Set.Finite.empty, ?_⟩
     intro x hx
     have ⟨i, _⟩ := hcov x hx
-    exact absurd ⟨i⟩ hI
+    exact (hI ⟨i⟩).elim
 
 #check IsClosed.isCompact
--- 表示: `IsClosed.isCompact {X : Type} [TopologicalSpace X] [CompactSpace X]
---        {C : Set X} (hC : IsClosed C) : IsCompact C`
--- 読み: 補題2と対をなす形。こちらの空間側の仮定は `[CompactSpace X]`。
+
+/-!
+    IsClosed.isCompact {X : Type} [TopologicalSpace X] [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCompact C
+
+補題2と対をなす形。こちらの空間側の仮定は `[CompactSpace X]`。
+-/
 
 /-! ## 10. 目標: コンパクトからハウスドルフへの連続全単射は同相
 
@@ -841,14 +1070,18 @@ structure Homeomorph (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] wher
   continuous_invFun : Continuous invFun
 
 #check Homeomorph
--- 表示: `Homeomorph (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] : Type`
--- 読み: 結果が `Prop` でなく `Type`。「同相である」という命題ではなく、
--- 同相写像というデータの型である。
+
+/-!
+    Homeomorph (X Y : Type) [TopologicalSpace X] [TopologicalSpace Y] : Type
+
+結果が `Prop` でなく `Type`。「同相である」という命題ではなく、
+同相写像というデータの型である。
+-/
 
 /-- 両側逆写像をもつ写像では、`g` による逆像は `f` による像に等しい（方針の 1）。
 位相と無関係な、集合の補題である。全単射のとき「逆像で考えても像で考えても同じ」
 という日常的な言い替えの正体がこれ。 -/
-lemma Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α}
+theorem Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α}
     (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) (s : Set α) :
     g ⁻¹' s = f '' s := by
   apply Set.ext
@@ -864,20 +1097,24 @@ lemma Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α}
     exact hx
 
 #check Set.preimage_eq_image
--- 表示: `Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α}
---        (hgf : ∀ (x : α), g (f x) = x) (hfg : ∀ (y : β), f (g y) = y) (s : Set α) :
---        g ⁻¹' s = f '' s`
+
+/-!
+    Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α} (hgf : ∀ (x : α), g (f x) = x) (hfg : ∀ (y : β), f (g y) = y)
+      (s : Set α) : g ⁻¹' s = f '' s
+-/
 
 /-- 開集合の補集合は閉（方針の 2）。閉の定義は「補集合が開」なので、
 二重補集合 `sᶜᶜ = s` に帰着する。 -/
-lemma isClosed_compl {s : Set X} (hs : IsOpen s) : IsClosed sᶜ := by
+theorem isClosed_compl {s : Set X} (hs : IsOpen s) : IsClosed sᶜ := by
   show IsOpen (sᶜᶜ : Set X)
   rw [Set.compl_compl]
   exact hs
 
 #check isClosed_compl
--- 表示: `isClosed_compl {X : Type} [TopologicalSpace X] {s : Set X} (hs : IsOpen s) :
---        IsClosed sᶜ`
+
+/-!
+    isClosed_compl {X : Type} [TopologicalSpace X] {s : Set X} (hs : IsOpen s) : IsClosed sᶜ
+-/
 
 /-- 逆写像の連続性。これが定理の中身:
 `g` が連続写像 `f` の両側逆写像なら、`g` も連続。
@@ -901,17 +1138,29 @@ theorem continuous_invFun [CompactSpace X] [Hausdorff Y]
   exact hcl
 
 #check continuous_invFun
--- 表示: `continuous_invFun {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y]
---        [CompactSpace X] [Hausdorff Y] {f : X → Y} (hf : Continuous f) {g : Y → X}
---        (hgf : ∀ (x : X), g (f x) = x) (hfg : ∀ (y : Y), f (g y) = y) : Continuous g`
--- 読み: 長いが、左から順に「空間の条件（インスタンス引数4つ）→ `f` の連続性 →
--- `g` が両側逆写像であること2つ → 結論 `g` の連続性」と読み下せる。
+
+/-!
+    continuous_invFun {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] [CompactSpace X] [Hausdorff Y]
+      {f : X → Y} (hf : Continuous f) {g : Y → X} (hgf : ∀ (x : X), g (f x) = x) (hfg : ∀ (y : Y), f (g y) = y) :
+      Continuous g
+
+長いが、左から順に「空間の条件（インスタンス引数4つ）→ `f` の連続性 →
+`g` が両側逆写像であること2つ → 結論 `g` の連続性」と読み下せる。
+-/
 
 /-- 目標の定理: コンパクト空間からハウスドルフ空間への連続全単射は同相写像。
+（`#check` の表示を見る前に、主定理の型——空間の条件・`f` の条件・結論——が
+どんな引数の列になるか、自分で予想してから確かめてほしい。）
 
 `where` 構文で `Homeomorph` の6フィールドを埋める。逆写像は、全射性 `hbij.surjective` の
-「存在する」から `Classical.choose` で1つ選んで作る。選択を使う構成なので
-`noncomputable`（この関数は計算はできないが、項としては正当）という印が要る。 -/
+「存在する」から `Classical.choose` で1つ選んで作る。存在の証明から値を
+取り出すこの操作が普通の項の構成では許されないこと（`CH.lean` 11節の
+「対応のずれ」）の代金が、公理 `Classical.choice` への依存と
+`noncomputable`（この関数は計算はできないが、項としては正当）という印である。
+
+最後のフィールドで使う `_root_.` は「トップレベルの名前」の明示。いま埋めている
+フィールド自身が `continuous_invFun` という同名なので、外の定理の方を指すために
+付けている。 -/
 noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y]
     (f : X → Y) (hf : Continuous f) (hbij : Function.Bijective f) : Homeomorph X Y where
   toFun := f
@@ -925,12 +1174,15 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
       (fun y => Classical.choose_spec (hbij.surjective y))
 
 #check Homeomorph.ofContinuousBijective
--- 表示: `Homeomorph.ofContinuousBijective {X : Type} [TopologicalSpace X] {Y : Type}
---        [TopologicalSpace Y] [CompactSpace X] [Hausdorff Y] (f : X → Y)
---        (hf : Continuous f) (hbij : Function.Bijective f) : Homeomorph X Y`
--- 読み: この型そのものが主定理の主張である——
--- 「コンパクト空間 X からハウスドルフ空間 Y への写像 f が連続かつ全単射なら、
---  X と Y の同相写像（というデータ）が得られる」。
+
+/-!
+    Homeomorph.ofContinuousBijective {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] [CompactSpace X]
+      [Hausdorff Y] (f : X → Y) (hf : Continuous f) (hbij : Function.Bijective f) : Homeomorph X Y
+
+この型そのものが主定理の主張である——
+「コンパクト空間 X からハウスドルフ空間 Y への写像 f が連続かつ全単射なら、
+ X と Y の同相写像（というデータ）が得られる」。
+-/
 
 /-! ### 使った公理の確認
 
@@ -957,8 +1209,24 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
 なお `propext` は集合を述語として定義したことから、`Quot.sound` は
 `Set.ext` の中の `funext`（Lean では定理）から来ている。
 -/
+
 #print axioms Homeomorph.ofContinuousBijective
 
+/-!
+    'Homeomorph.ofContinuousBijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+
+/-! ### ✏ 練習
+
+1. `#print axioms isOpen_empty` の結果を予想してから確かめよ。
+   `Classical.choice` は入るだろうか（合併の公理と `Set.ext` だけで示した証明だった）。
+2. `discrete Bool` を使って、`TopologicalSpace Bool` の項を1つ `example` で書け。
+3. `IsCompact.isClosed` の型で、「空間がハウスドルフ」という仮定が
+   3種類の括弧のどれで現れるか予想してから、本文の表示の枠で確かめよ。
+-/
+
 /-! 余力があれば、発展演習 `Extra.lean` へ（解答は `ExtraSol.lean`）。
-位相空間の圏と自由忘却随伴を組み立て、最後にこのファイルの主定理の
-ハウスドルフという仮定が外せないことを反例で確かめる。 -/
+位相空間の圏と自由忘却随伴を組み立て、このファイルの主定理の
+ハウスドルフという仮定が外せないことを反例で確かめるほか、
+位相空間の別定義（閉集合系・閉包・近傍系・ネット）の等価性や、
+部分空間・積・直和・商をまとめて生む誘導位相とその普遍性を扱う。 -/
