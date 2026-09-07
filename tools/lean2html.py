@@ -34,17 +34,19 @@ SITE_NOTE = (
 # ---------------------------------------------------------------- inline md
 
 def inline(text: str) -> str:
-    """インライン要素: `code` と **bold**。コード内は bold 処理しない。"""
-    parts = re.split(r"(`[^`]*`)", text)
-    out = []
-    for p in parts:
-        if p.startswith("`") and p.endswith("`") and len(p) >= 2:
-            out.append("<code>" + html.escape(p[1:-1]) + "</code>")
-        else:
-            e = html.escape(p)
-            e = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", e)
-            out.append(e)
-    return "".join(out)
+    """インライン要素: `code` と **bold**。
+    bold はコード片を中に含んでよいので、コードを一旦プレースホルダに退避してから
+    bold を処理し、最後に戻す。コード内の ** はそのまま残る。"""
+    codes: list[str] = []
+
+    def stash(m: re.Match) -> str:
+        codes.append("<code>" + html.escape(m.group(1)) + "</code>")
+        return f"\x00{len(codes) - 1}\x00"
+
+    tmp = re.sub(r"`([^`]*)`", stash, text)
+    e = html.escape(tmp)
+    e = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", e)
+    return re.sub(r"\x00(\d+)\x00", lambda m: codes[int(m.group(1))], e)
 
 # ---------------------------------------------------------------- prose (md subset)
 
@@ -196,24 +198,32 @@ def hl_code_part(code: str) -> str:
     return TOKEN_RE.sub(_token_repl, html.escape(code))
 
 
+COMMENT_BOLD_RE = re.compile(r"\*\*([^*]+?)\*\*")
+
+
+def esc_comment(text: str) -> str:
+    """コメント・docstring 用: エスケープした上で **…** を太字にする（行内のみ）。"""
+    return COMMENT_BOLD_RE.sub(r"<strong>\1</strong>", html.escape(text))
+
+
 def render_code(lines: list[str]) -> str:
     out = []
     in_doc = False
     for line in lines:
         if in_doc:
-            out.append(f'<span class="doc">{html.escape(line)}</span>')
+            out.append(f'<span class="doc">{esc_comment(line)}</span>')
             if "-/" in line:
                 in_doc = False
             continue
         if line.lstrip().startswith("/--"):
-            out.append(f'<span class="doc">{html.escape(line)}</span>')
+            out.append(f'<span class="doc">{esc_comment(line)}</span>')
             if "-/" not in line:
                 in_doc = True
             continue
         idx = line.find("--")
         if idx >= 0:
             code, comment = line[:idx], line[idx:]
-            out.append(hl_code_part(code) + f'<span class="cm">{html.escape(comment)}</span>')
+            out.append(hl_code_part(code) + f'<span class="cm">{esc_comment(comment)}</span>')
         else:
             out.append(hl_code_part(line))
     return '<pre class="lean"><code>' + "\n".join(out) + "</code></pre>"

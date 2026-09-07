@@ -66,7 +66,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>このうち機械が保証<strong>できない</strong>のは 2 だけである。定義が間違っていれば、そこから証明した定理は意図と違うことを言っている。だからこのファイルでは、すべての定義を1ファイルに収めて目視で監査できる分量に保ち（mathlib を使わないのはこのためでもある）、主要な定義にはよく知る例・事実がそこから出ることを確かめる「定義の確認」を添えてある。</p>
 <h2>読み方: 各宣言のあとの <code>#check</code></h2>
 <p>各宣言の直後に <code>#check 名前</code> を置き、その表示を <code>-- 表示:</code> に書き添えてある。「いま何がどんな型で手に入ったか」を宣言ごとに確認しながら読んでほしい。</p>
-<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> <code>[ ]</code> の違いは <code>Intro.lean</code> 7節。</p>
+<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> <code>[ ]</code> の違いは <code>Intro.lean</code> 6節。</p>
 <h2>1. 集合</h2>
 <p><code>α</code> の部分集合を「<code>α</code> の要素を受け取って命題を返す関数」として定義する。 <code>s : Set α</code> と <code>a : α</code> に対し、<code>s a</code> が「<code>a</code> は <code>s</code> に属する」という命題そのものになる。</p>
 <pre class="lean"><code><span class="doc">/-- `α` の部分集合の型。実体は述語 `α → Prop` そのもので、新しいデータは何もない。 -/</span>
@@ -75,7 +75,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> Set
 <span class="cm">-- 表示: `Set (α : Type) : Type`</span>
 <span class="cm">-- 読み: 型 α を受け取って型を返す。つまり `Set : Type → Type` という</span>
-<span class="cm">-- 「型を受け取って型を返す関数」である（`Intro.lean` 8節の `Fin` と同じ形）。</span>
+<span class="cm">-- 「型を受け取って型を返す関数」である（`Intro.lean` 7節の `Fin` と同じ形）。</span>
 
 <span class="cm">-- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は</span>
 <span class="cm">-- キャストなしでそのまま関数として適用できる。型検査が定義を展開して照合する。</span>
@@ -91,7 +91,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="cm">-- 型としては `setOf : (α → Prop) → Set α` と読めばよい。</span>
 
 <span class="doc">/-- 内包記法。`{a | p a}` と書いたら `setOf fun a =&gt; p a` の略記とする。</span>
-<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 9節）。 -/</span>
+<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 8節）。 -/</span>
 <span class="kw">syntax</span> &quot;{&quot; ident &quot; | &quot; term &quot;}&quot; : term
 
 <span class="cm">-- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は</span>
@@ -100,7 +100,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">macro_rules</span>
   | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)
 
-<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 9節）</span>
+<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 8節）</span>
 <span class="kw">namespace</span> Set
 
 <span class="cm">-- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる</span>
@@ -108,7 +108,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p><code>∈</code> <code>⊆</code> <code>∩</code> <code>∪</code> <code>∅</code> などの記法は、標準ライブラリの記法用クラス（<code>Membership</code> など）にこの <code>Set</code> を <code>instance</code> 登録すると使えるようになる。逆に言えば、登録するまでは使えない。実際、この時点で <code>a ∈ s</code> と書くと</p>
 <pre class="quote"><code>error: failed to synthesize instance of type class
   Membership Nat (Set Nat)</code></pre>
-<p>と断られる（<code>Intro.lean</code> 7節で見た「登録簿にない」エラー）。以下、クラスごとに <code>instance</code> 登録し、直後にその記法が使えるようになったことを <code>#check</code> で確認していく。<code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方。</p>
+<p>と断られる（<code>Intro.lean</code> 6節で見た「登録簿にない」エラー）。以下、クラスごとに <code>instance</code> 登録し、直後にその記法が使えるようになったことを <code>#check</code> で確認していく。<code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方。</p>
 <pre class="lean"><code><span class="doc">/-- 所属 `a ∈ s`。中身は「`s` に `a` を適用する」だけで、定義上そのまま `s a`。 -/</span>
 <span class="kw">instance</span> : Membership α (Set α) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
 
@@ -186,7 +186,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">prefix</span>:110 &quot;⋃₀ &quot; =&gt; Set.sUnion
 
 <span class="doc">/-- 添字づけられた集合族 `U : I → Set α` の合併。</span>
-<span class="doc">族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 8節）。 -/</span>
+<span class="doc">族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 7節）。 -/</span>
 <span class="kw">def</span> iUnion {I : <span class="sort">Type</span>} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 <span class="kw">#check</span> iUnion
@@ -204,7 +204,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> preimage
 <span class="cm">-- 表示: `Set.preimage {α β : Type} (f : α → β) (s : Set β) : Set α`</span>
-<span class="cm">-- 読み: `image` と見比べると `Set β → Set α` で、集合の移動が `f` と**逆向き**。</span>
+<span class="cm">-- 読み: `image` と見比べると `Set β → Set α` で、集合の移動が `f` と<strong>逆向き</strong>。</span>
 
 <span class="doc">/-- 中置記法 `f ⁻¹&#x27; s`。 -/</span>
 <span class="kw">infixl</span>:80 &quot; ⁻¹&#x27; &quot; =&gt; Set.preimage
@@ -230,7 +230,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> Finite
 <span class="cm">-- 表示: `Set.Finite {α : Type} (s : Set α) : Prop`</span>
-<span class="cm">-- 読み: 結果が `Prop`。つまりこれは集合の**性質**（集合を受け取って命題を返す述語）。</span>
+<span class="cm">-- 読み: 結果が `Prop`。つまりこれは集合の<strong>性質</strong>（集合を受け取って命題を返す述語）。</span>
 
 <span class="doc">/-- 空集合は有限。`n = 0` とし、拾う関数には `Fin.elim0`（`Fin 0` は空の型なので、</span>
 <span class="doc">そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` の導入（`CH.lean` 6節）。 -/</span>
@@ -262,7 +262,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> compl_compl
 <span class="cm">-- 表示: `Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s`</span>
 <span class="cm">-- 読み: どの集合 `s` にも適用できる等式。`∀ s, …` と書くのと `(s : Set α)` を</span>
-<span class="cm">-- 引数に取るのは同じこと（`Intro.lean` 8節: ∀ は依存関数型）。</span>
+<span class="cm">-- 引数に取るのは同じこと（`Intro.lean` 7節: ∀ は依存関数型）。</span>
 
 <span class="doc">/-- 2つの合併は「2つだけからなる族」の合併に書き直せる。</span>
 <span class="doc">`{u | u = s ∨ u = t}` は要素が `s` と `t` の2つ（だけ）の集合族。</span>
@@ -290,7 +290,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <h3>有限個の共通部分</h3>
 <p><code>Fin n</code> で番号づけられた集合たちの共通部分。<code>n</code> についての再帰で定義する。ハウスドルフ側の証明で、有限部分被覆から近傍を1つ作るのに使う。</p>
 <pre class="lean"><code><span class="doc">/-- `n` 個の集合 `W 0, …, W (n-1)` の共通部分。</span>
-<span class="doc">`Nat` の構造にそったパターンマッチ（`Intro.lean` 5節）で定義する:</span>
+<span class="doc">`Nat` の構造にそったパターンマッチ（`Intro.lean` 4節）で定義する:</span>
 <span class="doc">`0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。</span>
 <span class="doc">`fun i =&gt; W i.succ` は添字を1つずらして「残りの族」を作っている。 -/</span>
 <span class="kw">def</span> interFin : (n : Nat) → (Fin n → Set α) → Set α
@@ -299,12 +299,12 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> interFin
 <span class="cm">-- 表示: `Set.interFin {α : Type} (n : Nat) : (Fin n → Set α) → Set α`</span>
-<span class="cm">-- 読み: 表示に binder 形式（`(n : Nat)`）と矢印形式（`→`）が**混ざっている**が、</span>
+<span class="cm">-- 読み: 表示に binder 形式（`(n : Nat)`）と矢印形式（`→`）が<strong>混ざっている</strong>が、</span>
 <span class="cm">-- どちらも同じ関数型の表示にすぎない。全体としては</span>
 <span class="cm">-- `interFin : (n : Nat) → (Fin n → Set α) → Set α` という2引数関数である。</span>
 
 <span class="doc">/-- すべての `W i` に入る点は共通部分に入る。</span>
-<span class="doc">定義と同じ再帰の形で証明を書く——**再帰で書いた証明が数学的帰納法**である。</span>
+<span class="doc">定義と同じ再帰の形で証明を書く——<strong>再帰で書いた証明が数学的帰納法</strong>である。</span>
 <span class="doc">`n = 0` の場合のゴールは `a ∈ univ` すなわち `True` なので `trivial`。 -/</span>
 <span class="kw">theorem</span> mem_interFin : ∀ (n : Nat) (W : Fin n → Set α) (a : α), (∀ i, a ∈ W i) →
     a ∈ interFin n W
@@ -340,7 +340,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 全単射: 単射かつ全射。</span>
 <span class="doc"></span>
 <span class="doc">`Function.Injective f ∧ Function.Surjective f` と `∧` で束ねても内容は同じだが、</span>
-<span class="doc">ここでは `structure` にする。利点はフィールドに**名前**が付くこと:</span>
+<span class="doc">ここでは `structure` にする。利点はフィールドに<strong>名前</strong>が付くこと:</span>
 <span class="doc">取り出しが `hbij.1` ではなく `hbij.injective` と書けて、読み手に意図が伝わる。</span>
 <span class="doc">ほかにも、フィールドごとに説明（docstring）を付けられる、</span>
 <span class="doc">フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、</span>
@@ -367,7 +367,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>開集合が何であるかを指定するデータ <code>IsOpen</code> と、それが満たすべき3つの公理。</p>
 <pre class="lean"><code><span class="doc">/-- 位相空間の構造。「どの部分集合を開と呼ぶか」のデータ `IsOpen` と、</span>
 <span class="doc">それが満たすべき3公理を `class` で束ねる（データ＋性質という構成は</span>
-<span class="doc">`Intro.lean` 6節・7節の structure/class と同じ）。</span>
+<span class="doc">`Intro.lean` 5節・6節の structure/class と同じ）。</span>
 <span class="doc"></span>
 <span class="doc">`class` にしたので、以後 `[TopologicalSpace X]` と角括弧で書くだけで</span>
 <span class="doc">「`X` に載っている位相」がインスタンス引数として暗黙に渡る。</span>
@@ -464,7 +464,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> discrete
 <span class="cm">-- 表示: `discrete (X : Type) : TopologicalSpace X`</span>
-<span class="cm">-- 読み: 型を受け取って**位相そのもの**（`TopologicalSpace X` の項）を返す関数。</span></code></pre>
+<span class="cm">-- 読み: 型を受け取って<strong>位相そのもの</strong>（`TopologicalSpace X` の項）を返す関数。</span></code></pre>
 <h2>4. 連続写像</h2>
 <p>「近くの点を近くに送る」を開集合だけで言い換えたのが次の定義。写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。</p>
 <pre class="lean"><code><span class="kw">variable</span> {Y : <span class="sort">Type</span>} [TopologicalSpace Y] {Z : <span class="sort">Type</span>} [TopologicalSpace Z]
@@ -489,7 +489,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="doc">/-- 連続写像の合成は連続。</span>
 <span class="doc">`(g ∘ f) ⁻¹&#x27; s` が `f ⁻¹&#x27; (g ⁻¹&#x27; s)` と定義上等しいので、引き戻しを2回続けるだけ。</span>
-<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 9節）。 -/</span>
+<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 8節）。 -/</span>
 <span class="kw">theorem</span> Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (<span class="kw">fun</span> x =&gt; g (f x)) :=
   <span class="kw">fun</span> s hs =&gt; hf _ (hg s hs)
@@ -499,10 +499,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="cm">--        {Z : Type} [TopologicalSpace Z] {g : Y → Z} {f : X → Y}</span>
 <span class="cm">--        (hg : Continuous g) (hf : Continuous f) : Continuous fun x =&gt; g (f x)`</span>
 <span class="cm">-- 読み: 空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 `hg` `hf` の2つで、</span>
-<span class="cm">-- 先に適用される `f` の連続性が**後ろ**に来る（合成の記法 `g ∘ f` と同じ順）。</span></code></pre>
+<span class="cm">-- 先に適用される `f` の連続性が<strong>後ろ</strong>に来る（合成の記法 `g ∘ f` と同じ順）。</span></code></pre>
 <h2>5. ハウスドルフ空間</h2>
 <p>「異なる2点は開集合で見分けられる」という条件。点が多すぎず貼りついていない、という感じの性質。</p>
-<pre class="lean"><code><span class="doc">/-- ハウスドルフ空間であるという**性質**。フィールドが命題1つだけの `class : Prop` で、</span>
+<pre class="lean"><code><span class="doc">/-- ハウスドルフ空間であるという<strong>性質</strong>。フィールドが命題1つだけの `class : Prop` で、</span>
 <span class="doc">データは持たない。位相を前提にするので `[TopologicalSpace X]` を引数に取る。</span>
 <span class="doc"></span>
 <span class="doc">空間ごとに決まる常置的な性質なので `class` にしてある: 以後の定理は</span>
@@ -520,11 +520,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>被覆は添字づけられた族 <code>U : I → Set X</code> で表し、部分被覆は添字の部分集合 <code>J ⊆ I</code> を取ることで表す。 <code>J</code> が有限であることは <code>Set.Finite</code>（<code>Fin n</code> で番号づけられること）で表す。</p>
 <pre class="lean"><code><span class="doc">/-- コンパクト集合。定義を読み下すと:</span>
 <span class="doc">任意の添字型 `I`（暗黙引数）と開集合族 `U : I → Set X` について、</span>
-<span class="doc">`U` が `K` を覆うなら、**添字の有限部分集合** `J` に間引いても `K` を覆える。</span>
+<span class="doc">`U` が `K` を覆うなら、<strong>添字の有限部分集合</strong> `J` に間引いても `K` を覆える。</span>
 <span class="doc"></span>
 <span class="doc">`Hausdorff` と違って、こちらは `class` にしない。`IsCompact` は個々の</span>
 <span class="doc">部分集合ごとの述語で、`hK : IsCompact K` というふつうの仮定として渡したり、</span>
-<span class="doc">補題の**結論**として新しく作ったりする対象だからである</span>
+<span class="doc">補題の<strong>結論</strong>として新しく作ったりする対象だからである</span>
 <span class="doc">（集合ごとに登録簿へ載せる運用はできない）。</span>
 <span class="doc">空間全体の性質である `CompactSpace`（下）は `Hausdorff` と同様 `class` にする。 -/</span>
 <span class="kw">def</span> IsCompact (K : Set X) : <span class="sort">Prop</span> :=
@@ -752,7 +752,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 </ol>
 <pre class="lean"><code><span class="doc">/-- 同相写像。互いに逆な連続写像の組を `structure` で束ねる:</span>
 <span class="doc">データ2つ（`toFun`, `invFun`）と、それらが満たすべき性質4つ。</span>
-<span class="doc">`Homeomorph X Y : Type` は「`X` と `Y` の間の同相写像」**全体の型**であり、</span>
+<span class="doc">`Homeomorph X Y : Type` は「`X` と `Y` の間の同相写像」<strong>全体の型</strong>であり、</span>
 <span class="doc">`X ≅ Y` という命題ではなく、同相写像そのものをデータとして持ち歩く。 -/</span>
 <span class="kw">structure</span> Homeomorph (X Y : <span class="sort">Type</span>) [TopologicalSpace X] [TopologicalSpace Y] <span class="kw">where</span>
   toFun : X → Y

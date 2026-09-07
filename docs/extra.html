@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <li>自由忘却随伴 「離散 ⊣ 忘却 ⊣ 密着」</li>
 <li>位相空間の別定義（閉集合系・閉包作用素・近傍系・ネット）と等価性（Part 5）</li>
 </ul>
-<p>最後に、これらを使って **<code>Top.lean</code> の主定理のハウスドルフという仮定が外せないこと**を反例で確かめる。</p>
+<p>最後に、これらを使って <strong><code>Top.lean</code> の主定理のハウスドルフという仮定が外せないこと</strong>を反例で確かめる。</p>
 <h2>進め方</h2>
 <ul>
 <li><code>sorry</code> と書かれた場所を自分の証明・構成で置き換える。 <code>sorry</code> が残っているとビルド時に警告が出るので、消えたら完成。</li>
@@ -517,9 +517,9 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="doc">/-- 問題27: 逆——中のネットの極限で閉じている集合は閉であることを示せ。</span>
 <span class="doc"></span>
 <span class="doc">方針: `isOpen_of_nhds` に持ち込む。`a ∈ sᶜ` の開近傍が取れないと仮定すると、</span>
-<span class="doc">`a` の**どの**開近傍も `s` と交わる。そこで添字型を</span>
+<span class="doc">`a` の<strong>どの</strong>開近傍も `s` と交わる。そこで添字型を</span>
 <span class="doc">「`a` の開近傍の全体」（部分型）とし、包含の逆向きで有向にして、</span>
-<span class="doc">各近傍から `s` の点を `Classical.choose` で**選んで**ネットを作ると、</span>
+<span class="doc">各近傍から `s` の点を `Classical.choose` で<strong>選んで</strong>ネットを作ると、</span>
 <span class="doc">それは `a` に収束し、仮定から `a ∈ s` となって矛盾する。</span>
 <span class="doc">`Top.lean` の補題2（選択を避けた）と対照的に、ここでは選択が本質的に要る。</span>
 <span class="doc">できたら `#print axioms` で確認せよ。 -/</span>

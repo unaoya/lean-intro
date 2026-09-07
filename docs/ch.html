@@ -51,6 +51,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <body>
 <nav><span><a href="intro.html">← Intro</a></span><a href="index.html">目次</a><span><a href="top.html">Top →</a></span></nav>
 <main>
+<pre class="lean"><code><span class="kw">import</span> Intro</code></pre>
 <h1>型と命題の対応（Curry–Howard 対応）の雰囲気</h1>
 <p>Lean には「型の世界」と「命題の世界」があり、この2つはよく似ている。</p>
 <ul>
@@ -69,6 +70,36 @@ hr { border: none; border-top: 1px solid var(--border); }
 <tr><td>依存積</td><td><code>(a : α) → P a</code></td><td><code>∀ a, Q a</code></td></tr>
 <tr><td>依存和</td><td><code>(a : α) × P a</code></td><td><code>∃ a, Q a</code></td></tr>
 </tbody></table>
+<h2>0. 準備 — 命題・theorem・rfl</h2>
+<p>対照表に入る前に、命題の世界の書き方を最小限そろえる（<code>Intro.lean</code> は型の世界に集中し、命題の話をこのファイルまで持ち越した）。</p>
+<p><code>Intro.lean</code> の1節で見たとおり、<strong>命題は <code>Prop</code> という型を持つ項</strong>である。命題を作る記号 <code>=</code> や <code>&lt;</code> も、<code>+</code> と同じく<strong>記法</strong>であり、意味はクラスの仕組みで型ごとに決まっている（<code>Intro.lean</code> 6節）。</p>
+<ul>
+<li><code>=</code> <code>&lt;</code> — <strong>ざっくり</strong>: <code>Nat</code> の上では、どちらも <code>Nat → Nat → Prop</code> という型の関数とみなせばよい。<code>1 + 1 : Nat</code> と <code>2 : Nat</code> を渡すから <code>1 + 1 = 2 : Prop</code>。 <strong>正確には</strong>: <code>=</code> はどの型でも使える <code>Eq : α → α → Prop</code>（<code>α</code> は両辺の型から決まる暗黙引数。定義そのものは8節で見る）、<code>&lt;</code> は型ごとに登録簿で意味が決まる演算である。</li>
+</ul>
+<p><code>2 &lt; 1</code> のような偽の命題も、命題としては立派な項である。真であるとは「その命題の<strong>証明</strong>がある」ことである。</p>
+<p>命題も型だから、<code>def</code> とまったく同じ構文で「証明という項に名前を付ける」宣言が書ける。型の位置に命題を、<code>:=</code> の右にその証明を書く。このとき <code>def</code> の代わりに <code>theorem</code> と書くのが慣例で、意味は <code>def</code> と同じである。</p>
+<pre class="lean"><code><span class="kw">theorem</span> one_add_one : 1 + 1 = 2 := rfl
+
+<span class="kw">#check</span> one_add_one</code></pre>
+<pre class="quote"><code>one_add_one : 1 + 1 = 2</code></pre>
+<p><code>rfl</code> は「両辺が定義から計算して一致する」ことを理由にする等式の証明である（なぜこれが証明と言えるのかは、8節で <code>Eq</code> の定義とともに見る）。</p>
+<p>ここで型検査が何をしたかに注意。「項 <code>rfl</code> の型は命題 <code>1 + 1 = 2</code> と一致するか」という <code>Intro.lean</code> 2節以来の検査が、そのまま<strong>証明の検査</strong>になっている。この見方を本格的に展開するのが、このファイルの仕事である。</p>
+<p>もう1つ、<code>Intro.lean</code> 6節の class の話をここで拾っておく。インスタンス引数は <code>def</code> だけでなく <code>theorem</code> にも書けて、「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:</p>
+<pre class="lean"><code><span class="kw">theorem</span> zeroPair_fst (α : <span class="sort">Type</span>) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
+
+<span class="kw">#check</span> zeroPair_fst
+<span class="cm">-- 読み: 使うときは `α` を指定するだけでよく、`HasZero α` の項は</span>
+<span class="cm">-- 登録簿から自動で供給される。</span>
+
+<span class="cm">-- 登録済みの型なら、どれにでも同じ定理が適用できる</span>
+<span class="kw">example</span> : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
+<span class="kw">example</span> : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>#check 3 &lt; 5</code> と <code>#check 3 = 5</code> の表示を予想してから確かめよ（偽の命題も命題である、を思い出すこと）。</li>
+<li><code>theorem two_add_three : 2 + 3 = 5 := rfl</code> を自分で宣言してみよ。</li>
+<li><code>theorem oops : 2 + 2 = 5 := rfl</code> は受理されるか。予想してから試し、エラーメッセージがどの規則の破れを指しているか読み取れ。</li>
+</ol>
 <pre class="lean"><code><span class="kw">universe</span> u v w
 
 <span class="kw">variable</span> {α : <span class="sort">Type</span> u} {β : <span class="sort">Type</span> v} {γ : <span class="sort">Type</span> w}
@@ -196,6 +227,17 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">theorem</span> notIntro (h : p → False) : ¬p := h
 
 <span class="kw">#check</span> notIntro</code></pre>
+<h3>Prelude での定義 — Prop に住む帰納型</h3>
+<p>実は <code>Empty</code> も <code>False</code> も、Prelude で帰納型として定義されている:</p>
+<pre class="quote"><code>inductive Empty : Type
+
+inductive False : Prop</code></pre>
+<p>どちらも構成子ゼロ——「作り方なし」を宣言そのもので表している。違いは住所だけで、 <code>Empty</code> は <code>Type</code> の住人、<code>False</code> は <code>Prop</code> の住人である。このように、 <strong>帰納型は <code>Prop</code> に住む型＝命題も作れる</strong>。<code>Prop</code> の世界では、構成子は「その命題の<strong>証明の作り方</strong>」と読める。</p>
+<p>一点側の対応物もある。<code>Unit</code>（構成子1つ・引数なしの型、<code>Intro.lean</code> 4節）に対応する命題が <code>True</code> である:</p>
+<pre class="quote"><code>inductive True : Prop where
+  | intro : True</code></pre>
+<p>構成子 <code>True.intro</code> がそのまま証明——<code>True</code> はいつでも証明できる自明な命題である。そして、構成子が<strong>複数</strong>ある命題の代表が、3節で見た「または」<code>Or</code> だった（<code>inl</code>/<code>inr</code> の2通りの証明の作り方を持つ）。</p>
+<p>まぎらわしいが、<code>true : Bool</code> と <code>True : Prop</code> は別物なので注意。 <code>true</code> は計算で使う<strong>データ</strong>（<code>Bool</code> は <code>Type</code> の住人）であり、 <code>True</code> は<strong>命題</strong>（<code>Prop</code> の住人）である。</p>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem noContra : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
@@ -224,9 +266,21 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">theorem</span> applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 
 <span class="kw">#check</span> applyForall</code></pre>
+<h3>具体例: 述語と全称命題</h3>
+<p><code>Q : α → Prop</code>——<strong>命題を返す関数</strong>——は、数学でいう述語である。 <code>Intro.lean</code> 7節で「型を返す関数」を見たのと同じ要領で、具体的に1つ作ってみる:</p>
+<pre class="lean"><code><span class="kw">def</span> IsZero : Nat → <span class="sort">Prop</span> := <span class="kw">fun</span> n =&gt; n = 0
+
+<span class="kw">#check</span> IsZero 3   <span class="cm">-- IsZero 3 : Prop（`n` ごとに1つの命題が決まる）</span>
+
+<span class="doc">/-- 「すべての `n` について…」の証明は、依存関数そのものである:</span>
+<span class="doc">各 `n` を受け取って、命題 `IsZero (n * 0)` の証明を返す関数を書けばよい。 -/</span>
+<span class="kw">theorem</span> all_mul_zero : ∀ n : Nat, IsZero (n * 0) := <span class="kw">fun</span> _ =&gt; rfl
+
+<span class="kw">#check</span> all_mul_zero</code></pre>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
+<li><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> でも <code>all_mul_zero 5</code> でも証明できるか試せ。</li>
 </ol>
 <h2>6. 依存和と「存在する」</h2>
 <p>直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>。命題側で対応するのが存在量化 <code>∃ a, Q a</code>。</p>
@@ -252,9 +306,25 @@ hr { border: none; border-top: 1px solid var(--border); }
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> curryExists</code></pre>
+<h3>部分型 — 第二成分が証明の依存和</h3>
+<p><code>Intro.lean</code> 7節で「<code>n</code> 未満の番号の型」として使った <code>Fin</code> の中身は、まさにこの節の形をしている。Prelude での定義は:</p>
+<pre class="quote"><code>structure Fin (n : Nat) where
+  val : Nat
+  isLt : val &lt; n</code></pre>
+<p>値 <code>val</code> と、「その値が <code>n</code> 未満だ」という<strong>証明</strong> <code>isLt</code> の組——依存和の第二成分を命題にしたもの——である。このように、述語で切り出した「値と証明の組」の型を<strong>部分型</strong>と呼ぶ（専用記法 <code>{x // p x}</code> は <code>Top.lean</code> で使う）。</p>
+<p><code>Intro.lean</code> 7節の <code>first</code> は、値が常に 0 番だった。中身が分かったいまなら、値も <code>n</code> に依存する関数が書ける。「<code>Fin (n + 1)</code> の<strong>最後の</strong>番号」である:</p>
+<pre class="lean"><code><span class="kw">def</span> last : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> n =&gt; ⟨n, Nat.lt_succ_self n⟩
+
+<span class="kw">#check</span> last
+<span class="cm">-- 値 `n` に、命題 n &lt; n + 1 の証明（ライブラリの `Nat.lt_succ_self n`）を</span>
+<span class="cm">-- 添えて組にしている。証明の同伴を要求されるのが `first` との違いである。</span>
+
+<span class="kw">#check</span> last 2     <span class="cm">-- last 2 : Fin (2 + 1)</span>
+<span class="kw">#check</span> last 9     <span class="cm">-- last 9 : Fin (9 + 1)</span></code></pre>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
+<li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は、<code>Intro.lean</code> 7節の補足で見た強制の印である）。</li>
 </ol>
 <h2>7. 導入と除去のまとめ</h2>
 <p>作り方（導入）と使い方（除去）を並べると、左右で同じ形をしていることが見える。</p>
@@ -478,7 +548,7 @@ n : Nat
 <span class="cm">--</span>
 <span class="cm">-- 証明から値を取り出せてしまうと、中身を区別しないはずの証明が</span>
 <span class="cm">-- 計算に影響することになってしまう。そこで Lean は、</span>
-<span class="cm">-- 命題の証明を分解して**命題でないもの**を作ることを許していない。</span>
+<span class="cm">-- 命題の証明を分解して<strong>命題でないもの</strong>を作ることを許していない。</span>
 
 <span class="doc">/-- 結論が命題である限り、分解して使うことはできる。</span>
 <span class="doc">`∃` の除去はこの形になる。 -/</span>

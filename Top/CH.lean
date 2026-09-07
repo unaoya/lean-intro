@@ -1,3 +1,5 @@
+import Intro
+
 /-!
 # 型と命題の対応（Curry–Howard 対応）の雰囲気
 
@@ -22,6 +24,67 @@ Lean には「型の世界」と「命題の世界」があり、この2つは�
 | 空 | `Empty` | `False`（⊥） |
 | 依存積 | `(a : α) → P a` | `∀ a, Q a` |
 | 依存和 | `(a : α) × P a` | `∃ a, Q a` |
+-/
+
+/-! ## 0. 準備 — 命題・theorem・rfl
+
+対照表に入る前に、命題の世界の書き方を最小限そろえる
+（`Intro.lean` は型の世界に集中し、命題の話をこのファイルまで持ち越した）。
+
+`Intro.lean` の1節で見たとおり、**命題は `Prop` という型を持つ項**である。
+命題を作る記号 `=` や `<` も、`+` と同じく**記法**であり、
+意味はクラスの仕組みで型ごとに決まっている（`Intro.lean` 6節）。
+
+* `=` `<` — **ざっくり**: `Nat` の上では、どちらも `Nat → Nat → Prop` という型の
+  関数とみなせばよい。`1 + 1 : Nat` と `2 : Nat` を渡すから `1 + 1 = 2 : Prop`。
+  **正確には**: `=` はどの型でも使える `Eq : α → α → Prop`（`α` は両辺の型から
+  決まる暗黙引数。定義そのものは8節で見る）、`<` は型ごとに登録簿で
+  意味が決まる演算である。
+
+`2 < 1` のような偽の命題も、命題としては立派な項である。
+真であるとは「その命題の**証明**がある」ことである。
+
+命題も型だから、`def` とまったく同じ構文で「証明という項に名前を付ける」宣言が
+書ける。型の位置に命題を、`:=` の右にその証明を書く。このとき `def` の代わりに
+`theorem` と書くのが慣例で、意味は `def` と同じである。
+-/
+
+theorem one_add_one : 1 + 1 = 2 := rfl
+
+#check one_add_one
+
+/-!
+    one_add_one : 1 + 1 = 2
+
+`rfl` は「両辺が定義から計算して一致する」ことを理由にする等式の証明である
+（なぜこれが証明と言えるのかは、8節で `Eq` の定義とともに見る）。
+
+ここで型検査が何をしたかに注意。「項 `rfl` の型は命題 `1 + 1 = 2` と一致するか」
+という `Intro.lean` 2節以来の検査が、そのまま**証明の検査**になっている。
+この見方を本格的に展開するのが、このファイルの仕事である。
+
+もう1つ、`Intro.lean` 6節の class の話をここで拾っておく。
+インスタンス引数は `def` だけでなく `theorem` にも書けて、
+「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:
+-/
+
+theorem zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
+
+#check zeroPair_fst
+-- 読み: 使うときは `α` を指定するだけでよく、`HasZero α` の項は
+-- 登録簿から自動で供給される。
+
+-- 登録済みの型なら、どれにでも同じ定理が適用できる
+example : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
+example : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point
+
+/-! ### ✏ 練習
+
+1. `#check 3 < 5` と `#check 3 = 5` の表示を予想してから確かめよ
+   （偽の命題も命題である、を思い出すこと）。
+2. `theorem two_add_three : 2 + 3 = 5 := rfl` を自分で宣言してみよ。
+3. `theorem oops : 2 + 2 = 5 := rfl` は受理されるか。予想してから試し、
+   エラーメッセージがどの規則の破れを指しているか読み取れ。
 -/
 
 universe u v w
@@ -190,6 +253,35 @@ theorem notIntro (h : p → False) : ¬p := h
 
 #check notIntro
 
+/-!
+### Prelude での定義 — Prop に住む帰納型
+
+実は `Empty` も `False` も、Prelude で帰納型として定義されている:
+
+    inductive Empty : Type
+
+    inductive False : Prop
+
+どちらも構成子ゼロ——「作り方なし」を宣言そのもので表している。違いは住所だけで、
+`Empty` は `Type` の住人、`False` は `Prop` の住人である。このように、
+**帰納型は `Prop` に住む型＝命題も作れる**。`Prop` の世界では、
+構成子は「その命題の**証明の作り方**」と読める。
+
+一点側の対応物もある。`Unit`（構成子1つ・引数なしの型、`Intro.lean` 4節）に
+対応する命題が `True` である:
+
+    inductive True : Prop where
+      | intro : True
+
+構成子 `True.intro` がそのまま証明——`True` はいつでも証明できる自明な命題である。
+そして、構成子が**複数**ある命題の代表が、3節で見た「または」`Or` だった
+（`inl`/`inr` の2通りの証明の作り方を持つ）。
+
+まぎらわしいが、`true : Bool` と `True : Prop` は別物なので注意。
+`true` は計算で使う**データ**（`Bool` は `Type` の住人）であり、
+`True` は**命題**（`Prop` の住人）である。
+-/
+
 /-! ### ✏ 練習
 
 1. `theorem noContra : p → ¬p → q` を書け。ヒント: `¬p` は `p → False` なので、
@@ -231,10 +323,29 @@ theorem applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 
 #check applyForall
 
+/-!
+### 具体例: 述語と全称命題
+
+`Q : α → Prop`——**命題を返す関数**——は、数学でいう述語である。
+`Intro.lean` 7節で「型を返す関数」を見たのと同じ要領で、具体的に1つ作ってみる:
+-/
+
+def IsZero : Nat → Prop := fun n => n = 0
+
+#check IsZero 3   -- IsZero 3 : Prop（`n` ごとに1つの命題が決まる）
+
+/-- 「すべての `n` について…」の証明は、依存関数そのものである:
+各 `n` を受け取って、命題 `IsZero (n * 0)` の証明を返す関数を書けばよい。 -/
+theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
+
+#check all_mul_zero
+
 /-! ### ✏ 練習
 
 1. `theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a` を
    書け（各点で証明を組にするだけ）。
+2. `example : IsZero (0 * 5) := rfl` が通ることを確かめよ。
+   `IsZero (5 * 0)` は `rfl` でも `all_mul_zero 5` でも証明できるか試せ。
 -/
 
 /-! ## 6. 依存和と「存在する」
@@ -270,10 +381,40 @@ theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
 
 #check curryExists
 
+/-!
+### 部分型 — 第二成分が証明の依存和
+
+`Intro.lean` 7節で「`n` 未満の番号の型」として使った `Fin` の中身は、
+まさにこの節の形をしている。Prelude での定義は:
+
+    structure Fin (n : Nat) where
+      val : Nat
+      isLt : val < n
+
+値 `val` と、「その値が `n` 未満だ」という**証明** `isLt` の組——
+依存和の第二成分を命題にしたもの——である。このように、述語で切り出した
+「値と証明の組」の型を**部分型**と呼ぶ（専用記法 `{x // p x}` は
+`Top.lean` で使う）。
+
+`Intro.lean` 7節の `first` は、値が常に 0 番だった。中身が分かったいまなら、
+値も `n` に依存する関数が書ける。「`Fin (n + 1)` の**最後の**番号」である:
+-/
+
+def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
+
+#check last
+-- 値 `n` に、命題 n < n + 1 の証明（ライブラリの `Nat.lt_succ_self n`）を
+-- 添えて組にしている。証明の同伴を要求されるのが `first` との違いである。
+
+#check last 2     -- last 2 : Fin (2 + 1)
+#check last 9     -- last 9 : Fin (9 + 1)
+
 /-! ### ✏ 練習
 
 1. `theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a` を
    書け（証人はそのまま、根拠だけ差し替える）。
+2. `#check (last 4).val` の表示を予想してから確かめよ
+   （表示に付く `↑` は、`Intro.lean` 7節の補足で見た強制の印である）。
 -/
 
 /-! ## 7. 導入と除去のまとめ
