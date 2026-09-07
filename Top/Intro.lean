@@ -17,6 +17,40 @@ Lean を網羅的に紹介することは目的ではない。このファイル
 
 なお、このファイルは**型の世界**に集中する。命題と証明の世界は、
 1節で顔だけ見せたあとは極力持ち込まず、`CH.lean` でまとめて扱う。
+
+### この教材の読み方
+
+中心的な練習は、**書かれたコードを解読すること**である。その基本動作が
+「与えられた項の型を推測する」こと。そこで以後、項を書くたびに
+「この項の型はこうなるはずだ」とまず推測し、`#check` で答え合わせをする、
+というプロセスを繰り返す。読者も、出力の枠を読む前にいったん止まって、
+自分の推測を立ててから確かめてほしい。
+
+各節末の ✏ 練習で手を動かすのも、書ける人になるためではなく、
+**読みの検算**のためである——予想を立てて、機械に答え合わせをさせるための
+最小限の写経だと思ってほしい（コードを書く仕事は、AI に任せてよい）。
+
+### 補足: 記号の入力のしかた
+
+Lean のコードには `→` `⟨` `⟩` `∀` のような記号が多く出てくる。VS Code の
+Lean 4 拡張では、**バックスラッシュ `\` で始まる略記**を打つと記号に変換される。
+例えば `\to` と打って、続けて空白などを打つ（または Tab を押す）と `→` になる。
+よく使うものだけ挙げておく:
+
+| 記号 | 打ち方 |
+|---|---|
+| `→` | `\to` または `\r` |
+| `×` | `\times` または `\x` |
+| `⟨` `⟩` | `\<` と `\>`（`\<>` で両方いっぺんに出る） |
+| `α` `β` `γ` | `\a` `\b` `\g` |
+| `∀` ／ `∃` | `\all` ／ `\ex` |
+| `∧` ／ `∨` ／ `¬` | `\and` ／ `\or` ／ `\not` |
+| `∈` ／ `∪` ／ `∩` ／ `∅` | `\in` ／ `\cup` ／ `\cap` ／ `\empty` |
+| `≠` | `\ne` |
+
+すべて覚える必要はない。**エディタ上の記号にマウスを乗せると、その記号の
+打ち方がポップアップに表示される**ので、真似したい記号に出会ったら
+ホバーして確かめればよい。
 -/
 
 /-! ## 1. 項と型
@@ -144,6 +178,7 @@ def two : Nat := 2
 /-!
     two : Nat
 
+宣言に `: Nat` と書いたのだから型は `Nat` のはずで、表示もそのとおりである。
 名前を付けた項は、それ自体また項として使える:
 -/
 
@@ -226,6 +261,8 @@ def double : Nat → Nat := fun n => n + n
 /-!
     double : Nat → Nat
 
+注釈した型が、そのまま `double` の型になっている。
+
 本体に出てきた `+`（1節で先取りした）について一言だけ注意しておく。
 `+` は **notation（記法）**であり、その意味は **class／instance** という仕組みで
 型ごとに決まっている（仕組みは6節で説明する）。ここでは `Nat` に対して
@@ -305,13 +342,8 @@ Lean の関数はすべて1引数である。2引数の関数は、
 
 def plus : Nat → Nat → Nat := fun a => fun b => a + b
 
-#check plus        -- plus : Nat → Nat → Nat
-#check plus 3      -- plus 3 : Nat → Nat（1つ渡すと、残り1引数の関数が返る）
-#check plus 3 4    -- plus 3 4 : Nat
-#eval plus 3 4     -- 7
-
 /-!
-ここで矢印の読み方の約束を確認しておく。`→` は**右結合**である:
+読み方の約束を先に押さえる。`→` は**右結合**である:
 
     Nat → Nat → Nat　は　Nat → (Nat → Nat)　のこと
 
@@ -325,12 +357,59 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 
 括弧を左側に付けた `(Nat → Nat) → Nat` は**まったく別の型**
 （関数を受け取る関数）になることに注意。
+
+`plus` 自体の型は注釈のとおり:
+-/
+
+#check plus
+
+/-!
+    plus : Nat → Nat → Nat
+
+では、**`plus 3` の型は何か**。表示を見る前に推測しよう。
+`plus` の型を右結合で読めば `Nat → (Nat → Nat)`——定義域は `Nat`、
+行き先は `Nat → Nat`。そこに `3 : Nat` を渡すのだから、適用の2点確認より
+`plus 3 : Nat → Nat` のはずである:
+-/
+
+#check plus 3
+
+/-!
+    plus 3 : Nat → Nat
+
+推測どおり。「1つ渡すと、残り1引数の関数が返る」ことが型にそのまま現れている。
+もう1つ渡せば `Nat` になるはずで:
+-/
+
+#check plus 3 4
+
+/-!
+    plus 3 4 : Nat
+-/
+
+#eval plus 3 4
+
+/-!
+    7
 -/
 
 def applyTo21 (F : Nat → Nat) : Nat := F 21
 
-#check applyTo21       -- applyTo21 (F : Nat → Nat) : Nat
-#eval applyTo21 double -- 42（関数 double そのものを引数として渡している）
+#check applyTo21
+
+/-!
+    applyTo21 (F : Nat → Nat) : Nat
+
+`applyTo21 double` という項を読んでみよう。定義域は `Nat → Nat` で、
+`double : Nat → Nat` がちょうど一致する——**関数そのものを引数として渡す**
+適用であり、型は `Nat`。値は `double 21`、つまり `42` のはずである:
+-/
+
+#eval applyTo21 double
+
+/-!
+    42
+-/
 
 /-!
 書き方の糖衣もまとめておく。次の3つは**まったく同じ宣言**である:
@@ -344,7 +423,13 @@ def applyTo21 (F : Nat → Nat) : Nat := F 21
 `Nat → Nat → Nat → Nat` は `Nat → (Nat → (Nat → Nat))` と読む。 -/
 def addMul (a b c : Nat) : Nat := a + b * c
 
-#check addMul      -- addMul (a b c : Nat) : Nat（binder 形式の表示）
+#check addMul
+
+/-!
+    addMul (a b c : Nat) : Nat
+
+binder 形式の表示
+-/
 
 /-! ### 定義域や行き先が型でもよい
 
@@ -419,7 +504,11 @@ def Map : Type → Type → Type := fun A B => A → B
 「宣言された型」と「この規則」だけで、同じように自分の手で検算できる。
 -/
 
-#check double (plus 3 4)   -- 表示: double (plus 3 4) : Nat
+#check double (plus 3 4)
+
+/-!
+    double (plus 3 4) : Nat
+-/
 
 /-!
 照合が失敗すれば、破れた場所がそのままエラーになる。
@@ -475,7 +564,18 @@ inductive Signal where
 
 #check Signal
 
-#check Signal.red   -- Signal.red : Signal
+/-!
+    Signal : Type
+
+では、構成子 `Signal.red` の型は何か。「`Signal` の項の作り方」なのだから、
+作られるものの型 `Signal` のはずである:
+-/
+
+#check Signal.red
+
+/-!
+    Signal.red : Signal
+-/
 
 /-!
 この宣言の意味は「`Signal` の項は `Signal.red`, `Signal.yellow`, `Signal.green` の
@@ -496,9 +596,18 @@ def next : Signal → Signal
 #check next
 
 /-!
-定義した関数を試したい。`#eval` は値の表示の仕組み（`Repr`）が登録された型で
-しか使えず、いま作ったばかりの `Signal` には登録がない。こういうときは
-`#reduce`——項を計算して、**構成子の形**で表示するコマンド——が使える:
+    next : Signal → Signal
+-/
+
+/-!
+定義した関数を試したい。まず `next Signal.red` という項を読む:
+2点確認より型は `Signal`、値は定義の1行目（`Signal.red => Signal.green`）から
+`Signal.green` になるはずである。
+
+計算結果を見たいが、ここでは `#eval` が使えない——`#eval` は値の表示の仕組み
+（`Repr`）が登録された型でしか使えず、いま作ったばかりの `Signal` には
+登録がないからである。こういうときは `#reduce`——項を計算して、
+**構成子の形**で表示するコマンド——が使える:
 -/
 
 #reduce next Signal.red
@@ -518,6 +627,10 @@ def isRed : Signal → Bool
   | .green => false
 
 #check isRed
+
+/-!
+    isRed : Signal → Bool
+-/
 
 /-!
 `Bool` はまさにこの形の列挙型で、標準ライブラリ（Prelude）では
@@ -549,7 +662,16 @@ inductive NatOrBool where
   | nat (n : Nat) : NatOrBool
   | bool (b : Bool) : NatOrBool
 
-#check NatOrBool.nat    -- NatOrBool.nat (n : Nat) : NatOrBool
+/-!
+構成子 `nat` の型を推測しよう。`Nat` の項を1つ受け取って `NatOrBool` の項を
+作るのだから、`Nat → NatOrBool`——binder 表示なら `(n : Nat)` が左に出る——のはず:
+-/
+
+#check NatOrBool.nat
+
+/-!
+    NatOrBool.nat (n : Nat) : NatOrBool
+-/
 
 /-!
 矢印形式で書いても、まったく同じ型が定義される:
@@ -570,6 +692,10 @@ def valueOf : NatOrBool → Nat
 #check valueOf
 
 /-!
+    valueOf : NatOrBool → Nat
+-/
+
+/-!
 ### 型をパラメータにする
 
 次の段階として、包む中身の型そのものをパラメータ `(α β : Type)` にできる:
@@ -581,7 +707,21 @@ inductive MySum (α β : Type) where
 
 #check MySum
 
-#check MySum.inl    -- MySum.inl {α β : Type} (a : α) : MySum α β
+/-!
+    MySum (α β : Type) : Type
+
+構成子 `inl` の型はどうなるか。`NatOrBool.nat` からの類推では
+`α → MySum α β` だが、今度は `α`・`β` 自身も決まらないと使えないはずである:
+-/
+
+#check MySum.inl
+
+/-!
+    MySum.inl {α β : Type} (a : α) : MySum α β
+
+推測した引数 `(a : α)` に加えて、パラメータの分の引数 `{α β : Type}` が
+先頭に付いた。波括弧は「文脈から自動で埋まる引数」の印である（6節で説明する）。
+-/
 
 /-!
 `MySum α β` の項は、「`α` の項に `inl` の札を付けたもの」か
@@ -597,6 +737,10 @@ def fromSum : MySum Nat Bool → Nat
 #check fromSum
 
 /-!
+    fromSum : MySum Nat Bool → Nat
+-/
+
+/-!
 取り出す側も、パラメータを持たせて一般的に書ける。次の `getLeft` は
 「既定値 `d` を受け取り、左の札なら中身を、右の札なら `d` を返す」関数で、
 `fromSum` はその `Nat`・`Bool`・`0` への特殊化に当たる
@@ -610,7 +754,19 @@ def getLeft {α β : Type} (d : α) : MySum α β → α
 
 #check getLeft
 
-#eval getLeft 0 (MySum.inr true)   -- 0
+/-!
+    getLeft {α β : Type} (d : α) : MySum α β → α
+
+使ってみる。`getLeft 0 (MySum.inr true)` という項を読む: `d = 0 : Nat` から
+`α = Nat` が、`true : Bool` から `β = Bool` が埋まり、全体の型は `Nat`。
+値は「右の札」を渡したのだから、既定値 `0` が返るはずである:
+-/
+
+#eval getLeft 0 (MySum.inr true)
+
+/-!
+    0
+-/
 
 /-!
 ### 構成子は自分自身の型を引数に取れる（再帰）
@@ -624,6 +780,10 @@ inductive MyNat where
   | succ : MyNat → MyNat
 
 #check MyNat
+
+/-!
+    MyNat : Type
+-/
 
 /-!
 `MyNat` の項は、`zero` に `succ` を有限回適用したものがすべて。
@@ -646,7 +806,14 @@ def add : MyNat → MyNat → MyNat
 #check add
 
 /-!
-`add` の計算も `#reduce` で確かめられる。「1 + 1」に当たる計算をさせてみる:
+    add : MyNat → MyNat → MyNat
+-/
+
+/-!
+`add` の計算も `#reduce` で確かめられる。「1 + 1」に当たる
+`add (.succ .zero) (.succ .zero)` を読んでみよう。定義の2行目から
+`add m (succ zero) = succ (add m zero)`、さらに1行目から `add m zero = m`。
+だから値は `succ (succ zero)`、つまり「2」のはずである:
 -/
 
 #reduce add (.succ .zero) (.succ .zero)
@@ -700,6 +867,10 @@ inductive MyPoint where
 #check MyPoint
 
 /-!
+    MyPoint : Type
+-/
+
+/-!
 項の作り方は `MyPoint.mk 1 2` の一通りしかない。だから場合分けは常に1ケースで、
 成分を取り出す関数がすぐに書ける。
 -/
@@ -708,6 +879,10 @@ def MyPoint.x : MyPoint → Nat
   | .mk a _ => a
 
 #check MyPoint.x
+
+/-!
+    MyPoint.x : MyPoint → Nat
+-/
 
 /-!
 この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が
@@ -724,10 +899,37 @@ structure Point where
 
 #check Point
 
-#check Point.mk    -- Point.mk (x y : Nat) : Point （自動定義された構成子。`⟨1, 2⟩` は略記）
-#check Point.x     -- Point.x (self : Point) : Nat （自動定義された取り出し関数。`p.x` とも書ける——8節）
+/-!
+    Point : Type
 
-#eval (Point.mk 1 2).x   -- 1
+自動定義されるものの型を推測しよう。構成子 `Point.mk` はフィールドを順に
+受け取るから `Nat → Nat → Point`、取り出し関数 `Point.x` は
+`Point → Nat` のはずである:
+-/
+
+#check Point.mk
+
+/-!
+    Point.mk (x y : Nat) : Point
+
+自動定義された構成子。`⟨1, 2⟩` は略記
+-/
+
+#check Point.x
+
+/-!
+    Point.x (self : Point) : Nat
+
+自動定義された取り出し関数。`p.x` とも書ける——8節
+-/
+
+#eval (Point.mk 1 2).x
+
+/-!
+    1
+
+第1フィールドに入れた値が、そのまま返ってきた。
+-/
 
 /-!
 structure は引数（パラメータ）を取ることもできる。
@@ -737,9 +939,26 @@ structure Pair (α β : Type) where
   fst : α
   snd : β
 
-#check Pair        -- Pair (α β : Type) : Type
-#check Pair.mk     -- Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β
-#check Pair.fst    -- Pair.fst {α β : Type} (self : Pair α β) : α
+#check Pair
+
+/-!
+    Pair (α β : Type) : Type
+
+`Pair.mk` の型は? `MySum.inl` と同じく、パラメータの分の暗黙引数
+`{α β : Type}` が付くはずである:
+-/
+
+#check Pair.mk
+
+/-!
+    Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β
+-/
+
+#check Pair.fst
+
+/-!
+    Pair.fst {α β : Type} (self : Pair α β) : α
+-/
 
 /-!
 集合のアナロジーでは、`Point` は直積 Nat × Nat、`Pair α β` は直積 α × β である。
@@ -770,12 +989,25 @@ structure PointedType where
   carrier : Type
   point : carrier
 
-#check PointedType.mk   -- PointedType.mk (carrier : Type) (point : carrier) : PointedType
+/-!
+`mk` の型を推測しよう。フィールドの列そのまま……のはずだが、今度は
+**第2引数の型の中に、第1引数の名前が現れる**ことになる:
+-/
+
+#check PointedType.mk
+
+/-!
+    PointedType.mk (carrier : Type) (point : carrier) : PointedType
+-/
 
 /-- 例:「型 `Nat` と、その要素 `0`」の組。数学でいう「点付き集合」である。 -/
 def pointedNat : PointedType := ⟨Nat, 0⟩
 
 #check pointedNat
+
+/-!
+    pointedNat : PointedType
+-/
 
 /-!
 第二フィールド `point` の型が、第一フィールド `carrier` の**値**で決まっている
@@ -808,6 +1040,10 @@ class HasZero (α : Type) where
 
 #check HasZero
 
+/-!
+    HasZero (α : Type) : Type
+-/
+
 instance : HasZero Nat where
   zero := 0
 
@@ -826,21 +1062,28 @@ instance : HasZero Nat where
 「探す」仕事は括弧 `[ ]` の仕組みがやっていることが分かる。
 -/
 
-#check @inferInstance   -- @inferInstance : {α : Sort u_1} → [i : α] → α
+#check @inferInstance
+
+/-!
+    @inferInstance : {α : Sort u_1} → [i : α] → α
+-/
 
 /-!
 確かめてみる。次の `example` も名前を付けない宣言で、こちらは登録簿にも
 載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。
 -/
 
-example : HasZero Nat := inferInstance   -- 登録してあるので見つかる
+example : HasZero Nat := inferInstance
 
--- 登録していない型では失敗する:
---
---   example : HasZero Bool := inferInstance
---
---   error: failed to synthesize instance of type class
---     HasZero Bool
+/-!
+登録してあるので、これは見つかって受理される（`example` は受理されると
+Infoview には何も表示しない）。登録していない型では失敗する:
+
+    example : HasZero Bool := inferInstance
+
+    error: failed to synthesize instance of type class
+      HasZero Bool
+-/
 
 /-- インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。
 `zeroPair Nat` と書くだけで、`HasZero Nat` の項は登録簿から自動で渡される。 -/
@@ -848,7 +1091,17 @@ def zeroPair (α : Type) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.z
 
 #check zeroPair
 
-#eval (zeroPair Nat).fst   -- 0
+/-!
+    zeroPair (α : Type) [HasZero α] : Pair α α
+
+`(zeroPair Nat).fst` の値は、登録簿に載せた `zero`——つまり `0`——のはずである:
+-/
+
+#eval (zeroPair Nat).fst
+
+/-!
+    0
+-/
 
 /-! ### 自作型にもインスタンスを与える
 
@@ -859,9 +1112,20 @@ def zeroPair (α : Type) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.z
 instance : HasZero Point where
   zero := ⟨0, 0⟩
 
--- 登録した瞬間から、`HasZero` を使う汎用の道具がすべて `Point` でも使えるようになる
-#check zeroPair Point      -- 表示: zeroPair Point : Pair Point Point
-#eval (zeroPair Point).fst.x   -- 0
+#check zeroPair Point
+
+/-!
+    zeroPair Point : Pair Point Point
+
+登録した瞬間から、`HasZero` を使う汎用の道具がすべて `Point` でも
+使えるようになった。
+-/
+
+#eval (zeroPair Point).fst.x
+
+/-!
+    0
+-/
 
 /-! ### 記法もクラスで動いている
 
@@ -878,10 +1142,19 @@ instance : Add Point where
   add p q := ⟨p.x + q.x, p.y + q.y⟩
 
 #check Point.mk 1 2 + Point.mk 3 4
--- 表示: `{ x := 1, y := 2 } + { x := 3, y := 4 } : Point`
--- 登録した瞬間から、記法 `+` が `Point` でも通るようになった
 
-#eval (Point.mk 1 2 + Point.mk 3 4).x   -- 4
+/-!
+    { x := 1, y := 2 } + { x := 3, y := 4 } : Point
+
+登録した瞬間から、記法 `+` が `Point` でも通るようになった。
+`x` 成分は `1 + 3` で `4` のはずである:
+-/
+
+#eval (Point.mk 1 2 + Point.mk 3 4).x
+
+/-!
+    4
+-/
 
 /-!
 正確に言うと、`+` の読み先は `HAdd`（左右の型が違ってもよい、さらに一般の版）
@@ -920,7 +1193,13 @@ instance : Add Point where
   この節の `zeroPair` の `[HasZero α]` がこれだった。
 -/
 
-#check Pair.mk 1 true   -- { fst := 1, snd := true } : Pair Nat Bool （暗黙引数が埋まった）
+#check Pair.mk 1 true
+
+/-!
+    { fst := 1, snd := true } : Pair Nat Bool
+
+暗黙引数が埋まった
+-/
 
 /-! ### ✏ 練習
 
@@ -941,10 +1220,34 @@ instance : Add Point where
 第2引数と結果の型が、その第1引数で決まる。 -/
 def idAt (α : Type) (a : α) : α := a
 
-#check idAt         -- 表示: idAt (α : Type) (a : α) : α
-#check idAt Nat     -- 表示: idAt Nat : Nat → Nat
-#check idAt Bool    -- 表示: idAt Bool : Bool → Bool
-#eval idAt Nat 42   -- 42
+#check idAt
+
+/-!
+    idAt (α : Type) (a : α) : α
+
+では、**`idAt Nat` の型は何か**。第1引数として `α := Nat` を渡したのだから、
+残りは「`Nat` を受け取って `Nat` を返す」——`Nat → Nat` のはずである:
+-/
+
+#check idAt Nat
+
+/-!
+    idAt Nat : Nat → Nat
+
+推測どおり。同じ理屈で、`idAt Bool` なら `Bool → Bool` になるはず:
+-/
+
+#check idAt Bool
+
+/-!
+    idAt Bool : Bool → Bool
+-/
+
+#eval idAt Nat 42
+
+/-!
+    42
+-/
 
 /-!
 `idAt Nat` と `idAt Bool` は**型が違う**。つまり `idAt` に1つ引数を渡すと、
@@ -965,8 +1268,19 @@ def idAt (α : Type) (a : α) : α := a
 `CH.lean` の6節で見る）。
 -/
 
-#check Fin        -- Fin (n : Nat) : Type  （つまり Fin : Nat → Type）
-#check Fin 3      -- Fin 3 : Type
+#check Fin
+
+/-!
+    Fin (n : Nat) : Type
+
+つまり Fin : Nat → Type
+-/
+
+#check Fin 3
+
+/-!
+    Fin 3 : Type
+-/
 
 /-!
 族に沿って「番号 `n` を受け取り、型 `Fin (n + 1)` の項を返す」関数が書ける。
@@ -976,9 +1290,25 @@ def idAt (α : Type) (a : α) : α := a
 
 def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 
-#check first        -- first (n : Nat) : Fin (n + 1)
-#check first 2      -- first 2 : Fin (2 + 1)
-#check first 9      -- first 9 : Fin (9 + 1)
+#check first
+
+/-!
+    first (n : Nat) : Fin (n + 1)
+
+適用すれば、型の中の `n` に渡した数が入るはずである:
+-/
+
+#check first 2
+
+/-!
+    first 2 : Fin (2 + 1)
+-/
+
+#check first 9
+
+/-!
+    first 9 : Fin (9 + 1)
+-/
 
 /-!
 値はどれも「0 番」だが、その `0` の住んでいる型が入力ごとに違う。
@@ -1005,8 +1335,17 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 まぎらわしいことに、`(2 : Fin 3)` という書き方自体は通ってしまう:
 -/
 
-#check (2 : Nat)     -- 表示: 2 : Nat
-#check (2 : Fin 3)   -- 表示: 2 : Fin 3
+#check (2 : Nat)
+
+/-!
+    2 : Nat
+-/
+
+#check (2 : Fin 3)
+
+/-!
+    2 : Fin 3
+-/
 
 /-!
 これは数字 `2` が**記法**であり、期待される型に応じて別々の項に読まれるからである
@@ -1016,16 +1355,31 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 `(5 : Fin 3)` すら通り、3 で割った**余り**として読まれる:
 -/
 
-#eval (5 : Fin 3)    -- 2 になる（リテラルの読みは登録された読み方次第）
+#eval (5 : Fin 3)
 
--- `.val` は「番号を自然数として取り出す」関数（Fin n → Nat）
-#eval (2 : Fin 3).val   -- 2
+/-!
+    2
+
+`2` になった——リテラルの読みは、登録された読み方次第である。
+
+`.val` は「番号を自然数として取り出す」関数（`Fin n → Nat`）である:
+-/
+
+#eval (2 : Fin 3).val
+
+/-!
+    2
+-/
 
 /-!
 2つの `2` を等号で結ぼうとすると、面白いことが起きる:
 -/
 
-#check (2 : Nat) = (2 : Fin 3)   -- 表示: 2 = ↑2 : Prop
+#check (2 : Nat) = (2 : Fin 3)
+
+/-!
+    2 = ↑2 : Prop
+-/
 
 /-!
 型エラーにはならないが、右辺に `↑` が付いた。これは**強制**（coercion）の印で、
@@ -1075,7 +1429,13 @@ variable {α : Type} (x y : α)
 
 def toPair : Pair α α := ⟨x, y⟩
 
-#check toPair    -- toPair {α : Type} (x y : α) : Pair α α（variable が引数に取り込まれた）
+#check toPair
+
+/-!
+    toPair {α : Type} (x y : α) : Pair α α
+
+variable が引数に取り込まれた
+-/
 
 end
 
@@ -1095,9 +1455,19 @@ def origin : Point := ⟨0, 0⟩
 
 #check origin
 
+/-!
+    Geometry.origin : Point
+-/
+
 end Geometry
 
-#check Geometry.origin    -- Geometry.origin : Point（外からはフルネームで呼ぶ）
+#check Geometry.origin
+
+/-!
+    Geometry.origin : Point
+
+外からはフルネームで呼ぶ
+-/
 
 /-!
 ### ドット記法
@@ -1115,13 +1485,32 @@ end Geometry
 `p.swap` と呼べるようになる。 -/
 def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 
--- 確認: 後ろに付けるドットは、名前空間の関数の適用の略記にすぎない
-#eval (Point.mk 1 2).swap.x           -- 2（swap で x と y が入れ替わった）
-#eval (Point.swap (Point.mk 1 2)).x   -- 2（同じことのフルネーム版）
+/-!
+確認してみる。後ろに付けるドットは、名前空間の関数の適用の略記にすぎない:
+-/
 
--- フィールドは番号でも取れる: `.1` `.2` は第1・第2フィールドの略記
-#eval (Point.mk 1 2).1      -- 1
-#eval (Pair.mk 1 true).2    -- true
+#eval (Point.mk 1 2).swap.x
+
+/-!
+    2
+
+`swap` で `x` と `y` が入れ替わった。フルネーム版の
+`#eval (Point.swap (Point.mk 1 2)).x` でも、同じ `2` が返る。
+
+フィールドは番号でも取れる。`.1` `.2` は第1・第2フィールドの略記である:
+-/
+
+#eval (Point.mk 1 2).1
+
+/-!
+    1
+-/
+
+#eval (Pair.mk 1 true).2
+
+/-!
+    true
+-/
 
 /-!
 4節の `#reduce` の表示 `MyNat.zero.succ.succ` も、この「値の後ろに付けるドット」の
@@ -1154,7 +1543,16 @@ syntax "⟪" term ", " term "⟫" : term
 macro_rules
   | `(⟪$x, $y⟫) => `(Pair.mk $x $y)
 
-#check ⟪1, true⟫    -- { fst := 1, snd := true } : Pair Nat Bool
+/-!
+`⟪1, true⟫` は `Pair.mk 1 true` に展開されてから型検査されるので、
+型は `Pair Nat Bool` のはずである:
+-/
+
+#check ⟪1, true⟫
+
+/-!
+    { fst := 1, snd := true } : Pair Nat Bool
+-/
 
 /-!
 記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。

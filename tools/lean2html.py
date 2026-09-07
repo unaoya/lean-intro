@@ -23,6 +23,14 @@ OUT = ROOT / "docs"
 CHAPTERS = ["Intro", "CH", "Top", "Extra"]
 
 SITE_TITLE = "Lean 4 で書く位相空間 — ミニ教材"
+SITE_CONCEPT = (
+    "<em>Lean for the Working Mathematician in the Age of AI</em> — "
+    "AI がコードを書く時代の、働く数学者のための Lean 入門。"
+    "この教材の目標は、Lean のコードを自分で書けるようになることではない"
+    "（それは AI に任せてよい）。目標は、<strong>書かれたコードを読めるようになること</strong>、"
+    "<strong>どういう仕組みで証明が検査されるのかを理解すること</strong>、そして"
+    "<strong>形式化を自分の研究に役立てる可能性を考えること</strong>である。"
+)
 SITE_NOTE = (
     "数学的概念やその証明をプログラムとして書くとはどういうことか、"
     "なぜそれで証明の正しさを検証したと思えるのか、を実感するための教材。"
@@ -371,10 +379,18 @@ def main():
         out_path.write_text(page(titles[name], "\n".join(body), nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
-    toc = [f"<h1>{html.escape(SITE_TITLE)}</h1>", f"<p>{SITE_NOTE}</p>", "<ol>"]
+    roles = {
+        "Intro": "コードの読み方の基礎（項と型、型検査）",
+        "CH": "証明が検査される仕組み",
+        "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
+        "Extra": "演習（sorry を自分で埋める）",
+    }
+    toc = [f"<h1>{html.escape(SITE_TITLE)}</h1>",
+           f"<p>{SITE_CONCEPT}</p>", f"<p>{SITE_NOTE}</p>", "<ol>"]
     for name in CHAPTERS:
-        label = "（演習）" if name == "Extra" else ""
-        toc.append(f'<li><a href="{name.lower()}.html">{inline(titles[name])}</a>{label}</li>')
+        role = roles.get(name, "")
+        suffix = f" — {role}" if role else ""
+        toc.append(f'<li><a href="{name.lower()}.html">{inline(titles[name])}</a>{suffix}</li>')
     toc.append("</ol>")
     (OUT / "index.html").write_text(page(SITE_TITLE, "\n".join(toc)), encoding="utf-8")
     print("  index.html 生成")
