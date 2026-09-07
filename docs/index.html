@@ -52,8 +52,9 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <main>
 <h1>Lean 4 で書く位相空間 — ミニ教材</h1>
-<p><em>Lean for the Working Mathematician in the Age of AI</em> — AI がコードを書く時代の、働く数学者のための Lean 入門。この教材の目標は、Lean のコードを自分で書けるようになることではない（それは AI に任せてよい）。目標は、<strong>書かれたコードを読めるようになること——すなわち項の型を推測できるようになること。その推測は機械的に行えるので、コンピュータにも行える</strong>。<strong>そして、この型を推測する仕組みが定理の証明の検証にそのまま使える、と納得すること</strong>。その上で、<strong>形式化を自分の研究に役立てる可能性を考えること</strong>である。</p>
-<p>数学的概念やその証明をプログラムとして書くとはどういうことか、なぜそれで証明の正しさを検証したと思えるのか、を実感するための教材。読む順は Intro → CH → Top（→ 演習 Extra）。ソースは <a href="https://github.com/unaoya/lean-intro">GitHub</a> の <code>Top/*.lean</code>（このページはそこから自動生成）。</p>
+<p><em>Lean for the Working Mathematician in the Age of AI</em> — AI がコードを書く時代の、働く数学者のための Lean 入門。Lean のコードを自分で書けるようになることは目標ではない（それは AI に任せてよい）。</p>
+<p>この教材（Intro → CH → Top の3ファイル）の目標は2つある。</p><ul><li><strong>目標1 — Lean を読めるようになる</strong>。Lean のコードを読むとは、書かれた<strong>項の型を推測する</strong>ことである。そしてこの推測は<strong>機械的な手順</strong>で実行できる——だからコンピュータにも実行できる。実際に自分の手で型を推測できるようになること、少なくとも「これなら機械にもできそうだ」という感覚を持つことを目指す。</li><li><strong>目標2 — 検証の仕組みを納得する</strong>。項の型を推測するこの仕組みが、<strong>定理の証明の検証にそのまま使える</strong>ことを納得する。「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li></ul><p>目標1が主に Intro の、目標2が CH の担当で、Top では現物の数学（位相空間の主定理）について両方を実感する。その先で、形式化を自分の研究に役立てる可能性を考えたい。Lean を網羅的に紹介することは目的ではなく、必要な最低限の機能しか説明しない。</p>
+<p>読む順は Intro → CH → Top（→ 演習 Extra）。ソースは <a href="https://github.com/unaoya/lean-intro">GitHub</a> の <code>Top/*.lean</code>（このページはそこから自動生成）。</p>
 <ol>
 <li><a href="intro.html">Lean 最小限の導入</a> — コードの読み方の基礎（項と型、型検査）</li>
 <li><a href="ch.html">型と命題の対応（Curry–Howard 対応）の雰囲気</a> — 証明が検査される仕組み</li>

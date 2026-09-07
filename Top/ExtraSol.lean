@@ -771,3 +771,288 @@ theorem isClosed_of_nets {X : Type} (t : TopologicalSpace X) {s : Set X}
 -- ネットによる特徴づけには選択公理が深く関わる
 #print axioms nets_of_isClosed
 #print axioms isClosed_of_nets
+
+/-! ## Part 6: 誘導位相 — 押し出しと引き戻し（解答） -/
+
+/-- 問題28: 逆像は族の合併と交換する。 -/
+lemma Set.preimage_sUnion {α β : Type} (f : α → β) (S : Set (Set β)) :
+    f ⁻¹' (⋃₀ S) = ⋃₀ (Set.preimage f '' S) := by
+  apply Set.ext
+  intro a
+  constructor
+  · intro ⟨s, hsS, hfa⟩
+    exact ⟨f ⁻¹' s, ⟨s, hsS, rfl⟩, hfa⟩
+  · intro ⟨u, hu, hau⟩
+    have ⟨s, hsS, hsu⟩ := hu
+    rw [← hsu] at hau
+    exact ⟨s, hsS, hau⟩
+
+/-- 問題29: 押し出し位相（終位相の1本版）。
+`s` が開 ⟺ 逆像 `f ⁻¹' s` が開、と定める。逆像が `∩` とも `⋃₀` とも
+交換するので、公理はそのまま `tX` の公理に引き取ってもらえる。 -/
+@[reducible] def TopologicalSpace.coinduced {X Y : Type} (tX : TopologicalSpace X) (f : X → Y) :
+    TopologicalSpace Y where
+  IsOpen s := tX.IsOpen (f ⁻¹' s)
+  isOpen_univ := tX.isOpen_univ
+  isOpen_inter _ _ hs ht := tX.isOpen_inter _ _ hs ht
+  isOpen_sUnion S h := by
+    show tX.IsOpen (f ⁻¹' (⋃₀ S))
+    rw [Set.preimage_sUnion]
+    refine tX.isOpen_sUnion _ fun u hu => ?_
+    have ⟨s, hsS, hsu⟩ := hu
+    rw [← hsu]
+    exact h s hsS
+
+/-- 問題30: 終位相（族版）。族のすべての `f i` について逆像が開、と定める。 -/
+@[reducible] def finalTopology {I : Type} {Y : I → Type} {X : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X) :
+    TopologicalSpace X where
+  IsOpen s := ∀ i, (tY i).IsOpen (f i ⁻¹' s)
+  isOpen_univ i := (tY i).isOpen_univ
+  isOpen_inter _ _ hs ht i := (tY i).isOpen_inter _ _ (hs i) (ht i)
+  isOpen_sUnion S h i := by
+    show (tY i).IsOpen (f i ⁻¹' (⋃₀ S))
+    rw [Set.preimage_sUnion]
+    refine (tY i).isOpen_sUnion _ fun u hu => ?_
+    have ⟨s, hsS, hsu⟩ := hu
+    rw [← hsu]
+    exact h s hsS i
+
+/-- 問題31: 始位相（族版）。
+「族のすべての `f i` を連続にするどの位相 `t'` でも開」であることを開とする。
+各公理は `t'` の対応する公理をそのまま返せばよい。 -/
+@[reducible] def initialTopology {I : Type} {Y : I → Type} {X : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i) :
+    TopologicalSpace X where
+  IsOpen s := ∀ t' : TopologicalSpace X,
+    (∀ i u, (tY i).IsOpen u → t'.IsOpen (f i ⁻¹' u)) → t'.IsOpen s
+  isOpen_univ t' _ := t'.isOpen_univ
+  isOpen_inter s u hs hu t' hc := t'.isOpen_inter s u (hs t' hc) (hu t' hc)
+  isOpen_sUnion S h t' hc := t'.isOpen_sUnion S fun s hs => h s hs t' hc
+
+/-- 問題32(1): 終位相のもとで各 `f i` は連続。定義がそのまま連続性である。 -/
+theorem continuous_toFinal {I : Type} {Y : I → Type} {X : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X) (i : I) :
+    @Continuous (Y i) (tY i) X (finalTopology tY f) (f i) :=
+  fun _ hs => hs i
+
+/-- 問題32(2): 終位相は最も細かい:
+すべての `f i` を連続にする位相の開集合は、終位相でも開。 -/
+theorem final_finest {I : Type} {Y : I → Type} {X : Type}
+    {tY : (i : I) → TopologicalSpace (Y i)} {f : (i : I) → Y i → X}
+    {t' : TopologicalSpace X} (h : ∀ i, @Continuous (Y i) (tY i) X t' (f i)) :
+    ∀ s, t'.IsOpen s → (finalTopology tY f).IsOpen s :=
+  fun s hs i => h i s hs
+
+/-- 問題33(1): 始位相のもとで各 `f i` は連続。
+「どの位相でも開」の条件そのものに `f i ⁻¹' u` が入っている。 -/
+theorem continuous_fromInitial {I : Type} {Y : I → Type} {X : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i) (i : I) :
+    @Continuous X (initialTopology tY f) (Y i) (tY i) (f i) :=
+  fun u hu _t' hc => hc i u hu
+
+/-- 問題33(2): 始位相は最も粗い:
+始位相の開集合は、すべての `f i` を連続にするどの位相でも開。 -/
+theorem initial_coarsest {I : Type} {Y : I → Type} {X : Type}
+    {tY : (i : I) → TopologicalSpace (Y i)} {f : (i : I) → X → Y i}
+    {t' : TopologicalSpace X} (h : ∀ i, @Continuous X t' (Y i) (tY i) (f i)) :
+    ∀ s, (initialTopology tY f).IsOpen s → t'.IsOpen s :=
+  fun _s hs => hs t' fun i u hu => h i u hu
+
+/-- 問題34(1): 押し出しの普遍性。展開すると両辺は同じ命題になるので `Iff.rfl`。 -/
+theorem continuous_fromCoinduced_iff {X Y Z : Type} (tX : TopologicalSpace X)
+    (tZ : TopologicalSpace Z) (f : X → Y) (g : Y → Z) :
+    @Continuous Y (tX.coinduced f) Z tZ g ↔ @Continuous X tX Z tZ (fun x => g (f x)) :=
+  Iff.rfl
+
+/-- 問題34(2): 終位相（族版）の普遍性。`∀` の順序を入れ替えるだけ。 -/
+theorem continuous_fromFinal_iff {I : Type} {Y : I → Type} {X Z : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X)
+    (tZ : TopologicalSpace Z) (g : X → Z) :
+    @Continuous X (finalTopology tY f) Z tZ g ↔
+      ∀ i, @Continuous (Y i) (tY i) Z tZ (fun y => g (f i y)) :=
+  ⟨fun h i s hs => h s hs i, fun h s hs i => h i s hs⟩
+
+/-- 問題35: 始位相の普遍性。
+逆向きは「`g` で押し出した位相」を始位相の定義に食わせるのが鍵。 -/
+theorem continuous_toInitial_iff {I : Type} {Y : I → Type} {X Z : Type}
+    (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i)
+    (tZ : TopologicalSpace Z) (g : Z → X) :
+    @Continuous Z tZ X (initialTopology tY f) g ↔
+      ∀ i, @Continuous Z tZ (Y i) (tY i) (fun z => f i (g z)) := by
+  constructor
+  · intro hg i u hu
+    exact hg (f i ⁻¹' u) fun t' hc => hc i u hu
+  · intro h s hs
+    exact hs (tZ.coinduced g) fun i u hu => h i u hu
+
+/-- 1本の写像に沿った引き戻し（始位相の1本版）。族版の `I := Unit` の特殊化。 -/
+@[reducible] def TopologicalSpace.induced {X Y : Type} (f : X → Y) (t : TopologicalSpace Y) :
+    TopologicalSpace X :=
+  initialTopology (Y := fun _ : Unit => Y) (fun _ => t) (fun _ => f)
+
+/-- 部分空間位相: 包含写像 `Subtype.val` に沿った引き戻し。 -/
+instance instTopSubtype {X : Type} [tX : TopologicalSpace X] (p : X → Prop) :
+    TopologicalSpace (Subtype p) :=
+  tX.induced Subtype.val
+
+/-- 積位相（一般の直積）: 射影（各点での値を取る写像）の族の始位相。 -/
+instance instTopPi {I : Type} {Y : I → Type} [tY : (i : I) → TopologicalSpace (Y i)] :
+    TopologicalSpace ((i : I) → Y i) :=
+  initialTopology tY fun i g => g i
+
+/-- 二項の積位相: 射影2本の族（`I := Bool`）の始位相。 -/
+instance instTopProd {X Y : Type} [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+    TopologicalSpace (X × Y) :=
+  initialTopology (Y := fun b => cond b X Y)
+    (fun b => match b with | true => t₁ | false => t₂)
+    (fun b => match b with | true => Prod.fst | false => Prod.snd)
+
+/-- 直和位相: 包含 `Sigma.mk i` の族の終位相。 -/
+instance instTopSigma {I : Type} {Y : I → Type} [tY : (i : I) → TopologicalSpace (Y i)] :
+    TopologicalSpace ((i : I) × Y i) :=
+  finalTopology tY fun i => Sigma.mk i
+
+/-- 商位相: 射影 `Quot.mk r` に沿った押し出し。 -/
+instance instTopQuot {X : Type} [tX : TopologicalSpace X] {r : X → X → Prop} :
+    TopologicalSpace (Quot r) :=
+  tX.coinduced (Quot.mk r)
+
+/-- 問題36: 部分空間位相の開集合の具体形。
+逆向きは「`{val ⁻¹' u | u 開}` の形の集合の全体」が位相を成すことを示して
+始位相の定義に食わせる。合併では、選択公理を避けるため
+「逆像が `S` に入る開集合を全部集めた合併」を証人にする。 -/
+theorem isOpen_subtype_iff {X : Type} [tX : TopologicalSpace X] {p : X → Prop}
+    {s : Set (Subtype p)} :
+    IsOpen s ↔ ∃ u, IsOpen u ∧ s = Subtype.val ⁻¹' u := by
+  constructor
+  · intro hs
+    refine hs ⟨fun v => ∃ u, tX.IsOpen u ∧ v = Subtype.val ⁻¹' u, ?_, ?_, ?_⟩ ?_
+    · exact ⟨Set.univ, tX.isOpen_univ, rfl⟩
+    · intro v w ⟨u₁, hu₁, hv⟩ ⟨u₂, hu₂, hw⟩
+      refine ⟨u₁ ∩ u₂, tX.isOpen_inter _ _ hu₁ hu₂, ?_⟩
+      rw [hv, hw]
+      rfl
+    · intro S hS
+      refine ⟨⋃₀ {u | tX.IsOpen u ∧ Subtype.val ⁻¹' u ∈ S}, ?_, ?_⟩
+      · exact tX.isOpen_sUnion _ fun u hu => hu.1
+      · apply Set.ext
+        intro a
+        constructor
+        · intro ⟨v, hvS, hav⟩
+          have ⟨u, hu, hvu⟩ := hS v hvS
+          rw [hvu] at hav hvS
+          exact ⟨u, ⟨hu, hvS⟩, hav⟩
+        · intro ⟨u, hu, hau⟩
+          exact ⟨Subtype.val ⁻¹' u, hu.2, hau⟩
+    · exact fun _ u hu => ⟨u, hu, rfl⟩
+  · intro ⟨u, hu, hsu⟩ t' hc
+    rw [hsu]
+    exact hc () u hu
+
+/-- 問題37(1): 射影（各点での値を取る写像）は連続。 -/
+theorem continuous_apply {I : Type} {Y : I → Type} [tY : (i : I) → TopologicalSpace (Y i)]
+    (i : I) : Continuous fun g : (j : I) → Y j => g i :=
+  continuous_fromInitial tY (fun i (g : (j : I) → Y j) => g i) i
+
+/-- 問題37(2): 直積への写像の連続性は成分ごとに調べればよい（普遍性の言い替え）。 -/
+theorem continuous_pi_iff {I : Type} {Y : I → Type} [tY : (i : I) → TopologicalSpace (Y i)]
+    {Z : Type} [tZ : TopologicalSpace Z] (g : Z → (i : I) → Y i) :
+    Continuous g ↔ ∀ i, Continuous fun z => g z i :=
+  continuous_toInitial_iff tY (fun i (g : (j : I) → Y j) => g i) tZ g
+
+/-- 問題38(1): 商への射影は連続。押し出しの定義がそのまま連続性である。 -/
+theorem continuous_quotMk {X : Type} [tX : TopologicalSpace X] (r : X → X → Prop) :
+    Continuous (Quot.mk r) :=
+  fun _ hs => hs
+
+/-- 問題38(2): 商からの写像の連続性は持ち上げる前の写像で調べればよい。
+`Quot.lift g hg ∘ Quot.mk r = g` は商型の計算規則により定義上の等式なので、
+押し出しの普遍性がそのまま効く。 -/
+theorem continuous_quotLift {X Z : Type} [tX : TopologicalSpace X] [tZ : TopologicalSpace Z]
+    {r : X → X → Prop} {g : X → Z} (hg : ∀ a b, r a b → g a = g b) :
+    Continuous (Quot.lift g hg) ↔ Continuous g :=
+  continuous_fromCoinduced_iff tX tZ (Quot.mk r) (Quot.lift g hg)
+
+/-- 問題39(1): 空族の始位相は密着位相。
+「どの位相でも開」⟺「∅ か univ」（前者⇒後者は密着位相を食わせて分かる）。 -/
+theorem initialTopology_empty {X : Type} {Y : Empty → Type}
+    (tY : (i : Empty) → TopologicalSpace (Y i)) (f : (i : Empty) → X → Y i) :
+    initialTopology tY f = indiscrete X := by
+  apply TopologicalSpace.ext'
+  funext s
+  apply propext
+  constructor
+  · intro h
+    exact h (indiscrete X) fun i => i.elim
+  · intro h t' _
+    cases h with
+    | inl he => rw [he]; exact @isOpen_empty X t'
+    | inr hu => rw [hu]; exact t'.isOpen_univ
+
+/-- 問題39(2): 空族の終位相は離散位相。条件が空なのですべての集合が開。 -/
+theorem finalTopology_empty {X : Type} {Y : Empty → Type}
+    (tY : (i : Empty) → TopologicalSpace (Y i)) (f : (i : Empty) → Y i → X) :
+    finalTopology tY f = discrete X := by
+  apply TopologicalSpace.ext'
+  funext s
+  apply propext
+  exact ⟨fun _ => trivial, fun _ i => i.elim⟩
+
+/-- 問題40: 全射なら「逆像を取ってから像を取る」と元に戻る。 -/
+lemma Set.image_preimage_of_surjective {α β : Type} {f : α → β}
+    (hf : Function.Surjective f) (u : Set β) : f '' (f ⁻¹' u) = u := by
+  apply Set.ext
+  intro b
+  constructor
+  · intro ⟨a, ha, hab⟩
+    rw [← hab]
+    exact ha
+  · intro hb
+    have ⟨a, ha⟩ := hf b
+    refine ⟨a, ?_, ha⟩
+    show f a ∈ u
+    rw [ha]
+    exact hb
+
+/-- 問題41: コンパクト空間からハウスドルフ空間への連続全射は商写像
+（終域の位相は押し出し位相に一致する）。
+`Top.lean` の補題1〜3の連鎖（閉→コンパクト→像コンパクト→像閉）を再利用する。 -/
+theorem coinduced_eq_of_surjective {X Y : Type}
+    [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [CompactSpace X] [Hausdorff Y]
+    {f : X → Y} (hf : Continuous f) (hsurj : Function.Surjective f) :
+    tX.coinduced f = tY := by
+  apply TopologicalSpace.ext'
+  funext s
+  apply propext
+  constructor
+  · intro h
+    have hcl : IsClosed ((f ⁻¹' s)ᶜ : Set X) := isClosed_compl h
+    have hcpt : IsCompact ((f ⁻¹' s)ᶜ : Set X) := hcl.isCompact
+    have himg : IsCompact (f '' (f ⁻¹' s)ᶜ) := hcpt.image hf
+    have hclY : IsClosed (f '' (f ⁻¹' s)ᶜ) := himg.isClosed
+    have heq : f '' ((f ⁻¹' s)ᶜ) = sᶜ := Set.image_preimage_of_surjective hsurj sᶜ
+    rw [heq] at hclY
+    show tY.IsOpen s
+    rw [← Set.compl_compl s]
+    exact hclY
+  · intro h
+    exact hf s h
+
+/-- 問題42（発展）: 主定理の核 `continuous_invFun` の別証明。
+商写像定理で `tY` を押し出し位相に読み替え、押し出しの普遍性で
+`g` の連続性を `g ∘ f = id` の連続性に帰着する。 -/
+example {X Y : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+    [CompactSpace X] [Hausdorff Y] {f : X → Y} (hf : Continuous f) {g : Y → X}
+    (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) : Continuous g := by
+  have hsurj : Function.Surjective f := fun y => ⟨g y, hfg y⟩
+  rw [← coinduced_eq_of_surjective hf hsurj]
+  refine (continuous_fromCoinduced_iff tX tX f g).mpr ?_
+  have hid : (fun x => g (f x)) = fun x : X => x := funext hgf
+  rw [hid]
+  exact continuous_id
+
+-- 確認: 商写像定理は補題2・3（by_cases などの古典論理）経由で
+-- Classical.choice に依存する。逆写像を「構成」した主定理と違い、
+-- 選択の直接使用（Classical.choose）はない
+#print axioms coinduced_eq_of_surjective

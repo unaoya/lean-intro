@@ -52,12 +52,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <nav><span></span><a href="index.html">目次</a><span><a href="ch.html">CH →</a></span></nav>
 <main>
 <h1>Lean 最小限の導入</h1>
-<p>この教材（Intro → CH → Top の3ファイル）の目標は2つある。</p>
-<ul>
-<li><strong>目標1 — Lean を読めるようになる</strong>。Lean のコードを読むとは、書かれた <strong>項の型を推測する</strong>ことである。そしてこの推測は<strong>機械的な手順</strong>で実行できる——だからコンピュータにも実行できる。実際に自分の手で型を推測できるようになること、少なくとも「これなら機械にもできそうだ」という感覚を持つことを目指す。</li>
-<li><strong>目標2 — 検証の仕組みを納得する</strong>。項の型を推測するこの仕組みが、 <strong>定理の証明の検証にそのまま使える</strong>ことを納得する。「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li>
-</ul>
-<p>目標1が主にこのファイル（Intro）の、目標2が <code>CH.lean</code> の担当で、 <code>Top.lean</code> では現物の数学（位相空間の主定理）について両方を実感する。 Lean を網羅的に紹介することは目的ではなく、そのために必要な最低限の機能しか説明しない。</p>
+<p>教材全体の目標はトップページに掲げた2つ——<strong>目標1</strong>（Lean を読めるようになる:コードを読むとは項の型を推測することで、それは機械的に実行できる）と <strong>目標2</strong>（その同じ仕組みが証明の検証に使えると納得する）——である。このファイル（Intro）は主に<strong>目標1</strong>を担当し、項の型を推測するために必要な最低限の言語機能だけを説明する。</p>
 <p>このファイルで伝えたいことは2つ。</p>
 <ul>
 <li>Lean のもっとも基本の要素は<strong>項</strong>と<strong>型</strong>である。 Lean に書くことはすべて「項 <code>a</code> は型 <code>α</code> を持つ」（<code>a : α</code> と書く）の組み立てである。</li>
