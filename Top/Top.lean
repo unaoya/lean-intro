@@ -59,8 +59,8 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 
 初出の箇所にも、それぞれ短い説明を添えてある。
 
-またいくつかの小さな補題では、**同じ命題をタクティクと項の両方で**証明して
-並べる（本文の証明の直後に、対になる `example` を置く）。どちらの流儀でも
+また、タクティクで書いた証明にはそれぞれ、**同じ命題の項スタイルの証明**を
+対にして並べる（本文の証明の直後の `example`）。どちらの流儀でも
 最終的に同じ型の項に行き着くこと（`CH.lean` 12節）の、実地の見比べである。
 -/
 
@@ -814,6 +814,12 @@ theorem Set.subset_preimage_iUnion {α β : Type} {f : α → β} {K : Set α} {
 位相のインスタンス引数が付いていない＝純粋に集合の補題である。
 -/
 
+-- 項で書くと1行になる。`x ∈ ⋃ i, f ⁻¹' U i` と `f x ∈ ⋃ i, U i` は定義を
+-- 展開すると同じ命題なので、`h` を適用した結果がそのまま答えになる
+example {α β : Type} {f : α → β} {K : Set α} {I : Type}
+    {U : I → Set β} (h : f '' K ⊆ ⋃ i, U i) : K ⊆ ⋃ i, f ⁻¹' U i :=
+  fun x hx => h (f x) ⟨x, hx, rfl⟩
+
 /-- 逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。
 証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（`CH.lean` 6節）。 -/
 theorem Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
@@ -829,6 +835,15 @@ theorem Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I 
     Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type} {J : Set I} {U : I → Set β}
       (h : K ⊆ J.biUnion fun i ↦ f ⁻¹' U i) : f '' K ⊆ J.biUnion fun i ↦ U i
 -/
+
+-- 項で。タクティク版の `have ⟨…⟩ :=` による分解が `match` に当たる
+example {α β : Type} {f : α → β} {K : Set α} {I : Type}
+    {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹' U i) : f '' K ⊆ ⋃ i ∈ J, U i :=
+  fun _b hb =>
+    match hb with
+    | ⟨x, hx, hfx⟩ =>
+      match h x hx with
+      | ⟨i, hiJ, hxi⟩ => ⟨i, hiJ, hfx ▸ hxi⟩
 
 /-- 補題1: コンパクト集合の連続像はコンパクト。方針の3歩をそのまま並べる。
 下の `#check` を見る前に、この主張が「引数の列 : 結果」としてどう並ぶかを
@@ -850,6 +865,14 @@ theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Conti
 数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、
 そのまま「証明を2つ受け取って証明を返す関数」の型になっている。
 -/
+
+-- 項で。`intro` が `fun` に、`have` の分解が `match` に、`exact` が組の構成に対応する
+example {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
+    IsCompact (f '' K) :=
+  fun U hU hcov =>
+    match hK (fun i => f ⁻¹' U i) (fun i => hf _ (hU i))
+        (Set.subset_preimage_iUnion hcov) with
+    | ⟨J, hJ, hsub⟩ => ⟨J, hJ, Set.image_subset_biUnion hsub⟩
 
 /-! ### ✏ 練習
 
@@ -897,6 +920,17 @@ theorem isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W
     isOpen_of_nhds {X : Type} [TopologicalSpace X] {s : Set X} (h : ∀ (a : X), a ∈ s → ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
       IsOpen s
 -/
+
+-- 項で。`rw [heq]` が `heq ▸` に当たる
+example {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
+    IsOpen s :=
+  have heq : s = ⋃₀ {W | IsOpen W ∧ W ⊆ s} :=
+    Set.ext fun a =>
+      ⟨fun ha =>
+        match h a ha with
+        | ⟨W, hW, haW, hWs⟩ => ⟨W, ⟨hW, hWs⟩, haW⟩,
+       fun ⟨_, hW, haW⟩ => hW.2 a haW⟩
+  heq ▸ isOpen_sUnion _ fun _ hW => hW.1
 
 /-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`
 と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側
@@ -974,6 +1008,32 @@ theorem IsCompact.exists_disjoint_nhds [Hausdorff Y] {K : Set Y} (hK : IsCompact
     'IsCompact.exists_disjoint_nhds' depends on axioms: [propext]
 -/
 
+-- 山場の補題も項で書ける。`by` の各行がどの項に写るか、対照しながら読んでほしい
+-- （`refine ⟨_, ?_, ?_, ?_⟩` は `⟨…, …, …, …⟩` の直接の構成に、
+-- 最後の矛盾は `disjoint ▸` による「`a ∈ ∅` すなわち `False`」への書き換えになる）
+example [Hausdorff Y] {K : Set Y} (hK : IsCompact K)
+    {y : Y} (hy : y ∉ K) : ∃ W, IsOpen W ∧ y ∈ W ∧ ∀ a ∈ W, a ∉ K :=
+  have hcov : K ⊆ Set.iUnion fun i : SeparatingPair y => i.left := fun x hx =>
+    have hne : x ≠ y := fun h => hy (h ▸ hx)
+    match Hausdorff.separate x y hne with
+    | ⟨U, V, hU, hV, hxU, hyV, hUV⟩ => ⟨⟨U, V, hU, hV, hyV, hUV⟩, hxU⟩
+  match hK (fun i : SeparatingPair y => i.left) (fun i => i.isOpen_left) hcov with
+  | ⟨_, hJ, hsub⟩ =>
+    match hJ with
+    | ⟨n, g, hg⟩ =>
+      ⟨Set.interFin n fun k => (g k).right,
+       isOpen_interFin n _ fun k => (g k).isOpen_right,
+       Set.mem_interFin n _ y fun k => (g k).mem_right,
+       fun a ha haK =>
+         match hsub a haK with
+         | ⟨i, hiJ, hai⟩ =>
+           match hg i hiJ with
+           | ⟨k, hk⟩ =>
+             have hav : a ∈ (g k).right := Set.interFin_mem n _ a ha k
+             have hau : a ∈ (g k).left := hk ▸ hai
+             have hmem : a ∈ (g k).left ∩ (g k).right := ⟨hau, hav⟩
+             ((g k).disjoint ▸ hmem : a ∈ (∅ : Set Y))⟩
+
 /-- 補題2: ハウスドルフ空間のコンパクト集合は閉。上の2つの補題を合わせるだけ。 -/
 theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K := by
   show IsOpen (Kᶜ : Set Y)
@@ -989,6 +1049,11 @@ theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClos
 「空間がハウスドルフ」という仮定は `[Hausdorff Y]` という
 インスタンス引数の形で現れる（証明も登録簿から探される）。
 -/
+
+-- 項ではここまで縮む。`show` は不要（`IsClosed K` と `IsOpen Kᶜ` は定義上同じ命題）で、
+-- 補題が返す ∃ の中身が `isOpen_of_nhds` の要求とそのまま一致している
+example [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K :=
+  isOpen_of_nhds fun _ hy => hK.exists_disjoint_nhds hy
 
 /-! ## 9. 補題3: コンパクト空間の閉集合はコンパクト
 
@@ -1025,6 +1090,15 @@ theorem Set.univ_subset_iUnion_union_compl {α : Type} {C : Set α} {I : Type} {
       (hI : Nonempty I) : Set.univ ⊆ Set.iUnion fun i ↦ U i ∪ Cᶜ
 -/
 
+-- 項で。`by_cases` の正体は排中律 `Classical.em` による場合分けである
+example {α : Type} {C : Set α} {I : Type} {U : I → Set α}
+    (hcov : C ⊆ ⋃ i, U i) (hI : Nonempty I) :
+    (Set.univ : Set α) ⊆ ⋃ i, U i ∪ Cᶜ :=
+  fun x _ =>
+    (Classical.em (x ∈ C)).elim
+      (fun hx => match hcov x hx with | ⟨i, hi⟩ => ⟨i, Or.inl hi⟩)
+      (fun hx => match hI with | ⟨i⟩ => ⟨i, Or.inr hx⟩)
+
 /-- 全体が `U i ∪ Cᶜ` たちで覆われるなら、`C` は `U` だけで覆われる（方針の 3）。 -/
 theorem Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I}
     {U : I → Set α} (hsub : (Set.univ : Set α) ⊆ ⋃ i ∈ J, U i ∪ Cᶜ) : C ⊆ ⋃ i ∈ J, U i := by
@@ -1040,6 +1114,14 @@ theorem Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set
     Set.subset_biUnion_of_compl {α : Type} {C : Set α} {I : Type} {J : Set I} {U : I → Set α}
       (hsub : Set.univ ⊆ J.biUnion fun i ↦ U i ∪ Cᶜ) : C ⊆ J.biUnion fun i ↦ U i
 -/
+
+-- 項で。`cases hi with` の場合分けは、`match` の入れ子パターンでも書ける
+example {α : Type} {C : Set α} {I : Type} {J : Set I}
+    {U : I → Set α} (hsub : (Set.univ : Set α) ⊆ ⋃ i ∈ J, U i ∪ Cᶜ) : C ⊆ ⋃ i ∈ J, U i :=
+  fun x hx =>
+    match hsub x trivial with
+    | ⟨i, hiJ, Or.inl h⟩ => ⟨i, hiJ, h⟩
+    | ⟨_, _, Or.inr h⟩ => (h hx).elim
 
 /-- 補題3: コンパクト空間の閉集合はコンパクト。
 `by_cases` は「成り立つ場合」と「成り立たない場合」の古典論理による場合分け。 -/
@@ -1064,6 +1146,20 @@ theorem IsClosed.isCompact [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCo
 
 補題2と対をなす形。こちらの空間側の仮定は `[CompactSpace X]`。
 -/
+
+-- 項で。暗黙引数 `I` を場合分けで使うので、`fun {I} U …` と名前を付けて受ける
+example [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCompact C :=
+  fun {I} U hU hcov =>
+    (Classical.em (Nonempty I)).elim
+      (fun hI =>
+        match CompactSpace.isCompact_univ (fun i => U i ∪ Cᶜ)
+            (fun i => isOpen_union (hU i) hC)
+            (Set.univ_subset_iUnion_union_compl hcov hI) with
+        | ⟨J, hJ, hsub⟩ => ⟨J, hJ, Set.subset_biUnion_of_compl hsub⟩)
+      (fun hI =>
+        ⟨∅, Set.Finite.empty, fun x hx =>
+          match hcov x hx with
+          | ⟨i, _⟩ => (hI ⟨i⟩).elim⟩)
 
 /-! ## 10. 目標: コンパクトからハウスドルフへの連続全単射は同相
 
@@ -1127,6 +1223,16 @@ theorem Set.preimage_eq_image {α β : Type} {f : α → β} {g : β → α}
       (s : Set α) : g ⁻¹' s = f '' s
 -/
 
+-- 項で。`rw [← hfx, hgf]` の2回の書き換えが、`▸` 2回に分かれる
+example {α β : Type} {f : α → β} {g : β → α}
+    (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) (s : Set α) :
+    g ⁻¹' s = f '' s :=
+  Set.ext fun y =>
+    ⟨fun hy => ⟨g y, hy, hfg y⟩,
+     fun ⟨x, hx, hfx⟩ =>
+      have h1 : g (f x) ∈ s := (hgf x).symm ▸ hx
+      (hfx ▸ h1 : g y ∈ s)⟩
+
 /-- 開集合の補集合は閉（方針の 2）。閉の定義は「補集合が開」なので、
 二重補集合 `sᶜᶜ = s` に帰着する。 -/
 theorem isClosed_compl {s : Set X} (hs : IsOpen s) : IsClosed sᶜ := by
@@ -1139,6 +1245,10 @@ theorem isClosed_compl {s : Set X} (hs : IsOpen s) : IsClosed sᶜ := by
 /-!
     isClosed_compl {X : Type} [TopologicalSpace X] {s : Set X} (hs : IsOpen s) : IsClosed sᶜ
 -/
+
+-- 項で。`rw [Set.compl_compl]` が `▸` に、`show` が型注釈に当たる
+example {s : Set X} (hs : IsOpen s) : IsClosed sᶜ :=
+  ((Set.compl_compl s).symm ▸ hs : IsOpen sᶜᶜ)
 
 /-- 逆写像の連続性。これが定理の中身:
 `g` が連続写像 `f` の両側逆写像なら、`g` も連続。
@@ -1177,6 +1287,22 @@ theorem continuous_invFun [CompactSpace X] [Hausdorff Y]
 長いが、左から順に「空間の条件（インスタンス引数4つ）→ `f` の連続性 →
 `g` が両側逆写像であること2つ → 結論 `g` の連続性」と読み下せる。
 -/
+
+-- 定理の中身も項で。`have` の連鎖はそのまま項の `have` になり、
+-- `rw` だけが `▸` と `congrArg`（等式の両辺の補集合を取る）に置き換わる
+example [CompactSpace X] [Hausdorff Y]
+    {f : X → Y} (hf : Continuous f) {g : Y → X}
+    (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) : Continuous g :=
+  fun s hs =>
+    have hcC : IsClosed (sᶜ : Set X) := isClosed_compl hs
+    have hcpt : IsCompact (sᶜ : Set X) := hcC.isCompact
+    have himg : IsCompact (f '' (sᶜ : Set X)) := hcpt.image hf
+    have hcl : IsClosed (f '' (sᶜ : Set X)) := himg.isClosed
+    have h1 : g ⁻¹' (sᶜ : Set X) = f '' (sᶜ : Set X) :=
+      Set.preimage_eq_image hgf hfg _
+    have heq : g ⁻¹' s = (f '' (sᶜ : Set X))ᶜ :=
+      (Set.compl_compl (g ⁻¹' s)).symm.trans (congrArg (·ᶜ) h1)
+    heq ▸ hcl
 
 /-- 目標の定理: コンパクト空間からハウスドルフ空間への連続全単射は同相写像。
 （`#check` の表示を見る前に、主定理の型——空間の条件・`f` の条件・結論——が
