@@ -131,6 +131,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <h3>✏ 練習</h3>
 <ol>
 <li>本文で <code>HasZero Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : HasZero Bool where zero := false</code> を登録し、 <code>example : HasZero Bool := inferInstance</code> と <code>#check zeroPair Bool</code> が通るようになることを確かめよ。</li>
+<li>前問の instance を登録した状態で、 <code>example : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool</code> が通ることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</li>
+<li><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</li>
 </ol>
 <h2>2. 型の族と Fin</h2>
 <p><code>Intro1.lean</code> 6節の依存関数型が本領を発揮するのは、<strong>型を返す関数</strong>（型の族）と組み合わせたときである。標準ライブラリの <code>Fin</code> は「<code>n</code> 未満の番号の型」を返す関数である（この型の中身——値と証明の組——は <code>CH.lean</code> の6節で見た）。</p>
@@ -186,6 +188,8 @@ in the application
 <ol>
 <li><code>#check first 4</code> の表示と、<code>#eval (first 4).val</code> の値を予想してから確かめよ。</li>
 <li><code>#eval (5 : Fin 4)</code> の表示を予想してから確かめよ（本文の <code>(5 : Fin 3)</code> と同じ仕組みである）。</li>
+<li><code>#check first 0</code> の表示を予想してから確かめよ（<code>Fin (0 + 1)</code> は1点の型である）。</li>
+<li><code>#eval (first 5).val + (2 : Fin 3).val</code> の値を予想してから確かめよ。</li>
 </ol>
 <h2>3. 集合の先取り — 集合とは述語のこと</h2>
 <p><code>Top.lean</code> は、数学でいう「集合」を自作するところから始まる。その定義をここで先取りして、<code>CH.lean</code> で身につけた証明の書き方を実戦してみよう。</p>
@@ -220,6 +224,7 @@ in the application
 <ol>
 <li><code>def evens : MySet Nat := IsEven</code> と宣言せよ（<code>IsEven</code> は <code>CH.lean</code> 9節の述語）。<code>example : evens.mem 4 := ⟨2, rfl⟩</code> が通ることを確かめよ。</li>
 <li>全体集合 <code>def univ : MySet Nat := fun _ =&gt; True</code> を定義し、 <code>theorem subset_univ : ∀ s : MySet Nat, s.subset univ</code> を書け（各点の証明は <code>True.intro</code>）。</li>
+<li><code>def odds : MySet Nat := fun n =&gt; ¬IsEven n</code> を宣言し、 <code>#check odds.mem 3</code> の表示を予想してから確かめよ。</li>
 </ol>
 <h2>4. 宣言を支える小物 — variable・namespace</h2>
 <p><code>Top.lean</code> の見た目を決めている構文を、あと少しだけ揃える。</p>
@@ -252,6 +257,7 @@ in the application
 <h3>✏ 練習</h3>
 <ol>
 <li><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</li>
+<li><code>section</code> の中で <code>variable (n : Nat)</code> を置いて <code>def addN (m : Nat) : Nat := m + n</code> を宣言し、<code>#check addN</code> の表示（<code>n</code> がどの位置に現れるか）を予想してから確かめよ。</li>
 </ol>
 <h2>5. 記法の自作 — syntax と macro_rules</h2>
 <p><code>Top.lean</code> は <code>⋃₀ S</code> や <code>{a | p a}</code> といった数学記法を自作している。仕組みは:</p>
@@ -274,6 +280,7 @@ in the application
 <h3>✏ 練習</h3>
 <ol>
 <li><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</li>
+<li><code>infixl:65 &quot; ⊞ &quot; =&gt; add</code> で、<code>Intro1.lean</code> の <code>add</code>（<code>MyNat</code> の足し算）に中置記法を与え、<code>#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code> の表示を予想してから確かめよ。</li>
 </ol>
 </main>
 <nav><span><a href="ch.html">← CH</a></span><a href="index.html">目次</a><span><a href="top.html">Top →</a></span></nav>

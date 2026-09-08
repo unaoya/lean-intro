@@ -199,6 +199,11 @@ instance : Add Point where
    `instance : HasZero Bool where zero := false` を登録し、
    `example : HasZero Bool := inferInstance` と `#check zeroPair Bool` が
    通るようになることを確かめよ。
+2. 前問の instance を登録した状態で、
+   `example : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool` が
+   通ることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。
+3. `Add` にならって `instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩`
+   を登録し、`#eval (Point.mk 2 3 * Point.mk 4 5).x` の値を予想してから確かめよ。
 -/
 
 /-! ## 2. 型の族と Fin
@@ -354,6 +359,8 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 1. `#check first 4` の表示と、`#eval (first 4).val` の値を予想してから確かめよ。
 2. `#eval (5 : Fin 4)` の表示を予想してから確かめよ（本文の `(5 : Fin 3)` と
    同じ仕組みである）。
+3. `#check first 0` の表示を予想してから確かめよ（`Fin (0 + 1)` は1点の型である）。
+4. `#eval (first 5).val + (2 : Fin 3).val` の値を予想してから確かめよ。
 -/
 
 /-! ## 3. 集合の先取り — 集合とは述語のこと
@@ -425,6 +432,8 @@ theorem MySet.subset_refl {X : Type} (s : MySet X) : s.subset s := fun _ ha => h
 3. 全体集合 `def univ : MySet Nat := fun _ => True` を定義し、
    `theorem subset_univ : ∀ s : MySet Nat, s.subset univ` を書け
    （各点の証明は `True.intro`）。
+4. `def odds : MySet Nat := fun n => ¬IsEven n` を宣言し、
+   `#check odds.mem 3` の表示を予想してから確かめよ。
 -/
 
 /-! ## 4. 宣言を支える小物 — variable・namespace
@@ -498,6 +507,9 @@ end Geometry
 1. `namespace Geometry … end Geometry` をもう一度開いて `unitX : Point := ⟨1, 0⟩` を
    追加し、外から `#check Geometry.unitX` では見え、`#check unitX` では
    見えないことを確かめよ。
+2. `section` の中で `variable (n : Nat)` を置いて
+   `def addN (m : Nat) : Nat := m + n` を宣言し、`#check addN` の表示
+   （`n` がどの位置に現れるか）を予想してから確かめよ。
 -/
 
 /-! ## 5. 記法の自作 — syntax と macro_rules
@@ -545,4 +557,7 @@ macro_rules
 
 1. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
    `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
+2. `infixl:65 " ⊞ " => add` で、`Intro1.lean` の `add`（`MyNat` の足し算）に
+   中置記法を与え、`#reduce MyNat.zero.succ ⊞ MyNat.zero.succ` の表示を
+   予想してから確かめよ。
 -/

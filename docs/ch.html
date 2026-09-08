@@ -127,6 +127,8 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li>「2回適用」を両方の世界で書け: <code>def apply2 : (α → α) → α → α</code> と <code>theorem applyTwice : (p → p) → p → p</code>。</li>
 <li>「A より B、B より C」の連鎖 <code>theorem chain : (p → q) → (q → r) → p → r</code> を項で書け。</li>
+<li>同じ字面 <code>fun h =&gt; h</code> が、型側の <code>example : Nat → Nat</code> と命題側の <code>example : (1 = 1) → (1 = 1)</code> の<strong>両方</strong>で通ることを確かめよ。</li>
+<li><code>#check applyFun Nat.succ 3</code> の表示を予想してから確かめよ。</li>
 </ol>
 <h2>2. 直積型と「かつ」</h2>
 <p><strong>導入</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</p>
@@ -155,6 +157,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li><code>theorem and_left : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; : α × β → α</code> を書き比べよ。</li>
 <li><code>theorem and_assoc&#x27; : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.1</code> <code>.2</code> で書け。</li>
+<li>具体的な命題でも導入は同じであることを、 <code>example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code> で確かめよ。</li>
 </ol>
 <h2>3. 直和型と「または」</h2>
 <p><strong>導入</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</p>
@@ -206,6 +209,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li><code>theorem or_idem : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</li>
 <li><code>theorem or_map : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</li>
+<li><code>example : (1 = 2) ∨ (2 = 2) := .inr rfl</code> が通ることを確かめよ（左の札が<strong>偽の命題</strong>でも、右から入れる）。</li>
 </ol>
 <h2>4. 空の型と「⊥」</h2>
 <p>（ここからは <code>#check</code> の表示の書き添えを減らす。対になる宣言の表示が左右で重なることを、Infoview で確かめながら読み進めてほしい。）</p>
@@ -242,6 +246,7 @@ inductive False : Prop</code></pre>
 <ol>
 <li><code>theorem noContra : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
 <li><code>theorem dni : p → ¬¬p</code> を書け（二重否定の<strong>導入</strong>。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <code>Top.lean</code> の1節 <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</li>
+<li><code>example : ¬False := fun h =&gt; h</code> が通ることを確かめよ（<code>¬False</code> は <code>False → False</code>——恒等関数が証明になる）。</li>
 </ol>
 <h2>5. 依存積と「すべての」</h2>
 <p>関数型 <code>α → β</code> を一般化して、行き先の型が入力ごとに変わってよいことにしたのが依存積 <code>(a : α) → P a</code>。<code>P : α → Type</code> は「<code>α</code> の各点に型を割り当てるもの」。</p>
@@ -285,6 +290,7 @@ inductive False : Prop</code></pre>
 <ol>
 <li><code>theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
 <li><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> でも <code>all_mul_zero 5</code> でも証明できるか試せ。</li>
+<li><code>#check applyForall all_mul_zero 7</code> の表示を予想してから確かめよ（一般論に点を代入すると、命題も特殊化される）。</li>
 </ol>
 <h2>6. 依存和と「存在する」</h2>
 <p>直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>。命題側で対応するのが存在量化 <code>∃ a, Q a</code>。</p>
@@ -335,6 +341,7 @@ inductive False : Prop</code></pre>
 <ol>
 <li><code>theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
 <li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——<code>Intro2.lean</code> 2節の補足で説明する）。</li>
+<li><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</li>
 </ol>
 <h2>7. 導入と除去のまとめ</h2>
 <p>作り方（導入）と使い方（除去）を並べると、左右で同じ形をしていることが見える。</p>
@@ -356,6 +363,10 @@ inductive False : Prop</code></pre>
 <span class="kw">example</span> : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
 
 <span class="kw">example</span> : p ∧ q → q ∧ p := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li>対照表を見ながら、<code>theorem andToOr : p ∧ q → p ∨ q</code> の証明項を書け（<code>∧</code> の除去で取り出し、<code>∨</code> の導入で包む——1行で書ける）。</li>
+</ol>
 <h2>8. 例: 自然数の命題を構成子で証明する</h2>
 <p>「命題を証明する＝項を作る」を、自然数のいちばん基本的な命題で確かめておく。鍵は、<code>=</code> や <code>≤</code> といった命題を作るもの自体が、<code>Intro1.lean</code> の <code>MyNat</code> などと同じく<strong>帰納型として定義されている</strong>ことである。</p>
 <h3>等しさ <code>Eq</code></h3>
@@ -405,6 +416,27 @@ inductive False : Prop</code></pre>
 
 <span class="kw">#check</span> MyEq.symm</code></pre>
 <pre class="quote"><code>MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a</code></pre>
+<h3>発展: なぜこの <code>match</code> が通るのか——添字の単一化</h3>
+<p>（この小節は発展的な話題である。初読では飛ばして、次の <code>example</code> へ進んでよい。）</p>
+<p>上の証明をよく見ると、不思議なことが起きている。ゴールは <code>MyEq b a</code> なのに、返しているのは <code>.refl</code>——その型は <code>MyEq a a</code> であって、<code>a</code> と <code>b</code> は別の変数のはずである。なぜ型が合うのか。</p>
+<p>鍵は、<code>MyEq</code> の宣言のコロンの<strong>左右</strong>の違いにある。<code>(a : α)</code> は <strong>パラメータ</strong>（どの構成子でも共通・固定）、コロンの右の <code>α → Prop</code> の引数は <strong>添字</strong>（構成子ごとに値を決められる）である。<code>MyEq a</code> は「各 <code>b</code> に命題 <code>MyEq a b</code> を割り当てる族」だが、唯一の構成子 <code>refl</code> は、この族のうち <strong>対角線 <code>MyEq a a</code> にしか項を作らない</strong>。</p>
+<p>ここで <code>Intro1.lean</code> 4節の原則——帰納型の項は、構成子で作られたものがすべて——を当てはめる。手元には <code>h : MyEq a b</code> という項がある。項はすべて構成子から作られ、構成子は <code>refl</code> だけで、<code>refl</code> が作る項の型は <code>MyEq a a</code>。したがって、<strong><code>MyEq a b</code> に項があるということ自体が、<code>b</code> は実は <code>a</code> だったことを意味する</strong>。</p>
+<p>添字つきの型への <code>match</code> は、この推論を実行している。枝に入るとき、「どの構成子か」の列挙（<code>Signal</code> のときと同じ仕事）に加えて、「その構成子で作られたのなら<strong>添字は何でなければならないか</strong>」の照合（単一化）が走る。 <code>refl</code> の枝の中では <code>b := a</code> と特殊化された世界になり、ゴール <code>MyEq b a</code> は <code>MyEq a a</code> に書き換わる——だから右辺の <code>.refl</code> が受理される。</p>
+<p>このことはコンパイル結果に現れる:</p>
+<pre class="lean"><code><span class="kw">#print</span> MyEq.symm</code></pre>
+<pre class="quote"><code>theorem MyEq.symm : ∀ {α : Type} {a b : α}, MyEq a b → MyEq b a :=
+fun {α} {a b} h ↦
+  match b, h with
+  | .(a), MyEq.refl =&gt; MyEq.refl</code></pre>
+<p>内部では <strong><code>b</code> も一緒にマッチされて</strong>いて、そのパターンが <code>.(a)</code> になっている。この <code>.( )</code> は<strong>強制パターン</strong>——「ここは自由な場合分けではない。<code>h</code> が <code>refl</code> である以上、<code>a</code> であることが強制されている」という印である。</p>
+<p>正体まで降りると、これは自動生成された帰納法原理の仕事である:</p>
+<pre class="lean"><code><span class="kw">#check</span> @MyEq.rec</code></pre>
+<pre class="quote"><code>@MyEq.rec : {α : Type} →
+  {a : α} → {motive : (a_1 : α) → MyEq a a_1 → Sort u_1} → motive a ⋯ → {a_1 : α} → (t : MyEq a a_1) → motive a_1 t</code></pre>
+<p>読み: 「すべての添字 <code>a_1</code> と <code>t : MyEq a a_1</code> について <code>motive a_1 t</code>」を結論するのに、要求される義務は <strong><code>refl</code> の場合の <code>motive a ⋯</code> ただ1つ</strong>である。「<code>refl</code> の場合だけ示せばよい」という形の中に、「そのとき添字は <code>a</code>」がすでに織り込まれている。<code>match</code> を使わず、この帰納法原理を直接使っても書ける:</p>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm&#x27; {a b : α} (h : MyEq a b) : MyEq b a :=
+  MyEq.rec (motive := <span class="kw">fun</span> c _ =&gt; MyEq c a) MyEq.refl h</code></pre>
+<p>まとめると: <code>Signal</code> の <code>match</code> は場合の列挙だけだったが、添字つきの族への <code>match</code> は枝ごとに<strong>添字の情報が増える</strong>（依存パターンマッチと呼ばれる）。「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが <code>Eq</code> の帰納法原理 <code>Eq.rec</code>（代入原理）の中身であり、12節で見る <code>rw</code> が裏でやっていることの正体でもある。</p>
 <pre class="lean"><code><span class="doc">/-- 型検査が両辺を計算してから比べる仕組みも `Eq` 専用ではないので、</span>
 <span class="doc">`1 + 1 = 2` に当たる命題はやはり構成子だけで証明できる。 -/</span>
 <span class="kw">example</span> : MyEq (1 + 1) 2 := .refl
@@ -433,6 +465,7 @@ or definition name, but `h` is a proof of
 <ol>
 <li><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</li>
 <li>本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</li>
+<li>逆向きの橋 <code>theorem MyEq.ofEq {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
 </ol>
 <h2>9. 証明を読んで納得するとは何をすることか</h2>
 <p>数学の証明は、書かれ、読まれ、読んだ人が「正しい」と納得することで機能する。では、証明を読んで納得するとき、読者は何をしているのだろうか。</p>
@@ -538,6 +571,7 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <ol>
 <li><code>theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)</code> を <code>isEven_double</code> にならって書け（証人は <code>n</code>、根拠は <code>rfl</code> で済む——なぜ済むのかも考えること）。</li>
 <li>「n が偶数なら n + 2 も偶数」を、本文と同じ3段構え（ふつうの証明 → 詳細版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</li>
+<li><code>example : IsEven 10 := ⟨5, rfl⟩</code> が通ることを確かめよ（例1の一般論の、具体的な1点での実例である）。</li>
 </ol>
 <h2>10. 型検査が証明の検査になる</h2>
 <p>前節の見方から、この教材の中心の主張が出る。</p>
@@ -574,6 +608,7 @@ n : Nat
 <h3>✏ 練習</h3>
 <ol>
 <li><code>n + 1 - 1 = n</code> は（<code>n - 1 + 1 = n</code> と違って）すべての <code>n</code> で正しい。 <code>#check @Nat.add_sub_cancel</code> でライブラリの補題の形を調べ、これを使って <code>example : ∀ n : Nat, n + 1 - 1 = n</code> を証明せよ。今度は穴が残らないことを確かめること。（表示の <code>∀ (n m : Nat)</code> は丸括弧＝<strong>明示引数</strong>なので、<code>_</code> で省略せず実際の値を渡す必要がある——<code>Intro1.lean</code> 6節の括弧の読み分けの復習である。）</li>
+<li><code>#eval (3 : Nat) - 5</code> の値を予想してから確かめよ（本文の <code>0 - 1</code> と同じく、自然数の引き算は切り捨てである）。</li>
 </ol>
 <h2>11. 対応のずれ</h2>
 <p>対応は完全ではない。証明は「あるかないか」だけが問題で中身は区別されない（同じ命題の2つの証明は等しいものとして扱われる）のに対し、項は中身が区別される。この差が、除去のところに現れる。</p>
@@ -679,6 +714,7 @@ fun {p q} h ↦ ⟨h.right, h.left⟩
 <h3>✏ 練習</h3>
 <ol>
 <li><code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、 <code>#print</code> で生成された項を本文の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
+<li><code>theorem idTac : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
 </ol>
 </main>
 <nav><span><a href="intro1.html">← Intro1</a></span><a href="index.html">目次</a><span><a href="intro2.html">Intro2 →</a></span></nav>

@@ -374,6 +374,13 @@ def double' (n : Nat) : Nat := n + n
 読み替えられるようにしておくこと。
 -/
 
+/-! ### ✏ 練習
+
+1. `def triple (n : Nat) : Nat := n + n + n` を宣言し、`#check triple` の
+   表示（binder 形式）を予想してから確かめよ。
+2. `#eval double (double 5)` の値を予想してから実行せよ。
+-/
+
 /-! ### 多変数関数はカリー化で表す
 
 Lean の関数はすべて1引数である。2引数の関数は、
@@ -699,6 +706,15 @@ def isRed : Signal → Bool
     isRed : Signal → Bool
 -/
 
+/-! ### ✏ 練習
+
+1. `Signal` の「逆回り」`prev : Signal → Signal` を `match` で定義し、
+   `#reduce prev (next Signal.red)` の表示を予想してから確かめよ
+   （`Signal.red` に戻ってくるはずである）。
+2. `isRed` にならって `isGreen : Signal → Bool` を書き、
+   `#eval isGreen Signal.red` の値を予想してから確かめよ。
+-/
+
 /-!
 `Bool` はまさにこの形の列挙型で、標準ライブラリ（Prelude）では
 次のように定義されている:
@@ -760,6 +776,15 @@ def valueOf : NatOrBool → Nat
 
 /-!
     valueOf : NatOrBool → Nat
+-/
+
+/-! ### ✏ 練習
+
+1. `#eval valueOf (NatOrBool.bool true)` の値を予想してから確かめよ
+   （どちらの枝に入るか）。
+2. 「`bool` の札なら中身を、`nat` の札なら `false` を返す」関数
+   `flagOf : NatOrBool → Bool` を書き、`#eval flagOf (NatOrBool.bool true)` で
+   確かめよ。
 -/
 
 /-!
@@ -835,6 +860,12 @@ def getLeft {α β : Type} (d : α) : MySum α β → α
     0
 -/
 
+/-! ### ✏ 練習
+
+1. `#eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)` の値を予想してから
+   確かめよ。（`MySum.inl 3` だけでは `β` が決まらないので、型注釈で教えている。）
+-/
+
 /-!
 ### 構成子は自分自身の型を引数に取れる（再帰）
 
@@ -904,17 +935,14 @@ def add : MyNat → MyNat → MyNat
 
 /-! ### ✏ 練習
 
-1. `Signal` の「逆回り」`prev : Signal → Signal` を `match` で定義し、
-   `#reduce prev (next Signal.red)` の表示を予想してから確かめよ
-   （`Signal.red` に戻ってくるはずである）。
-2. `MyNat` の項として 3 を `def myThree : MyNat := …`（`succ` 3回）と書き、
+1. `MyNat` の項として 3 を `def myThree : MyNat := …`（`succ` 3回）と書き、
    `#reduce add myThree MyNat.zero` の表示を予想してから確かめよ。
-3. 2点の列挙型 `inductive Two where | a | b` を定義せよ。`Two` と `Bool` は
+2. 2点の列挙型 `inductive Two where | a | b` を定義せよ。`Two` と `Bool` は
    集合としては同じ2点集合だが、型としては別物である。往復の関数
    `toBool : Two → Bool` と `ofBool : Bool → Two` を書き、
    `#eval toBool (ofBool true)` を確かめよ（`Bool` は表示の仕組みが
    登録済みなので `#eval` が使える）。
-4. 前問の `Nat` 版: `MyNat` と `Nat` も、型としては別物だが「同型」である。
+3. 前問の `Nat` 版: `MyNat` と `Nat` も、型としては別物だが「同型」である。
    往復の関数 `toN : MyNat → Nat`（再帰で `+ 1` していく）と
    `ofN : Nat → MyNat` を書き、
    `#eval toN (ofN 3)` の値を予想してから確かめよ。
@@ -998,6 +1026,20 @@ structure Point where
     1
 
 第1フィールドに入れた値が、そのまま返ってきた。
+-/
+
+/-! ### ✏ 練習
+
+1. 例えば
+
+       structure Circle where
+         center : Point
+         radius : Nat
+
+   のような自作の structure を1つ定義し、`#check` で構成子と取り出し関数が
+   自動定義されていることを確かめよ。
+2. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
+   さらに `(Point.mk 1 2).y` とも書けることを試せ（7節のドット記法の先取り）。
 -/
 
 /-!
@@ -1092,16 +1134,11 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 
 /-! ### ✏ 練習
 
-1. 例えば
-
-       structure Circle where
-         center : Point
-         radius : Nat
-
-   のような自作の structure を1つ定義し、`#check` で構成子と取り出し関数が
-   自動定義されていることを確かめよ。
-2. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
-   さらに `(Point.mk 1 2).y` とも書けることを試せ（7節のドット記法の先取り）。
+1. `#check Pair.mk true 0` の表示を予想してから確かめよ
+   （`α`・`β` は何に決まるか）。
+2. `def pointedBool : PointedType := ⟨Bool, true⟩` が受理されることを確かめよ。
+   また `#check PointedType.mk Nat` の表示を予想してから確かめよ
+   （第1引数を渡すと、第2引数の型が決まる）。
 -/
 
 /-! ## 6. 依存関数型
@@ -1159,6 +1196,13 @@ def idAt (α : Type) (a : α) : α := a
 文脈から自動で埋めてもらう書き方である。
 -/
 
+/-! ### ✏ 練習
+
+1. `#check idAt (Nat → Nat)` の型を予想してから確かめよ（矢印の結合に注意）。
+   `#eval idAt (Nat → Nat) double 21` はどうなるか。
+2. `#check idAt Signal` の表示を予想してから確かめよ。
+-/
+
 /-! ### 型の読み方と括弧 `( )`・`{ }`
 
 ここで、`#check` が表示する型の読み方をまとめておく。例えば
@@ -1199,9 +1243,8 @@ def idAt (α : Type) (a : α) : α := a
 
 /-! ### ✏ 練習
 
-1. `#check idAt (Nat → Nat)` の型を予想してから確かめよ（矢印の結合に注意）。
-   `#eval idAt (Nat → Nat) double 21` はどうなるか。
-2. `#check idAt Signal` の表示を予想してから確かめよ。
+1. `#check Map Nat` の表示を予想してから確かめよ
+   （`Map` に1つだけ渡すと、何が返るか）。
 -/
 
 /-! ## 7. ドット記法
@@ -1273,4 +1316,6 @@ example : Point := .mk 1 2
 
 1. `#eval (Point.mk 1 2).swap.swap.x` の値を予想してから確かめよ
    （2回入れ替えると元に戻るはずである）。
+2. `example : Point := .mk 1 2` にならって、`example : Signal := .red` が
+   通ることを確かめよ（前ドットが「期待される型」から解決されている）。
 -/

@@ -460,6 +460,15 @@ theorem interFin_mem : ∀ (n : Nat) (W : Fin n → Set α) (a : α), a ∈ inte
 
 end Set
 
+/-! ### ✏ 練習
+
+1. `example : (2 : Nat) ∈ ({n | n < 5} : Set Nat)` を証明せよ。
+   ヒント: `∈` と `setOf` を展開すればゴールは `2 < 5`、すなわち `3 ≤ 5`——
+   `CH.lean` 8節の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
+2. `#print axioms Set.compl_compl` の結果を予想してから確かめよ
+   （背理法を使った証明だった）。
+-/
+
 /-! ## 2. 全単射
 
 目標の「連続全単射」を述べるために要る。
@@ -489,6 +498,13 @@ structure Function.Bijective {α β : Type} (f : α → β) : Prop where
     Function.Bijective {α β : Type} (f : α → β) : Prop
 
 写像の性質（写像を受け取って命題を返す）。
+-/
+
+/-! ### ✏ 練習
+
+1. 恒等写像が全単射であること
+   `example : Function.Bijective (fun n : Nat => n)` を証明せよ
+   （`injective` は仮定をそのまま返し、`surjective` は証人 `b` と `rfl`）。
 -/
 
 /-- `⋃ i, U i` で族全体の合併を表す。 -/
@@ -645,6 +661,12 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 型を受け取って**位相そのもの**（`TopologicalSpace X` の項）を返す関数。
 -/
 
+/-! ### ✏ 練習
+
+1. `example : (discrete Nat).IsOpen {n | n = 0}` を証明せよ
+   （離散位相では、どの部分集合の開性も `True`——証明は `trivial`）。
+-/
+
 /-! ## 4. 連続写像
 
 「近くの点を近くに送る」を開集合だけで言い換えたのが次の定義。
@@ -698,6 +720,12 @@ theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Co
 
 空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 `hg` `hf` の2つで、
 先に適用される `f` の連続性が**後ろ**に来る（合成の記法 `g ∘ f` と同じ順）。
+-/
+
+/-! ### ✏ 練習
+
+1. `#check @Continuous` の表示を予想してから確かめよ
+   （2つの空間の位相が、どの種類の括弧で並ぶか）。
 -/
 
 /-! ## 5. ハウスドルフ空間
@@ -835,6 +863,12 @@ theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Conti
 
 数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、
 そのまま「証明を2つ受け取って証明を返す関数」の型になっている。
+-/
+
+/-! ### ✏ 練習
+
+1. `#print axioms Set.subset_preimage_iUnion` の結果を予想してから確かめよ
+   （包含の付け替えだけの証明に、公理は要るだろうか）。
 -/
 
 /-! ## 8. 補題2: ハウスドルフ空間のコンパクト集合は閉

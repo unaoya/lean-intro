@@ -328,6 +328,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>Set.interFin_mem {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : a ∈ interFin n W → ∀ (i : Fin n), a ∈ W i</code></pre>
 <p><code>mem_interFin</code> と仮定・結論が入れ替わっている。2つ合わせて同値。</p>
 <pre class="lean"><code><span class="kw">end</span> Set</code></pre>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>example : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat)</code> を証明せよ。ヒント: <code>∈</code> と <code>setOf</code> を展開すればゴールは <code>2 &lt; 5</code>、すなわち <code>3 ≤ 5</code>—— <code>CH.lean</code> 8節の構成子 <code>Nat.le.step</code>・<code>Nat.le.refl</code> で書ける。</li>
+<li><code>#print axioms Set.compl_compl</code> の結果を予想してから確かめよ（背理法を使った証明だった）。</li>
+</ol>
 <h2>2. 全単射</h2>
 <p>目標の「連続全単射」を述べるために要る。 <code>Function.Injective</code>（<code>∀ ⦃a b⦄, f a = f b → a = b</code>。括弧 <code>⦃ ⦄</code> は暗黙引数 <code>{ }</code> の変種で、この教材では <code>∀ a b, f a = f b → a = b</code> と読んでよい）と <code>Function.Surjective</code>（<code>∀ b, ∃ a, f a = b</code>）は標準ライブラリにあるので、全単射だけを定義する。</p>
 <pre class="lean"><code><span class="doc">/-- 全単射: 単射かつ全射。</span>
@@ -347,6 +352,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> Function.Bijective</code></pre>
 <pre class="quote"><code>Function.Bijective {α β : Type} (f : α → β) : Prop</code></pre>
 <p>写像の性質（写像を受け取って命題を返す）。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li>恒等写像が全単射であること <code>example : Function.Bijective (fun n : Nat =&gt; n)</code> を証明せよ（<code>injective</code> は仮定をそのまま返し、<code>surjective</code> は証人 <code>b</code> と <code>rfl</code>）。</li>
+</ol>
 <pre class="lean"><code><span class="doc">/-- `⋃ i, U i` で族全体の合併を表す。 -/</span>
 <span class="kw">syntax</span>:110 &quot;⋃ &quot; ident &quot;, &quot; term : term
 <span class="doc">/-- `⋃ i ∈ J, U i` で添字を `J` に制限した合併を表す。 -/</span>
@@ -454,6 +463,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> discrete</code></pre>
 <pre class="quote"><code>discrete (X : Type) : TopologicalSpace X</code></pre>
 <p>型を受け取って<strong>位相そのもの</strong>（<code>TopologicalSpace X</code> の項）を返す関数。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>example : (discrete Nat).IsOpen {n | n = 0}</code> を証明せよ（離散位相では、どの部分集合の開性も <code>True</code>——証明は <code>trivial</code>）。</li>
+</ol>
 <h2>4. 連続写像</h2>
 <p>「近くの点を近くに送る」を開集合だけで言い換えたのが次の定義。写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。</p>
 <pre class="lean"><code><span class="kw">variable</span> {Y : <span class="sort">Type</span>} [TopologicalSpace Y] {Z : <span class="sort">Type</span>} [TopologicalSpace Z]
@@ -484,6 +497,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>Continuous.comp {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {Z : Type} [TopologicalSpace Z]
   {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) : Continuous fun x ↦ g (f x)</code></pre>
 <p>空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 <code>hg</code> <code>hf</code> の2つで、先に適用される <code>f</code> の連続性が<strong>後ろ</strong>に来る（合成の記法 <code>g ∘ f</code> と同じ順）。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>#check @Continuous</code> の表示を予想してから確かめよ（2つの空間の位相が、どの種類の括弧で並ぶか）。</li>
+</ol>
 <h2>5. ハウスドルフ空間</h2>
 <p>「異なる2点は開集合で見分けられる」という条件。点が多すぎず貼りついていない、という感じの性質。</p>
 <pre class="lean"><code><span class="doc">/-- ハウスドルフ空間であるという<strong>性質</strong>。フィールドが命題1つだけの `class : Prop` で、</span>
@@ -574,6 +591,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {K : Set X} (hK : IsCompact K)
   {f : X → Y} (hf : Continuous f) : IsCompact (f &#x27;&#x27; K)</code></pre>
 <p>数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、そのまま「証明を2つ受け取って証明を返す関数」の型になっている。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>#print axioms Set.subset_preimage_iUnion</code> の結果を予想してから確かめよ（包含の付け替えだけの証明に、公理は要るだろうか）。</li>
+</ol>
 <h2>8. 補題2: ハウスドルフ空間のコンパクト集合は閉</h2>
 <p>ここが証明の山場で、有限性を実際に使うのもここだけ。方針:</p>
 <ol>
