@@ -6,7 +6,8 @@
 
 変換規則:
   * `/-! ... -/` ブロック → 地の文（この教材で使う Markdown サブセットを HTML 化）
-  * それ以外（宣言・docstring・コメント・#check）→ コードブロック（簡易ハイライト付き）
+  * 行頭の docstring `/-- ... -/` → 地の文（直後の宣言の説明として、コードの直前に置く）
+  * それ以外（宣言・フィールドの docstring・コメント・#check）→ コードブロック（簡易ハイライト付き）
 
 章構成を変えるときは CHAPTERS を書き換えるだけでよい。
 """
@@ -68,7 +69,8 @@ def inline(text: str) -> str:
         codes.append("<code>" + html.escape(m.group(1)) + "</code>")
         return f"\x00{len(codes) - 1}\x00"
 
-    tmp = re.sub(r"`([^`]*)`", stash, text)
+    tmp = re.sub(r"``\s?(.*?)\s?``", stash, text)   # ``…`` はバッククォートを含むコード片
+    tmp = re.sub(r"`([^`]*)`", stash, tmp)
     e = html.escape(tmp)
     e = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", e)
     return re.sub(r"\x00(\d+)\x00", lambda m: codes[int(m.group(1))], e)
@@ -256,7 +258,10 @@ def render_code(lines: list[str]) -> str:
 # ---------------------------------------------------------------- file parsing
 
 def parse(path: Path) -> list[tuple[str, list[str]]]:
-    """ファイルを (kind, lines) のセグメント列に分ける。kind は 'prose' か 'code'。"""
+    """ファイルを (kind, lines) のセグメント列に分ける。
+    kind は 'prose'（/-! ブロック）・'doc'（行頭の docstring）・'code' のいずれか。
+    インデントされた docstring（structure のフィールドなど）は宣言の一部なので
+    code に残す。"""
     lines = path.read_text(encoding="utf-8").split("\n")
     segments = []
     cur_kind, cur = None, []
@@ -275,7 +280,8 @@ def parse(path: Path) -> list[tuple[str, list[str]]]:
     i = 0
     while i < len(lines):
         line = lines[i]
-        if line.startswith("/-!"):
+        if line.startswith("/-!") or line.startswith("/--"):
+            kind = "prose" if line.startswith("/-!") else "doc"
             flush()
             body = [line[3:].lstrip()]
             while "-/" not in body[-1] and i + 1 < len(lines):
@@ -283,7 +289,7 @@ def parse(path: Path) -> list[tuple[str, list[str]]]:
                 body.append(lines[i])
             # 閉じ `-/` を除去（行末どちらのスタイルにも対応）
             body[-1] = body[-1][: body[-1].rfind("-/")].rstrip()
-            cur_kind, cur = "prose", [b for b in body]
+            cur_kind, cur = kind, [b for b in body]
             flush()
         else:
             if cur_kind != "code":
@@ -328,8 +334,11 @@ def render_chapter(name: str, segments) -> str:
     body = []
     sec, sol_i = 0, 0
     for kind, lines in segments:
-        if kind != "prose":
+        if kind == "code":
             body.append(render_code(lines))
+            continue
+        if kind == "doc":
+            body.append(render_prose(lines))
             continue
         for l in lines:
             m = SECTION_RE.match(l)
@@ -346,7 +355,7 @@ def render_chapter(name: str, segments) -> str:
             sol_i += 1
             if got != label:
                 raise SystemExit(f"error: {name} 練習 {label} の位置に SOL {got}（{SOL_FILES[name]}.lean の順序を確認）")
-            inner = "\n".join(render_prose(ls) if k == "prose" else render_code(ls) for k, ls in segs2)
+            inner = "\n".join(render_code(ls) if k == "code" else render_prose(ls) for k, ls in segs2)
             body.append(f'<details class="sol"><summary>解答 {item}</summary>\n{inner}\n</details>')
     if sols is not None and sol_i != len(sols):
         raise SystemExit(f"error: {name} で解答が {len(sols) - sol_i} 個余っている（{SOL_FILES[name]}.lean）")
