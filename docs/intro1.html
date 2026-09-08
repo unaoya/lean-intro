@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lean 最小限の導入</title>
+<title>Lean 最小限の導入 I — 型と項の言語</title>
 <style>
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
@@ -51,8 +51,8 @@ hr { border: none; border-top: 1px solid var(--border); }
 <body>
 <nav><span></span><a href="index.html">目次</a><span><a href="ch.html">CH →</a></span></nav>
 <main>
-<h1>Lean 最小限の導入</h1>
-<p>教材全体の目標はトップページに掲げた2つ——<strong>目標1</strong>（Lean を読めるようになる:コードを読むとは項の型を推測することで、それは機械的に実行できる）と <strong>目標2</strong>（その同じ仕組みが証明の検証に使えると納得する）——である。このファイル（Intro）は主に<strong>目標1</strong>を担当し、項の型を推測するために必要な最低限の言語機能だけを説明する。</p>
+<h1>Lean 最小限の導入 I — 型と項の言語</h1>
+<p>教材全体の目標はトップページに掲げた2つ——<strong>目標1</strong>（Lean を読めるようになる:コードを読むとは項の型を推測することで、それは機械的に実行できる）と <strong>目標2</strong>（その同じ仕組みが証明の検証に使えると納得する）——である。読む順は Intro1 → <code>CH.lean</code> → Intro2 → <code>Top.lean</code>。このファイル（Intro1）は主に<strong>目標1</strong>を担当し、<code>CH.lean</code> を読むために必要な最低限の言語機能だけを説明する。<code>Top.lean</code> のための残りの道具（class・<code>Fin</code>・記法の自作など）は、<code>CH.lean</code> のあとの <code>Intro2.lean</code> で揃える。</p>
 <p>このファイルで伝えたいことは2つ。</p>
 <ul>
 <li>Lean のもっとも基本の要素は<strong>項</strong>と<strong>型</strong>である。 Lean に書くことはすべて「項 <code>a</code> は型 <code>α</code> を持つ」（<code>a : α</code> と書く）の組み立てである。</li>
@@ -82,6 +82,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <h2>1. 項と型</h2>
 <p>Lean に書くものの基本の単位を<strong>項</strong>（term）と呼ぶ。項とは何かの正確な定義はここでは与えないが、さしあたり <strong><code>#check</code> の右側に書けるものは項だと考えてよい</strong>。 <code>#check e</code> は、項 <code>e</code> の<strong>型</strong>を調べて表示するコマンドである。</p>
 <pre class="lean"><code><span class="kw">#check</span> 3</code></pre>
+<pre class="quote"><code>3 : Nat</code></pre>
 <p>エディタ右側のパネル（Infoview）には、次のように表示される:</p>
 <pre class="quote"><code>3 : Nat</code></pre>
 <p>これは「項 <code>3</code> は型 <code>Nat</code>（自然数の型）を持つ」と読む。</p>
@@ -101,7 +102,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="kw">#check</span> <span class="sort">Prop</span></code></pre>
 <pre class="quote"><code>Prop : Type</code></pre>
 <p><code>Prop</code> は<strong>命題</strong>たちの住む宇宙である（このファイルでは深入りしない。 <code>CH.lean</code> の主題である）。</p>
-<p>型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、これがあるから「型を受け取る関数」「型を返す関数」が書ける（3節の <code>Map</code> と7節）。</p>
+<p>型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、これがあるから「型を受け取る関数」「型を返す関数」が書ける（3節の <code>Map</code> と6節）。</p>
 <h3>先取り: 演算と命題の記号</h3>
 <p>数の演算や、等式・不等式の記号も、ふつうに書ける。それぞれが正確には何者なのかは後で説明することにして（<code>+</code> は3節。<code>=</code> と <code>&lt;</code> はこのファイルでは深入りせず、 <code>CH.lean</code> で主役になる）、表示だけ先に見ておく。</p>
 <pre class="lean"><code><span class="kw">#check</span> 3 + 4</code></pre>
@@ -172,7 +173,7 @@ but is expected to have type
 <span class="kw">#check</span> double</code></pre>
 <pre class="quote"><code>double : Nat → Nat</code></pre>
 <p>注釈した型が、そのまま <code>double</code> の型になっている。</p>
-<p>本体に出てきた <code>+</code>（1節で先取りした）について一言だけ注意しておく。 <code>+</code> は <strong>notation（記法）</strong>であり、その意味は <strong>class／instance</strong> という仕組みで型ごとに決まっている（仕組みは6節で説明する）。ここでは <code>Nat</code> に対して使っており、「2つの <code>Nat</code> から <code>Nat</code> を作る演算」と思えばよい。</p>
+<p>本体に出てきた <code>+</code>（1節で先取りした）について一言だけ注意しておく。 <code>+</code> は <strong>notation（記法）</strong>であり、その意味は <strong>class／instance</strong> という仕組みで型ごとに決まっている（仕組みは <code>Intro2.lean</code> で説明する）。ここでは <code>Nat</code> に対して使っており、「2つの <code>Nat</code> から <code>Nat</code> を作る演算」と思えばよい。</p>
 <p>この <code>def</code> を受理する前の型検査では、2節と同じ照合が走っている。コロンの右に注釈した型 <code>Nat → Nat</code> から「引数は <code>n : Nat</code>」と仮に置き、そのもとで本体 <code>n + n</code> の型が行き先の <code>Nat</code> になるかを調べる。つまり <strong><code>fun</code> 記法で書かれた項の型が、注釈した関数型と一致するか</strong>が検査されている。</p>
 <p>一致しなければ、もちろん受理されない。本体の型を間違えてみると:</p>
 <pre class="quote"><code>def bad2 : Nat → Nat := fun n =&gt; true</code></pre>
@@ -253,9 +254,9 @@ def plus (a b : Nat) : Nat := a + b                  -- binder 形式で書く</
 <h3><code>+</code> をあらためて: ざっくり版と正確な版</h3>
 <p>カリー化を知ったいま、<code>+</code> にちゃんとした型が与えられる。以後、裏に仕組みのあるものには<strong>ざっくり</strong>版と<strong>正確には</strong>版を併記する（正確な版は初読では飛ばしてよい）。</p>
 <ul>
-<li><code>+</code> — <strong>ざっくり</strong>: <code>Nat → Nat → Nat</code> という型の2引数関数で、 <code>3 + 4</code> は <code>plus 3 4</code> と同じ形の適用を、中置の記法で書いたもの。 <strong>正確には</strong>: <code>+</code> の読み先は汎用の演算 <code>HAdd.hAdd</code> で、「どの型の足し算か」は登録簿（6節の instance）から決まる。それを <code>Nat</code> に特殊化した姿がざっくり版である。</li>
+<li><code>+</code> — <strong>ざっくり</strong>: <code>Nat → Nat → Nat</code> という型の2引数関数で、 <code>3 + 4</code> は <code>plus 3 4</code> と同じ形の適用を、中置の記法で書いたもの。 <strong>正確には</strong>: <code>+</code> の読み先は汎用の演算 <code>HAdd.hAdd</code> で、「どの型の足し算か」は登録簿（<code>Intro2.lean</code> の instance）から決まる。それを <code>Nat</code> に特殊化した姿がざっくり版である。</li>
 <li><code>*</code> — <code>+</code> と同様の記法である（ざっくり <code>Nat → Nat → Nat</code> の2引数関数、正確には <code>HMul</code> という汎用演算の <code>Nat</code> への特殊化）。</li>
-<li>数字 <code>3</code> — <strong>ざっくり</strong>: そのまま自然数の項。 <strong>正確には</strong>: 数字も記法であり、期待される型に応じて読み方が決まる（仕組みは6節、実例は7節の補足で見る）。何も指定がなければ <code>Nat</code> と読まれる。</li>
+<li>数字 <code>3</code> — <strong>ざっくり</strong>: そのまま自然数の項。 <strong>正確には</strong>: 数字も記法であり、期待される型に応じて読み方が決まる（仕組みと実例は <code>Intro2.lean</code> で見る）。何も指定がなければ <code>Nat</code> と読まれる。</li>
 </ul>
 <h3>型は部分項から機械的に計算できる</h3>
 <p>2節で「型検査が走る」と述べ、この節の冒頭で <code>double 21</code> の2点確認を見た。一般の形をまとめておく。適用についての規則はただ1つである:</p>
@@ -331,7 +332,7 @@ in the application
 <pre class="lean"><code>#reduce next Signal.red</code></pre>
 <pre class="quote"><code>Signal.green</code></pre>
 <p>たしかに赤の次は青になった。</p>
-<p>期待される型が分かっている位置では、<code>Signal.red</code> を <code>.red</code> と省略できる（この省略の仕組みは8節のドット記法で説明する）。以後は省略形も使う:</p>
+<p>期待される型が分かっている位置では、<code>Signal.red</code> を <code>.red</code> と省略できる（この省略の仕組みは7節のドット記法で説明する）。以後は省略形も使う:</p>
 <pre class="lean"><code><span class="kw">def</span> isRed : Signal → Bool
   | .red =&gt; true
   | .yellow =&gt; false
@@ -416,7 +417,7 @@ in the application
 <p><code>add</code> の計算も <code>#reduce</code> で確かめられる。「1 + 1」に当たる <code>add (.succ .zero) (.succ .zero)</code> を読んでみよう。定義の2行目から <code>add m (succ zero) = succ (add m zero)</code>、さらに1行目から <code>add m zero = m</code>。だから値は <code>succ (succ zero)</code>、つまり「2」のはずである:</p>
 <pre class="lean"><code>#reduce add (.succ .zero) (.succ .zero)</code></pre>
 <pre class="quote"><code>MyNat.zero.succ.succ</code></pre>
-<p><code>MyNat.zero.succ.succ</code> は <code>MyNat.succ (MyNat.succ MyNat.zero)</code> のこと（値の後ろにドットで関数をつなぐ表示——仕組みは8節のドット記法で見る）。たしかに <code>succ</code> が2回重なった項、つまり「2」が返ってきた。</p>
+<p><code>MyNat.zero.succ.succ</code> は <code>MyNat.succ (MyNat.succ MyNat.zero)</code> のこと（値の後ろにドットで関数をつなぐ表示——仕組みは7節のドット記法で見る）。たしかに <code>succ</code> が2回重なった項、つまり「2」が返ってきた。</p>
 <p>標準ライブラリの型はほとんどすべて帰納型である。 <code>Bool</code> <code>Unit</code> <code>Empty</code>（上で引用した）、<code>Nat</code>（リテラル <code>3</code> は <code>succ (succ (succ zero))</code> の表示）、<code>CH.lean</code> に出てくる <code>×</code> <code>⊕</code>、さらには命題の側の <code>And</code> <code>Or</code> <code>Eq</code> すらもそうなのだが、命題の話は <code>CH.lean</code> に譲る。</p>
 <p><code>Top.lean</code> では、<code>Nat</code> の再帰で集合の有限個の共通部分 <code>interFin</code> を定義し、その性質もまた再帰で証明している。<strong>再帰で書いた証明が数学的帰納法</strong>である。</p>
 <h3>✏ 練習</h3>
@@ -456,7 +457,7 @@ in the application
 <p>自動定義された構成子。<code>⟨1, 2⟩</code> は略記</p>
 <pre class="lean"><code><span class="kw">#check</span> Point.x</code></pre>
 <pre class="quote"><code>Point.x (self : Point) : Nat</code></pre>
-<p>自動定義された取り出し関数。<code>p.x</code> とも書ける——8節</p>
+<p>自動定義された取り出し関数。<code>p.x</code> とも書ける——7節</p>
 <pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2).x</code></pre>
 <pre class="quote"><code>1</code></pre>
 <p>第1フィールドに入れた値が、そのまま返ってきた。</p>
@@ -490,7 +491,7 @@ in the application
 <span class="kw">#check</span> pointedNat</code></pre>
 <pre class="quote"><code>pointedNat : PointedType</code></pre>
 <p>第二フィールド <code>point</code> の型が、第一フィールド <code>carrier</code> の<strong>値</strong>で決まっている（<code>pointedNat</code> では <code>point : Nat</code>）。なお <code>#check PointedType</code> とすると <code>PointedType : Type 1</code> と表示される——中身に <code>Type</code> の項を入れたので、入れ物は1節の宇宙の階段を1段のぼるのである。</p>
-<p>この「後の成分が前の成分に依存する組」の一般論は、<code>CH.lean</code> の6節（依存和）で扱う。特に、第二成分を<strong>命題の証明</strong>にした「部分型」が <code>Top.lean</code> の主役級の道具になるのだが、命題の話なのでここでは踏み込まない。</p>
+<p>この「後の成分が前の成分に依存する組」の一般論は、<code>CH.lean</code> の6節（依存和）で扱う。特に、第二成分を<strong>命題の証明</strong>にしたもの（部分型）はそこで主役になり、 <code>Top.lean</code> でも「分離データの束」<code>SeparatingPair</code> として活躍する。命題の話なので、ここではこれ以上踏み込まない。</p>
 <h3>✏ 練習</h3>
 <ol>
 <li>例えば</li>
@@ -500,87 +501,9 @@ in the application
      radius : Nat</code></pre>
 <p>のような自作の structure を1つ定義し、<code>#check</code> で構成子と取り出し関数が自動定義されていることを確かめよ。</p>
 <ol>
-<li><code>#eval Point.y (Point.mk 1 2)</code> の値を予想してから確かめよ。さらに <code>(Point.mk 1 2).y</code> とも書けることを試せ（8節のドット記法の先取り）。</li>
+<li><code>#eval Point.y (Point.mk 1 2)</code> の値を予想してから確かめよ。さらに <code>(Point.mk 1 2).y</code> とも書けることを試せ（7節のドット記法の先取り）。</li>
 </ol>
-<h2>6. class と instance</h2>
-<p><code>class</code> は structure の変種で、「この型の項は <code>instance</code> として登録しておき、必要になったら Lean が登録簿から探して使う」という使い方を宣言したもの。</p>
-<pre class="lean"><code><span class="kw">class</span> HasZero (α : <span class="sort">Type</span>) <span class="kw">where</span>
-  zero : α
-
-<span class="kw">#check</span> HasZero</code></pre>
-<pre class="quote"><code>HasZero (α : Type) : Type</code></pre>
-<pre class="lean"><code><span class="kw">instance</span> : HasZero Nat <span class="kw">where</span>
-  zero := 0</code></pre>
-<p><code>HasZero α</code> の項は「<code>α</code> のどの項をゼロと呼ぶかの指定」で、 <code>instance</code> 宣言によって <code>Nat</code> のゼロとして <code>0</code> を登録した。</p>
-<p><code>instance</code> は<strong>名前を付けない宣言</strong>である（中身は <code>def</code> と同じで、宣言と同時に登録簿へ載る）。使う側は登録簿から探すだけで名前で呼ばないから、名前を書く必要がない。実際には Lean が <code>instHasZeroNat</code> のような名前を自動で付けており、<code>instance myZero : HasZero Nat where …</code> と自分で名前を付けることもできる。</p>
-<p>登録簿から探す操作そのものを項として書いたのが <code>inferInstance</code> である。型を見ると、インスタンス引数 <code>[i : α]</code> を受け取ってそのまま返すだけの関数で、「探す」仕事は括弧 <code>[ ]</code> の仕組みがやっていることが分かる。</p>
-<pre class="lean"><code><span class="kw">#check</span> @inferInstance</code></pre>
-<pre class="quote"><code>@inferInstance : {α : Sort u_1} → [i : α] → α</code></pre>
-<p>表示に、初めて見る記法が2つある。頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は <code>Prop</code> と <code>Type</code> たちを束ねる書き方で、<code>Prop = Sort 0</code>、 <code>Type = Sort 1</code>、<code>Type 1 = Sort 2</code>、…と読む。つまりこの関数はどの宇宙の型に対しても使える、ということである。</p>
-<p>確かめてみる。次の <code>example</code> も名前を付けない宣言で、こちらは登録簿にも載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。</p>
-<pre class="lean"><code><span class="kw">example</span> : HasZero Nat := inferInstance</code></pre>
-<p>登録してあるので、これは見つかって受理される（<code>example</code> は受理されると Infoview には何も表示しない）。登録していない型では失敗する:</p>
-<pre class="quote"><code>example : HasZero Bool := inferInstance
-
-error(lean.synthInstanceFailed): failed to synthesize instance of type class
-  HasZero Bool
-
-Hint: Type class instance resolution failures can be inspected with the
-`set_option trace.Meta.synthInstance true` command.</code></pre>
-<p>（<code>error(…)</code> の丸括弧はエラーの分類名。<code>Hint:</code> は調査のヒントで、以後の引用ではどちらも省略することがある。）</p>
-<pre class="lean"><code><span class="doc">/-- インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。</span>
-<span class="doc">`zeroPair Nat` と書くだけで、`HasZero Nat` の項は登録簿から自動で渡される。 -/</span>
-<span class="kw">def</span> zeroPair (α : <span class="sort">Type</span>) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.zero⟩
-
-<span class="kw">#check</span> zeroPair</code></pre>
-<pre class="quote"><code>zeroPair (α : Type) [HasZero α] : Pair α α</code></pre>
-<p><code>(zeroPair Nat).fst</code> の値は、登録簿に載せた <code>zero</code>——つまり <code>0</code>——のはずである:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (zeroPair Nat).fst</code></pre>
-<pre class="quote"><code>0</code></pre>
-<h3>自作型にもインスタンスを与える</h3>
-<p>クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。 5節で作った <code>Point</code> にゼロを登録してみる。</p>
-<pre class="lean"><code><span class="kw">instance</span> : HasZero Point <span class="kw">where</span>
-  zero := ⟨0, 0⟩
-
-<span class="kw">#check</span> zeroPair Point</code></pre>
-<pre class="quote"><code>zeroPair Point : Pair Point Point</code></pre>
-<p>登録した瞬間から、<code>HasZero</code> を使う汎用の道具がすべて <code>Point</code> でも使えるようになった。</p>
-<pre class="lean"><code><span class="kw">#eval</span> (zeroPair Point).fst.x</code></pre>
-<pre class="quote"><code>0</code></pre>
-<h3>記法もクラスで動いている</h3>
-<p>3節の「正確には」で、「<code>+</code> の正体は汎用の演算で、どの型の足し算かは登録簿から決まる」と述べた。その登録簿が、標準ライブラリのクラス <code>Add</code> である:</p>
-<pre class="quote"><code>class Add (α : Type u) where
-  add : α → α → α</code></pre>
-<p><code>Point</code> に足し算を登録してみる:</p>
-<pre class="lean"><code><span class="kw">instance</span> : Add Point <span class="kw">where</span>
-  add p q := ⟨p.x + q.x, p.y + q.y⟩
-
-<span class="kw">#check</span> Point.mk 1 2 + Point.mk 3 4</code></pre>
-<pre class="quote"><code>{ x := 1, y := 2 } + { x := 3, y := 4 } : Point</code></pre>
-<p>表示の <code>{ x := 1, y := 2 }</code> は <code>Point.mk 1 2</code> の<strong>別表示</strong>である（フィールド名付きの structure リテラル。書くときにも使える）。登録した瞬間から、記法 <code>+</code> が <code>Point</code> でも通るようになった。 <code>x</code> 成分は <code>1 + 3</code> で <code>4</code> のはずである:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2 + Point.mk 3 4).x</code></pre>
-<pre class="quote"><code>4</code></pre>
-<p>正確に言うと、<code>+</code> の読み先は <code>HAdd</code>（左右の型が違ってもよい、さらに一般の版）なのだが、「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。</p>
-<p>数字のリテラルにも同じ仕組みがあり、そちらは <code>OfNat</code> というクラスが担っている（7節の補足で、<code>(2 : Fin 3)</code> のようなリテラルが通る理由として再登場する）。</p>
-<p>なお、この教材の <code>HasZero</code> は練習用の自作クラスで、記法とは独立している（登録しても <code>0</code> と書けるようにはならない）。mathlib にはよく似た <code>Zero</code> というクラスがあり、そちらは <code>OfNat</code> への橋渡しを備えているので、登録すると <code>0</code> と書けるようになる。</p>
-<h3>型の読み方と3種類の括弧</h3>
-<p>インスタンス引数まで出そろったので、<code>#check</code> が表示する型の読み方をあらためてまとめておく。例えば</p>
-<pre class="quote"><code>Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β</code></pre>
-<p>は、コロンの左に引数の列が並び、最後の <code>: Pair α β</code> が結果の型、と読む（3節で見た binder 形式である）。引数を1つ渡すたびに列の左から1つ消えていき、全部渡すと結果の型の項が得られる。そして各段階で「渡した項の型が、引数の型と一致するか」の型検査が走っている。2節からやってきたことの一般形である。</p>
-<p>引数を包む括弧には3種類あり、「その引数を<strong>誰が埋めるか</strong>」を表している。</p>
-<ul>
-<li><code>(fst : α)</code> — <strong>明示引数</strong>。使う側が自分で書く。</li>
-<li><code>{α : Type}</code> — <strong>暗黙引数</strong>。使う側は書かない。Lean が読み込みの段階で、他の引数とのつじつま合わせ（単一化）から埋める（この前処理を <strong>エラボレーション</strong>と呼ぶ。型検査との関係は <code>CH.lean</code> 10節で整理する）。 <code>Pair.mk 1 true</code> と書けば <code>1 : Nat</code> と <code>true : Bool</code> から <code>α := Nat</code>、<code>β := Bool</code> が決まる。</li>
-<li><code>[inst : C α]</code> — <strong>インスタンス引数</strong>。これも使う側は書かないが、埋め方が違う。他の引数との単一化だけでは決まらず、エラボレータが <code>instance</code> として <strong>登録された項</strong>の中から探索して埋める。この節の <code>zeroPair</code> の <code>[HasZero α]</code> がこれだった。</li>
-</ul>
-<pre class="lean"><code><span class="kw">#check</span> Pair.mk 1 true</code></pre>
-<pre class="quote"><code>{ fst := 1, snd := true } : Pair Nat Bool</code></pre>
-<p>暗黙引数が埋まった</p>
-<h3>✏ 練習</h3>
-<ol>
-<li>本文で <code>HasZero Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : HasZero Bool where zero := false</code> を登録し、 <code>example : HasZero Bool := inferInstance</code> と <code>#check zeroPair Bool</code> が通るようになることを確かめよ。</li>
-</ol>
-<h2>7. 依存関数型</h2>
+<h2>6. 依存関数型</h2>
 <p>関数の一般化がもう1段ある。<strong>行き先の型が、入力に応じて変わってよい</strong>とした関数——依存関数——である。いちばん簡単な例は「型そのものを最初の引数として受け取る」形で作れる。型が引数にできることは、3節の <code>Map</code> で見たとおりである。</p>
 <pre class="lean"><code><span class="doc">/-- どんな型の上でも使える恒等写像。第1引数として<strong>型</strong>を受け取り、</span>
 <span class="doc">第2引数と結果の型が、その第1引数で決まる。 -/</span>
@@ -599,91 +522,29 @@ Hint: Type class instance resolution failures can be inspected with the
 <p><code>idAt Nat</code> と <code>idAt Bool</code> は<strong>型が違う</strong>。つまり <code>idAt</code> に1つ引数を渡すと、「残りの型」がその引数の値で決まる。こうなるともう <code>A → B</code> の形では書けない。この形の関数の型を<strong>依存関数型</strong>といい、</p>
 <pre class="quote"><code>idAt : (α : Type) → α → α</code></pre>
 <p>と書く（束縛した名前 <code>α</code> が矢印の右側に現れるのが目印）。これが Lean の関数型の一般形で、<code>A → B</code> は「行き先が入力に依存しない特別な場合」の略記である。</p>
-<p>なお、この「型を渡してから使う」仕組みこそ多相性の正体で、6節で説明した暗黙引数 <code>{α : Type}</code> は、この第1引数を文脈から自動で埋めてもらう書き方である。</p>
-<p>依存関数がさらに面白くなるのは、<strong>型を返す関数</strong>（型の族）と組み合わせたとき。標準ライブラリの <code>Fin</code> は「<code>n</code> 未満の番号の型」を返す関数である（<code>Fin 3</code> の項は 0 番・1 番・2 番の3つ。この型が<strong>どう作られているか</strong>は <code>CH.lean</code> の6節で見る）。</p>
-<pre class="lean"><code><span class="kw">#check</span> Fin</code></pre>
-<pre class="quote"><code>Fin (n : Nat) : Type</code></pre>
-<p>つまり Fin : Nat → Type</p>
-<pre class="lean"><code><span class="kw">#check</span> Fin 3</code></pre>
-<pre class="quote"><code>Fin 3 : Type</code></pre>
-<p>族に沿って「番号 <code>n</code> を受け取り、型 <code>Fin (n + 1)</code> の項を返す」関数が書ける。一般形 <code>(a : α) → P a</code> の <code>P</code> が定数でない、本格的な依存の例である。 <code>first 2</code> と <code>first 9</code> は<strong>型が違う</strong>ことに注意。</p>
-<pre class="lean"><code><span class="kw">def</span> first : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> _ =&gt; 0
-
-<span class="kw">#check</span> first</code></pre>
-<pre class="quote"><code>first (n : Nat) : Fin (n + 1)</code></pre>
-<p>適用すれば、型の中の <code>n</code> に渡した数が入るはずである:</p>
-<pre class="lean"><code><span class="kw">#check</span> first 2</code></pre>
-<pre class="quote"><code>first 2 : Fin (2 + 1)</code></pre>
-<pre class="lean"><code><span class="kw">#check</span> first 9</code></pre>
-<pre class="quote"><code>first 9 : Fin (9 + 1)</code></pre>
-<p>値はどれも「0 番」だが、その <code>0</code> の住んでいる型が入力ごとに違う。（<code>0</code> と書けるのは <code>Fin</code> 用のリテラルの読みが登録されているからで、すぐ下の補足で詳しく見る。）</p>
-<p>集合のアナロジーでは、依存関数型 <code>(a : α) → P a</code> は集合族 {P a} の <strong>直積</strong> ∏ₐ P a に当たる。その項は「各 a に P a の要素を1つずつ選ぶ、選び方」だからである。<code>α → β</code> ＝ B^A（すべての因子が同じ直積、すなわち冪）の、因子が点ごとに変わってよい一般化になっている。対になる<strong>族の直和</strong> ∐ₐ P a——「どの a か」の札付きで各 P a の要素を集めたもの——に当たる<strong>依存和</strong> <code>(a : α) × P a</code> もあり、<code>Pair</code>（直積）と <code>MySum</code>（直和）の共通の一般化である。<code>CH.lean</code> の6節で主役になる。</p>
-<h3>補足: では <code>2 : Fin 3</code> なのか？</h3>
-<p>「<code>Fin 3</code> は 3 未満の番号の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 1節で見たとおり<strong>項はちょうど1つの型を持ち</strong>、型どうしは集合のように重ならない——集合のアナロジーの限界がここにある。<code>Fin 3</code> は <code>Nat</code> の部分集合ではなく、 <code>Nat</code> とは<strong>別に作られた型</strong>である（作りは <code>CH.lean</code> の6節で見る）。</p>
-<p>まぎらわしいことに、<code>(2 : Fin 3)</code> という書き方自体は通ってしまう:</p>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Nat)</code></pre>
-<pre class="quote"><code>2 : Nat</code></pre>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Fin 3)</code></pre>
-<pre class="quote"><code>2 : Fin 3</code></pre>
-<p>これは数字 <code>2</code> が<strong>記法</strong>であり、期待される型に応じて別々の項に読まれるからである（<code>Fin</code> 用の読み方が instance として登録されている——6節で見た仕組みである）。 <code>(2 : Nat)</code> は自然数の項、<code>(2 : Fin 3)</code> は <code>Fin 3</code> の「2 番」の項で、 <strong>同じ字面の、別の項</strong>なのである。所属判定をしているのではない証拠に、 <code>(5 : Fin 3)</code> すら通り、3 で割った<strong>余り</strong>として読まれる:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 3)</code></pre>
-<pre class="quote"><code>2</code></pre>
-<p><code>2</code> になった——リテラルの読みは、登録された読み方次第である。</p>
-<p><code>.val</code> は「番号を自然数として取り出す」関数（<code>Fin n → Nat</code>）である:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (2 : Fin 3).val</code></pre>
-<pre class="quote"><code>2</code></pre>
-<p>2つの <code>2</code> を等号で結ぼうとすると、面白いことが起きる:</p>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Nat) = (2 : Fin 3)</code></pre>
-<pre class="quote"><code>2 = ↑2 : Prop</code></pre>
-<p>型エラーにはならないが、右辺に <code>↑</code> が付いた。これは<strong>強制</strong>（coercion）の印で、 Lean が <code>Fin 3 → Nat</code> の写像（<code>.val</code>）を自動で挟み、「<code>Nat</code> の世界に持ち上げてから比べる」形に読み替えている。逆向きはそうはいかない。<code>Fin 3</code> を引数に取る関数を用意して、<code>(2 : Nat)</code> を渡してみると:</p>
-<pre class="quote"><code>def useFin (x : Fin 3) : Fin 3 := x
-#check useFin (2 : Nat)
-
-error: Application type mismatch: The argument
-  2
-has type
-  Nat
-but is expected to have type
-  Fin 3
-in the application
-  useFin 2</code></pre>
-<p><code>Nat → Fin 3</code> の向きには「3 未満に収まっているか」の確認が要るので、自動では埋められない。まとめると、<code>Fin 3</code> と <code>Nat</code> の関係は「部分集合と全体」ではなく、<strong>写像 <code>.val</code> で結ばれた別々の型</strong>である。</p>
+<p>なお、この「型を渡してから使う」仕組みこそ多相性の正体で、これまでも表示に顔を出してきた暗黙引数 <code>{α : Type}</code>（すぐ下でまとめる）は、この第1引数を文脈から自動で埋めてもらう書き方である。</p>
+<h3>型の読み方と括弧 <code>( )</code>・<code>{ }</code></h3>
+<p>ここで、<code>#check</code> が表示する型の読み方をまとめておく。例えば</p>
+<pre class="quote"><code>Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β</code></pre>
+<p>は、コロンの左に引数の列が並び、最後の <code>: Pair α β</code> が結果の型、と読む（3節で見た binder 形式である）。引数を1つ渡すたびに列の左から1つ消えていき、全部渡すと結果の型の項が得られる。そして各段階で「渡した項の型が、引数の型と一致するか」の型検査が走っている。2節からやってきたことの一般形である。</p>
+<p>引数を包む括弧は、「その引数を<strong>誰が埋めるか</strong>」を表している。</p>
+<ul>
+<li><code>(fst : α)</code> — <strong>明示引数</strong>。使う側が自分で書く。</li>
+<li><code>{α : Type}</code> — <strong>暗黙引数</strong>。使う側は書かない。Lean が読み込みの段階で、他の引数とのつじつま合わせ（単一化）から埋める（この前処理を <strong>エラボレーション</strong>と呼ぶ。型検査との関係は <code>CH.lean</code> 10節で整理する）。 <code>Pair.mk 1 true</code> と書けば <code>1 : Nat</code> と <code>true : Bool</code> から <code>α := Nat</code>、<code>β := Bool</code> が決まる。</li>
+</ul>
+<p>括弧にはもう1種類 <code>[ ]</code> があるが、それは <code>Intro2.lean</code> の class とともに説明する。</p>
+<pre class="lean"><code><span class="kw">#check</span> Pair.mk 1 true</code></pre>
+<pre class="quote"><code>{ fst := 1, snd := true } : Pair Nat Bool</code></pre>
+<p>暗黙引数が埋まった</p>
 <p>行き先の型は、<code>Type</code> の住人でなくてもよい。<strong>命題を返す関数</strong>（数学でいう述語）を作り、「すべての <code>n</code> について…」の証明そのものを依存関数として書く——それが <code>CH.lean</code> の5節の主題である。<code>Top.lean</code> に出てくる「集合の族」 <code>U : I → Set X</code> や「型の族」 <code>P : α → Type</code> も、この「型（や集合、命題）を返す関数」の仲間である。</p>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>#check idAt (Nat → Nat)</code> の型を予想してから確かめよ（矢印の結合に注意）。 <code>#eval idAt (Nat → Nat) double 21</code> はどうなるか。</li>
-<li><code>#check first 4</code> の表示と、<code>#eval (first 4).val</code> の値を予想してから確かめよ。</li>
+<li><code>#check idAt Signal</code> の表示を予想してから確かめよ。</li>
 </ol>
-<h2>8. 宣言を支える小物 — variable・namespace・記法</h2>
-<p>最後に、<code>CH.lean</code> と <code>Top.lean</code> の見た目を決めている構文を紹介する。（証明を書くもう1つの流儀「タクティク」は <code>CH.lean</code> の最後で扱う。）</p>
-<h3>variable — 共通の引数の前置き</h3>
-<p>同じ引数を宣言のたびに書くかわりに、<code>variable</code> でまとめて前置きしておける。以後の宣言は、その変数を<strong>実際に使ったときだけ</strong>引数として受け取る。</p>
-<pre class="lean"><code><span class="kw">section</span>
-<span class="kw">variable</span> {α : <span class="sort">Type</span>} (x y : α)
-
-<span class="kw">def</span> toPair : Pair α α := ⟨x, y⟩
-
-<span class="kw">#check</span> toPair</code></pre>
-<pre class="quote"><code>toPair {α : Type} (x y : α) : Pair α α</code></pre>
-<p>variable が引数に取り込まれた</p>
-<pre class="lean"><code><span class="kw">end</span></code></pre>
-<p><code>section … end</code> は、<code>variable</code> の効き目をそこまでで区切るための囲いである。なお <code>universe u</code> も同様の前置きで、宇宙の段の名前（1節）を宣言する。 <code>CH.lean</code> の冒頭はこの2つから始まっている。逆に、名前空間の<strong>中</strong>の名前を接頭辞なしで使えるようにする <code>export N (名前)</code> という宣言もある（<code>Top.lean</code> が <code>TopologicalSpace.IsOpen</code> を <code>IsOpen</code> と書くために使っている）。</p>
-<h3>namespace — 名前の接頭辞</h3>
-<p><code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く。</p>
-<pre class="lean"><code><span class="kw">namespace</span> Geometry
-
-<span class="kw">def</span> origin : Point := ⟨0, 0⟩
-
-<span class="kw">#check</span> origin</code></pre>
-<pre class="quote"><code>Geometry.origin : Point</code></pre>
-<pre class="lean"><code><span class="kw">end</span> Geometry
-
-<span class="kw">#check</span> Geometry.origin</code></pre>
-<pre class="quote"><code>Geometry.origin : Point</code></pre>
-<p>外からはフルネームで呼ぶ</p>
-<h3>ドット記法</h3>
-<p>名前空間の仕組みの上に、便利な省略記法が載っている。向きの違う2つの用法があるので、まとめて押さえておく。</p>
-<p><strong>値の後ろに付けるドット</strong>: <code>p : Point</code> に対して <code>p.x</code> と書くと、Lean は「<code>p</code> の型の名前 <code>Point</code> の名前空間から <code>x</code> を探し、<code>p</code> を最初の <code>Point</code> 型の引数として渡す」と解釈する。つまり <code>p.x</code> は <code>Point.x p</code> の略記。自動生成されるフィールドに限らず、<code>Point.〜</code> という名前の関数なら何でも使える。</p>
+<h2>7. ドット記法</h2>
+<p><code>CH.lean</code> の証明では、<code>h.1</code> や <code>.inl</code> のようなドットの略記が頻繁に使われる。向きの違う2つの用法があるので、まとめて押さえておく。</p>
+<p><strong>値の後ろに付けるドット</strong>: <code>p : Point</code> に対して <code>p.x</code> と書くと、Lean は「<code>p</code> の型の名前 <code>Point</code> を接頭辞に持つ関数 <code>Point.x</code> を探し、<code>p</code> を最初の <code>Point</code> 型の引数として渡す」と解釈する。つまり <code>p.x</code> は <code>Point.x p</code> の略記。自動生成されるフィールドに限らず、<code>Point.〜</code> という名前の関数なら何でも使える（<code>型名.関数名</code> という名前の仕組みの一般論——名前空間——は <code>Intro2.lean</code> で扱う）。</p>
 <pre class="lean"><code><span class="doc">/-- ドット記法の実演用: 成分を入れ替える関数。名前を `Point.swap` にしたので</span>
 <span class="doc">`p.swap` と呼べるようになる。 -/</span>
 <span class="kw">def</span> Point.swap (p : Point) : Point := ⟨p.y, p.x⟩</code></pre>
@@ -699,30 +560,11 @@ in the application
 <p>4節の <code>#reduce</code> の表示 <code>MyNat.zero.succ.succ</code> も、この「値の後ろに付けるドット」の連鎖だった（<code>.succ</code> は <code>MyNat.succ</code> の略記で、<code>MyNat.zero</code> に2回適用されている）。</p>
 <p><strong>型が分かっている場所で前に付けるドット</strong>: 期待される型が <code>Point</code> だと分かっている位置では、構成子 <code>Point.mk</code> を <code>.mk</code> と省略できる。今度は「<strong>期待される型</strong>の名前空間から探す」という解決である。 4節のパターンマッチで使った <code>.red</code> や <code>.succ</code> もこの用法で、 <code>match</code> の各ケースは <code>Signal.red</code> などの略記だった。</p>
 <pre class="lean"><code><span class="kw">example</span> : Point := .mk 1 2</code></pre>
-<p><code>Top.lean</code> では <code>Set</code> の関数（<code>Set.ext</code> など）がこの形で、<code>s.ext</code> のように使われる。</p>
-<h3>syntax と macro_rules — 記法の自作</h3>
-<p><code>Top.lean</code> は <code>⋃₀ S</code> や <code>{a | p a}</code> といった数学記法を自作している。仕組みは:</p>
-<ul>
-<li><code>syntax</code> — 「この書き方を受け付けよ」と構文を追加する</li>
-<li><code>macro_rules</code> — 「その書き方はこの項の略記である」と展開を与える</li>
-</ul>
-<p>試しに、5節の <code>Pair</code> のための記法を作ってみる。</p>
-<pre class="lean"><code><span class="kw">syntax</span> &quot;⟪&quot; term &quot;, &quot; term &quot;⟫&quot; : term
-
-<span class="kw">macro_rules</span>
-  | `(⟪$x, $y⟫) =&gt; `(Pair.mk $x $y)</code></pre>
-<p><code>macro_rules</code> の行はこう読む。<code></code> <code>(…) </code><code> は**構文の断片**を作る引用符、 </code>$x<code>・</code>$y<code> は受け取った断片をそこへ埋め込む印である。つまりこの行は「</code>⟪x, y⟫<code> と書かれたら、</code>Pair.mk x y` と書かれたことにせよ」と読める。</p>
-<p>すると <code>⟪1, true⟫</code> は <code>Pair.mk 1 true</code> に展開されてから型検査されるので、型は <code>Pair Nat Bool</code> のはずである:</p>
-<pre class="lean"><code><span class="kw">#check</span> ⟪1, true⟫</code></pre>
-<pre class="quote"><code>{ fst := 1, snd := true } : Pair Nat Bool</code></pre>
-<p>記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。単純な中置・前置の記法には <code>infixl</code> や <code>prefix</code> という略記もある（<code>Top.lean</code> で使用）。</p>
-<p>これで <code>CH.lean</code> と <code>Top.lean</code> を読む準備は足りる。</p>
-<p>なお正確には、Lean の核には依存関数型と帰納型のほかに商型（<code>Quot</code>）などもあるが、この教材では直接は使わない（ただし関数の外延性 <code>funext</code> が商型の上に建っているため、<code>Top.lean</code> 末尾の公理の一覧には顔を出す）。</p>
+<p>証明でもこの記法が多用される。<code>CH.lean</code> では <code>h.1</code>・<code>h.elim</code>、<code>Top.lean</code> では <code>hK : IsCompact K</code> に対する <code>hK.image hf</code>（＝ <code>IsCompact.image hK hf</code>）のような形で登場する。</p>
+<p>これで <code>CH.lean</code> を読む準備が整った。<code>CH.lean</code> のあとは <code>Intro2.lean</code> → <code>Top.lean</code> と進んでほしい。</p>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</li>
 <li><code>#eval (Point.mk 1 2).swap.swap.x</code> の値を予想してから確かめよ（2回入れ替えると元に戻るはずである）。</li>
-<li><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</li>
 </ol>
 </main>
 <nav><span></span><a href="index.html">目次</a><span><a href="ch.html">CH →</a></span></nav>

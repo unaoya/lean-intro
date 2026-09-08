@@ -20,7 +20,7 @@ SRC = ROOT / "Top"
 OUT = ROOT / "docs"
 
 # 章構成（表示順）。ExtraSol（解答）は公開しない。
-CHAPTERS = ["Intro", "CH", "Top", "Extra"]
+CHAPTERS = ["Intro1", "CH", "Intro2", "Top", "Extra"]
 
 SITE_TITLE = "Lean 4 で書く位相空間 — ミニ教材"
 SITE_CONCEPT = (
@@ -29,7 +29,7 @@ SITE_CONCEPT = (
     "Lean のコードを自分で書けるようになることは目標ではない（それは AI に任せてよい）。"
 )
 SITE_GOALS = (
-    "<p>この教材（Intro → CH → Top の3ファイル）の目標は2つある。</p>"
+    "<p>この教材（Intro1 → CH → Intro2 → Top の4ファイル）の目標は2つある。</p>"
     "<ul>"
     "<li><strong>目標1 — Lean を読めるようになる</strong>。Lean のコードを読むとは、"
     "書かれた<strong>項の型を推測する</strong>ことである。そしてこの推測は"
@@ -40,13 +40,13 @@ SITE_GOALS = (
     "<strong>定理の証明の検証にそのまま使える</strong>ことを納得する。"
     "「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li>"
     "</ul>"
-    "<p>目標1が主に Intro の、目標2が CH の担当で、Top では現物の数学"
-    "（位相空間の主定理）について両方を実感する。その先で、形式化を自分の研究に"
-    "役立てる可能性を考えたい。Lean を網羅的に紹介することは目的ではなく、"
-    "必要な最低限の機能しか説明しない。</p>"
+    "<p>目標1が主に Intro1 の、目標2が CH の担当。Intro2 で Top のための"
+    "道具（class・Fin・集合・記法）を揃え、Top では現物の数学（位相空間の主定理）に"
+    "ついて両方を実感する。その先で、形式化を自分の研究に役立てる可能性を考えたい。"
+    "Lean を網羅的に紹介することは目的ではなく、必要な最低限の機能しか説明しない。</p>"
 )
 SITE_NOTE = (
-    "読む順は Intro → CH → Top（→ 演習 Extra）。"
+    "読む順は Intro1 → CH → Intro2 → Top（→ 演習 Extra）。"
     "ソースは <a href=\"https://github.com/unaoya/lean-intro\">GitHub</a> の "
     "<code>Top/*.lean</code>（このページはそこから自動生成）。"
 )
@@ -392,8 +392,9 @@ def main():
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
     roles = {
-        "Intro": "コードの読み方の基礎（項と型、型検査）",
+        "Intro1": "コードの読み方の基礎（項と型、関数、帰納型、structure）",
         "CH": "証明が検査される仕組み",
+        "Intro2": "CH のあとに読む後編（class・Fin・集合の正体・記法の自作）",
         "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
         "Extra": "演習（sorry を自分で埋める）",
     }

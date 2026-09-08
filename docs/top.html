@@ -49,7 +49,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
-<nav><span><a href="ch.html">← CH</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
+<nav><span><a href="intro2.html">← Intro2</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
 <main>
 <h1>位相空間</h1>
 <p>mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を組み立てる。</p>
@@ -65,8 +65,8 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>証明そのものは信じる必要がない。途中の議論がどれだけ長く込み入っていても、型検査を通った時点で検査は済んでいる。</p>
 <p>機械が直接保証してくれるのは、「1 を信頼したうえで、書かれた証明が主張どおりの型を持つ」ことと、「3 にどの公理が入っているかの列挙」である。 1 と 3 は信頼の<strong>基盤</strong>として明示的に引き受けるものであり、 2 は人間が読んで監査するしかない。定義が間違っていれば、そこから証明した定理は意図と違うことを言っている。だからこのファイルでは、すべての定義を1ファイルに収めて目視で監査できる分量に保ち（mathlib を使わないのはこのためでもある）、主要な定義にはよく知る例・事実がそこから出ることを確かめる「定義の確認」を添えてある。</p>
 <h2>読み方: 主要な宣言のあとの <code>#check</code></h2>
-<p>主要な名前付きの定義・定理の直後に <code>#check 名前</code> を置き、その表示を <code>Intro.lean</code> と同じ Infoview 風の枠で書き添えてある。 <code>Intro.lean</code> 以来の読み方——表示を見る前に「いま何がどんな型で手に入るはずか」を<strong>予想</strong>してから確かめる——を、ここでも続けてほしい。</p>
-<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> <code>[ ]</code> の違いは <code>Intro.lean</code> 6節。</p>
+<p>主要な名前付きの定義・定理の直後に <code>#check 名前</code> を置き、その表示を <code>Intro1.lean</code> と同じ Infoview 風の枠で書き添えてある。 <code>Intro1.lean</code> 以来の読み方——表示を見る前に「いま何がどんな型で手に入るはずか」を<strong>予想</strong>してから確かめる——を、ここでも続けてほしい。</p>
+<p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<code>Intro1.lean</code> 3節）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> の違いは <code>Intro1.lean</code> 6節、<code>[ ]</code> は <code>Intro2.lean</code> 1節。</p>
 <h2>読み方: タクティク証明の記号</h2>
 <p>証明は <code>CH.lean</code> 12節のタクティクで書く。同節の早見表にない記号を挙げておく:</p>
 <ul>
@@ -85,7 +85,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> Set</code></pre>
 <pre class="quote"><code>Set (α : Type) : Type</code></pre>
-<p>型 α を受け取って型を返す。つまり <code>Set : Type → Type</code> という「型を受け取って型を返す関数」である（<code>Intro.lean</code> 7節の <code>Fin</code> と同じ形）。</p>
+<p>型 α を受け取って型を返す。つまり <code>Set : Type → Type</code> という「型を受け取って型を返す関数」である（<code>Intro2.lean</code> の <code>Fin</code> や <code>MySet</code> と同じ形）。</p>
 <pre class="lean"><code><span class="cm">-- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は</span>
 <span class="cm">-- キャストなしでそのまま関数として適用できる。型検査が定義を展開して照合する。</span>
 <span class="kw">example</span> (A : Set Nat) (n : Nat) : <span class="sort">Prop</span> := A n
@@ -98,7 +98,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>setOf {α : Type} (p : α → Prop) : Set α</code></pre>
 <p><code>{α : Type}</code> は暗黙引数（書かなくても <code>p</code> の型から決まる）。型としては <code>setOf : (α → Prop) → Set α</code> と読めばよい。</p>
 <pre class="lean"><code><span class="doc">/-- 内包記法。`{a | p a}` と書いたら `setOf fun a =&gt; p a` の略記とする。</span>
-<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 8節）。 -/</span>
+<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro2.lean` 5節）。 -/</span>
 <span class="kw">syntax</span> &quot;{&quot; ident &quot; | &quot; term &quot;}&quot; : term
 
 <span class="cm">-- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は</span>
@@ -107,7 +107,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">macro_rules</span>
   | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)
 
-<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 8節）</span>
+<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 4節）</span>
 <span class="kw">namespace</span> Set
 
 <span class="cm">-- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる</span>
@@ -115,7 +115,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p><code>∈</code> <code>⊆</code> <code>∩</code> <code>∪</code> <code>∅</code> などの記法は、標準ライブラリの記法用クラス（<code>Membership</code> など）にこの <code>Set</code> を <code>instance</code> 登録すると使えるようになる。逆に言えば、登録するまでは使えない。実際、この時点で <code>a ∈ s</code> と書くと</p>
 <pre class="quote"><code>error: failed to synthesize instance of type class
   Membership Nat (Set Nat)</code></pre>
-<p>と断られる（<code>Intro.lean</code> 6節で見た「登録簿にない」エラー）。以下、クラスごとに <code>instance</code> 登録し、直後にその記法が使えるようになったことを <code>#check</code> で確認していく。<code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方。</p>
+<p>と断られる（<code>Intro2.lean</code> 1節で見た「登録簿にない」エラー）。以下、クラスごとに <code>instance</code> 登録し、直後にその記法が使えるようになったことを <code>#check</code> で確認していく。<code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方。</p>
 <pre class="lean"><code><span class="doc">/-- 所属 `a ∈ s`。中身は「`s` に `a` を適用する」だけで、定義上そのまま `s a`。 -/</span>
 <span class="kw">instance</span> : Membership α (Set α) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
 
@@ -188,7 +188,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">prefix</span>:110 &quot;⋃₀ &quot; =&gt; Set.sUnion
 
 <span class="doc">/-- 添字づけられた集合族 `U : I → Set α` の合併。</span>
-<span class="doc">族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 7節）。 -/</span>
+<span class="doc">族とは「添字を受け取って集合を返す関数」である（`Intro2.lean` 2節の型の族の仲間）。 -/</span>
 <span class="kw">def</span> iUnion {I : <span class="sort">Type</span>} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 <span class="kw">#check</span> iUnion</code></pre>
@@ -291,7 +291,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <h3>有限個の共通部分</h3>
 <p><code>Fin n</code> で番号づけられた集合たちの共通部分。<code>n</code> についての再帰で定義する。ハウスドルフ側の証明で、有限部分被覆から近傍を1つ作るのに使う。</p>
 <pre class="lean"><code><span class="doc">/-- `n` 個の集合 `W 0, …, W (n-1)` の共通部分。</span>
-<span class="doc">`Nat` の構造にそったパターンマッチ（`Intro.lean` 4節）で定義する:</span>
+<span class="doc">`Nat` の構造にそったパターンマッチ（`Intro1.lean` 4節）で定義する:</span>
 <span class="doc">`0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。</span>
 <span class="doc">`fun i =&gt; W i.succ` は添字を1つずらして「残りの族」を作っている。 -/</span>
 <span class="kw">def</span> interFin : (n : Nat) → (Fin n → Set α) → Set α
@@ -360,13 +360,13 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>開集合が何であるかを指定するデータ <code>IsOpen</code> と、それが満たすべき3つの公理。</p>
 <pre class="lean"><code><span class="doc">/-- 位相空間の構造。「どの部分集合を開と呼ぶか」のデータ `IsOpen` と、</span>
 <span class="doc">それが満たすべき3公理を `class` で束ねる（データ＋性質という構成は</span>
-<span class="doc">`Intro.lean` 5節・6節の structure/class と同じ）。</span>
+<span class="doc">`Intro1.lean` 5節の structure・`Intro2.lean` 1節の class と同じ）。</span>
 <span class="doc"></span>
 <span class="doc">`class` にしたので、以後 `[TopologicalSpace X]` と角括弧で書くだけで</span>
 <span class="doc">「`X` に載っている位相」がインスタンス引数として暗黙に渡る。</span>
 <span class="doc"></span>
 <span class="doc">フィールドは `def` と同じく「引数をコロンの左に書く」形で宣言できる</span>
-<span class="doc">（`Intro.lean` 3節の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/</span>
+<span class="doc">（`Intro1.lean` 3節の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/</span>
 <span class="kw">class</span> TopologicalSpace (X : <span class="sort">Type</span>) <span class="kw">where</span>
 <span class="doc">  /-- その集合が開集合であるという述語。 -/</span>
   IsOpen (s : Set X) : <span class="sort">Prop</span>
@@ -475,7 +475,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>仮定なしの定理。結論の中の <code>fun x ↦ x</code> が恒等写像。</p>
 <pre class="lean"><code><span class="doc">/-- 連続写像の合成は連続。</span>
 <span class="doc">`(g ∘ f) ⁻¹&#x27; s` が `f ⁻¹&#x27; (g ⁻¹&#x27; s)` と定義上等しいので、引き戻しを2回続けるだけ。</span>
-<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 8節）。 -/</span>
+<span class="doc">名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro1.lean` 7節）。 -/</span>
 <span class="kw">theorem</span> Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (<span class="kw">fun</span> x =&gt; g (f x)) :=
   <span class="kw">fun</span> s hs =&gt; hf _ (hg s hs)
@@ -604,7 +604,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`</span>
 <span class="doc">と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側</span>
 <span class="doc">として使い、`right` は `y` を含み、2つは交わらない。フィールドの型が前の</span>
-<span class="doc">フィールドに依存している（`Intro.lean` 5節）ことにも注意。 -/</span>
+<span class="doc">フィールドに依存している（`Intro1.lean` 5節）ことにも注意。 -/</span>
 <span class="kw">structure</span> SeparatingPair (y : Y) <span class="kw">where</span>
 <span class="doc">  /-- 分離の `K` 側の開集合。 -/</span>
   left : Set Y
@@ -858,6 +858,6 @@ hr { border: none; border-top: 1px solid var(--border); }
 </ol>
 <p>余力があれば、発展演習 <code>Extra.lean</code> へ（解答は <code>ExtraSol.lean</code>）。位相空間の圏と自由忘却随伴を組み立て、このファイルの主定理のハウスドルフという仮定が外せないことを反例で確かめるほか、位相空間の別定義（閉集合系・閉包・近傍系・ネット）の等価性や、部分空間・積・直和・商をまとめて生む誘導位相とその普遍性を扱う。</p>
 </main>
-<nav><span><a href="ch.html">← CH</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
+<nav><span><a href="intro2.html">← Intro2</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
 </body>
 </html>

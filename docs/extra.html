@@ -146,7 +146,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> Category
 <span class="cm">-- 表示: `Cat.Category : Type 2`</span>
 <span class="cm">-- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。</span>
-<span class="cm">-- `Intro.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span>
+<span class="cm">-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span>
 
 <span class="doc">/-- 問題5: 型の圏を作れ。対象は型、射は関数。</span>
 <span class="doc"></span>
@@ -535,7 +535,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <li><strong>始位相</strong>（引き戻し）: 写像の族 <code>f i : X → Y i</code> の<strong>出発点</strong> <code>X</code> に位相を入れる。「すべての <code>f i</code> が連続になる<strong>最も粗い</strong>位相」。</li>
 </ul>
 <p>部分空間・積・直和・商という日常的な構成は、すべてこの2つの特殊化として一挙に手に入る。さらに「どんな写像が連続になるか」の判定法（<strong>普遍性</strong>）も、族の一般論として一度証明すれば全構成で使い回せる。</p>
-<p>なお、商位相の例では商型 <code>Quot</code> を使う。<code>Intro.lean</code> の末尾で「商型はこの教材では使わない」と述べたのは本編（Intro・CH・Top）の話で、発展演習のこの Part で初めて登場する。</p>
+<p>なお、商位相の例では商型 <code>Quot</code> を使う。<code>Intro2.lean</code> の末尾で「商型はこの教材では使わない」と述べたのは本編（Intro・CH・Top）の話で、発展演習のこの Part で初めて登場する。</p>
 <h3>押し出しから: 逆像は集合演算と交換する</h3>
 <p>「<code>f ⁻¹&#x27; s</code> が開なら <code>s</code> を開と呼ぶ」——これが押し出しの定義になる。位相の公理を満たすのは、逆像が集合演算と交換するからである。 <code>univ</code> と <code>∩</code> については、両辺が<strong>定義上同じ集合</strong>になる:</p>
 <pre class="lean"><code><span class="kw">example</span> {α β : <span class="sort">Type</span>} (f : α → β) : f ⁻¹&#x27; (Set.univ : Set β) = Set.univ := rfl
@@ -662,7 +662,7 @@ hr { border: none; border-top: 1px solid var(--border); }
     @Continuous Z tZ X (initialTopology tY f) g ↔
       ∀ i, @Continuous Z tZ (Y i) (tY i) (<span class="kw">fun</span> z =&gt; f i (g z)) := <span class="sorry">sorry</span></code></pre>
 <h3>部分空間・積・直和・商</h3>
-<p>4つの日常的な構成を、始位相・終位相の特殊化として <code>instance</code> 登録する（ここは問題ではなく、以下すべて与える）。登録した瞬間から、<code>Subtype p</code> や <code>X × Y</code> と書くだけで位相が自動で載るようになる——<code>Intro.lean</code> 6節で見た class の効き目である。</p>
+<p>4つの日常的な構成を、始位相・終位相の特殊化として <code>instance</code> 登録する（ここは問題ではなく、以下すべて与える）。登録した瞬間から、<code>Subtype p</code> や <code>X × Y</code> と書くだけで位相が自動で載るようになる——<code>Intro2.lean</code> 1節で見た class の効き目である。</p>
 <pre class="lean"><code><span class="doc">/-- 1本の写像に沿った引き戻し。族版の `I := Unit`（添字が1点）への特殊化。 -/</span>
 @[reducible] <span class="kw">def</span> TopologicalSpace.induced {X Y : <span class="sort">Type</span>} (f : X → Y)
     (t : TopologicalSpace Y) : TopologicalSpace X :=

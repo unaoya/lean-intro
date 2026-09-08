@@ -116,7 +116,7 @@ structure Category where
 #check Category
 -- 表示: `Cat.Category : Type 2`
 -- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。
--- `Intro.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
+-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
 
 /-- 問題5: 型の圏を作れ。対象は型、射は関数。
 
@@ -556,7 +556,7 @@ theorem isClosed_of_nets {X : Type} (t : TopologicalSpace X) {s : Set X}
 一挙に手に入る。さらに「どんな写像が連続になるか」の判定法（**普遍性**）も、
 族の一般論として一度証明すれば全構成で使い回せる。
 
-なお、商位相の例では商型 `Quot` を使う。`Intro.lean` の末尾で
+なお、商位相の例では商型 `Quot` を使う。`Intro2.lean` の末尾で
 「商型はこの教材では使わない」と述べたのは本編（Intro・CH・Top）の話で、
 発展演習のこの Part で初めて登場する。
 
@@ -719,7 +719,7 @@ theorem continuous_toInitial_iff {I : Type} {Y : I → Type} {X Z : Type}
 
 4つの日常的な構成を、始位相・終位相の特殊化として `instance` 登録する
 （ここは問題ではなく、以下すべて与える）。登録した瞬間から、`Subtype p` や
-`X × Y` と書くだけで位相が自動で載るようになる——`Intro.lean` 6節で見た
+`X × Y` と書くだけで位相が自動で載るようになる——`Intro2.lean` 1節で見た
 class の効き目である。
 -/
 

@@ -133,7 +133,7 @@ structure Category where
 #check Category
 -- 表示: `Cat.Category : Type 2`
 -- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。
--- `Intro.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
+-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
 
 /-- 問題5: 型の圏。対象は型、射は関数。法則はすべて `rfl`。 -/
 @[reducible] def TypeCat : Category where

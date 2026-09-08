@@ -1,9 +1,7 @@
-import Intro
-
 /-!
 # 型と命題の対応（Curry–Howard 対応）の雰囲気
 
-`Intro.lean` の目標1は「項の型を推測する——それは機械的にできる」だった。
+`Intro1.lean` の目標1は「項の型を推測する——それは機械的にできる」だった。
 このファイルの目標は**目標2**: その同じ仕組みが、**定理の証明の検証に
 そのまま使える**ことを納得することである。
 
@@ -33,12 +31,13 @@ Lean には「型の世界」と「命題の世界」があり、この2つは�
 /-! ## 0. 準備 — 命題・theorem・rfl
 
 対照表に入る前に、命題の世界の書き方を最小限そろえる
-（`Intro.lean` は型の世界に集中し、命題の話をこのファイルまで持ち越した）。
+（`Intro1.lean` は型の世界に集中し、命題の話をこのファイルまで持ち越した）。
 
-`Intro.lean` の1節で見たとおり、**命題は `Prop` という型を持つ項**である。
+`Intro1.lean` の1節で見たとおり、**命題は `Prop` という型を持つ項**である。
 命題を作る記号 `=` や `<` も記法だが、裏の仕組みは異なる:
 `=` はどの型でも使える1つの述語 `Eq` の記法であり、
-`<` は `+` と同じ仲間で、型ごとにクラスの仕組みで意味が決まる（`Intro.lean` 6節）。
+`<` は `+` と同じ仲間で、型ごとにクラスの仕組みで意味が決まる
+（クラスの仕組みそのものは `Intro2.lean` で説明する）。
 
 * `=` `<` — **ざっくり**: `Nat` の上では、どちらも `Nat → Nat → Prop` という型の
   関数とみなせばよい。`1 + 1 : Nat` と `2 : Nat` を渡すから `1 + 1 = 2 : Prop`。
@@ -68,28 +67,9 @@ theorem one_add_one : 1 + 1 = 2 := rfl
 （なぜこれが証明と言えるのかは、8節で `Eq` の定義とともに見る）。
 
 ここで型検査が何をしたかに注意。「項 `rfl` の型は命題 `1 + 1 = 2` と一致するか」
-という `Intro.lean` 2節以来の検査が、そのまま**証明の検査**になっている。
+という `Intro1.lean` 2節以来の検査が、そのまま**証明の検査**になっている。
 この見方を本格的に展開するのが、このファイルの仕事である。
-
-もう1つ、`Intro.lean` 6節の class の話をここで拾っておく。
-インスタンス引数は `def` だけでなく `theorem` にも書けて、
-「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:
 -/
-
-theorem zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
-
-#check zeroPair_fst
-
-/-!
-    zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero
-
-使うときは `α` を指定するだけでよく、`HasZero α` の項は
-登録簿から自動で供給される。
--/
-
--- 登録済みの型なら、どれにでも同じ定理が適用できる
-example : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
-example : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point
 
 /-! ### ✏ 練習
 
@@ -100,10 +80,14 @@ example : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point
    エラーメッセージがどの規則の破れを指しているか読み取れ。
 -/
 
-universe u v w
-
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α β γ : Type}
 variable {p q r : Prop}
+
+/-!
+（`variable` は「同じ引数を宣言のたびに書く代わりの前置き」で、以後の宣言は
+使った変数だけを引数として受け取る——詳しくは `Intro2.lean` で。
+この教材では宇宙は `Type` に固定する。）
+-/
 
 /-! ## 1. 関数型と「ならば」
 
@@ -120,10 +104,7 @@ def constFun (b : β) : α → β := fun _ => b
 #check constFun
 
 /-!
-    constFun.{u, v} {α : Type u} {β : Type v} (b : β) : α → β
-
-名前の後ろの `.{u, v}` は、この宣言が使っている宇宙変数の名前（冒頭の
-`universe u v w`）。宇宙をまたいで使える宣言に付く表示で、読み飛ばしてよい。
+    constFun {α β : Type} (b : β) : α → β
 -/
 
 /-- 命題側の導入: `q` の証明が1つあれば、`p → q` が示せる。字面はまったく同じ。 -/
@@ -144,7 +125,7 @@ def applyFun (f : α → β) (a : α) : β := f a
 #check applyFun
 
 /-!
-    applyFun.{u, v} {α : Type u} {β : Type v} (f : α → β) (a : α) : β
+    applyFun {α β : Type} (f : α → β) (a : α) : β
 -/
 
 /-- 命題側の除去: 適用。これも字面が同じ。 -/
@@ -187,7 +168,7 @@ def mkProd (a : α) (b : β) : α × β := ⟨a, b⟩
 #check mkProd
 
 /-!
-    mkProd.{u, v} {α : Type u} {β : Type v} (a : α) (b : β) : α × β
+    mkProd {α β : Type} (a : α) (b : β) : α × β
 -/
 
 theorem mkAnd (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
@@ -206,7 +187,7 @@ def swapProd : α × β → β × α := fun x => ⟨x.2, x.1⟩
 #check swapProd
 
 /-!
-    swapProd.{u, v} {α : Type u} {β : Type v} : α × β → β × α
+    swapProd {α β : Type} : α × β → β × α
 -/
 
 /-- 命題側: 「かつ」を入れ替える。`swapProd` と一字一句同じ証明項で書ける。 -/
@@ -241,7 +222,7 @@ def inlSum (a : α) : α ⊕ β := .inl a
 #check inlSum
 
 /-!
-    inlSum.{u, v} {α : Type u} {β : Type v} (a : α) : α ⊕ β
+    inlSum {α β : Type} (a : α) : α ⊕ β
 -/
 
 theorem inlOr (hp : p) : p ∨ q := .inl hp
@@ -263,7 +244,7 @@ def swapSum : α ⊕ β → β ⊕ α := fun x =>
 #check swapSum
 
 /-!
-    swapSum.{u, v} {α : Type u} {β : Type v} : α ⊕ β → β ⊕ α
+    swapSum {α β : Type} : α ⊕ β → β ⊕ α
 -/
 
 /-- 命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。 -/
@@ -289,7 +270,7 @@ def elimSum : α ⊕ β → (α → γ) → (β → γ) → γ := fun x f g =>
 #check elimSum
 
 /-!
-    elimSum.{u, v, w} {α : Type u} {β : Type v} {γ : Type w} : α ⊕ β → (α → γ) → (β → γ) → γ
+    elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ
 -/
 
 /-- 命題側の除去。`Or.elim` と同じもの。字面は上と同じ。 -/
@@ -334,7 +315,7 @@ def elimEmpty : Empty → α := fun e => e.elim
 #check elimEmpty
 
 /-!
-    elimEmpty.{u} {α : Type u} : Empty → α
+    elimEmpty {α : Type} : Empty → α
 -/
 
 /-- 命題側: 矛盾からは何でも従う。 -/
@@ -369,7 +350,7 @@ theorem notIntro (h : p → False) : ¬p := h
 **帰納型は `Prop` に住む型＝命題も作れる**。`Prop` の世界では、
 構成子は「その命題の**証明の作り方**」と読める。
 
-一点側の対応物もある。`Unit`（構成子1つ・引数なしの型、`Intro.lean` 4節）に
+一点側の対応物もある。`Unit`（構成子1つ・引数なしの型、`Intro1.lean` 4節）に
 対応する命題が `True` である:
 
     inductive True : Prop where
@@ -397,7 +378,7 @@ theorem notIntro (h : p → False) : ¬p := h
 /-! ## 5. 依存積と「すべての」
 
 関数型 `α → β` を一般化して、行き先の型が入力ごとに変わってよいことにしたのが依存積
-`(a : α) → P a`。`P : α → Type v` は「`α` の各点に型を割り当てるもの」。
+`(a : α) → P a`。`P : α → Type` は「`α` の各点に型を割り当てるもの」。
 
 命題側で対応するのは全称量化 `∀ a, Q a`。
 `Q : α → Prop` は「`α` の各点に命題を割り当てるもの」で、形はまったく同じ。
@@ -406,14 +387,14 @@ theorem notIntro (h : p → False) : ¬p := h
 `α → β` は `P` が定数のときの特別な場合なので、これは自然なこと。
 -/
 
-variable {P : α → Type v} {Q : α → Prop}
+variable {P : α → Type} {Q : α → Prop}
 
 def mkPi (f : (a : α) → P a) : (a : α) → P a := fun a => f a
 
 #check mkPi
 
 /-!
-    mkPi.{u, v} {α : Type u} {P : α → Type v} (f : (a : α) → P a) (a : α) : P a
+    mkPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a
 -/
 
 theorem mkForall (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
@@ -421,7 +402,7 @@ theorem mkForall (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
 #check mkForall
 
 /-!
-    mkForall.{u} {α : Type u} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a
+    mkForall {α : Type} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a
 -/
 
 /-- 型側の除去: 点 `a` を与えると `P a` の項が出る。 -/
@@ -430,7 +411,7 @@ def applyPi (f : (a : α) → P a) (a : α) : P a := f a
 #check applyPi
 
 /-!
-    applyPi.{u, v} {α : Type u} {P : α → Type v} (f : (a : α) → P a) (a : α) : P a
+    applyPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a
 -/
 
 /-- 命題側の除去: 点 `a` を与えると `Q a` の証明が出る。 -/
@@ -439,7 +420,7 @@ theorem applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 #check applyForall
 
 /-!
-    applyForall.{u} {α : Type u} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a
+    applyForall {α : Type} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a
 
 `applyPi` と重なる。「一般論に点を代入する」ことの正体が、この適用である。
 -/
@@ -448,7 +429,7 @@ theorem applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
 ### 具体例: 述語と全称命題
 
 `Q : α → Prop`——**命題を返す関数**——は、数学でいう述語である。
-`Intro.lean` 7節で「型を返す関数」を見たのと同じ要領で、具体的に1つ作ってみる:
+`Intro1.lean` 3節で「型を返す関数」`Map` を見たのと同じ要領で、具体的に1つ作ってみる:
 -/
 
 def IsZero : Nat → Prop := fun n => n = 0
@@ -496,7 +477,7 @@ def mkSigma (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
 #check mkSigma
 
 /-!
-    mkSigma.{u, v} {α : Type u} {P : α → Type v} (a : α) (b : P a) : (a : α) × P a
+    mkSigma {α : Type} {P : α → Type} (a : α) (b : P a) : (a : α) × P a
 -/
 
 theorem mkExists (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
@@ -504,7 +485,7 @@ theorem mkExists (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
 #check mkExists
 
 /-!
-    mkExists.{u} {α : Type u} {Q : α → Prop} (a : α) (h : Q a) : ∃ a, Q a
+    mkExists {α : Type} {Q : α → Prop} (a : α) (h : Q a) : ∃ a, Q a
 
 `mkSigma` と重なる。「存在を示すには証人 `a` と根拠 `h` を出せばよい」が、
 そのまま引数の列になっている。
@@ -517,7 +498,7 @@ def currySigma : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
 #check currySigma
 
 /-!
-    currySigma.{u, v, w} {α : Type u} {γ : Type w} {P : α → Type v} : ((a : α) × P a → γ) → (a : α) → P a → γ
+    currySigma {α γ : Type} {P : α → Type} : ((a : α) × P a → γ) → (a : α) → P a → γ
 -/
 
 /-- 命題側: 「存在するなら `r`」は「どの点についても、条件を満たすなら `r`」と同じこと。
@@ -528,7 +509,7 @@ theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
 #check curryExists
 
 /-!
-    curryExists.{u} {α : Type u} {r : Prop} {Q : α → Prop} : ((∃ a, Q a) → r) → ∀ (a : α), Q a → r
+    curryExists {α : Type} {r : Prop} {Q : α → Prop} : ((∃ a, Q a) → r) → ∀ (a : α), Q a → r
 
 `currySigma` と重なる（カリー化は命題の世界でも同じ形）。
 -/
@@ -536,8 +517,8 @@ theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
 /-!
 ### 部分型 — 第二成分が証明の依存和
 
-`Intro.lean` 7節で「`n` 未満の番号の型」として使った `Fin` の中身は、
-まさにこの節の形をしている。Prelude での定義は:
+標準ライブラリには「`n` 未満の番号の型」`Fin` がある（`Intro2.lean` で
+道具として活躍する）。その中身は、まさにこの節の形をしている。Prelude での定義は:
 
     structure Fin (n : Nat) where
       val : Nat
@@ -548,8 +529,8 @@ theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
 「値と証明の組」の型を**部分型**と呼ぶ（専用記法 `{x // p x}` は
 `Top.lean` で使う）。
 
-`Intro.lean` 7節の `first` は、値が常に 0 番だった。中身が分かったいまなら、
-値も `n` に依存する関数が書ける。「`Fin (n + 1)` の**最後の**番号」である:
+中身が分かれば、項も作れる。値が `n` に依存する依存関数の例として、
+「`Fin (n + 1)` の**最後の**番号」を作ってみる:
 -/
 
 def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
@@ -584,7 +565,7 @@ last 9 : Fin (9 + 1)
 1. `theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a` を
    書け（証人はそのまま、根拠だけ差し替える）。
 2. `#check (last 4).val` の表示を予想してから確かめよ
-   （表示に付く `↑` は、`Intro.lean` 7節の補足で見た強制の印である）。
+   （表示に付く `↑` は**強制**の印——`Intro2.lean` 2節の補足で説明する）。
 -/
 
 /-! ## 7. 導入と除去のまとめ
@@ -620,7 +601,7 @@ example : p ∧ q → q ∧ p := fun x => ⟨x.2, x.1⟩
 /-! ## 8. 例: 自然数の命題を構成子で証明する
 
 「命題を証明する＝項を作る」を、自然数のいちばん基本的な命題で確かめておく。
-鍵は、`=` や `≤` といった命題を作るもの自体が、`Intro.lean` の `MyNat` などと
+鍵は、`=` や `≤` といった命題を作るもの自体が、`Intro1.lean` の `MyNat` などと
 同じく**帰納型として定義されている**ことである。
 
 ### 等しさ `Eq`
@@ -642,7 +623,7 @@ example : 0 = 0 := rfl        -- 略記。引数の `0` は型 `0 = 0` の側か
 一方 `0 = 1` という型の項は `refl` では作れず、実際この型に項は存在しない。
 証明のない命題は、項のない型 `Empty`（4節）と同じ立場にある。
 
-`Intro.lean` で `1 + 1 = 2` まで `rfl` で証明できたのは、型検査が両辺を
+`0` 節で `1 + 1 = 2` が `rfl` で証明できたのは、型検査が両辺を
 **計算してから**比べるからである。`1 + 1` は計算すると `2` になるので、
 `1 + 1 = 2` は `2 = 2` と同じ型であり、`refl` の射程に入る。
 
@@ -707,13 +688,13 @@ Lean では違う。いま見たとおり `Eq` はただの帰納型の宣言で
 同じ形の帰納型 `MyEq` を宣言すると、帰納法原理も同じ形で自動生成される。
 -/
 
-inductive MyEq {α : Sort u} (a : α) : α → Prop where
+inductive MyEq {α : Type} (a : α) : α → Prop where
   | refl : MyEq a a
 
 #check MyEq
 
 /-!
-    MyEq.{u} {α : Sort u} (a : α) : α → Prop
+    MyEq {α : Type} (a : α) : α → Prop
 -/
 
 /-- 対称律は場合分け（`match`）だけで導ける。構成子は `refl` の1つ、つまり
@@ -726,7 +707,7 @@ theorem MyEq.symm {a b : α} (h : MyEq a b) : MyEq b a :=
 #check MyEq.symm
 
 /-!
-    MyEq.symm.{u} {α : Type u} {a b : α} (h : MyEq a b) : MyEq b a
+    MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a
 -/
 
 /-- 型検査が両辺を計算してから比べる仕組みも `Eq` 専用ではないので、
@@ -746,7 +727,7 @@ theorem myEq_iff_eq {a b : α} : MyEq a b ↔ a = b :=
 #check myEq_iff_eq
 
 /-!
-    myEq_iff_eq.{u} {α : Type u} {a b : α} : MyEq a b ↔ a = b
+    myEq_iff_eq {α : Type} {a b : α} : MyEq a b ↔ a = b
 -/
 
 /-- `propext : (p ↔ q) → p = q`（命題の外延性。`Top.lean` の3公理の1つ）まで
@@ -857,8 +838,8 @@ theorem comp_injective {f : α → β} {g : β → γ}
 #check comp_injective
 
 /-!
-    comp_injective.{u, v, w} {α : Type u} {β : Type v} {γ : Type w} {f : α → β} {g : β → γ} (hg : Function.Injective g)
-      (hf : Function.Injective f) : Function.Injective fun x ↦ g (f x)
+    comp_injective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Injective g) (hf : Function.Injective f) :
+      Function.Injective fun x ↦ g (f x)
 -/
 
 /-!
@@ -896,7 +877,9 @@ theorem comp_injective {f : α → β} {g : β → γ}
 
 /-!
 項を読む前に、使うライブラリの道具の型を挙げておく（`#check` で確認できる。
-以下の照合は、この3つの型と適用規則だけでできる）:
+以下の照合は、この3つの型と適用規則だけでできる。表示中の `Sort u_1` は
+`Prop` と `Type` を束ねる宇宙の表記で、ここでは `Type` か `Prop` と
+読めばよい——詳しくは `Intro2.lean` で）:
 
     @congrArg : ∀ {α : Sort u_1} {β : Sort u_2} {a₁ a₂ : α} (f : α → β),
                 a₁ = a₂ → f a₁ = f a₂
@@ -1056,7 +1039,7 @@ Lean では**埋まらない穴**として必ず現れる。仮定を使うに�
    これを使って `example : ∀ n : Nat, n + 1 - 1 = n` を証明せよ。
    今度は穴が残らないことを確かめること。
    （表示の `∀ (n m : Nat)` は丸括弧＝**明示引数**なので、`_` で省略せず
-   実際の値を渡す必要がある——`Intro.lean` 6節の括弧の読み分けの復習である。）
+   実際の値を渡す必要がある——`Intro1.lean` 6節の括弧の読み分けの復習である。）
 -/
 
 /-! ## 11. 対応のずれ
@@ -1074,7 +1057,7 @@ def sigmaFst (s : (a : α) × P a) : α := s.1
 #check sigmaFst
 
 /-!
-    sigmaFst.{u, v} {α : Type u} {P : α → Type v} (s : (a : α) × P a) : α
+    sigmaFst {α : Type} {P : α → Type} (s : (a : α) × P a) : α
 -/
 
 /-- 型側: 第二成分も取り出せる。型が第一成分に依存していることに注意。 -/
@@ -1083,7 +1066,7 @@ def sigmaSnd (s : (a : α) × P a) : P s.1 := s.2
 #check sigmaSnd
 
 /-!
-    sigmaSnd.{u, v} {α : Type u} {P : α → Type v} (s : (a : α) × P a) : P s.fst
+    sigmaSnd {α : Type} {P : α → Type} (s : (a : α) × P a) : P s.fst
 -/
 
 -- 命題側では、これは書けない:
@@ -1121,7 +1104,7 @@ theorem existsElim (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
 #check existsElim
 
 /-!
-    existsElim.{u} {α : Type u} {r : Prop} {Q : α → Prop} (h : ∃ a, Q a) (hr : ∀ (a : α), Q a → r) : r
+    existsElim {α : Type} {r : Prop} {Q : α → Prop} (h : ∃ a, Q a) (hr : ∀ (a : α), Q a → r) : r
 -/
 
 -- 「または」でも事情は同じ。どちらだったかを `Bool` として取り出そうとすると:

@@ -32,16 +32,16 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 ## 読み方: 主要な宣言のあとの `#check`
 
 主要な名前付きの定義・定理の直後に `#check 名前` を置き、その表示を
-`Intro.lean` と同じ Infoview 風の枠で書き添えてある。
-`Intro.lean` 以来の読み方——表示を見る前に
+`Intro1.lean` と同じ Infoview 風の枠で書き添えてある。
+`Intro1.lean` 以来の読み方——表示を見る前に
 「いま何がどんな型で手に入るはずか」を**予想**してから確かめる——を、
 ここでも続けてほしい。
 
 表示は `名前 (x : A) (y : B) : C` という「引数の列 : 結果の型」の形をとる。
 これは関数型 `名前 : A → B → C` と**同じ型の別表示**である。
 `def f (n : α) : β := …` と `def f : α → β := fun n => …` が同じ宣言の2通りの
-書き方である（`Intro.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
-括弧 `( )` `{ }` `[ ]` の違いは `Intro.lean` 6節。
+書き方である（`Intro1.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
+括弧 `( )` `{ }` の違いは `Intro1.lean` 6節、`[ ]` は `Intro2.lean` 1節。
 
 ## 読み方: タクティク証明の記号
 
@@ -72,7 +72,7 @@ def Set (α : Type) : Type := α → Prop
     Set (α : Type) : Type
 
 型 α を受け取って型を返す。つまり `Set : Type → Type` という
-「型を受け取って型を返す関数」である（`Intro.lean` 7節の `Fin` と同じ形）。
+「型を受け取って型を返す関数」である（`Intro2.lean` の `Fin` や `MySet` と同じ形）。
 -/
 
 -- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は
@@ -93,7 +93,7 @@ def setOf {α : Type} (p : α → Prop) : Set α := p
 -/
 
 /-- 内包記法。`{a | p a}` と書いたら `setOf fun a => p a` の略記とする。
-`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro.lean` 8節）。 -/
+`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro2.lean` 5節）。 -/
 syntax "{" ident " | " term "}" : term
 
 -- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は
@@ -102,7 +102,7 @@ syntax "{" ident " | " term "}" : term
 macro_rules
   | `({ $x:ident | $p }) => `(setOf fun $x => $p)
 
--- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro.lean` 8節）
+-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 4節）
 namespace Set
 
 -- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる
@@ -116,7 +116,7 @@ variable {α : Type}
     error: failed to synthesize instance of type class
       Membership Nat (Set Nat)
 
-と断られる（`Intro.lean` 6節で見た「登録簿にない」エラー）。
+と断られる（`Intro2.lean` 1節で見た「登録簿にない」エラー）。
 以下、クラスごとに `instance` 登録し、直後にその記法が使えるようになったことを
 `#check` で確認していく。`⟨…⟩` はクラスの構成子にフィールドの中身を渡す書き方。
 -/
@@ -247,7 +247,7 @@ def sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 prefix:110 "⋃₀ " => Set.sUnion
 
 /-- 添字づけられた集合族 `U : I → Set α` の合併。
-族とは「添字を受け取って集合を返す関数」である（`Intro.lean` 7節）。 -/
+族とは「添字を受け取って集合を返す関数」である（`Intro2.lean` 2節の型の族の仲間）。 -/
 def iUnion {I : Type} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 #check iUnion
@@ -404,7 +404,7 @@ theorem union_eq_sUnion (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} 
 -/
 
 /-- `n` 個の集合 `W 0, …, W (n-1)` の共通部分。
-`Nat` の構造にそったパターンマッチ（`Intro.lean` 4節）で定義する:
+`Nat` の構造にそったパターンマッチ（`Intro1.lean` 4節）で定義する:
 `0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。
 `fun i => W i.succ` は添字を1つずらして「残りの族」を作っている。 -/
 def interFin : (n : Nat) → (Fin n → Set α) → Set α
@@ -514,13 +514,13 @@ macro_rules
 
 /-- 位相空間の構造。「どの部分集合を開と呼ぶか」のデータ `IsOpen` と、
 それが満たすべき3公理を `class` で束ねる（データ＋性質という構成は
-`Intro.lean` 5節・6節の structure/class と同じ）。
+`Intro1.lean` 5節の structure・`Intro2.lean` 1節の class と同じ）。
 
 `class` にしたので、以後 `[TopologicalSpace X]` と角括弧で書くだけで
 「`X` に載っている位相」がインスタンス引数として暗黙に渡る。
 
 フィールドは `def` と同じく「引数をコロンの左に書く」形で宣言できる
-（`Intro.lean` 3節の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/
+（`Intro1.lean` 3節の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/
 class TopologicalSpace (X : Type) where
   /-- その集合が開集合であるという述語。 -/
   IsOpen (s : Set X) : Prop
@@ -685,7 +685,7 @@ theorem continuous_id : Continuous (fun x : X => x) :=
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
-名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro.lean` 8節）。 -/
+名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro1.lean` 7節）。 -/
 theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) :=
   fun s hs => hf _ (hg s hs)
@@ -881,7 +881,7 @@ theorem isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W
 /-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`
 と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側
 として使い、`right` は `y` を含み、2つは交わらない。フィールドの型が前の
-フィールドに依存している（`Intro.lean` 5節）ことにも注意。 -/
+フィールドに依存している（`Intro1.lean` 5節）ことにも注意。 -/
 structure SeparatingPair (y : Y) where
   /-- 分離の `K` 側の開集合。 -/
   left : Set Y
