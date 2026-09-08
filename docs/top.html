@@ -46,15 +46,20 @@ nav a { color: var(--link); text-decoration: none; }
 nav a:hover { text-decoration: underline; }
 a { color: var(--link); }
 hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
 </style>
 </head>
 <body>
 <nav><span><a href="intro2.html">← Intro2</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
 <main>
+<pre class="lean"><code><span class="kw">import</span> Intro2</code></pre>
 <h1>位相空間</h1>
 <p>mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を組み立てる。</p>
 <p>最終目標は「コンパクト空間からハウスドルフ空間への連続全単射は同相写像である」。そのために必要なものだけを、必要になった順に足していく。</p>
-<p>標準ライブラリには数学でいう「集合」がないので、まずそこから作る。</p>
+<p>数学でいう「集合」には、<code>Intro2.lean</code> で作った <code>Set</code> を使う（このファイルはそれを import している）。</p>
 <h2>この定理を信じるには何を信じればよいか</h2>
 <p>末尾の定理 <code>Homeomorph.ofContinuousBijective</code> を信じるのに必要なのは、次の3つだけである。</p>
 <ol>
@@ -78,59 +83,15 @@ hr { border: none; border-top: 1px solid var(--border); }
 <li><code>h ▸ e</code> — 等式 <code>h</code> で <code>e</code> の型を書き換える（<code>rw</code> の項版）</li>
 </ul>
 <p>初出の箇所にも、それぞれ短い説明を添えてある。</p>
+<p>またいくつかの小さな補題では、<strong>同じ命題をタクティクと項の両方で</strong>証明して並べる（本文の証明の直後に、対になる <code>example</code> を置く）。どちらの流儀でも最終的に同じ型の項に行き着くこと（<code>CH.lean</code> 12節）の、実地の見比べである。</p>
 <h2>1. 集合</h2>
-<p><code>α</code> の部分集合を「<code>α</code> の要素を受け取って命題を返す関数」として定義する。 <code>s : Set α</code> と <code>a : α</code> に対し、<code>s a</code> が「<code>a</code> は <code>s</code> に属する」という命題そのものになる。</p>
-<pre class="lean"><code><span class="doc">/-- `α` の部分集合の型。実体は述語 `α → Prop` そのもので、新しいデータは何もない。 -/</span>
-<span class="kw">def</span> Set (α : <span class="sort">Type</span>) : <span class="sort">Type</span> := α → <span class="sort">Prop</span>
-
-<span class="kw">#check</span> Set</code></pre>
-<pre class="quote"><code>Set (α : Type) : Type</code></pre>
-<p>型 α を受け取って型を返す。つまり <code>Set : Type → Type</code> という「型を受け取って型を返す関数」である（<code>Intro2.lean</code> の <code>Fin</code> や <code>MySet</code> と同じ形）。</p>
-<pre class="lean"><code><span class="cm">-- 確認: `Set α` は `α → Prop` の定義上の言い替えなので、`A : Set α` は</span>
-<span class="cm">-- キャストなしでそのまま関数として適用できる。型検査が定義を展開して照合する。</span>
-<span class="kw">example</span> (A : Set Nat) (n : Nat) : <span class="sort">Prop</span> := A n
-
-<span class="doc">/-- 述語 `p` を集合とみなしたもの。`Set α` は定義上 `α → Prop` なので中身は</span>
-<span class="doc">恒等関数だが、「述語を集合と読み替える」という宣言をこの名前が担う。 -/</span>
-<span class="kw">def</span> setOf {α : <span class="sort">Type</span>} (p : α → <span class="sort">Prop</span>) : Set α := p
-
-<span class="kw">#check</span> setOf</code></pre>
-<pre class="quote"><code>setOf {α : Type} (p : α → Prop) : Set α</code></pre>
-<p><code>{α : Type}</code> は暗黙引数（書かなくても <code>p</code> の型から決まる）。型としては <code>setOf : (α → Prop) → Set α</code> と読めばよい。</p>
-<pre class="lean"><code><span class="doc">/-- 内包記法。`{a | p a}` と書いたら `setOf fun a =&gt; p a` の略記とする。</span>
-<span class="doc">`syntax` は「この書き方を受け付けよ」という構文の追加（`Intro2.lean` 5節）。 -/</span>
-<span class="kw">syntax</span> &quot;{&quot; ident &quot; | &quot; term &quot;}&quot; : term
-
-<span class="cm">-- `macro_rules` が展開規則を与える。`` `( … ) `` は構文の引用、`$x` `$p` は</span>
-<span class="cm">-- その中に埋め込まれた変数で、「左の形が来たら右の形に書き換えよ」と読む。</span>
-<span class="cm">-- 記法は項に展開されてから型検査されるので、検査の対象はあくまで項である。</span>
-<span class="kw">macro_rules</span>
-  | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)
-
-<span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 4節）</span>
+<p>集合 <code>Set</code>（実体は述語 <code>α → Prop</code>）と、内包記法 <code>{a | p a}</code>・所属 <code>∈</code>・包含 <code>⊆</code> は <code>Intro2.lean</code> 4節で作った。ここではその上に、残りの道具—— <code>∩</code>・<code>∪</code>・<code>∅</code>・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。</p>
+<pre class="lean"><code><span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 5節）</span>
 <span class="kw">namespace</span> Set
 
 <span class="cm">-- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる</span>
 <span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
-<p><code>∈</code> <code>⊆</code> <code>∩</code> <code>∪</code> <code>∅</code> などの記法は、標準ライブラリの記法用クラス（<code>Membership</code> など）にこの <code>Set</code> を <code>instance</code> 登録すると使えるようになる。逆に言えば、登録するまでは使えない。実際、この時点で <code>a ∈ s</code> と書くと</p>
-<pre class="quote"><code>error: failed to synthesize instance of type class
-  Membership Nat (Set Nat)</code></pre>
-<p>と断られる（<code>Intro2.lean</code> 1節で見た「登録簿にない」エラー）。以下、クラスごとに <code>instance</code> 登録し、直後にその記法が使えるようになったことを <code>#check</code> で確認していく。<code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方。</p>
-<pre class="lean"><code><span class="doc">/-- 所属 `a ∈ s`。中身は「`s` に `a` を適用する」だけで、定義上そのまま `s a`。 -/</span>
-<span class="kw">instance</span> : Membership α (Set α) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
-
-<span class="kw">#check</span> (1 : Nat) ∈ ({n | n = 1} : Set Nat)</code></pre>
-<pre class="quote"><code>1 ∈ setOf fun n ↦ n = 1 : Prop</code></pre>
-<p>型が <code>Prop</code> と付いた＝ <code>∈</code> の登録に成功している。なお表示が <code>{n | n = 1}</code> に戻らないのは、自作した記法が構文解析（読む方向）専用で、表示（書く方向）の規則までは作っていないから。展開先の <code>setOf …</code> がそのまま見えている。</p>
-<pre class="lean"><code><span class="cm">-- さらに確認: `1 ∈ {n | n = 1}` は定義上そのまま命題 `1 = 1` なので `rfl` で閉じる</span>
-<span class="kw">example</span> : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl
-
-<span class="doc">/-- 包含 `s ⊆ t`: `s` のどの要素も `t` に属する。全称と含意だけで書ける。 -/</span>
-<span class="kw">instance</span> : HasSubset (Set α) := ⟨<span class="kw">fun</span> s t =&gt; ∀ a, a ∈ s → a ∈ t⟩
-
-<span class="kw">#check</span> ({n | n = 1} : Set Nat) ⊆ {n | n = 2}</code></pre>
-<pre class="quote"><code>(setOf fun n ↦ n = 1) ⊆ setOf fun n ↦ n = 2 : Prop</code></pre>
-<p>型は Prop</p>
+<p><code>∩</code> <code>∪</code> <code>∅</code> の記法も、<code>Intro2.lean</code> 4節の <code>∈</code>・<code>⊆</code> と同じやり方——標準ライブラリの記法用クラスへの <code>instance</code> 登録——で使えるようにする。 <code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方である。</p>
 <pre class="lean"><code><span class="doc">/-- 共通部分 `s ∩ t`: 両方に属する点の全体（「かつ」）。 -/</span>
 <span class="kw">instance</span> : Inter (Set α) := ⟨<span class="kw">fun</span> s t =&gt; {a | a ∈ s ∧ a ∈ t}⟩
 
@@ -148,14 +109,16 @@ hr { border: none; border-top: 1px solid var(--border); }
 
 <span class="kw">#check</span> (∅ : Set Nat)</code></pre>
 <pre class="quote"><code>∅ : Set Nat</code></pre>
-<p><code>instance</code> は名前のない宣言だが、実際には Lean が自動で命名している。上の5つは <code>Set.instMembership</code>, <code>Set.instInter</code> のような名前になる（<code>set_option pp.explicit true</code> で項を表示すると中に見える）。 <code>instance memInst : Membership α (Set α) := …</code> と自分で名前を付けてもよい。</p>
-<pre class="lean"><code><span class="doc">/-- 全体集合。どの点も属する集合（つねに `True` を返す述語）。 -/</span>
+<p><code>instance</code> は名前のない宣言だが、実際には Lean が自動で命名している。上の3つは <code>Set.instInter</code> のような名前になる（<code>set_option pp.explicit true</code> で項を表示すると中に見える）。 <code>instance memInst : Membership α (Set α) := …</code> と自分で名前を付けてもよい。</p>
+<pre class="lean"><code><span class="doc">/-- 全体集合。どの点も属する集合（つねに `True` を返す述語）。</span>
+<span class="doc">束縛子を `_a` としたのは、述語の中で点を使わないから（`_` は「使わない」印）。 -/</span>
 <span class="kw">def</span> univ : Set α := {_a | True}
 
 <span class="kw">#check</span> univ</code></pre>
 <pre class="quote"><code>Set.univ {α : Type} : Set α</code></pre>
 <p>namespace の中で宣言したのでフルネームは <code>Set.univ</code>。明示引数はなく、暗黙の <code>α</code> は使う場面の期待される型から決まる。</p>
-<pre class="lean"><code><span class="cm">-- 確認: `a ∈ univ` は定義上 `True` なので、その構成子 `trivial` で閉じる</span>
+<pre class="lean"><code><span class="cm">-- 確認: `0 ∈ univ` は定義を展開すると命題 `True` そのもの。</span>
+<span class="cm">-- `trivial : True` がちょうどその型を持つので、これで閉じる</span>
 <span class="kw">example</span> : (0 : Nat) ∈ (univ : Set Nat) := trivial
 
 <span class="doc">/-- 補集合 `sᶜ`: `s` に属さない点の全体。`∉` は `¬(a ∈ s)` の略記。 -/</span>
@@ -177,7 +140,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 中置記法 `f &#x27;&#x27; s`。数字 `80` は結合の強さ。 -/</span>
 <span class="kw">infixl</span>:80 &quot; &#x27;&#x27; &quot; =&gt; Set.image
 
-<span class="doc">/-- 集合族 `S` に属する集合すべての合併。</span>
+<span class="doc">/-- 「集合の集まり」`S : Set (Set α)` に属する集合すべての合併。</span>
 <span class="doc">位相の公理でいう「任意個の合併」を、添字を使わずにこれで表す。 -/</span>
 <span class="kw">def</span> sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 
@@ -187,8 +150,9 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 前置記法 `⋃₀ S`。 -/</span>
 <span class="kw">prefix</span>:110 &quot;⋃₀ &quot; =&gt; Set.sUnion
 
-<span class="doc">/-- 添字づけられた集合族 `U : I → Set α` の合併。</span>
-<span class="doc">族とは「添字を受け取って集合を返す関数」である（`Intro2.lean` 2節の型の族の仲間）。 -/</span>
+<span class="doc">/-- 添字づけられた集合族 `U : I → Set α` の合併。族とは「添字を受け取って</span>
+<span class="doc">集合を返す関数」である（`Intro2.lean` 2節の型の族の仲間）。`sUnion` が</span>
+<span class="doc">「集合の集まり」を受け取るのに対し、こちらは添字でパラメータづけた族を受け取る。 -/</span>
 <span class="kw">def</span> iUnion {I : <span class="sort">Type</span>} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 <span class="kw">#check</span> iUnion</code></pre>
@@ -242,16 +206,12 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> Finite.empty</code></pre>
 <pre class="quote"><code>Set.Finite.empty {α : Type} : ∅.Finite</code></pre>
 <p>仮定なしの定理。<code>∅.Finite</code> はドット記法の表示で <code>Set.Finite ∅</code> のこと。定理の #check は「証明済みの命題」を型として見せてくれる。</p>
-<pre class="lean"><code><span class="doc">/-- 外延性: 属する要素が一致する集合は等しい。</span>
-<span class="doc">関数の外延性 `funext` と命題の外延性 `propext` から従う</span>
-<span class="doc">（集合を関数として定義したことの代金をここで払う）。この場面に特殊化した型は</span>
-<span class="doc"></span>
-<span class="doc">    funext  : (∀ a, s a = t a) → s = t</span>
-<span class="doc">    propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</span>
-<span class="doc"></span>
-<span class="doc">で、証明項 `funext fun a =&gt; propext (h a)` は、この2つを型どおりに</span>
-<span class="doc">組み合わせただけである。</span>
-<span class="doc">以後、集合の等式を示すときは `apply Set.ext` で「要素ごとの同値」に還元する。 -/</span>
+<h3>外延性</h3>
+<p>属する要素が一致する集合は等しい——関数の外延性 <code>funext</code> と命題の外延性 <code>propext</code> から従う（集合を関数として定義したことの代金をここで払う）。この場面に特殊化した型は</p>
+<pre class="quote"><code>funext  : (∀ a, s a = t a) → s = t
+propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
+<p>で、下の証明項 <code>funext fun a =&gt; propext (h a)</code> は、この2つを型どおりに組み合わせただけである。以後、集合の等式を示すときは <code>apply Set.ext</code> で「要素ごとの同値」に還元する。</p>
+<pre class="lean"><code><span class="doc">/-- 外延性: 属する要素が一致する集合は等しい。 -/</span>
 <span class="kw">theorem</span> ext {s t : Set α} (h : ∀ a, a ∈ s ↔ a ∈ t) : s = t :=
   funext <span class="kw">fun</span> a =&gt; propext (h a)
 
@@ -285,6 +245,18 @@ hr { border: none; border-top: 1px solid var(--border); }
     | inl h =&gt; <span class="kw">exact</span> Or.inl (h ▸ hau)
     | inr h =&gt; <span class="kw">exact</span> Or.inr (h ▸ hau)
 
+<span class="cm">-- 同じ命題を項で直接書くと、こうなる（タクティクと項の見比べ）:</span>
+<span class="kw">example</span> (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} :=
+  ext <span class="kw">fun</span> _ =&gt;
+    ⟨<span class="kw">fun</span> ha =&gt;
+      <span class="kw">match</span> ha <span class="kw">with</span>
+      | Or.inl h =&gt; ⟨s, Or.inl rfl, h⟩
+      | Or.inr h =&gt; ⟨t, Or.inr rfl, h⟩,
+     <span class="kw">fun</span> ⟨_, hu, hau⟩ =&gt;
+      <span class="kw">match</span> hu <span class="kw">with</span>
+      | Or.inl h =&gt; Or.inl (h ▸ hau)
+      | Or.inr h =&gt; Or.inr (h ▸ hau)⟩
+
 <span class="kw">#check</span> union_eq_sUnion</code></pre>
 <pre class="quote"><code>Set.union_eq_sUnion {α : Type} (s t : Set α) : s ∪ t = ⋃₀ setOf fun u ↦ u = s ∨ u = t</code></pre>
 <p>内包記法は表示では展開先の <code>setOf</code> の形で見える（前述）。</p>
@@ -294,9 +266,10 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="doc">`Nat` の構造にそったパターンマッチ（`Intro1.lean` 4節）で定義する:</span>
 <span class="doc">`0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。</span>
 <span class="doc">`fun i =&gt; W i.succ` は添字を1つずらして「残りの族」を作っている。 -/</span>
-<span class="kw">def</span> interFin : (n : Nat) → (Fin n → Set α) → Set α
-  | 0, _ =&gt; univ
-  | n + 1, W =&gt; W 0 ∩ interFin n <span class="kw">fun</span> i =&gt; W i.succ
+<span class="kw">def</span> interFin : (n : Nat) → (Fin n → Set α) → Set α := <span class="kw">fun</span> n W =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | 0 =&gt; univ
+  | n + 1 =&gt; W 0 ∩ interFin n <span class="kw">fun</span> i =&gt; W i.succ
 
 <span class="kw">#check</span> interFin</code></pre>
 <pre class="quote"><code>Set.interFin {α : Type} (n : Nat) : (Fin n → Set α) → Set α</code></pre>
@@ -305,24 +278,23 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="doc">定義と同じ再帰の形で証明を書く——<strong>再帰で書いた証明が数学的帰納法</strong>である。</span>
 <span class="doc">`n = 0` の場合のゴールは `a ∈ univ` すなわち `True` なので `trivial`。 -/</span>
 <span class="kw">theorem</span> mem_interFin : ∀ (n : Nat) (W : Fin n → Set α) (a : α), (∀ i, a ∈ W i) →
-    a ∈ interFin n W
-  | 0, _, _, _ =&gt; trivial
-  | n + 1, _, a, h =&gt; ⟨h 0, mem_interFin n _ a <span class="kw">fun</span> i =&gt; h i.succ⟩
+    a ∈ interFin n W := <span class="kw">fun</span> n W a h =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | 0 =&gt; trivial
+  | n + 1 =&gt; ⟨h 0, mem_interFin n (<span class="kw">fun</span> i =&gt; W i.succ) a <span class="kw">fun</span> i =&gt; h i.succ⟩
 
 <span class="kw">#check</span> mem_interFin</code></pre>
 <pre class="quote"><code>Set.mem_interFin {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : (∀ (i : Fin n), a ∈ W i) → a ∈ interFin n W</code></pre>
 <p>引数3つのあと、「仮定 → 結論」。長い表示は適当な位置で折り返されるが意味は変わらない。</p>
 <pre class="lean"><code><span class="doc">/-- 共通部分に入る点は、すべての `W i` に入る（逆向き）。</span>
 <span class="doc">`n = 0` では示すべき添字がそもそもない（`Fin 0` は空）ので `Fin.elim0`。</span>
-<span class="doc">`n + 1` では途中から `by` でタクティクに切り替え、</span>
-<span class="doc">添字 `i` を `Fin.cases` で「先頭か、後続か」に場合分けする。 -/</span>
+<span class="doc">`n + 1` では添字 `i` を `Fin.cases` で「先頭か、後続か」に場合分けする</span>
+<span class="doc">（`Fin.cases` は、場合分けを項として書くための標準ライブラリの関数）。 -/</span>
 <span class="kw">theorem</span> interFin_mem : ∀ (n : Nat) (W : Fin n → Set α) (a : α), a ∈ interFin n W →
-    ∀ i, a ∈ W i
-  | 0, _, _, _, i =&gt; Fin.elim0 i
-  | n + 1, W, a, h, i =&gt; <span class="kw">by</span>
-      <span class="kw">cases</span> i <span class="kw">using</span> Fin.cases <span class="kw">with</span>
-      | zero =&gt; <span class="kw">exact</span> h.1
-      | succ j =&gt; <span class="kw">exact</span> interFin_mem n _ a h.2 j
+    ∀ i, a ∈ W i := <span class="kw">fun</span> n W a h i =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | 0 =&gt; Fin.elim0 i
+  | n + 1 =&gt; Fin.cases h.1 (<span class="kw">fun</span> j =&gt; interFin_mem n (<span class="kw">fun</span> k =&gt; W k.succ) a h.2 j) i
 
 <span class="kw">#check</span> interFin_mem</code></pre>
 <pre class="quote"><code>Set.interFin_mem {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : a ∈ interFin n W → ∀ (i : Fin n), a ∈ W i</code></pre>
@@ -333,6 +305,16 @@ hr { border: none; border-top: 1px solid var(--border); }
 <li><code>example : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat)</code> を証明せよ。ヒント: <code>∈</code> と <code>setOf</code> を展開すればゴールは <code>2 &lt; 5</code>、すなわち <code>3 ≤ 5</code>—— <code>CH.lean</code> 8節の構成子 <code>Nat.le.step</code>・<code>Nat.le.refl</code> で書ける。</li>
 <li><code>#print axioms Set.compl_compl</code> の結果を予想してから確かめよ（背理法を使った証明だった）。</li>
 </ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">example</span> : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat) :=
+  Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
+<p><code>∈</code> と <code>setOf</code> を展開するとゴールは <code>2 &lt; 5</code>、すなわち <code>2 + 1 ≤ 5</code>。 <code>Nat.le.refl : 3 ≤ 3</code> から <code>step</code> を2回で <code>3 ≤ 5</code> に届く（<code>CH.lean</code> 8節）。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">#print</span> axioms Set.compl_compl</code></pre>
+<pre class="quote"><code>&#x27;Set.compl_compl&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
+<p>背理法 <code>Classical.byContradiction</code> を使ったので、<code>Classical.choice</code> への依存が現れる（<code>propext</code>・<code>Quot.sound</code> はその道連れ）。</p>
+</details>
 <h2>2. 全単射</h2>
 <p>目標の「連続全単射」を述べるために要る。 <code>Function.Injective</code>（<code>∀ ⦃a b⦄, f a = f b → a = b</code>。括弧 <code>⦃ ⦄</code> は暗黙引数 <code>{ }</code> の変種で、この教材では <code>∀ a b, f a = f b → a = b</code> と読んでよい）と <code>Function.Surjective</code>（<code>∀ b, ∃ a, f a = b</code>）は標準ライブラリにあるので、全単射だけを定義する。</p>
 <pre class="lean"><code><span class="doc">/-- 全単射: 単射かつ全射。</span>
@@ -356,7 +338,13 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li>恒等写像が全単射であること <code>example : Function.Bijective (fun n : Nat =&gt; n)</code> を証明せよ（<code>injective</code> は仮定をそのまま返し、<code>surjective</code> は証人 <code>b</code> と <code>rfl</code>）。</li>
 </ol>
-<pre class="lean"><code><span class="doc">/-- `⋃ i, U i` で族全体の合併を表す。 -/</span>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">example</span> : Function.Bijective (<span class="kw">fun</span> n : Nat =&gt; n) :=
+  ⟨<span class="kw">fun</span> _ _ h =&gt; h, <span class="kw">fun</span> b =&gt; ⟨b, rfl⟩⟩</code></pre>
+<p>単射性: 仮定 <code>h : a₁ = a₂</code> がそのままゴール（恒等写像なので送り先の等式＝元の等式）。先頭の <code>fun _ _</code> は2点 <code>a₁ a₂</code> のぶんの束縛である。全射性: 点 <code>b</code> への証人は <code>b</code> 自身、根拠は <code>rfl</code>。</p>
+</details>
+<pre class="lean"><code><span class="doc">/-- `⋃ i, U i` で族全体の合併を表す（`syntax`・`macro_rules` の仕組みは</span>
+<span class="doc">`Intro2.lean` 3節）。 -/</span>
 <span class="kw">syntax</span>:110 &quot;⋃ &quot; ident &quot;, &quot; term : term
 <span class="doc">/-- `⋃ i ∈ J, U i` で添字を `J` に制限した合併を表す。 -/</span>
 <span class="kw">syntax</span>:110 &quot;⋃ &quot; ident &quot; ∈ &quot; term:110 &quot;, &quot; term : term
@@ -389,6 +377,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> TopologicalSpace</code></pre>
 <pre class="quote"><code>TopologicalSpace (X : Type) : Type</code></pre>
 <p>クラスも「型を受け取って型を返す関数」。<code>TopologicalSpace X</code> は「<code>X</code> 上の位相全体の型」で、その項1つが位相1つに当たる。</p>
+<p>なお、主フィールドの型 <code>Set X → Prop</code> は <code>Set (Set X)</code> と同じもの——つまり <code>IsOpen</code> は「部分集合の集まり」P(P(X)) の元である。「開集合系を指定する」という日常の言い方が、そのまま型に写っている。</p>
 <pre class="lean"><code><span class="cm">-- `export` で `TopologicalSpace.IsOpen` などを接頭辞なしの `IsOpen` で書けるようにする</span>
 <span class="kw">export</span> TopologicalSpace (IsOpen isOpen_univ isOpen_inter isOpen_sUnion)
 
@@ -415,27 +404,47 @@ hr { border: none; border-top: 1px solid var(--border); }
 <span class="kw">#check</span> isOpen_empty</code></pre>
 <pre class="quote"><code>isOpen_empty {X : Type} [TopologicalSpace X] : IsOpen ∅</code></pre>
 <p><code>[TopologicalSpace X]</code> がインスタンス引数として表示に現れる。結論の <code>IsOpen ∅</code> がどの位相の話かは、この引数が決めている。</p>
-<pre class="lean"><code><span class="doc">/-- 2つの開集合の合併も開。公理は「集合族の合併」の形なので、</span>
+<p>同じ証明を項で直接書くと、次のようになる。<code>have h : … := …;</code> の並びがタクティクの <code>have</code> に、<code>h ▸ e</code> が <code>rw [← h]; exact e</code> に対応する（<code>▸</code> は等式 <code>h</code> で <code>e</code> の型を書き換える演算子。<code>CH.lean</code> 9節）。</p>
+<pre class="lean"><code><span class="kw">example</span> : IsOpen (∅ : Set X) :=
+  <span class="kw">have</span> h : (⋃₀ (∅ : Set (Set X))) = (∅ : Set X) :=
+    Set.ext <span class="kw">fun</span> _ =&gt; ⟨<span class="kw">fun</span> ⟨_, hs, _⟩ =&gt; False.elim hs, <span class="kw">fun</span> ha =&gt; False.elim ha⟩
+  h ▸ isOpen_sUnion _ <span class="kw">fun</span> _ hs =&gt; False.elim hs
+
+
+<span class="doc">/-- 2つの開集合の合併も開。公理は「集合族の合併」の形なので、</span>
 <span class="doc">まず補題 `Set.union_eq_sUnion` で合併を族の合併に書き換えてから公理を適用する。</span>
 <span class="doc">族の各要素は `s` か `t` のどちらかなので、場合分けしてそれぞれの開性を使う。 -/</span>
 <span class="kw">theorem</span> isOpen_union {s t : Set X} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∪ t) := <span class="kw">by</span>
   <span class="kw">rw</span> [Set.union_eq_sUnion]
   <span class="kw">refine</span> isOpen_sUnion _ <span class="kw">fun</span> u hu =&gt; ?_
   <span class="kw">cases</span> hu <span class="kw">with</span>
-  | inl h =&gt; <span class="kw">rw</span> [h]; <span class="kw">exact</span> hs
-  | inr h =&gt; <span class="kw">rw</span> [h]; <span class="kw">exact</span> ht
+  | inl h =&gt;
+    <span class="kw">rw</span> [h]
+    <span class="kw">exact</span> hs
+  | inr h =&gt;
+    <span class="kw">rw</span> [h]
+    <span class="kw">exact</span> ht
 
 <span class="kw">#check</span> isOpen_union</code></pre>
 <pre class="quote"><code>isOpen_union {X : Type} [TopologicalSpace X] {s t : Set X} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∪ t)</code></pre>
 <p>明示引数は証明2つだけ。<code>s t</code> は <code>hs ht</code> の型から決まるので暗黙。</p>
-<pre class="lean"><code><span class="doc">/-- 有限個の開集合の共通部分は開。`n` についての再帰で、公理の「2つの共通部分」を繰り返す。</span>
+<pre class="lean"><code><span class="cm">-- こちらも項で。`match` の場合分けが `cases` に当たる</span>
+<span class="kw">example</span> {s t : Set X} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∪ t) :=
+  (Set.union_eq_sUnion s t) ▸ isOpen_sUnion _ <span class="kw">fun</span> _u hu =&gt;
+    <span class="kw">match</span> hu <span class="kw">with</span>
+    | Or.inl h =&gt; h ▸ hs
+    | Or.inr h =&gt; h ▸ ht
+
+
+<span class="doc">/-- 有限個の開集合の共通部分は開。`n` についての再帰で、公理の「2つの共通部分」を繰り返す。</span>
 <span class="doc"></span>
 <span class="doc">無限個の共通部分では成り立たないことに注意（例えば実数直線で</span>
 <span class="doc">`⋂ n, (-1/n, 1/n) = {0}` は開でない）。有限性がここで効く。 -/</span>
 <span class="kw">theorem</span> isOpen_interFin : ∀ (n : Nat) (W : Fin n → Set X), (∀ i, IsOpen (W i)) →
-    IsOpen (Set.interFin n W)
-  | 0, _, _ =&gt; isOpen_univ
-  | n + 1, _, h =&gt; isOpen_inter _ _ (h 0) (isOpen_interFin n _ <span class="kw">fun</span> i =&gt; h i.succ)
+    IsOpen (Set.interFin n W) := <span class="kw">fun</span> n W h =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | 0 =&gt; isOpen_univ
+  | n + 1 =&gt; isOpen_inter _ _ (h 0) (isOpen_interFin n (<span class="kw">fun</span> i =&gt; W i.succ) <span class="kw">fun</span> i =&gt; h i.succ)
 
 <span class="kw">#check</span> isOpen_interFin</code></pre>
 <pre class="quote"><code>isOpen_interFin {X : Type} [TopologicalSpace X] (n : Nat) (W : Fin n → Set X) :
@@ -467,8 +476,12 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li><code>example : (discrete Nat).IsOpen {n | n = 0}</code> を証明せよ（離散位相では、どの部分集合の開性も <code>True</code>——証明は <code>trivial</code>）。</li>
 </ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">example</span> : (discrete Nat).IsOpen {n | n = 0} := trivial</code></pre>
+<p>離散位相の <code>IsOpen</code> は定義上どの集合でも <code>True</code>。証明は構成子 <code>trivial</code>。</p>
+</details>
 <h2>4. 連続写像</h2>
-<p>「近くの点を近くに送る」を開集合だけで言い換えたのが次の定義。写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。</p>
+<p>位相空間の間の写像が連続であることを、開集合だけを使って定義する。写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。</p>
 <pre class="lean"><code><span class="kw">variable</span> {Y : <span class="sort">Type</span>} [TopologicalSpace Y] {Z : <span class="sort">Type</span>} [TopologicalSpace Z]
 
 <span class="doc">/-- 連続写像: 開集合の逆像がつねに開。 -/</span>
@@ -479,7 +492,9 @@ hr { border: none; border-top: 1px solid var(--border); }
 <p>両側の空間それぞれにインスタンス引数が付く。「<code>f</code> が連続」という命題は、実は「どの位相に関してか」を2つ暗黙に抱えている。</p>
 <h3>定義の確認</h3>
 <p>連続の定義についても、よく知る事実がここから出ることを見ておく。どちらも証明は1行で、逆像が定義上ぴったり重なることを使うだけ。</p>
-<pre class="lean"><code><span class="doc">/-- 恒等写像は連続。`(fun x =&gt; x) ⁻¹&#x27; s` は `s` そのものなので、仮定をそのまま返せばよい。 -/</span>
+<pre class="lean"><code><span class="doc">/-- 恒等写像は連続。示すべきは `IsOpen ((fun x =&gt; x) ⁻¹&#x27; s)` だが、</span>
+<span class="doc">`(fun x =&gt; x) ⁻¹&#x27; s` は定義を展開すると `s` そのもの。</span>
+<span class="doc">だから仮定 `hs : IsOpen s` が、そのまま型の合う項になる。 -/</span>
 <span class="kw">theorem</span> continuous_id : Continuous (<span class="kw">fun</span> x : X =&gt; x) :=
   <span class="kw">fun</span> _ hs =&gt; hs
 
@@ -501,8 +516,13 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li><code>#check @Continuous</code> の表示を予想してから確かめよ（2つの空間の位相が、どの種類の括弧で並ぶか）。</li>
 </ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#check</span> @Continuous</code></pre>
+<pre class="quote"><code>@Continuous : {X : Type} → [TopologicalSpace X] → {Y : Type} → [TopologicalSpace Y] → (X → Y) → Prop</code></pre>
+<p><code>@</code> 付きの表示では、暗黙引数も含めた引数の列が <code>→</code> でつながった 1本の関数型として見える。2つの空間の位相は、どちらも角括弧 <code>[TopologicalSpace X]</code>・<code>[TopologicalSpace Y]</code>——インスタンス引数——で並ぶ。</p>
+</details>
 <h2>5. ハウスドルフ空間</h2>
-<p>「異なる2点は開集合で見分けられる」という条件。点が多すぎず貼りついていない、という感じの性質。</p>
+<p>「異なる2点は開集合で見分けられる」という条件。</p>
 <pre class="lean"><code><span class="doc">/-- ハウスドルフ空間であるという<strong>性質</strong>。フィールドが命題1つだけの `class : Prop` で、</span>
 <span class="doc">データは持たない。位相を前提にするので `[TopologicalSpace X]` を引数に取る。</span>
 <span class="doc"></span>
@@ -517,7 +537,7 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="quote"><code>Hausdorff (X : Type) [TopologicalSpace X] : Prop</code></pre>
 <p><code>TopologicalSpace X : Type</code>（データ）と違い、こちらは結果が <code>Prop</code>（性質）。</p>
 <h2>6. コンパクト</h2>
-<p>「どんな開被覆にも有限部分被覆がある」という条件。無限にある開集合のうち有限個で済ませられる、という有限性の性質。</p>
+<p>「どんな開被覆にも有限部分被覆がある」という条件。</p>
 <p>被覆は添字づけられた族 <code>U : I → Set X</code> で表し、部分被覆は添字の部分集合 <code>J ⊆ I</code> を取ることで表す。 <code>J</code> が有限であることは <code>Set.Finite</code>（<code>Fin n</code> で番号づけられること）で表す。</p>
 <pre class="lean"><code><span class="doc">/-- コンパクト集合。定義を読み下すと:</span>
 <span class="doc">任意の添字型 `I`（暗黙引数）と開集合族 `U : I → Set X` について、</span>
@@ -595,6 +615,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <ol>
 <li><code>#print axioms Set.subset_preimage_iUnion</code> の結果を予想してから確かめよ（包含の付け替えだけの証明に、公理は要るだろうか）。</li>
 </ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#print</span> axioms Set.subset_preimage_iUnion</code></pre>
+<pre class="quote"><code>&#x27;Set.subset_preimage_iUnion&#x27; does not depend on any axioms</code></pre>
+<p>包含の付け替えだけの証明なので、公理は1つも要らない。</p>
+</details>
 <h2>8. 補題2: ハウスドルフ空間のコンパクト集合は閉</h2>
 <p>ここが証明の山場で、有限性を実際に使うのもここだけ。方針:</p>
 <ol>
@@ -625,7 +650,11 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`</span>
 <span class="doc">と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側</span>
 <span class="doc">として使い、`right` は `y` を含み、2つは交わらない。フィールドの型が前の</span>
-<span class="doc">フィールドに依存している（`Intro1.lean` 5節）ことにも注意。 -/</span>
+<span class="doc">フィールドに依存している（`Intro1.lean` 5節）ことにも注意。</span>
+<span class="doc"></span>
+<span class="doc">`K` はどこにも現れない: この structure は「点 `y` を分離する開集合の組」</span>
+<span class="doc">だけを束ねたもので、`K` との関係（`left` たちが `K` を覆うこと）は</span>
+<span class="doc">使う側の補題で述べる。定義は必要最小限の材料だけを持つのがよい。 -/</span>
 <span class="kw">structure</span> SeparatingPair (y : Y) <span class="kw">where</span>
 <span class="doc">  /-- 分離の `K` 側の開集合。 -/</span>
   left : Set Y
@@ -803,7 +832,13 @@ hr { border: none; border-top: 1px solid var(--border); }
 <pre class="lean"><code><span class="doc">/-- 逆写像の連続性。これが定理の中身:</span>
 <span class="doc">`g` が連続写像 `f` の両側逆写像なら、`g` も連続。</span>
 <span class="doc">前半の4行が方針の 3（補題3 → 補題1 → 補題2 をドット記法でつなぐ）、</span>
-<span class="doc">後半が方針の 1・4 による書き換えである。 -/</span>
+<span class="doc">後半が方針の 1・4 による書き換えである。</span>
+<span class="doc"></span>
+<span class="doc">仮定を「`f` は全単射」ではなく「両側逆写像 `g` がある」という形にしたのは、</span>
+<span class="doc">結論が `g` の連続性——特定の写像 `g` についての主張——だからである。</span>
+<span class="doc">全単射から逆写像を<strong>作る</strong>作業（選択公理が要る）は最後の</span>
+<span class="doc">`Homeomorph.ofContinuousBijective` に分離してあり、</span>
+<span class="doc">この定理自体は選択公理なしで証明できる。 -/</span>
 <span class="kw">theorem</span> continuous_invFun [CompactSpace X] [Hausdorff Y]
     {f : X → Y} (hf : Continuous f) {g : Y → X}
     (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) : Continuous g := <span class="kw">by</span>
@@ -877,6 +912,20 @@ hr { border: none; border-top: 1px solid var(--border); }
 <li><code>discrete Bool</code> を使って、<code>TopologicalSpace Bool</code> の項を1つ <code>example</code> で書け。</li>
 <li><code>IsCompact.isClosed</code> の型で、「空間がハウスドルフ」という仮定が 3種類の括弧のどれで現れるか予想してから、本文の表示の枠で確かめよ。</li>
 </ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#print</span> axioms isOpen_empty</code></pre>
+<pre class="quote"><code>&#x27;isOpen_empty&#x27; depends on axioms: [propext, Quot.sound]</code></pre>
+<p><code>Set.ext</code>（中身は <code>funext</code> と <code>propext</code>）の使用で <code>propext</code> と <code>Quot.sound</code>（<code>funext</code> の道連れ）が入るが、<code>Classical.choice</code> は入らない——背理法なしの証明だったことが、ここからも確認できる。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">example</span> : TopologicalSpace Bool := discrete Bool</code></pre>
+<p><code>discrete</code> は「型を受け取って位相そのものを返す関数」なので、 <code>Bool</code> に適用するだけで項が得られる。</p>
+</details>
+<details class="sol"><summary>解答 3</summary>
+<p>角括弧（インスタンス引数）で現れる:</p>
+<pre class="quote"><code>IsCompact.isClosed {Y : Type} [TopologicalSpace Y] [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K</code></pre>
+<p>「空間がハウスドルフ」は <code>[Hausdorff Y]</code>。位相と同じく空間に常置される性質なので、登録簿から自動で供給される形になっている。波括弧は型や集合の暗黙引数、丸括弧は明示的に渡す証明 <code>hK</code> である。</p>
+</details>
 <p>余力があれば、発展演習 <code>Extra.lean</code> へ（解答は <code>ExtraSol.lean</code>）。位相空間の圏と自由忘却随伴を組み立て、このファイルの主定理のハウスドルフという仮定が外せないことを反例で確かめるほか、位相空間の別定義（閉集合系・閉包・近傍系・ネット）の等価性や、部分空間・積・直和・商をまとめて生む誘導位相とその普遍性を扱う。</p>
 </main>
 <nav><span><a href="intro2.html">← Intro2</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>

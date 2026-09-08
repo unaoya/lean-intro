@@ -19,8 +19,12 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "Top"
 OUT = ROOT / "docs"
 
-# 章構成（表示順）。ExtraSol（解答）は公開しない。
+# 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
 CHAPTERS = ["Intro1", "CH", "Intro2", "Top", "Extra"]
+
+# ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 節.番号 -/` 区切り）。
+# 問題と解答の数・順序が合わなければ生成をエラーで止める。
+SOL_FILES = {"Intro1": "Intro1Sol", "CH": "CHSol", "Intro2": "Intro2Sol", "Top": "TopSol"}
 
 SITE_TITLE = "Lean 4 で書く位相空間 — ミニ教材"
 SITE_CONCEPT = (
@@ -47,6 +51,7 @@ SITE_GOALS = (
 )
 SITE_NOTE = (
     "読む順は Intro1 → CH → Intro2 → Top（→ 演習 Extra）。"
+    "各 ✏ 練習には折りたたみの解答が付いている（解答もすべて Lean の検査済み）。"
     "ソースは <a href=\"https://github.com/unaoya/lean-intro\">GitHub</a> の "
     "<code>Top/*.lean</code>（このページはそこから自動生成）。"
 )
@@ -290,6 +295,64 @@ def parse(path: Path) -> list[tuple[str, list[str]]]:
     return segments
 
 
+SOL_MARK_RE = re.compile(r"^SOL (\d+\.\d+)$")
+
+
+def parse_solutions(path: Path) -> list[tuple[str, list[tuple[str, list[str]]]]]:
+    """解答ファイルを `/-! SOL 節.番号 -/` 区切りで (ラベル, セグメント列) に分ける。
+    最初のマーカーより前（import・ファイル頭の説明）は捨てる。"""
+    sols = []
+    cur_label, cur_segs = None, []
+    for kind, lines in parse(path):
+        m = SOL_MARK_RE.match(lines[0].strip()) if kind == "prose" and lines else None
+        if m and all(not l.strip() for l in lines[1:]):
+            if cur_label is not None:
+                sols.append((cur_label, cur_segs))
+            cur_label, cur_segs = m.group(1), []
+        elif cur_label is not None:
+            cur_segs.append((kind, lines))
+    if cur_label is not None:
+        sols.append((cur_label, cur_segs))
+    return sols
+
+
+EXERCISE_HEAD_RE = re.compile(r"^#{2,4} .*✏ 練習")
+SECTION_RE = re.compile(r"^## (\d+)\.")
+ITEM_RE = re.compile(r"^(\d+)\. ")
+
+
+def render_chapter(name: str, segments) -> str:
+    """本文をレンダリングし、✏ 練習の各問の直後に解答を折りたたみで挟む。"""
+    sol_path = SRC / f"{SOL_FILES[name]}.lean" if name in SOL_FILES else None
+    sols = parse_solutions(sol_path) if sol_path and sol_path.exists() else None
+    body = []
+    sec, sol_i = 0, 0
+    for kind, lines in segments:
+        if kind != "prose":
+            body.append(render_code(lines))
+            continue
+        for l in lines:
+            m = SECTION_RE.match(l)
+            if m:
+                sec = int(m.group(1))
+        body.append(render_prose(lines))
+        if sols is None or not any(EXERCISE_HEAD_RE.match(l) for l in lines):
+            continue
+        for item in [int(m.group(1)) for l in lines if (m := ITEM_RE.match(l))]:
+            label = f"{sec}.{item}"
+            if sol_i >= len(sols):
+                raise SystemExit(f"error: {name} 練習 {label} の解答がない（{SOL_FILES[name]}.lean）")
+            got, segs2 = sols[sol_i]
+            sol_i += 1
+            if got != label:
+                raise SystemExit(f"error: {name} 練習 {label} の位置に SOL {got}（{SOL_FILES[name]}.lean の順序を確認）")
+            inner = "\n".join(render_prose(ls) if k == "prose" else render_code(ls) for k, ls in segs2)
+            body.append(f'<details class="sol"><summary>解答 {item}</summary>\n{inner}\n</details>')
+    if sols is not None and sol_i != len(sols):
+        raise SystemExit(f"error: {name} で解答が {len(sols) - sol_i} 個余っている（{SOL_FILES[name]}.lean）")
+    return "\n".join(body)
+
+
 def chapter_title(segments) -> str:
     for kind, lines in segments:
         if kind == "prose":
@@ -343,6 +406,10 @@ nav a { color: var(--link); text-decoration: none; }
 nav a:hover { text-decoration: underline; }
 a { color: var(--link); }
 hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
 """
 
 
@@ -384,11 +451,8 @@ def main():
     for idx, name in enumerate(CHAPTERS):
         segments = parse(SRC / f"{name}.lean")
         titles[name] = chapter_title(segments)
-        body = []
-        for kind, lines in segments:
-            body.append(render_prose(lines) if kind == "prose" else render_code(lines))
         out_path = OUT / f"{name.lower()}.html"
-        out_path.write_text(page(titles[name], "\n".join(body), nav_html(idx)), encoding="utf-8")
+        out_path.write_text(page(titles[name], render_chapter(name, segments), nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
     roles = {

@@ -41,4 +41,4 @@ lean_lib «TextI» where
 -- 別教材（Top/ 配下、mathlib 非依存・標準ライブラリのみ・デフォルトビルド対象外）
 lean_lib «Top» where
   srcDir := "Top"
-  roots := #[`Intro1, `CH, `Intro2, `Top, `Extra, `ExtraSol]
+  roots := #[`Intro1, `CH, `Intro2, `Top, `Extra, `ExtraSol, `Intro1Sol, `CHSol, `Intro2Sol, `TopSol]
