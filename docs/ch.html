@@ -63,7 +63,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <li>命題 <code>p</code> に対しては、証明 <code>h : p</code> を<strong>書く</strong>。</li>
 </ul>
 <p>型の世界での基本の活動は項を作ること、命題の世界での基本の活動は証明を書くこと。このファイルで伝えたいのは、2つの世界の類似に基づいて、 <strong>ある型の項を作ることと、ある命題の証明を書くことを対応させられる</strong>ということ。</p>
-<p>それを見るために、すでにある型（命題）から新しい型（命題）を作る操作を6つ並べ、それぞれについて「どう作るか（導入）」と「どう使うか（除去）」を見比べる（その命題を<strong>示したい</strong>ときに見るのが導入、<strong>使いたい</strong>ときに見るのが除去である）。対応する項と証明が<strong>同じ字面で書ける</strong>ことが繰り返し現れる。</p>
+<p>それを見るために、すでにある型（命題）から新しい型（命題）を作る操作を6つ並べ、それぞれについて、その命題を<strong>示すとき</strong>の書き方と<strong>使うとき</strong>の書き方を見比べる（型の側では「項を作るとき」と「項を使うとき」にあたる。論理学で導入則・除去則と呼ばれる区別だが、この教材では呼び名もこの2語で通す）。対応する項と証明が<strong>同じ字面で書ける</strong>ことが繰り返し現れる。</p>
 <table>
 <thead><tr><th></th><th>型</th><th>命題</th></tr></thead>
 <tbody>
@@ -115,31 +115,28 @@ is not definitionally equal to the right-hand side
   5</code></pre>
 <p>「<code>rfl</code> は両辺が計算で一致するときだけ使える」という規則の破れがそのまま報告されている。</p>
 </details>
-<pre class="lean"><code><span class="kw">variable</span> {α β γ : <span class="sort">Type</span>}
-<span class="kw">variable</span> {p q r : <span class="sort">Prop</span>}</code></pre>
-<p>（<code>variable</code> は「同じ引数を宣言のたびに書く代わりの前置き」で、以後の宣言は使った変数だけを引数として受け取る。ここで宣言した <code>α β γ</code>・<code>p q r</code> は、次の節からの宣言で使われる。この教材では宇宙は <code>Type</code> に固定する。）</p>
 <h2>1. 関数型と「ならば」</h2>
-<p><strong>導入</strong>: <code>fun x =&gt; e</code> で作る。<code>x : α</code> を仮に置いて <code>e : β</code> を作れば <code>α → β</code> が得られる。「<code>p</code> を仮定すれば <code>q</code> が示せる」なら <code>p → q</code> が言える、というのと同じ形。</p>
-<p><strong>除去</strong>: <code>f a</code> と適用する。関数に項を与えれば値が出る。含意に証明を与えれば結論の証明が出る。</p>
-<pre class="lean"><code><span class="doc">/-- 型側の導入: `β` の項が1つあれば、`α` から `β` への関数が作れる。 -/</span>
-<span class="kw">def</span> constFun (b : β) : α → β := <span class="kw">fun</span> _ =&gt; b
+<p><strong>示すとき</strong>: <code>fun x =&gt; e</code> で作る。<code>x : α</code> を仮に置いて <code>e : β</code> を作れば <code>α → β</code> が得られる。「<code>p</code> を仮定すれば <code>q</code> が示せる」なら <code>p → q</code> が言える、というのと同じ形。</p>
+<p><strong>使うとき</strong>: <code>f a</code> と適用する。関数に項を与えれば値が出る。含意に証明を与えれば結論の証明が出る。</p>
+<p>作るとき（型側）: <code>β</code> の項が1つあれば、<code>α</code> から <code>β</code> への関数が作れる。</p>
+<pre class="lean"><code><span class="kw">def</span> constFun {α β : <span class="sort">Type</span>} (b : β) : α → β := <span class="kw">fun</span> _ =&gt; b
 
 <span class="kw">#check</span> constFun</code></pre>
 <pre class="quote"><code>constFun {α β : Type} (b : β) : α → β</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側の導入: `q` の証明が1つあれば、`p → q` が示せる。字面はまったく同じ。 -/</span>
-<span class="kw">theorem</span> constImp (hq : q) : p → q := <span class="kw">fun</span> _ =&gt; hq
+<p>示すとき（命題側）: <code>q</code> の証明が1つあれば、<code>p → q</code> が示せる。字面はまったく同じ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> constImp {p q : <span class="sort">Prop</span>} (hq : q) : p → q := <span class="kw">fun</span> _ =&gt; hq
 
 <span class="kw">#check</span> constImp</code></pre>
 <pre class="quote"><code>constImp {p q : Prop} (hq : q) : p → q</code></pre>
 <p><code>constFun</code> と見比べてほしい。<code>{α β}</code> が <code>{p q}</code> に変わった以外、引数の並びも結果の形も、そのまま重なっている。</p>
-<pre class="lean"><code><span class="doc">/-- 型側の除去: 適用。 -/</span>
-<span class="kw">def</span> applyFun (f : α → β) (a : α) : β := f a
+<p>使うとき（型側）: 適用。</p>
+<pre class="lean"><code><span class="kw">def</span> applyFun {α β : <span class="sort">Type</span>} (f : α → β) (a : α) : β := f a
 
 <span class="kw">#check</span> applyFun</code></pre>
 <pre class="quote"><code>applyFun {α β : Type} (f : α → β) (a : α) : β</code></pre>
 <p>読み:「<code>f</code> に <code>a</code> を適用して <code>f a</code>」。</p>
-<pre class="lean"><code><span class="doc">/-- 命題側の除去: 適用。これも字面が同じ。 -/</span>
-<span class="kw">theorem</span> applyImp (h : p → q) (hp : p) : q := h hp
+<p>使うとき（命題側）: 適用。これも字面が同じ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> applyImp {p q : <span class="sort">Prop</span>} (h : p → q) (hp : p) : q := h hp
 
 <span class="kw">#check</span> applyImp</code></pre>
 <pre class="quote"><code>applyImp {p q : Prop} (h : p → q) (hp : p) : q</code></pre>
@@ -151,8 +148,8 @@ is not definitionally equal to the right-hand side
 <h3>✏ 練習</h3>
 <p>型側と命題側を<strong>同じ字面</strong>で書けることを、自分の手で確かめる。</p>
 <ol>
-<li>「2回適用」を両方の世界で書け: <code>def apply2 : (α → α) → α → α</code> と <code>theorem applyTwice : (p → p) → p → p</code>。</li>
-<li>「A より B、B より C」の連鎖 <code>theorem chain : (p → q) → (q → r) → p → r</code> を項で書け。</li>
+<li>「2回適用」を両方の世界で書け: <code>def apply2 {α : Type} : (α → α) → α → α</code> と <code>theorem applyTwice {p : Prop} : (p → p) → p → p</code>。</li>
+<li>「A より B、B より C」の連鎖 <code>theorem chain {p q r : Prop} : (p → q) → (q → r) → p → r</code> を項で書け。</li>
 <li>同じ字面 <code>fun h =&gt; h</code> が、型側の <code>example : Nat → Nat</code> と命題側の <code>example : (1 = 1) → (1 = 1)</code> の<strong>両方</strong>で通ることを確かめよ。</li>
 <li><code>#check applyFun Nat.succ 3</code> の表示を予想してから確かめよ。</li>
 </ol>
@@ -179,33 +176,33 @@ is not definitionally equal to the right-hand side
 <p><code>f = Nat.succ</code>（<code>β = Nat</code>）、<code>a = 3</code> が代入され、結果の型は <code>Nat</code>。</p>
 </details>
 <h2>2. 直積型と「かつ」</h2>
-<p><strong>導入</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</p>
-<p><strong>除去</strong>: <code>.1</code> と <code>.2</code> で取り出す。組からは各成分が取れる。 <code>p ∧ q</code> からは <code>p</code> も <code>q</code> も取れる。</p>
-<pre class="lean"><code><span class="kw">def</span> mkProd (a : α) (b : β) : α × β := ⟨a, b⟩
+<p><strong>示すとき</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</p>
+<p><strong>使うとき</strong>: <code>.1</code> と <code>.2</code> で取り出す。組からは各成分が取れる。 <code>p ∧ q</code> からは <code>p</code> も <code>q</code> も取れる。</p>
+<pre class="lean"><code><span class="kw">def</span> mkProd {α β : <span class="sort">Type</span>} (a : α) (b : β) : α × β := ⟨a, b⟩
 
 <span class="kw">#check</span> mkProd</code></pre>
 <pre class="quote"><code>mkProd {α β : Type} (a : α) (b : β) : α × β</code></pre>
-<pre class="lean"><code><span class="kw">theorem</span> mkAnd (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
+<pre class="lean"><code><span class="kw">theorem</span> mkAnd {p q : <span class="sort">Prop</span>} (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
 
 <span class="kw">#check</span> mkAnd</code></pre>
 <pre class="quote"><code>mkAnd {p q : Prop} (hp : p) (hq : q) : p ∧ q</code></pre>
 <p><code>mkProd</code> の <code>×</code> が <code>∧</code> に変わっただけである。</p>
-<pre class="lean"><code><span class="doc">/-- 型側: 組を入れ替える。 -/</span>
-<span class="kw">def</span> swapProd : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
+<p>型側: 組を入れ替える。</p>
+<pre class="lean"><code><span class="kw">def</span> swapProd {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
 
 <span class="kw">#check</span> swapProd</code></pre>
 <pre class="quote"><code>swapProd {α β : Type} : α × β → β × α</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側: 「かつ」を入れ替える。`swapProd` と一字一句同じ証明項で書ける。 -/</span>
-<span class="kw">theorem</span> swapAnd : p ∧ q → q ∧ p := <span class="kw">fun</span> h =&gt; ⟨h.2, h.1⟩
+<p>命題側: 「かつ」を入れ替える。<code>swapProd</code> と一字一句同じ証明項で書ける。</p>
+<pre class="lean"><code><span class="kw">theorem</span> swapAnd {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> h =&gt; ⟨h.2, h.1⟩
 
 <span class="kw">#check</span> swapAnd</code></pre>
 <pre class="quote"><code>swapAnd {p q : Prop} : p ∧ q → q ∧ p</code></pre>
 <p><code>swapProd</code> と重なる。証明項も <code>fun x =&gt; ⟨x.2, x.1⟩</code> で同一だった。</p>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem and_left : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; : α × β → α</code> を書き比べよ。</li>
-<li><code>theorem and_assoc&#x27; : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.1</code> <code>.2</code> で書け。</li>
-<li>具体的な命題でも導入は同じであることを、 <code>example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code> で確かめよ。</li>
+<li><code>theorem and_left {p q : Prop} : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; {α β : Type} : α × β → α</code> を書き比べよ。</li>
+<li><code>theorem and_assoc&#x27; {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.1</code> <code>.2</code> で書け。</li>
+<li>具体的な命題でも示し方は同じであることを、 <code>example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code> で確かめよ。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">theorem</span> and_left {p q : <span class="sort">Prop</span>} : p ∧ q → p := <span class="kw">fun</span> h =&gt; h.1
@@ -220,30 +217,30 @@ is not definitionally equal to the right-hand side
 </details>
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code></pre>
-<p>具体的な命題でも、<code>∧</code> の導入は「証明を2つ組にする」だけである。</p>
+<p>具体的な命題でも、<code>∧</code> の示し方は「証明を2つ組にする」だけである。</p>
 </details>
 <h2>3. 直和型と「または」</h2>
-<p><strong>導入</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</p>
-<p><strong>除去</strong>: 場合分け（<code>match</code>）。和の項を使うには、左のときと右のときの両方について行き先を用意する必要がある。「または」を使うときに場合分けするのと同じ。</p>
-<pre class="lean"><code><span class="kw">def</span> inlSum (a : α) : α ⊕ β := .inl a
+<p><strong>示すとき</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</p>
+<p><strong>使うとき</strong>: 場合分け（<code>match</code>）。和の項を使うには、左のときと右のときの両方について行き先を用意する必要がある。「または」を使うときに場合分けするのと同じ。</p>
+<pre class="lean"><code><span class="kw">def</span> inlSum {α β : <span class="sort">Type</span>} (a : α) : α ⊕ β := .inl a
 
 <span class="kw">#check</span> inlSum</code></pre>
 <pre class="quote"><code>inlSum {α β : Type} (a : α) : α ⊕ β</code></pre>
-<pre class="lean"><code><span class="kw">theorem</span> inlOr (hp : p) : p ∨ q := .inl hp
+<pre class="lean"><code><span class="kw">theorem</span> inlOr {p q : <span class="sort">Prop</span>} (hp : p) : p ∨ q := .inl hp
 
 <span class="kw">#check</span> inlOr</code></pre>
 <pre class="quote"><code>inlOr {p q : Prop} (hp : p) : p ∨ q</code></pre>
 <p><code>inlSum</code> と重なる。</p>
-<pre class="lean"><code><span class="doc">/-- 型側: 和を入れ替える。左なら右へ、右なら左へ。 -/</span>
-<span class="kw">def</span> swapSum : α ⊕ β → β ⊕ α := <span class="kw">fun</span> x =&gt;
+<p>型側: 和を入れ替える。左なら右へ、右なら左へ。</p>
+<pre class="lean"><code><span class="kw">def</span> swapSum {α β : <span class="sort">Type</span>} : α ⊕ β → β ⊕ α := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .inl a =&gt; .inr a
   | .inr b =&gt; .inl b
 
 <span class="kw">#check</span> swapSum</code></pre>
 <pre class="quote"><code>swapSum {α β : Type} : α ⊕ β → β ⊕ α</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。 -/</span>
-<span class="kw">theorem</span> swapOr : p ∨ q → q ∨ p := <span class="kw">fun</span> h =&gt;
+<p>命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。</p>
+<pre class="lean"><code><span class="kw">theorem</span> swapOr {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">fun</span> h =&gt;
   <span class="kw">match</span> h <span class="kw">with</span>
   | .inl hp =&gt; .inr hp
   | .inr hq =&gt; .inl hq
@@ -251,16 +248,16 @@ is not definitionally equal to the right-hand side
 <span class="kw">#check</span> swapOr</code></pre>
 <pre class="quote"><code>swapOr {p q : Prop} : p ∨ q → q ∨ p</code></pre>
 <p><code>swapSum</code> と重なる。</p>
-<pre class="lean"><code><span class="doc">/-- 型側の除去を一般の形で書いたもの。 -/</span>
-<span class="kw">def</span> elimSum : α ⊕ β → (α → γ) → (β → γ) → γ := <span class="kw">fun</span> x f g =&gt;
+<p>型側の「使うとき」を一般の形で書いたもの。</p>
+<pre class="lean"><code><span class="kw">def</span> elimSum {α β γ : <span class="sort">Type</span>} : α ⊕ β → (α → γ) → (β → γ) → γ := <span class="kw">fun</span> x f g =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .inl a =&gt; f a
   | .inr b =&gt; g b
 
 <span class="kw">#check</span> elimSum</code></pre>
 <pre class="quote"><code>elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側の除去。`Or.elim` と同じもの。字面は上と同じ。 -/</span>
-<span class="kw">theorem</span> elimOr : p ∨ q → (p → r) → (q → r) → r := <span class="kw">fun</span> h f g =&gt;
+<p>命題側の「使うとき」。<code>Or.elim</code> と同じもの。字面は上と同じ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> elimOr {p q r : <span class="sort">Prop</span>} : p ∨ q → (p → r) → (q → r) → r := <span class="kw">fun</span> h f g =&gt;
   <span class="kw">match</span> h <span class="kw">with</span>
   | .inl hp =&gt; f hp
   | .inr hq =&gt; g hq
@@ -270,8 +267,8 @@ is not definitionally equal to the right-hand side
 <p><code>elimSum</code> と重なる。「場合分けで示す」ことの正体が、この型である。</p>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem or_idem : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</li>
-<li><code>theorem or_map : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</li>
+<li><code>theorem or_idem {p : Prop} : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</li>
+<li><code>theorem or_map {p q r : Prop} : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</li>
 <li><code>example : (1 = 2) ∨ (2 = 2) := .inr rfl</code> が通ることを確かめよ（左の札が<strong>偽の命題</strong>でも、右から入れる）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
@@ -290,24 +287,24 @@ is not definitionally equal to the right-hand side
 </details>
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : (1 = 2) ∨ (2 = 2) := .inr rfl</code></pre>
-<p>通る。<code>∨</code> の導入は片側の証明だけでよいので、左が偽の命題でも構わない。</p>
+<p>通る。<code>∨</code> を示すには片側の証明だけでよいので、左が偽の命題でも構わない。</p>
 </details>
 <h2>4. 空の型と「⊥」</h2>
 <p>項が1つもない型が <code>Empty</code>、証明が1つもない命題が <code>False</code>。</p>
-<p><strong>導入</strong>: <strong>ない</strong>。これが空であることの意味そのもので、作り方が用意されていないから項（証明）が存在しない。</p>
-<p><strong>除去</strong>: 場合分けすべき場合が1つもないので、「もし項が手に入ったなら何でも作れる」という形になる。矛盾からは何でも従う、というのと同じ。</p>
-<pre class="lean"><code><span class="doc">/-- 型側: `Empty` の項があれば何の型の項でも作れる。 -/</span>
-<span class="kw">def</span> elimEmpty : Empty → α := <span class="kw">fun</span> e =&gt; e.elim
+<p><strong>示すとき</strong>: 手段が<strong>ない</strong>。これが空であることの意味そのもので、作り方が用意されていないから項（証明）が存在しない。</p>
+<p><strong>使うとき</strong>: 場合分けすべき場合が1つもないので、「もし項が手に入ったなら何でも作れる」という形になる。矛盾からは何でも従う、というのと同じ。</p>
+<p>型側: <code>Empty</code> の項があれば何の型の項でも作れる。</p>
+<pre class="lean"><code><span class="kw">def</span> elimEmpty {α : <span class="sort">Type</span>} : Empty → α := <span class="kw">fun</span> e =&gt; e.elim
 
 <span class="kw">#check</span> elimEmpty</code></pre>
 <pre class="quote"><code>elimEmpty {α : Type} : Empty → α</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側: 矛盾からは何でも従う。 -/</span>
-<span class="kw">theorem</span> elimFalse : False → p := <span class="kw">fun</span> h =&gt; h.elim
+<p>命題側: 矛盾からは何でも従う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> elimFalse {p : <span class="sort">Prop</span>} : False → p := <span class="kw">fun</span> h =&gt; h.elim
 
 <span class="kw">#check</span> elimFalse</code></pre>
 <pre class="quote"><code>elimFalse {p : Prop} : False → p</code></pre>
-<pre class="lean"><code><span class="doc">/-- 否定 `¬p` は `p → False` のことなので、実は新しい作り方ではない。 -/</span>
-<span class="kw">theorem</span> notIntro (h : p → False) : ¬p := h
+<p>否定 <code>¬p</code> は <code>p → False</code> のことなので、実は新しい作り方ではない。</p>
+<pre class="lean"><code><span class="kw">theorem</span> notIntro {p : <span class="sort">Prop</span>} (h : p → False) : ¬p := h
 
 <span class="kw">#check</span> notIntro</code></pre>
 <pre class="quote"><code>notIntro {p : Prop} (h : p → False) : ¬p</code></pre>
@@ -324,8 +321,8 @@ inductive False : Prop</code></pre>
 <p>まぎらわしいが、<code>true : Bool</code> と <code>True : Prop</code> は別物なので注意。 <code>true</code> は計算で使う<strong>データ</strong>（<code>Bool</code> は <code>Type</code> の住人）であり、 <code>True</code> は<strong>命題</strong>（<code>Prop</code> の住人）である。</p>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem noContra : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
-<li><code>theorem dni : p → ¬¬p</code> を書け（二重否定の<strong>導入</strong>。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <code>Top.lean</code> の1節 <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</li>
+<li><code>theorem noContra {p q : Prop} : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
+<li><code>theorem dni {p : Prop} : p → ¬¬p</code> を書け（<code>¬¬p</code> を<strong>示す</strong>向き。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <code>Top.lean</code> の1節 <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</li>
 <li><code>example : ¬False := fun h =&gt; h</code> が通ることを確かめよ（<code>¬False</code> は <code>False → False</code>——恒等関数が証明になる）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
@@ -345,24 +342,22 @@ inductive False : Prop</code></pre>
 <h2>5. 依存積と「すべての」</h2>
 <p>関数型 <code>α → β</code> を一般化して、行き先の型が入力ごとに変わってよいことにしたのが依存積 <code>(a : α) → P a</code>。<code>P : α → Type</code> は「<code>α</code> の各点に型を割り当てるもの」。</p>
 <p>命題側で対応するのは全称量化 <code>∀ a, Q a</code>。 <code>Q : α → Prop</code> は「<code>α</code> の各点に命題を割り当てるもの」で、形はまったく同じ。</p>
-<p><strong>導入・除去</strong>: 関数のときと変わらず <code>fun x =&gt; e</code> と <code>f a</code>。 <code>α → β</code> は <code>P</code> が定数のときの特別な場合なので、これは自然なこと。</p>
-<pre class="lean"><code><span class="kw">variable</span> {P : α → <span class="sort">Type</span>} {Q : α → <span class="sort">Prop</span>}
-
-<span class="kw">def</span> mkPi (f : (a : α) → P a) : (a : α) → P a := <span class="kw">fun</span> a =&gt; f a
+<p><strong>示すとき・使うとき</strong>: 関数のときと変わらず <code>fun x =&gt; e</code> と <code>f a</code>。 <code>α → β</code> は <code>P</code> が定数のときの特別な場合なので、これは自然なこと。</p>
+<pre class="lean"><code><span class="kw">def</span> mkPi {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (f : (a : α) → P a) : (a : α) → P a := <span class="kw">fun</span> a =&gt; f a
 
 <span class="kw">#check</span> mkPi</code></pre>
 <pre class="quote"><code>mkPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a</code></pre>
-<pre class="lean"><code><span class="kw">theorem</span> mkForall (h : ∀ a, Q a) : ∀ a, Q a := <span class="kw">fun</span> a =&gt; h a
+<pre class="lean"><code><span class="kw">theorem</span> mkForall {α : <span class="sort">Type</span>} {Q : α → <span class="sort">Prop</span>} (h : ∀ a, Q a) : ∀ a, Q a := <span class="kw">fun</span> a =&gt; h a
 
 <span class="kw">#check</span> mkForall</code></pre>
 <pre class="quote"><code>mkForall {α : Type} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a</code></pre>
-<pre class="lean"><code><span class="doc">/-- 型側の除去: 点 `a` を与えると `P a` の項が出る。 -/</span>
-<span class="kw">def</span> applyPi (f : (a : α) → P a) (a : α) : P a := f a
+<p>使うとき（型側）: 点 <code>a</code> を与えると <code>P a</code> の項が出る。</p>
+<pre class="lean"><code><span class="kw">def</span> applyPi {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (f : (a : α) → P a) (a : α) : P a := f a
 
 <span class="kw">#check</span> applyPi</code></pre>
 <pre class="quote"><code>applyPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側の除去: 点 `a` を与えると `Q a` の証明が出る。 -/</span>
-<span class="kw">theorem</span> applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
+<p>使うとき（命題側）: 点 <code>a</code> を与えると <code>Q a</code> の証明が出る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> applyForall {α : <span class="sort">Type</span>} {Q : α → <span class="sort">Prop</span>} (h : ∀ a, Q a) (a : α) : Q a := h a
 
 <span class="kw">#check</span> applyForall</code></pre>
 <pre class="quote"><code>applyForall {α : Type} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a</code></pre>
@@ -374,16 +369,27 @@ inductive False : Prop</code></pre>
 <span class="kw">#check</span> IsZero 3</code></pre>
 <pre class="quote"><code>IsZero 3 : Prop</code></pre>
 <p><code>IsZero</code> に点 <code>3</code> を渡すと、命題 <code>3 = 0</code> が1つ決まる——<code>n</code> ごとに命題を割り当てる族である。</p>
-<pre class="lean"><code><span class="doc">/-- 「すべての `n` について…」の証明は、依存関数そのものである:</span>
-<span class="doc">各 `n` を受け取って、命題 `IsZero (n * 0)` の証明を返す関数を書けばよい。 -/</span>
-<span class="kw">theorem</span> all_mul_zero : ∀ n : Nat, IsZero (n * 0) := <span class="kw">fun</span> _ =&gt; rfl
+<p>「すべての <code>n</code> について…」の証明は、依存関数そのものである:各 <code>n</code> を受け取って、命題 <code>IsZero (n * 0)</code> の証明を返す関数を書けばよい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> all_mul_zero : ∀ n : Nat, IsZero (n * 0) := <span class="kw">fun</span> _ =&gt; rfl
 
 <span class="kw">#check</span> all_mul_zero</code></pre>
 <pre class="quote"><code>all_mul_zero (n : Nat) : IsZero (n * 0)</code></pre>
 <p>証明が <code>fun _ =&gt; rfl</code> で済むのは、<code>IsZero (n * 0)</code> が定義上 <code>n * 0 = 0</code> で、 <code>n * 0</code> が<strong>計算で</strong> <code>0</code> になるからである（0節の <code>1 + 1 = 2</code> と同じ理屈）。</p>
+<h3>発展: 対称に見えて <code>rfl</code> が通らない <code>0 * n</code></h3>
+<p>同じ調子で <code>∀ n, IsZero (0 * n)</code> も書きたくなるが、こちらは通らない:</p>
+<pre class="quote"><code>theorem all_zero_mul : ∀ n : Nat, IsZero (0 * n) := fun n =&gt; rfl
+
+error: Type mismatch
+  rfl
+has type
+  ?m.10 = ?m.10
+but is expected to have type
+  IsZero (0 * n)</code></pre>
+<p>理由は <code>*</code> の定義が<strong>第2引数についての再帰</strong>であること。<code>n * 0</code> は第2引数が <code>0</code> なので計算が1歩で進むが、<code>0 * n</code> は第2引数が<strong>変数のまま</strong> なので計算が止まり、<code>0 * n</code> と <code>0</code> は「計算で一致」しない。数学では対称に見える2つの式が、定義のレベルでは非対称なのである（練習2の <code>0 * 5</code> が通るのは、<code>5</code> が具体的な数字で計算が最後まで走るから）。</p>
+<p>変数 <code>n</code> のまま示すには <code>n</code> についての<strong>数学的帰納法</strong>が要る。Lean では帰納法は再帰で書く——実物は <code>Top.lean</code> の <code>mem_interFin</code> などで見る。ライブラリではこの命題（の中身）は <code>Nat.zero_mul</code> として証明済みである。</p>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
+<li><code>theorem all_and {α : Type} {Q R : α → Prop} :(∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
 <li><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> でも <code>all_mul_zero 5</code> でも証明できるか試せ。</li>
 <li><code>#check applyForall all_mul_zero 7</code> の表示を予想してから確かめよ（一般論に点を代入すると、命題も特殊化される）。</li>
 </ol>
@@ -408,26 +414,25 @@ inductive False : Prop</code></pre>
 </details>
 <h2>6. 依存和と「存在する」</h2>
 <p>直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>（<code>P : α → Type</code>、型の族）。命題側で対応するのが存在量化 <code>∃ a, Q a</code>（<code>Q : α → Prop</code>、命題の族）。</p>
-<p><strong>導入</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</p>
-<p><strong>除去</strong>: 組を分解する。型側は <code>.1</code> <code>.2</code> で取り出せる。命題側にはここだけ制限があるので、後の 11 節で見る。</p>
-<pre class="lean"><code><span class="kw">def</span> mkSigma (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
+<p><strong>示すとき</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</p>
+<p><strong>使うとき</strong>: 組を分解する。型側は <code>.1</code> <code>.2</code> で取り出せる。命題側にはここだけ制限があるので、後の 11 節で見る。</p>
+<pre class="lean"><code><span class="kw">def</span> mkSigma {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
 
 <span class="kw">#check</span> mkSigma</code></pre>
 <pre class="quote"><code>mkSigma {α : Type} {P : α → Type} (a : α) (b : P a) : (a : α) × P a</code></pre>
-<pre class="lean"><code><span class="kw">theorem</span> mkExists (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
+<pre class="lean"><code><span class="kw">theorem</span> mkExists {α : <span class="sort">Type</span>} {Q : α → <span class="sort">Prop</span>} (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
 
 <span class="kw">#check</span> mkExists</code></pre>
 <pre class="quote"><code>mkExists {α : Type} {Q : α → Prop} (a : α) (h : Q a) : ∃ a, Q a</code></pre>
 <p><code>mkSigma</code> と重なる。「存在を示すには証人 <code>a</code> と根拠 <code>h</code> を出せばよい」が、そのまま引数の列になっている。</p>
-<pre class="lean"><code><span class="doc">/-- 型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。 -/</span>
-<span class="kw">def</span> currySigma : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
+<p>型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。</p>
+<pre class="lean"><code><span class="kw">def</span> currySigma {α γ : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> currySigma</code></pre>
 <pre class="quote"><code>currySigma {α γ : Type} {P : α → Type} : ((a : α) × P a → γ) → (a : α) → P a → γ</code></pre>
-<pre class="lean"><code><span class="doc">/-- 命題側: 「存在するなら `r`」は「どの点についても、条件を満たすなら `r`」と同じこと。</span>
-<span class="doc">`currySigma` と同じ証明項で書ける。 -/</span>
-<span class="kw">theorem</span> curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
+<p>命題側: 「存在するなら <code>r</code>」は「どの点についても、条件を満たすなら <code>r</code>」と同じこと。 <code>currySigma</code> と同じ証明項で書ける。</p>
+<pre class="lean"><code><span class="kw">theorem</span> curryExists {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>} : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> curryExists</code></pre>
@@ -452,7 +457,7 @@ inductive False : Prop</code></pre>
 <pre class="quote"><code>last 9 : Fin (9 + 1)</code></pre>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
+<li><code>theorem exists_map {α : Type} {Q R : α → Prop} :(∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
 <li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——<code>Intro2.lean</code> 2節の補足で説明する）。</li>
 <li><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</li>
 </ol>
@@ -473,10 +478,10 @@ inductive False : Prop</code></pre>
 <pre class="lean"><code><span class="kw">example</span> : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code></pre>
 <p>証人 <code>0</code> と、<code>IsZero 0</code> すなわち <code>0 = 0</code> の証明 <code>rfl</code> の組である。</p>
 </details>
-<h2>7. 導入と除去のまとめ</h2>
-<p>作り方（導入）と使い方（除去）を並べると、左右で同じ形をしていることが見える。</p>
+<h2>7. 示すときと使うときのまとめ</h2>
+<p>示すときの形と使うときの形を並べると、左右で同じ形をしていることが見える。</p>
 <table>
-<thead><tr><th></th><th>型</th><th>命題</th><th>導入</th><th>除去</th></tr></thead>
+<thead><tr><th></th><th>型</th><th>命題</th><th>示すとき</th><th>使うとき</th></tr></thead>
 <tbody>
 <tr><td>関数</td><td><code>α → β</code></td><td><code>p → q</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr>
 <tr><td>積</td><td><code>α × β</code></td><td><code>p ∧ q</code></td><td><code>⟨a, b⟩</code></td><td><code>.1</code> / <code>.2</code></td></tr>
@@ -485,21 +490,19 @@ inductive False : Prop</code></pre>
 <tr><td>依存積</td><td><code>(a : α) → P a</code></td><td><code>∀ a, Q a</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr>
 <tr><td>依存和</td><td><code>(a : α) × P a</code></td><td><code>∃ a, Q a</code></td><td><code>⟨a, b⟩</code></td><td><code>.1</code> / <code>.2</code>（<code>∃</code> は <code>match</code> のみ——11節）</td></tr>
 </tbody></table>
-<p>導入は「その型（命題）を作るのに何が要るか」、除去は「その型（命題）を持っているとき何が言えるか」。上の例で見たとおり、対応する両側は多くの場合まったく同じ字面で書ける。</p>
+<p>示すときの列は「その型（命題）を作るのに何が要るか」、使うときの列は「その型（命題）を持っているとき何が言えるか」。上の例で見たとおり、対応する両側は多くの場合まったく同じ字面で書ける。</p>
 <p>字面が同じになるのは偶然ではない。証明を書くときにしていることは、関数を書き、組を作り、場合分けをすること——つまり項の構成そのものである。「命題 <code>p</code> を証明する」とは「<code>p</code> を型とみなして、その項を1つ作る」ことであり、この対応が Curry–Howard 対応と呼ばれるものである。</p>
-<pre class="lean"><code><span class="doc">/-- 型側と命題側で同じ項が通ることの確認。</span>
-<span class="doc">`⟨x.2, x.1⟩` という同じ式が、片方では組の入れ替え、</span>
-<span class="doc">もう片方では「かつ」の入れ替えの証明になっている。 -/</span>
-<span class="kw">example</span> : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
+<p>型側と命題側で同じ項が通ることの確認。 <code>⟨x.2, x.1⟩</code> という同じ式が、片方では組の入れ替え、もう片方では「かつ」の入れ替えの証明になっている。</p>
+<pre class="lean"><code><span class="kw">example</span> {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
 
-<span class="kw">example</span> : p ∧ q → q ∧ p := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩</code></pre>
+<span class="kw">example</span> {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩</code></pre>
 <h3>✏ 練習</h3>
 <ol>
-<li>対照表を見ながら、<code>theorem andToOr : p ∧ q → p ∨ q</code> の証明項を書け（<code>∧</code> の除去で取り出し、<code>∨</code> の導入で包む——1行で書ける）。</li>
+<li>対照表を見ながら、<code>theorem andToOr {p q : Prop} : p ∧ q → p ∨ q</code> の証明項を書け（<code>∧</code> から取り出し、<code>∨</code> を示す形に包む——1行で書ける）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">theorem</span> andToOr {p q : <span class="sort">Prop</span>} : p ∧ q → p ∨ q := <span class="kw">fun</span> h =&gt; .inl h.1</code></pre>
-<p><code>∧</code> の除去（<code>.1</code>）で <code>p</code> の証明を取り出し、<code>∨</code> の導入（<code>.inl</code>）で包む。（<code>.2</code> と <code>.inr</code> の組み合わせでもよい。）</p>
+<p><code>∧</code> から <code>.1</code> で <code>p</code> の証明を取り出し、<code>∨</code> を示す形 <code>.inl</code> で包む。（<code>.2</code> と <code>.inr</code> の組み合わせでもよい。）</p>
 </details>
 <h2>8. 例: 自然数の命題を構成子で証明する</h2>
 <p>「命題を証明する＝項を作る」——つまり、<strong>命題に対応する型の項を作れれば、証明できたと思ってよい</strong>——を、自然数のいちばん基本的な命題で確かめておく。鍵は、<code>=</code> や <code>≤</code> といった命題を作るもの自体が、<code>Intro1.lean</code> の <code>MyNat</code> などと同じく<strong>帰納型として定義されている</strong>ことである。</p>
@@ -521,7 +524,7 @@ inductive False : Prop</code></pre>
 <pre class="lean"><code><span class="kw">example</span> : 0 ≤ 0 := Nat.le.refl
 <span class="kw">example</span> : 0 ≤ 1 := Nat.le.step Nat.le.refl
 <span class="kw">example</span> : 0 ≤ 2 := Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
-<p>これが7節の主張の実演である。<code>0 ≤ 2</code> を証明するとは、帰納型 <code>Nat.le</code> の項を構成子から組み立てることに他ならず、出来上がった証明はデータと同じ資格でそこにある。<code>∧</code> <code>∨</code> <code>∃</code> <code>False</code> も同様に帰納型として定義された命題であり（2〜4節、6節）、導入で使った <code>⟨_, _⟩</code> や <code>.inl</code> は、それらの構成子だったのである。</p>
+<p>これが7節の主張の実演である。<code>0 ≤ 2</code> を証明するとは、帰納型 <code>Nat.le</code> の項を構成子から組み立てることに他ならず、出来上がった証明はデータと同じ資格でそこにある。<code>∧</code> <code>∨</code> <code>∃</code> <code>False</code> も同様に帰納型として定義された命題であり（2〜4節、6節）、示すときに使った <code>⟨_, _⟩</code> や <code>.inl</code> は、それらの構成子だったのである。</p>
 <h3>等式の法則は公理ではない</h3>
 <p>ふつうの述語論理では、等式の反射律や代入原理は論理に組み込まれた<strong>公理</strong>である。 Lean では違う。いま見たとおり <code>Eq</code> はただの帰納型の宣言で、等式に期待される振る舞いは、そこから実際に出てくる:</p>
 <ul>
@@ -534,6 +537,18 @@ inductive False : Prop</code></pre>
 <p>「公理に一切依存していない」という報告——対称律は、帰納型の仕組みだけから <strong>証明された</strong>定理である。</p>
 <p>つまり Lean の基礎にあるのは等式の公理のリストではなく、「（健全性の条件を満たす）帰納型の宣言に対して、構成子・帰納法原理・計算規則を与える」という一般規則のほうである。等式に限らず、この教材に出てくる <code>∧</code> <code>∨</code> <code>∃</code> <code>=</code> <code>≤</code> の論理法則はすべて、依存関数型・宇宙・帰納型という土台から<strong>定義と定理として</strong>出てくる。</p>
 <p>例外として土台の外から公理を足すこともあるが、この教材の主定理が実際に依存するのは、外延性・選択・商型の健全性にあたる3つだけである。それは <code>Top.lean</code> の末尾で <code>#print axioms</code> により確認する。</p>
+<h3>「全部」と「別々」も出てくる</h3>
+<p><code>Intro1.lean</code> 4節で、帰納型の宣言は2つのことを保証すると述べた:構成子で作られたものが項の<strong>全部</strong>であること、そして違う作り方をした項は <strong>別々</strong>であることである。この2つも公理ではなく、同じ一般規則から出てくる。</p>
+<p>「全部」の保証の正体は、自動生成される帰納法原理そのものである。 <code>rec</code> は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」と言っており、<code>match</code> の場合分けがそれで尽くせるのはこれによる。</p>
+<p>「別々」には、これも宣言の受理時に自動生成される道具 <code>noConfusion</code> が使える。「違う構成子どうしは等しくない」と「同じ構成子なら中身まで等しい（構成子は単射）」の両方がこれで証明できる。実物を <code>Bool</code> と <code>Nat</code> で見る（<code>a ≠ b</code> は <code>¬(a = b)</code> の記法。初出である）:</p>
+<pre class="lean"><code><span class="kw">example</span> : true ≠ false := <span class="kw">fun</span> h =&gt; Bool.noConfusion h
+
+<span class="kw">example</span> {m n : Nat} (h : Nat.succ m = Nat.succ n) : m = n :=
+  Nat.noConfusion h (<span class="kw">fun</span> h&#x27; =&gt; h&#x27;)
+
+<span class="kw">#print</span> axioms Bool.noConfusion</code></pre>
+<pre class="quote"><code>&#x27;Bool.noConfusion&#x27; does not depend on any axioms</code></pre>
+<p><code>noConfusion</code> 自体も公理には依存していない——帰納型の仕組みから <strong>証明された</strong>定理である。種明かしだけ述べると、「構成子を <code>match</code> で見分けて <code>True</code>／<code>False</code> を割り当てる述語」を作り、<code>Eq.rec</code>（代入原理）で <code>true = false</code> の仮定からゴール <code>False</code> へ運ぶ——どれも既出の道具である。</p>
 <h3>実験: 等式をもう1つ作る</h3>
 <p><code>Eq</code> が特別な組み込みでないことは、実際に作り直してみるとよく分かる。同じ形の帰納型 <code>MyEq</code> を宣言すると、帰納法原理も同じ形で自動生成される。</p>
 <pre class="lean"><code><span class="kw">inductive</span> MyEq {α : <span class="sort">Type</span>} (a : α) : α → <span class="sort">Prop</span> <span class="kw">where</span>
@@ -541,10 +556,8 @@ inductive False : Prop</code></pre>
 
 <span class="kw">#check</span> MyEq</code></pre>
 <pre class="quote"><code>MyEq {α : Type} (a : α) : α → Prop</code></pre>
-<pre class="lean"><code><span class="doc">/-- 対称律は場合分け（`match`）だけで導ける。構成子は `refl` の1つ、つまり</span>
-<span class="doc">`a` と `b` が同じ場合しかないので、返すべきものも `refl` で足りる。</span>
-<span class="doc">推移律や代入原理も同様である。 -/</span>
-<span class="kw">theorem</span> MyEq.symm {a b : α} (h : MyEq a b) : MyEq b a :=
+<p>対称律は場合分け（<code>match</code>）だけで導ける。構成子は <code>refl</code> の1つ、つまり <code>a</code> と <code>b</code> が同じ場合しかないので、返すべきものも <code>refl</code> で足りる。推移律や代入原理も同様である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm {α : <span class="sort">Type</span>} {a b : α} (h : MyEq a b) : MyEq b a :=
   <span class="kw">match</span> h <span class="kw">with</span>
   | .refl =&gt; .refl
 
@@ -568,22 +581,20 @@ fun {α} {a b} h ↦
 <pre class="quote"><code>@MyEq.rec : {α : Type} →
   {a : α} → {motive : (a_1 : α) → MyEq a a_1 → Sort u_1} → motive a ⋯ → {a_1 : α} → (t : MyEq a a_1) → motive a_1 t</code></pre>
 <p>読み: 「すべての添字 <code>a_1</code> と <code>t : MyEq a a_1</code> について <code>motive a_1 t</code>」を結論するのに、要求される義務は <strong><code>refl</code> の場合の <code>motive a ⋯</code> ただ1つ</strong>である。「<code>refl</code> の場合だけ示せばよい」という形の中に、「そのとき添字は <code>a</code>」がすでに織り込まれている。<code>match</code> を使わず、この帰納法原理を直接使っても書ける:</p>
-<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm&#x27; {a b : α} (h : MyEq a b) : MyEq b a :=
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm&#x27; {α : <span class="sort">Type</span>} {a b : α} (h : MyEq a b) : MyEq b a :=
   MyEq.rec (motive := <span class="kw">fun</span> c _ =&gt; MyEq c a) MyEq.refl h</code></pre>
 <p>まとめると: <code>Signal</code> の <code>match</code> は場合の列挙だけだったが、添字つきの族への <code>match</code> は枝ごとに<strong>添字の情報が増える</strong>（依存パターンマッチと呼ばれる）。「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが <code>Eq</code> の帰納法原理 <code>Eq.rec</code>（代入原理）の中身であり、12節で見る <code>rw</code> が裏でやっていることの正体でもある。</p>
-<pre class="lean"><code><span class="doc">/-- 型検査が両辺を計算してから比べる仕組みも `Eq` 専用ではないので、</span>
-<span class="doc">`1 + 1 = 2` に当たる命題はやはり構成子だけで証明できる。 -/</span>
-<span class="kw">example</span> : MyEq (1 + 1) 2 := .refl</code></pre>
+<p>型検査が両辺を計算してから比べる仕組みも <code>Eq</code> 専用ではないので、 <code>1 + 1 = 2</code> に当たる命題はやはり構成子だけで証明できる。</p>
+<pre class="lean"><code><span class="kw">example</span> : MyEq (1 + 1) 2 := .refl</code></pre>
 <p>しかも、<code>Eq</code> と同値であることを系の中で証明できる。 <code>p ↔ q</code>（同値、<code>\iff</code> と打つ）はここが初出だが、これも「<code>p → q</code> の証明と <code>q → p</code> の証明の組」という2フィールドの structure にすぎず、 <code>⟨→の証明, ←の証明⟩</code> で作れる。両方向とも「相手の等式で場合分けして、自分の構成子を置く」だけである。なお2つ目の <code>match h with | rfl =&gt; …</code> の <code>rfl</code> は、証明項ではなく<strong>パターン</strong>の位置にある——「<code>Eq</code> の唯一の構成子 <code>Eq.refl</code> の場合」を表す書き方である。</p>
-<pre class="lean"><code><span class="kw">theorem</span> myEq_iff_eq {a b : α} : MyEq a b ↔ a = b :=
+<pre class="lean"><code><span class="kw">theorem</span> myEq_iff_eq {α : <span class="sort">Type</span>} {a b : α} : MyEq a b ↔ a = b :=
   ⟨<span class="kw">fun</span> h =&gt; <span class="kw">match</span> h <span class="kw">with</span> | .refl =&gt; rfl,
    <span class="kw">fun</span> h =&gt; <span class="kw">match</span> h <span class="kw">with</span> | rfl =&gt; .refl⟩
 
 <span class="kw">#check</span> myEq_iff_eq</code></pre>
 <pre class="quote"><code>myEq_iff_eq {α : Type} {a b : α} : MyEq a b ↔ a = b</code></pre>
-<pre class="lean"><code><span class="doc">/-- `propext : (p ↔ q) → p = q`（命題の外延性。`Top.lean` の3公理の1つ）まで</span>
-<span class="doc">使えば、同値であるにとどまらず、命題として<strong>等しい</strong>ことになる。 -/</span>
-<span class="kw">example</span> {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq</code></pre>
+<p><code>propext : (p ↔ q) → p = q</code>（命題の外延性。<code>Top.lean</code> の3公理の1つ）まで使えば、同値であるにとどまらず、命題として<strong>等しい</strong>ことになる。</p>
+<pre class="lean"><code><span class="kw">example</span> {α : <span class="sort">Type</span>} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq</code></pre>
 <p>つまり2つ目の等式を作っても、衝突も分裂も起きず、同じものが増えるだけである。実際 <code>h : MyEq a b</code> を「<code>a = b</code> が証明できた」と解釈しても問題ない——上で示した同値 <code>myEq_iff_eq</code> が、その読み替えの正当化である。 <code>Eq</code> に残る特別さは論理の側にはなく、道具立ての側にある: <code>=</code> という記法や、<code>rw</code>・<code>simp</code> などのタクティク（12節で登場する、証明のもう1つの書き方の道具）は <code>Eq</code> に向けて作られているので、 <code>MyEq</code> では使えない。例えば <code>h : MyEq a b</code> で <code>rw [h]</code> とすると</p>
 <pre class="quote"><code>error: Invalid rewrite argument: Expected an equality or iff proof
 or definition name, but `h` is a proof of
@@ -593,7 +604,7 @@ or definition name, but `h` is a proof of
 <ol>
 <li><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</li>
 <li>本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</li>
-<li>逆向きの橋 <code>theorem MyEq.ofEq {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
+<li>逆向きの橋 <code>theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">example</span> : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
@@ -623,8 +634,8 @@ or definition name, but `h` is a proof of
 </ul>
 <p>重要なのは、どの確認も<strong>局所的</strong>だということである。見るのはその一文と現在の文脈だけでよく、証明全体の狙いや発想を理解する必要はない。しかも確認の中身は「一覧にあるか」「形が合うか」の照合であって、機械的に実行できる。直感や洞察が要るのは証明を<strong>見つける</strong>ときであって、<strong>検める</strong>作業には要らない。「納得した」とは、この検査がすべての文で通ったことの別名である。</p>
 <p>以下、初等的な事実を3つ、この観点で書いてみる。それぞれについて「ふつうの証明」「省略をすべて書き出した詳細版」「Lean の項」を並べる。詳細版の各文に番号を振り、項の対応する部分に同じ番号を添えるので、 <strong>詳細化を進めていった先に項がある</strong>ことを見比べてほしい。</p>
-<pre class="lean"><code><span class="doc">/-- 偶数であること: 半分になる数が存在する。 -/</span>
-<span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k, n = 2 * k
+<p>偶数であること: 半分になる数が存在する。</p>
+<pre class="lean"><code><span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k, n = 2 * k
 
 <span class="kw">#check</span> IsEven</code></pre>
 <pre class="quote"><code>IsEven (n : Nat) : Prop</code></pre>
@@ -637,8 +648,8 @@ or definition name, but `h` is a proof of
 <li>よって「半分」の証人として <code>n</code> が取れ、<code>n + n</code> は偶数である。∎</li>
 </ol>
 <pre class="lean"><code><span class="kw">theorem</span> isEven_double : ∀ n : Nat, IsEven (n + n) :=
-  <span class="kw">fun</span> n =&gt;                     <span class="cm">-- (1) n を任意に取る（∀ の導入）</span>
-    ⟨n, (Nat.two_mul n).symm⟩  <span class="cm">-- (3) 証人は n、(2) 根拠は two_mul の対称形（∃ の導入）</span>
+  <span class="kw">fun</span> n =&gt;                     <span class="cm">-- (1) n を任意に取る（∀ を示す形）</span>
+    ⟨n, (Nat.two_mul n).symm⟩  <span class="cm">-- (3) 証人は n、(2) 根拠は two_mul の対称形（∃ を示す形）</span>
 
 <span class="kw">#check</span> isEven_double</code></pre>
 <pre class="quote"><code>isEven_double (n : Nat) : IsEven (n + n)</code></pre>
@@ -650,7 +661,7 @@ or definition name, but `h` is a proof of
 <li>仮定 hg は「任意の u, v について、g u = g v ならば u = v」という全称文である。 u := f x、v := f y と特殊化して h に適用すると、f x = f y を得る。</li>
 <li>仮定 hf を同様に f x = f y に適用して、x = y を得る。これが示すべきことだった。∎</li>
 </ol>
-<pre class="lean"><code><span class="kw">theorem</span> comp_injective {f : α → β} {g : β → γ}
+<pre class="lean"><code><span class="kw">theorem</span> comp_injective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : Function.Injective g) (hf : Function.Injective f) :
     Function.Injective (<span class="kw">fun</span> x =&gt; g (f x)) :=
   <span class="kw">fun</span> x y h =&gt;             <span class="cm">-- (1) x, y を取り、h を仮定する</span>
@@ -702,12 +713,12 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <table>
 <thead><tr><th>紙の常套句</th><th>項での正体</th></tr></thead>
 <tbody>
-<tr><td>「〜とする」「任意に取る」</td><td><code>fun</code>（<code>→</code>・<code>∀</code> の導入）</td></tr>
-<tr><td>「A と B より C」</td><td>適用（含意・全称文の除去）</td></tr>
+<tr><td>「〜とする」「任意に取る」</td><td><code>fun</code>（<code>→</code>・<code>∀</code> を示す形）</td></tr>
+<tr><td>「A と B より C」</td><td>適用（含意・全称文を使う）</td></tr>
 <tr><td>「C を得た。以下それを使う」</td><td><code>have h : C := …</code></td></tr>
 <tr><td>「〜となる x を取る」</td><td><code>have ⟨x, hx⟩ := …</code>（<code>∃</code> の分解）</td></tr>
-<tr><td>「求めるものは〜である」</td><td><code>⟨証人, 根拠⟩</code>（<code>∃</code> の導入）</td></tr>
-<tr><td>「場合分けする」</td><td><code>match</code>（<code>∨</code> などの除去）</td></tr>
+<tr><td>「求めるものは〜である」</td><td><code>⟨証人, 根拠⟩</code>（<code>∃</code> を示す形）</td></tr>
+<tr><td>「場合分けする」</td><td><code>match</code>（<code>∨</code> などを使う）</td></tr>
 <tr><td>「両辺に〜を施す」「= をつなぐ」</td><td><code>congrArg</code>・<code>Eq.trans</code></td></tr>
 <tr><td>「明らか」</td><td><code>rfl</code>（計算で両辺が一致するときだけ書ける）</td></tr>
 <tr><td>「∎」</td><td>型検査が通ること</td></tr>
@@ -727,8 +738,8 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <p><strong>ふつうの証明</strong>: <code>n</code> が偶数なら <code>n = 2k</code> と書ける。すると <code>n + 2 = 2k + 2 = 2(k + 1)</code> だから、<code>n + 2</code> も偶数である。∎</p>
 <p><strong>詳細版</strong>:</p>
 <ol>
-<li>仮定 <code>IsEven n</code> すなわち <code>∃ k, n = 2 * k</code> を分解し、 <code>k</code> と根拠 <code>hk : n = 2 * k</code> を得る（∃ の除去）。</li>
-<li>証人として <code>k + 1</code> を立てる（∃ の導入）。</li>
+<li>仮定 <code>IsEven n</code> すなわち <code>∃ k, n = 2 * k</code> を分解し、 <code>k</code> と根拠 <code>hk : n = 2 * k</code> を得る（<code>∃</code> を使う）。</li>
+<li>証人として <code>k + 1</code> を立てる（<code>∃</code> を示す）。</li>
 <li>根拠として <code>n + 2 = 2 * (k + 1)</code> を示す。<code>hk</code> で <code>n</code> を <code>2 * k</code> に書き換えると、示すべきは <code>2 * k + 2 = 2 * (k + 1)</code>——これは <code>Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2</code> の対称形である。</li>
 </ol>
 <p><strong>項</strong>:</p>
@@ -759,15 +770,8 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 
 error: don&#x27;t know how to synthesize placeholder for argument `h`
 context:
-α : Type u
-β : Type v
-γ : Type w
-p q r : Prop
-P : α → Type v
-Q : α → Prop
 n : Nat
 ⊢ 1 ≤ n</code></pre>
-<p>（<code>α</code>〜<code>Q</code> は、このファイル冒頭の <code>variable</code> がスコープにあるため並んでいるだけのもの。いま関係するのは最後の2行、<code>n : Nat</code> と <code>⊢ 1 ≤ n</code> である。）</p>
 <p>このエラーを出したのは、2段構えの<strong>前段</strong>——エラボレータ——である。省略された仮定は「未解決のゴール <code>⊢ 1 ≤ n</code>」として露出し、それが埋まらない限り完成した項が組み上がらないので、カーネルに渡る前に止まる。そして実際、この仮定はどうやっても埋められない。自然数の引き算は <code>0 - 1 = 0</code> と切り捨てなので、<code>n = 0</code> がこの主張の反例だからである。</p>
 <pre class="lean"><code><span class="kw">#eval</span> (0 : Nat) - 1 + 1</code></pre>
 <pre class="quote"><code>1</code></pre>
@@ -792,15 +796,15 @@ n : Nat
 <p>自然数の引き算は <code>0</code> で切り捨てられる。</p>
 </details>
 <h2>11. 対応のずれ</h2>
-<p>対応は完全ではない。証明は「あるかないか」だけが問題で中身は区別されない（同じ命題の2つの証明は等しいものとして扱われる）のに対し、項は中身が区別される。この差が、除去のところに現れる。</p>
+<p>対応は完全ではない。証明は「あるかないか」だけが問題で中身は区別されない（同じ命題の2つの証明は等しいものとして扱われる）のに対し、項は中身が区別される。この差が、<strong>使うとき</strong>に現れる。</p>
 <p>依存和からは第一成分を取り出せるが、存在量化からは取り出せない。</p>
-<pre class="lean"><code><span class="doc">/-- 型側: どの点だったかを取り出せる。 -/</span>
-<span class="kw">def</span> sigmaFst (s : (a : α) × P a) : α := s.1
+<p>型側: どの点だったかを取り出せる。</p>
+<pre class="lean"><code><span class="kw">def</span> sigmaFst {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : α := s.1
 
 <span class="kw">#check</span> sigmaFst</code></pre>
 <pre class="quote"><code>sigmaFst {α : Type} {P : α → Type} (s : (a : α) × P a) : α</code></pre>
-<pre class="lean"><code><span class="doc">/-- 型側: 第二成分も取り出せる。型が第一成分に依存していることに注意。 -/</span>
-<span class="kw">def</span> sigmaSnd (s : (a : α) × P a) : P s.1 := s.2
+<p>型側: 第二成分も取り出せる。型が第一成分に依存していることに注意。</p>
+<pre class="lean"><code><span class="kw">def</span> sigmaSnd {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : P s.1 := s.2
 
 <span class="kw">#check</span> sigmaSnd</code></pre>
 <pre class="quote"><code>sigmaSnd {α : Type} {P : α → Type} (s : (a : α) × P a) : P s.fst</code></pre>
@@ -828,11 +832,9 @@ n : Nat
 <span class="cm">--</span>
 <span class="cm">-- `Prop` の世界から `Type` の世界へ渡れている。4節からずっと使ってきた</span>
 <span class="cm">-- `.elim` や、等式によるデータの書き換え（`▸`、`Top.lean` で使用）が</span>
-<span class="cm">-- 正当なのは、この例外のおかげである。</span>
-
-<span class="doc">/-- 結論が命題である限り、分解して使うことはできる。</span>
-<span class="doc">`∃` の除去はこの形になる。 -/</span>
-<span class="kw">theorem</span> existsElim (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
+<span class="cm">-- 正当なのは、この例外のおかげである。</span></code></pre>
+<p>結論が命題である限り、分解して使うことはできる。 <code>∃</code> を使うときはこの形になる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> existsElim {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>} (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
   <span class="kw">match</span> h <span class="kw">with</span>
   | ⟨a, ha⟩ =&gt; hr a ha
 
@@ -852,10 +854,9 @@ n : Nat
 <span class="cm">-- 要点は `can only eliminate into Prop` の1行である）。</span>
 <span class="cm">-- 「`Prop` にしか落とせない」というのがまさに制限の内容で、</span>
 <span class="cm">-- 3 節の `swapSum` が型側では書けて、`swapOr` が命題側でも書けたのは、</span>
-<span class="cm">-- どちらも行き先が同じ世界（型なら型、命題なら命題）に留まっていたから。</span>
-
-<span class="doc">/-- 結論が命題であれば、「または」も場合分けして使える。 -/</span>
-<span class="kw">theorem</span> orElimToProp (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
+<span class="cm">-- どちらも行き先が同じ世界（型なら型、命題なら命題）に留まっていたから。</span></code></pre>
+<p>結論が命題であれば、「または」も場合分けして使える。</p>
+<pre class="lean"><code><span class="kw">theorem</span> orElimToProp {p q r : <span class="sort">Prop</span>} (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
 
 <span class="kw">#check</span> orElimToProp</code></pre>
 <pre class="quote"><code>orElimToProp {p q r : Prop} (h : p ∨ q) (f : p → r) (g : q → r) : r</code></pre>
@@ -877,7 +878,7 @@ which has propositional type
 </details>
 <h2>12. タクティク — 証明のもう1つの書き方</h2>
 <p>ここまで、証明はすべて項として直接書いてきた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 2節の <code>swapAnd</code> をタクティクで書き直してみる。</p>
-<pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; : p ∧ q → q ∧ p := <span class="kw">by</span>
+<pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">by</span>
   <span class="kw">intro</span> h            <span class="cm">-- `fun h =&gt;` に対応</span>
   <span class="kw">exact</span> ⟨h.2, h.1⟩   <span class="cm">-- この項をそのまま置く</span>
 
@@ -907,7 +908,7 @@ fun {p q} h ↦ ⟨h.right, h.left⟩
 <h3>✏ 練習</h3>
 <ol>
 <li><code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、 <code>#print</code> で生成された項を本文の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
-<li><code>theorem idTac : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
+<li><code>theorem idTac {p : Prop} : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">theorem</span> swapOrTac {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">by</span>

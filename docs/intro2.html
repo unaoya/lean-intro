@@ -87,9 +87,8 @@ error(lean.synthInstanceFailed): failed to synthesize instance of type class
 Hint: Type class instance resolution failures can be inspected with the
 `set_option trace.Meta.synthInstance true` command.</code></pre>
 <p>（<code>error(…)</code> の丸括弧はエラーの分類名。<code>Hint:</code> は調査のヒントで、以後の引用ではどちらも省略することがある。）</p>
-<pre class="lean"><code><span class="doc">/-- インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。</span>
-<span class="doc">`zeroPair Nat` と書くだけで、`HasZero Nat` の項は登録簿から自動で渡される。 -/</span>
-<span class="kw">def</span> zeroPair (α : <span class="sort">Type</span>) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.zero⟩
+<p>インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。 <code>zeroPair Nat</code> と書くだけで、<code>HasZero Nat</code> の項は登録簿から自動で渡される。</p>
+<pre class="lean"><code><span class="kw">def</span> zeroPair (α : <span class="sort">Type</span>) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.zero⟩
 
 <span class="kw">#check</span> zeroPair</code></pre>
 <pre class="quote"><code>zeroPair (α : Type) [HasZero α] : Pair α α</code></pre>
@@ -252,7 +251,7 @@ in the application
 
 <span class="kw">macro_rules</span>
   | `(⟪$x, $y⟫) =&gt; `(Pair.mk $x $y)</code></pre>
-<p><code>macro_rules</code> の行はこう読む。<code></code> <code>(…) </code><code> は**構文の断片**を作る引用符、 </code>$x<code>・</code>$y<code> は受け取った断片をそこへ埋め込む印である。つまりこの行は「</code>⟪x, y⟫<code> と書かれたら、</code>Pair.mk x y` と書かれたことにせよ」と読める。</p>
+<p><code>macro_rules</code> の行はこう読む。<code>`(…)</code> は<strong>構文の断片</strong>を作る引用符、 <code>$x</code>・<code>$y</code> は受け取った断片をそこへ埋め込む印である。つまりこの行は「<code>⟪x, y⟫</code> と書かれたら、<code>Pair.mk x y</code> と書かれたことにせよ」と読める。</p>
 <p>すると <code>⟪1, true⟫</code> は <code>Pair.mk 1 true</code> に展開されてから型検査されるので、型は <code>Pair Nat Bool</code> のはずである:</p>
 <pre class="lean"><code><span class="kw">#check</span> ⟪1, true⟫</code></pre>
 <pre class="quote"><code>{ fst := 1, snd := true } : Pair Nat Bool</code></pre>
@@ -282,8 +281,8 @@ in the application
 <h2>4. 集合 — <code>Set</code> を自作する</h2>
 <p><code>Top.lean</code> は、数学でいう「集合」の上に位相を組み立てる。その集合をここで作ってしまおう。<code>CH.lean</code> で身につけた証明の書き方の、最初の実戦でもある。</p>
 <p><code>X</code> の部分集合を1つ指定することは、「各 <code>a : X</code> が入っているかどうか」を決めること——つまり <strong><code>X</code> 上の述語を1つ与えること</strong>と同じである。そこで:</p>
-<pre class="lean"><code><span class="doc">/-- `X` の部分集合の型。実体は述語 `X → Prop` そのもので、新しいデータは何もない。 -/</span>
-<span class="kw">def</span> Set (X : <span class="sort">Type</span>) : <span class="sort">Type</span> := X → <span class="sort">Prop</span>
+<p><code>X</code> の部分集合の型。実体は述語 <code>X → Prop</code> そのもので、新しいデータは何もない。</p>
+<pre class="lean"><code><span class="kw">def</span> Set (X : <span class="sort">Type</span>) : <span class="sort">Type</span> := X → <span class="sort">Prop</span>
 
 <span class="kw">#check</span> Set</code></pre>
 <pre class="quote"><code>Set (X : Type) : Type</code></pre>
@@ -298,7 +297,10 @@ in the application
 
 <span class="kw">macro_rules</span>
   | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)</code></pre>
-<p>所属の記号 <code>∈</code>（<code>\in</code> と打つ）は、標準ライブラリの記法用クラス <code>Membership</code> に instance 登録すると使えるようになる——1節で見た「記法はクラスで動く」の実戦である。中身は「集合（＝述語）<code>s</code> に点 <code>a</code> を適用する」だけ:</p>
+<p>所属の記号 <code>∈</code>（<code>\in</code> と打つ）は、標準ライブラリの記法用クラス <code>Membership</code> に instance 登録すると使えるようになる——1節で見た「記法はクラスで動く」の実戦である。中身は「集合（＝述語）<code>s</code> に点 <code>a</code> を適用する」だけ。まずクラスそのものを見ておく:</p>
+<pre class="lean"><code><span class="kw">#check</span> Membership</code></pre>
+<pre class="quote"><code>Membership.{u, v} (α : outParam (Type u)) (γ : Type v) : Type (max u v)</code></pre>
+<p><code>Membership α γ</code> は「入れ物 <code>γ</code> に要素 <code>α</code> が属する」という記法 <code>∈</code> のためのクラスである（表示は宇宙変数付きだが、この教材の範囲ではどれも <code>Type</code> と読んでよい——<code>Intro1.lean</code> 1節）。<code>outParam</code> は instance 探索へのヒントで、「<code>∈</code> の右の入れ物の型 <code>γ</code> が分かれば、左の要素の型 <code>α</code> はそこから自動で決まる」という指定である。次の登録は <code>γ := Set X</code>・<code>α := X</code> の場合に当たる:</p>
 <pre class="lean"><code><span class="kw">instance</span> {X : <span class="sort">Type</span>} : Membership X (Set X) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
 
 <span class="kw">#check</span> (1 : Nat) ∈ ({n | n = 1} : Set Nat)</code></pre>

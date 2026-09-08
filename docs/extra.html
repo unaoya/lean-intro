@@ -78,11 +78,9 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p><code>Top.lean</code> の <code>Continuous</code> は位相をインスタンス引数で受け取るので、 1つの型に別の位相を載せて論じるには <code>@</code> で位相を明示する。例えば <code>@Continuous X (discrete X) Y tY f</code> は「<code>X</code> に離散位相を入れたとき <code>f</code> は連続」。</p>
 <h2>Part 1: 密着位相</h2>
 <p>離散位相（<code>Top.lean</code> の <code>discrete</code>、すべての部分集合が開）の対極として、開集合が <code>∅</code> と <code>univ</code> しかない位相を<strong>密着位相</strong>という。</p>
-<pre class="lean"><code><span class="doc">/-- 問題1: 密着位相が位相の3公理を満たすことを示せ。</span>
-<span class="doc"></span>
-<span class="doc">ヒント: `isOpen_sUnion` では「`S` のどれかが `univ` か、全部 `∅` か」で</span>
-<span class="doc">場合分けする（`by_cases`）。 -/</span>
-@[reducible] <span class="kw">def</span> indiscrete (X : <span class="sort">Type</span>) : TopologicalSpace X <span class="kw">where</span>
+<p>問題1: 密着位相が位相の3公理を満たすことを示せ。</p>
+<p>ヒント: <code>isOpen_sUnion</code> では「<code>S</code> のどれかが <code>univ</code> か、全部 <code>∅</code> か」で場合分けする（<code>by_cases</code>）。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> indiscrete (X : <span class="sort">Type</span>) : TopologicalSpace X <span class="kw">where</span>
   IsOpen s := s = ∅ ∨ s = Set.univ
   isOpen_univ := <span class="sorry">sorry</span>
   isOpen_inter := <span class="sorry">sorry</span>
@@ -90,12 +88,10 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> indiscrete
 <span class="cm">-- 表示: `indiscrete (X : Type) : TopologicalSpace X`</span>
-<span class="cm">-- 読み: `discrete` と同じ形——型を受け取って位相そのものを返す関数。</span>
-
-<span class="doc">/-- 問題2: 離散位相からの写像はすべて連続であることを示せ。</span>
-<span class="doc"></span>
-<span class="doc">離散位相では何もかも開なので、逆像の開性はただで手に入る。 -/</span>
-<span class="kw">theorem</span> continuous_from_discrete {X Y : <span class="sort">Type</span>} [tY : TopologicalSpace Y] (f : X → Y) :
+<span class="cm">-- 読み: `discrete` と同じ形——型を受け取って位相そのものを返す関数。</span></code></pre>
+<p>問題2: 離散位相からの写像はすべて連続であることを示せ。</p>
+<p>離散位相では何もかも開なので、逆像の開性はただで手に入る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_from_discrete {X Y : <span class="sort">Type</span>} [tY : TopologicalSpace Y] (f : X → Y) :
     @Continuous X (discrete X) Y tY f :=
   <span class="sorry">sorry</span>
 
@@ -105,13 +101,10 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="cm">-- 読み: 表示では暗黙・インスタンス引数が省かれるので、結論がただの `Continuous f` に</span>
 <span class="cm">-- 見える。実際の主張は `@Continuous X (discrete X) Y tY f` で、`X` 側が離散位相で</span>
 <span class="cm">-- あることは表示からは読めない。`@` 付きの主張は `#check` の表示だけでは</span>
-<span class="cm">-- 区別できないことに注意。</span>
-
-<span class="doc">/-- 問題3: 密着位相への写像はすべて連続であることを示せ。</span>
-<span class="doc"></span>
-<span class="doc">ヒント: 逆像を取る前に開集合は `∅` か `univ` しかない。</span>
-<span class="doc">`f ⁻¹&#x27; ∅` と `f ⁻¹&#x27; Set.univ` は定義上それぞれ `∅` と `univ` に等しい。 -/</span>
-<span class="kw">theorem</span> continuous_to_indiscrete {X Y : <span class="sort">Type</span>} [tX : TopologicalSpace X] (f : X → Y) :
+<span class="cm">-- 区別できないことに注意。</span></code></pre>
+<p>問題3: 密着位相への写像はすべて連続であることを示せ。</p>
+<p>ヒント: 逆像を取る前に開集合は <code>∅</code> か <code>univ</code> しかない。 <code>f ⁻¹&#x27; ∅</code> と <code>f ⁻¹&#x27; Set.univ</code> は定義上それぞれ <code>∅</code> と <code>univ</code> に等しい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_to_indiscrete {X Y : <span class="sort">Type</span>} [tX : TopologicalSpace X] (f : X → Y) :
     @Continuous X tX Y (indiscrete Y) f :=
   <span class="sorry">sorry</span>
 
@@ -150,24 +143,18 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">#check</span> Category
 <span class="cm">-- 表示: `Cat.Category : Type 2`</span>
 <span class="cm">-- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。</span>
-<span class="cm">-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span>
-
-<span class="doc">/-- 問題5: 型の圏を作れ。対象は型、射は関数。</span>
-<span class="doc"></span>
-<span class="doc">法則の証明はすべて `rfl` で済むはず。なぜ済むのかも考えてみること</span>
-<span class="doc">（関数の合成は定義上結合的である）。 -/</span>
-@[reducible] <span class="kw">def</span> TypeCat : Category :=
+<span class="cm">-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span></code></pre>
+<p>問題5: 型の圏を作れ。対象は型、射は関数。</p>
+<p>法則の証明はすべて <code>rfl</code> で済むはず。なぜ済むのかも考えてみること（関数の合成は定義上結合的である）。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> TypeCat : Category :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> TypeCat
 <span class="cm">-- 表示: `Cat.TypeCat : Category`</span>
-<span class="cm">-- 読み: 「圏」という型の項が1つ手に入った。</span>
-
-<span class="doc">/-- 位相空間の圏の対象: 台の型と、その上の位相を束ねたもの。</span>
-<span class="doc"></span>
-<span class="doc">`attribute [instance] TopSpace.str` としておくと、`A : TopSpace` に対して</span>
-<span class="doc">`A.carrier` 上の位相が自動で見つかるようになり、`Continuous f` とだけ書ける。 -/</span>
-<span class="kw">structure</span> TopSpace : <span class="sort">Type</span> 1 <span class="kw">where</span>
+<span class="cm">-- 読み: 「圏」という型の項が1つ手に入った。</span></code></pre>
+<p>位相空間の圏の対象: 台の型と、その上の位相を束ねたもの。</p>
+<p><code>attribute [instance] TopSpace.str</code> としておくと、<code>A : TopSpace</code> に対して <code>A.carrier</code> 上の位相が自動で見つかるようになり、<code>Continuous f</code> とだけ書ける。</p>
+<pre class="lean"><code><span class="kw">structure</span> TopSpace : <span class="sort">Type</span> 1 <span class="kw">where</span>
 <span class="doc">  /-- 台の型。 -/</span>
   carrier : <span class="sort">Type</span>
 <span class="doc">  /-- 台の上の位相。 -/</span>
@@ -177,15 +164,10 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="cm">-- 表示: `Cat.TopSpace : Type 1`</span>
 <span class="cm">-- 読み: 台の型（`Type` の項）をフィールドに含むので、`Type` でなく `Type 1` に住む。</span>
 
-<span class="kw">attribute</span> [<span class="kw">instance</span>] TopSpace.str
-
-<span class="doc">/-- 問題6: 位相空間の圏を作れ。対象は `TopSpace`、</span>
-<span class="doc">射は「関数と、その連続性の証明の組」`{ f : A.carrier → B.carrier // Continuous f }`。</span>
-<span class="doc"></span>
-<span class="doc">これは `CH.lean` 6節の依存和そのもの（`Subtype`）である。</span>
-<span class="doc">ヒント: 恒等射は `continuous_id`、合成は `Continuous.comp`。</span>
-<span class="doc">射の等しさは `Subtype.ext`（第一成分が等しければ等しい）で示す。 -/</span>
-@[reducible] <span class="kw">def</span> TopCat : Category :=
+<span class="kw">attribute</span> [<span class="kw">instance</span>] TopSpace.str</code></pre>
+<p>問題6: 位相空間の圏を作れ。対象は <code>TopSpace</code>、射は「関数と、その連続性の証明の組」<code>{ f : A.carrier → B.carrier // Continuous f }</code>。</p>
+<p>これは <code>CH.lean</code> 6節の依存和そのもの（<code>Subtype</code>）である。ヒント: 恒等射は <code>continuous_id</code>、合成は <code>Continuous.comp</code>。射の等しさは <code>Subtype.ext</code>（第一成分が等しければ等しい）で示す。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> TopCat : Category :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> TopCat
@@ -205,29 +187,22 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> Functor
 <span class="cm">-- 表示: `Cat.Functor (C D : Category) : Type 1`</span>
-<span class="cm">-- 読み: 2つの圏を受け取って「その間の関手全体の型」を返す。</span>
-
-<span class="doc">/-- 問題7: 忘却関手 `U : Top → Type` を作れ。位相を忘れて台の型だけを残す。 -/</span>
-@[reducible] <span class="kw">def</span> forgetful : Functor TopCat TypeCat :=
+<span class="cm">-- 読み: 2つの圏を受け取って「その間の関手全体の型」を返す。</span></code></pre>
+<p>問題7: 忘却関手 <code>U : Top → Type</code> を作れ。位相を忘れて台の型だけを残す。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> forgetful : Functor TopCat TypeCat :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> forgetful
-<span class="cm">-- 表示: `Cat.forgetful : Functor TopCat TypeCat`</span>
-
-<span class="doc">/-- 問題8: 離散関手 `D : Type → Top` を作れ。型に離散位相を載せる。</span>
-<span class="doc">射の行き先（任意の写像が連続になること）は問題2で作った。</span>
-<span class="doc"></span>
-<span class="doc">ヒント: 行き先の位相はインスタンス探索では見つからないので、</span>
-<span class="doc">`continuous_from_discrete (tY := discrete _) f` のように名前付き引数で明示する。 -/</span>
-@[reducible] <span class="kw">def</span> discreteFunctor : Functor TypeCat TopCat :=
+<span class="cm">-- 表示: `Cat.forgetful : Functor TopCat TypeCat`</span></code></pre>
+<p>問題8: 離散関手 <code>D : Type → Top</code> を作れ。型に離散位相を載せる。射の行き先（任意の写像が連続になること）は問題2で作った。</p>
+<p>ヒント: 行き先の位相はインスタンス探索では見つからないので、 <code>continuous_from_discrete (tY := discrete _) f</code> のように名前付き引数で明示する。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> discreteFunctor : Functor TypeCat TopCat :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> discreteFunctor
-<span class="cm">-- 表示: `Cat.discreteFunctor : Functor TypeCat TopCat`</span>
-
-<span class="doc">/-- 問題9: 密着関手 `I : Type → Top` を作れ。型に密着位相を載せる。</span>
-<span class="doc">射の行き先は問題3で作った。 -/</span>
-@[reducible] <span class="kw">def</span> indiscreteFunctor : Functor TypeCat TopCat :=
+<span class="cm">-- 表示: `Cat.discreteFunctor : Functor TypeCat TopCat`</span></code></pre>
+<p>問題9: 密着関手 <code>I : Type → Top</code> を作れ。型に密着位相を載せる。射の行き先は問題3で作った。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> indiscreteFunctor : Functor TypeCat TopCat :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> indiscreteFunctor
@@ -264,27 +239,18 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> Adjunction
 <span class="cm">-- 表示: `Cat.Adjunction {C D : Category} (F : Functor C D) (G : Functor D C) : Type 1`</span>
-<span class="cm">-- 読み: 圏 `C` `D` は関手 `F` `G` の型から決まるので暗黙引数。</span>
-
-<span class="doc">/-- 問題10: 随伴「離散 ⊣ 忘却」を作れ。</span>
-<span class="doc"></span>
-<span class="doc">`Hom_Top(D X, A) ≃ Hom_Type(X, U A)`: 左辺の射は「連続な写像」、</span>
-<span class="doc">右辺の射は「ただの写像」だが、離散位相からはどんな写像も連続（問題2）なので、</span>
-<span class="doc">この対応の実体は「同じ関数を右へ左へ読み替えるだけ」である。</span>
-<span class="doc">自然性も含め、ほとんどの証明が `rfl` か `Subtype.ext rfl` で済むはず。 -/</span>
-<span class="kw">def</span> discreteAdj : Adjunction discreteFunctor forgetful :=
+<span class="cm">-- 読み: 圏 `C` `D` は関手 `F` `G` の型から決まるので暗黙引数。</span></code></pre>
+<p>問題10: 随伴「離散 ⊣ 忘却」を作れ。</p>
+<p><code>Hom_Top(D X, A) ≃ Hom_Type(X, U A)</code>: 左辺の射は「連続な写像」、右辺の射は「ただの写像」だが、離散位相からはどんな写像も連続（問題2）なので、この対応の実体は「同じ関数を右へ左へ読み替えるだけ」である。自然性も含め、ほとんどの証明が <code>rfl</code> か <code>Subtype.ext rfl</code> で済むはず。</p>
+<pre class="lean"><code><span class="kw">def</span> discreteAdj : Adjunction discreteFunctor forgetful :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> discreteAdj
 <span class="cm">-- 表示: `Cat.discreteAdj : Adjunction discreteFunctor forgetful`</span>
-<span class="cm">-- 読み: 型がそのまま「離散 ⊣ 忘却」と読める。</span>
-
-<span class="doc">/-- 問題11: 随伴「忘却 ⊣ 密着」を作れ。問題10と対称的。</span>
-<span class="doc"></span>
-<span class="doc">これで 離散 ⊣ 忘却 ⊣ 密着 という3連随伴ができたことになる。</span>
-<span class="doc">離散位相が「もっとも細かい位相」、密着位相が「もっとも粗い位相」であることの</span>
-<span class="doc">圏論的な言い換えである。 -/</span>
-<span class="kw">def</span> indiscreteAdj : Adjunction forgetful indiscreteFunctor :=
+<span class="cm">-- 読み: 型がそのまま「離散 ⊣ 忘却」と読める。</span></code></pre>
+<p>問題11: 随伴「忘却 ⊣ 密着」を作れ。問題10と対称的。</p>
+<p>これで 離散 ⊣ 忘却 ⊣ 密着 という3連随伴ができたことになる。離散位相が「もっとも細かい位相」、密着位相が「もっとも粗い位相」であることの圏論的な言い換えである。</p>
+<pre class="lean"><code><span class="kw">def</span> indiscreteAdj : Adjunction forgetful indiscreteFunctor :=
   <span class="sorry">sorry</span>
 
 <span class="kw">#check</span> indiscreteAdj
@@ -318,27 +284,19 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p>を形式化し、A〜C が開集合系と<strong>等価</strong>であることを、Part 3 で作った <code>Cat.Equiv</code> を「構造どうしの全単射」として使って示す。</p>
 <p>等価性の証明には「同じ <code>IsOpen</code> を持つ2つの <code>TopologicalSpace</code> は等しい」という外延性補題が要る。証明フィールドは proof irrelevance により等しさに影響しないので、述語フィールドの一致だけから構造全体の等しさが出る（下の <code>ext&#x27;</code>。この形の補題は各構造に対して与えておく）。</p>
 <p>この Part の <code>#check</code> は表示の注記を省く（読み方はこれまでと同じ）。</p>
-<pre class="lean"><code><span class="doc">/-- 集合族の共通部分。`sUnion` の双対。 -/</span>
-<span class="kw">def</span> Set.sInter {α : <span class="sort">Type</span>} (S : Set (Set α)) : Set α := {a | ∀ s ∈ S, a ∈ s}
-
-<span class="doc">/-- 前置記法 `⋂₀ S`。 -/</span>
-<span class="kw">prefix</span>:110 &quot;⋂₀ &quot; =&gt; Set.sInter
-
-<span class="doc">/-- 包含の反対称性。集合の等式を示す基本手段（以下で多用する）。 -/</span>
-<span class="kw">theorem</span> Set.subset_antisymm {α : <span class="sort">Type</span>} {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
-  Set.ext <span class="kw">fun</span> a =&gt; ⟨<span class="kw">fun</span> ha =&gt; h₁ a ha, <span class="kw">fun</span> ha =&gt; h₂ a ha⟩
-
-<span class="doc">/-- 同じ `IsOpen` を持つ位相は等しい。`cases` で両者を分解すると、</span>
-<span class="doc">述語の一致を代入した残りは証明フィールドだけになり、</span>
-<span class="doc">proof irrelevance により `rfl` で閉じる。 -/</span>
-<span class="kw">theorem</span> TopologicalSpace.ext&#x27; {X : <span class="sort">Type</span>} {t₁ t₂ : TopologicalSpace X}
+<p>集合族の共通部分。<code>sUnion</code> の双対。</p>
+<pre class="lean"><code><span class="kw">def</span> Set.sInter {α : <span class="sort">Type</span>} (S : Set (Set α)) : Set α := {a | ∀ s ∈ S, a ∈ s}</code></pre>
+<p>前置記法 <code>⋂₀ S</code>。</p>
+<pre class="lean"><code><span class="kw">prefix</span>:110 &quot;⋂₀ &quot; =&gt; Set.sInter</code></pre>
+<p>包含の反対称性。集合の等式を示す基本手段（以下で多用する）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Set.subset_antisymm {α : <span class="sort">Type</span>} {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
+  Set.ext <span class="kw">fun</span> a =&gt; ⟨<span class="kw">fun</span> ha =&gt; h₁ a ha, <span class="kw">fun</span> ha =&gt; h₂ a ha⟩</code></pre>
+<p>同じ <code>IsOpen</code> を持つ位相は等しい。<code>cases</code> で両者を分解すると、述語の一致を代入した残りは証明フィールドだけになり、 proof irrelevance により <code>rfl</code> で閉じる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TopologicalSpace.ext&#x27; {X : <span class="sort">Type</span>} {t₁ t₂ : TopologicalSpace X}
     (h : t₁.IsOpen = t₂.IsOpen) : t₁ = t₂ := <span class="kw">by</span>
-  <span class="kw">cases</span> t₁; <span class="kw">cases</span> t₂; <span class="kw">cases</span> h; rfl
-
-<span class="doc">/-- 問題14: 補集合の基本法則を示せ（ド・モルガンを含む6本）。</span>
-<span class="doc">`compl_inter` と `compl_sInter` には古典論理（`by_cases` か</span>
-<span class="doc">`Classical.byContradiction`）が要る。どこで要るのか意識しながら書くこと。 -/</span>
-<span class="kw">theorem</span> Set.compl_univ {α : <span class="sort">Type</span>} : (Set.univ : Set α)ᶜ = ∅ := <span class="sorry">sorry</span>
+  <span class="kw">cases</span> t₁; <span class="kw">cases</span> t₂; <span class="kw">cases</span> h; rfl</code></pre>
+<p>問題14: 補集合の基本法則を示せ（ド・モルガンを含む6本）。 <code>compl_inter</code> と <code>compl_sInter</code> には古典論理（<code>by_cases</code> か <code>Classical.byContradiction</code>）が要る。どこで要るのか意識しながら書くこと。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Set.compl_univ {α : <span class="sort">Type</span>} : (Set.univ : Set α)ᶜ = ∅ := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> Set.compl_empty {α : <span class="sort">Type</span>} : (∅ : Set α)ᶜ = Set.univ := <span class="sorry">sorry</span>
 
@@ -352,8 +310,8 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">theorem</span> Set.compl_sInter {α : <span class="sort">Type</span>} (S : Set (Set α)) :
     (⋂₀ S)ᶜ = ⋃₀ (Set.compl &#x27;&#x27; S) := <span class="sorry">sorry</span></code></pre>
 <h3>A: 閉集合系</h3>
-<pre class="lean"><code><span class="doc">/-- 閉集合系による位相の公理化。開集合系の公理の双対になっている。 -/</span>
-<span class="kw">structure</span> ClosedTopology (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<p>閉集合系による位相の公理化。開集合系の公理の双対になっている。</p>
+<pre class="lean"><code><span class="kw">structure</span> ClosedTopology (X : <span class="sort">Type</span>) <span class="kw">where</span>
 <span class="doc">  /-- その集合が閉集合であるという述語。 -/</span>
   IsClosed (s : Set X) : <span class="sort">Prop</span>
 <span class="doc">  /-- 空集合は閉。 -/</span>
@@ -365,32 +323,28 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">theorem</span> ClosedTopology.ext&#x27; {X : <span class="sort">Type</span>} {c₁ c₂ : ClosedTopology X}
     (h : c₁.IsClosed = c₂.IsClosed) : c₁ = c₂ := <span class="kw">by</span>
-  <span class="kw">cases</span> c₁; <span class="kw">cases</span> c₂; <span class="kw">cases</span> h; rfl
-
-<span class="doc">/-- 問題15: 閉集合系から開集合系を作れ（開 = 補集合が閉）。問題14を使う。 -/</span>
-@[reducible] <span class="kw">def</span> ClosedTopology.toTop {X : <span class="sort">Type</span>} (c : ClosedTopology X) : TopologicalSpace X <span class="kw">where</span>
+  <span class="kw">cases</span> c₁; <span class="kw">cases</span> c₂; <span class="kw">cases</span> h; rfl</code></pre>
+<p>問題15: 閉集合系から開集合系を作れ（開 = 補集合が閉）。問題14を使う。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> ClosedTopology.toTop {X : <span class="sort">Type</span>} (c : ClosedTopology X) : TopologicalSpace X <span class="kw">where</span>
   IsOpen s := c.IsClosed sᶜ
   isOpen_univ := <span class="sorry">sorry</span>
   isOpen_inter := <span class="sorry">sorry</span>
-  isOpen_sUnion := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題16: 開集合系から閉集合系を作れ（閉 = 補集合が開）。 -/</span>
-<span class="kw">def</span> TopologicalSpace.toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : ClosedTopology X <span class="kw">where</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題16: 開集合系から閉集合系を作れ（閉 = 補集合が開）。</p>
+<pre class="lean"><code><span class="kw">def</span> TopologicalSpace.toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : ClosedTopology X <span class="kw">where</span>
   IsClosed s := t.IsOpen sᶜ
   isClosed_empty := <span class="sorry">sorry</span>
   isClosed_union := <span class="sorry">sorry</span>
-  isClosed_sInter := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題17: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。</span>
-<span class="doc">ヒント: `ext&#x27;` → `funext` → `show` で二重補集合の形に読み替えて `compl_compl`。 -/</span>
-<span class="kw">theorem</span> toTop_toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toClosed.toTop = t := <span class="sorry">sorry</span>
+  isClosed_sInter := <span class="sorry">sorry</span></code></pre>
+<p>問題17: 往復が恒等であることを示し、<code>Cat.Equiv</code> にまとめよ。ヒント: <code>ext&#x27;</code> → <code>funext</code> → <code>show</code> で二重補集合の形に読み替えて <code>compl_compl</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> toTop_toClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toClosed.toTop = t := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> toClosed_toTop {X : <span class="sort">Type</span>} (c : ClosedTopology X) : c.toTop.toClosed = c := <span class="sorry">sorry</span>
 
 <span class="kw">def</span> topEquivClosed (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (ClosedTopology X) := <span class="sorry">sorry</span></code></pre>
 <h3>B: Kuratowski の閉包作用素</h3>
-<pre class="lean"><code><span class="doc">/-- Kuratowski の閉包公理。「閉包」の振る舞いだけで位相を決める。 -/</span>
-<span class="kw">structure</span> KuratowskiClosure (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<p>Kuratowski の閉包公理。「閉包」の振る舞いだけで位相を決める。</p>
+<pre class="lean"><code><span class="kw">structure</span> KuratowskiClosure (X : <span class="sort">Type</span>) <span class="kw">where</span>
 <span class="doc">  /-- 閉包作用素。 -/</span>
   cl (s : Set X) : Set X
 <span class="doc">  /-- 空集合の閉包は空。 -/</span>
@@ -404,15 +358,12 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">theorem</span> KuratowskiClosure.ext&#x27; {X : <span class="sort">Type</span>} {k₁ k₂ : KuratowskiClosure X}
     (h : k₁.cl = k₂.cl) : k₁ = k₂ := <span class="kw">by</span>
-  <span class="kw">cases</span> k₁; <span class="kw">cases</span> k₂; <span class="kw">cases</span> h; rfl
-
-<span class="doc">/-- 位相から定める閉包: `s` を含む閉集合すべての共通部分。 -/</span>
-<span class="kw">def</span> TopologicalSpace.closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) : Set X :=
-  ⋂₀ {u | t.IsOpen uᶜ ∧ s ⊆ u}
-
-<span class="doc">/-- 問題18: 閉包の基本性質4本を示せ。</span>
-<span class="doc">`closure_isClosed` には問題14の `compl_sInter` が要る。 -/</span>
-<span class="kw">theorem</span> TopologicalSpace.subset_closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) :
+  <span class="kw">cases</span> k₁; <span class="kw">cases</span> k₂; <span class="kw">cases</span> h; rfl</code></pre>
+<p>位相から定める閉包: <code>s</code> を含む閉集合すべての共通部分。</p>
+<pre class="lean"><code><span class="kw">def</span> TopologicalSpace.closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) : Set X :=
+  ⋂₀ {u | t.IsOpen uᶜ ∧ s ⊆ u}</code></pre>
+<p>問題18: 閉包の基本性質4本を示せ。 <code>closure_isClosed</code> には問題14の <code>compl_sInter</code> が要る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TopologicalSpace.subset_closure {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (s : Set X) :
     s ⊆ t.closure s := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> TopologicalSpace.closure_min {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s u : Set X}
@@ -422,38 +373,32 @@ details.sol[open] > summary { margin-bottom: .4rem; }
     t.IsOpen (t.closure s)ᶜ := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> TopologicalSpace.closure_mono {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s u : Set X}
-    (h : s ⊆ u) : t.closure s ⊆ t.closure u := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題19: 閉包公理から単調性を導け。使ってよいのは `cl_union` だけ。</span>
-<span class="doc">ヒント: `s ⊆ t` なら `s ∪ t = t`。 -/</span>
-<span class="kw">theorem</span> KuratowskiClosure.mono {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) {s t : Set X}
-    (h : s ⊆ t) : k.cl s ⊆ k.cl t := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題20: 閉包作用素から開集合系を作れ（開 = 補集合が `cl` の不動点）。</span>
-<span class="doc">`isOpen_sUnion` が山場: `subset_antisymm` と `mono` を使う。 -/</span>
-@[reducible] <span class="kw">def</span> KuratowskiClosure.toTop {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) : TopologicalSpace X <span class="kw">where</span>
+    (h : s ⊆ u) : t.closure s ⊆ t.closure u := <span class="sorry">sorry</span></code></pre>
+<p>問題19: 閉包公理から単調性を導け。使ってよいのは <code>cl_union</code> だけ。ヒント: <code>s ⊆ t</code> なら <code>s ∪ t = t</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> KuratowskiClosure.mono {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) {s t : Set X}
+    (h : s ⊆ t) : k.cl s ⊆ k.cl t := <span class="sorry">sorry</span></code></pre>
+<p>問題20: 閉包作用素から開集合系を作れ（開 = 補集合が <code>cl</code> の不動点）。 <code>isOpen_sUnion</code> が山場: <code>subset_antisymm</code> と <code>mono</code> を使う。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> KuratowskiClosure.toTop {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) : TopologicalSpace X <span class="kw">where</span>
   IsOpen s := k.cl sᶜ = sᶜ
   isOpen_univ := <span class="sorry">sorry</span>
   isOpen_inter := <span class="sorry">sorry</span>
-  isOpen_sUnion := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題21: 位相から閉包作用素を作れ。問題18の4本を使う。 -/</span>
-<span class="kw">def</span> TopologicalSpace.toKur {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : KuratowskiClosure X <span class="kw">where</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題21: 位相から閉包作用素を作れ。問題18の4本を使う。</p>
+<pre class="lean"><code><span class="kw">def</span> TopologicalSpace.toKur {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : KuratowskiClosure X <span class="kw">where</span>
   cl := t.closure
   cl_empty := <span class="sorry">sorry</span>
   subset_cl := <span class="sorry">sorry</span>
   cl_union := <span class="sorry">sorry</span>
-  cl_cl := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題22: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。 -/</span>
-<span class="kw">theorem</span> toKur_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toKur.toTop = t := <span class="sorry">sorry</span>
+  cl_cl := <span class="sorry">sorry</span></code></pre>
+<p>問題22: 往復が恒等であることを示し、<code>Cat.Equiv</code> にまとめよ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> toKur_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toKur.toTop = t := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> toTop_toKur {X : <span class="sort">Type</span>} (k : KuratowskiClosure X) : k.toTop.toKur = k := <span class="sorry">sorry</span>
 
 <span class="kw">def</span> topEquivKur (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (KuratowskiClosure X) := <span class="sorry">sorry</span></code></pre>
 <h3>C: 近傍系</h3>
-<pre class="lean"><code><span class="doc">/-- 近傍系による位相の公理化（ハウスドルフ流）。 -/</span>
-<span class="kw">structure</span> NeighborhoodSystem (X : <span class="sort">Type</span>) <span class="kw">where</span>
+<p>近傍系による位相の公理化（ハウスドルフ流）。</p>
+<pre class="lean"><code><span class="kw">structure</span> NeighborhoodSystem (X : <span class="sort">Type</span>) <span class="kw">where</span>
 <span class="doc">  /-- 各点に、その「近傍」の族を割り当てる。 -/</span>
   N (x : X) : Set (Set X)
 <span class="doc">  /-- 全体集合はどの点の近傍でもある。 -/</span>
@@ -469,35 +414,30 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">theorem</span> NeighborhoodSystem.ext&#x27; {X : <span class="sort">Type</span>} {n₁ n₂ : NeighborhoodSystem X}
     (h : n₁.N = n₂.N) : n₁ = n₂ := <span class="kw">by</span>
-  <span class="kw">cases</span> n₁; <span class="kw">cases</span> n₂; <span class="kw">cases</span> h; rfl
-
-<span class="doc">/-- 問題23: 近傍系から開集合系を作れ（開 = 自分の各点の近傍である集合）。 -/</span>
-@[reducible] <span class="kw">def</span> NeighborhoodSystem.toTop {X : <span class="sort">Type</span>} (n : NeighborhoodSystem X) : TopologicalSpace X <span class="kw">where</span>
+  <span class="kw">cases</span> n₁; <span class="kw">cases</span> n₂; <span class="kw">cases</span> h; rfl</code></pre>
+<p>問題23: 近傍系から開集合系を作れ（開 = 自分の各点の近傍である集合）。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> NeighborhoodSystem.toTop {X : <span class="sort">Type</span>} (n : NeighborhoodSystem X) : TopologicalSpace X <span class="kw">where</span>
   IsOpen s := ∀ x ∈ s, s ∈ n.N x
   isOpen_univ := <span class="sorry">sorry</span>
   isOpen_inter := <span class="sorry">sorry</span>
-  isOpen_sUnion := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題24: 開集合系から近傍系を作れ（近傍 = 開集合を間に挟んで点を含む集合）。 -/</span>
-<span class="kw">def</span> TopologicalSpace.toNbhd {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : NeighborhoodSystem X <span class="kw">where</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題24: 開集合系から近傍系を作れ（近傍 = 開集合を間に挟んで点を含む集合）。</p>
+<pre class="lean"><code><span class="kw">def</span> TopologicalSpace.toNbhd {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : NeighborhoodSystem X <span class="kw">where</span>
   N x := {U | ∃ V, t.IsOpen V ∧ x ∈ V ∧ V ⊆ U}
   univ_mem := <span class="sorry">sorry</span>
   mem_of := <span class="sorry">sorry</span>
   superset := <span class="sorry">sorry</span>
   inter := <span class="sorry">sorry</span>
-  interior := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題25: 往復が恒等であることを示し、`Cat.Equiv` にまとめよ。</span>
-<span class="doc">片方は `Top.lean` の `isOpen_of_nhds` がそのまま効く。</span>
-<span class="doc">もう片方の鍵は `W := {y | U ∈ N y}` が開になること（`interior` 公理を使う）。 -/</span>
-<span class="kw">theorem</span> toNbhd_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toNbhd.toTop = t := <span class="sorry">sorry</span>
+  interior := <span class="sorry">sorry</span></code></pre>
+<p>問題25: 往復が恒等であることを示し、<code>Cat.Equiv</code> にまとめよ。片方は <code>Top.lean</code> の <code>isOpen_of_nhds</code> がそのまま効く。もう片方の鍵は <code>W := {y | U ∈ N y}</code> が開になること（<code>interior</code> 公理を使う）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> toNbhd_toTop {X : <span class="sort">Type</span>} (t : TopologicalSpace X) : t.toNbhd.toTop = t := <span class="sorry">sorry</span>
 
 <span class="kw">theorem</span> toTop_toNbhd {X : <span class="sort">Type</span>} (n : NeighborhoodSystem X) : n.toTop.toNbhd = n := <span class="sorry">sorry</span>
 
 <span class="kw">def</span> topEquivNbhd (X : <span class="sort">Type</span>) : Cat.Equiv (TopologicalSpace X) (NeighborhoodSystem X) := <span class="sorry">sorry</span></code></pre>
 <h3>D: ネットによる閉集合の特徴づけ</h3>
-<pre class="lean"><code><span class="doc">/-- 有向な添字: 空でなく、どの2元にも上界がある。 -/</span>
-<span class="kw">structure</span> DirectedIndex : <span class="sort">Type</span> 1 <span class="kw">where</span>
+<p>有向な添字: 空でなく、どの2元にも上界がある。</p>
+<pre class="lean"><code><span class="kw">structure</span> DirectedIndex : <span class="sort">Type</span> 1 <span class="kw">where</span>
 <span class="doc">  /-- 添字の型。 -/</span>
   ι : <span class="sort">Type</span>
 <span class="doc">  /-- 「後」の関係。 -/</span>
@@ -505,30 +445,18 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="doc">  /-- 空でない。 -/</span>
   inhabited : Nonempty ι
 <span class="doc">  /-- どの2元にも共通の「後」がある。 -/</span>
-  upper (i j : ι) : ∃ k, le i k ∧ le j k
-
-<span class="doc">/-- ネット `net : D.ι → X` が点 `a` に収束する:</span>
-<span class="doc">`a` のどの開近傍にも、ある添字から先はすべて入る。 -/</span>
-<span class="kw">def</span> Converges {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (D : DirectedIndex)
+  upper (i j : ι) : ∃ k, le i k ∧ le j k</code></pre>
+<p>ネット <code>net : D.ι → X</code> が点 <code>a</code> に収束する: <code>a</code> のどの開近傍にも、ある添字から先はすべて入る。</p>
+<pre class="lean"><code><span class="kw">def</span> Converges {X : <span class="sort">Type</span>} (t : TopologicalSpace X) (D : DirectedIndex)
     (net : D.ι → X) (a : X) : <span class="sort">Prop</span> :=
-  ∀ U, t.IsOpen U → a ∈ U → ∃ d, ∀ e, D.le d e → net e ∈ U
-
-<span class="doc">/-- 問題26: 閉集合の中のネットの極限は、その閉集合に入ることを示せ。</span>
-<span class="doc">ヒント: `upper d d` で「d 以後」の添字を1つ取る。 -/</span>
-<span class="kw">theorem</span> nets_of_isClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
+  ∀ U, t.IsOpen U → a ∈ U → ∃ d, ∀ e, D.le d e → net e ∈ U</code></pre>
+<p>問題26: 閉集合の中のネットの極限は、その閉集合に入ることを示せ。ヒント: <code>upper d d</code> で「d 以後」の添字を1つ取る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> nets_of_isClosed {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
     (hs : t.IsOpen sᶜ) (D : DirectedIndex) (net : D.ι → X)
-    (hnet : ∀ e, net e ∈ s) {a : X} (hconv : Converges t D net a) : a ∈ s := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題27: 逆——中のネットの極限で閉じている集合は閉であることを示せ。</span>
-<span class="doc"></span>
-<span class="doc">方針: `isOpen_of_nhds` に持ち込む。`a ∈ sᶜ` の開近傍が取れないと仮定すると、</span>
-<span class="doc">`a` の<strong>どの</strong>開近傍も `s` と交わる。そこで添字型を</span>
-<span class="doc">「`a` の開近傍の全体」（部分型）とし、包含の逆向きで有向にして、</span>
-<span class="doc">各近傍から `s` の点を `Classical.choose` で<strong>選んで</strong>ネットを作ると、</span>
-<span class="doc">それは `a` に収束し、仮定から `a ∈ s` となって矛盾する。</span>
-<span class="doc">`Top.lean` の補題2（選択を避けた）と対照的に、ここでは選択が本質的に要る。</span>
-<span class="doc">できたら `#print axioms` で確認せよ。 -/</span>
-<span class="kw">theorem</span> isClosed_of_nets {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
+    (hnet : ∀ e, net e ∈ s) {a : X} (hconv : Converges t D net a) : a ∈ s := <span class="sorry">sorry</span></code></pre>
+<p>問題27: 逆——中のネットの極限で閉じている集合は閉であることを示せ。</p>
+<p>方針: <code>isOpen_of_nhds</code> に持ち込む。<code>a ∈ sᶜ</code> の開近傍が取れないと仮定すると、 <code>a</code> の<strong>どの</strong>開近傍も <code>s</code> と交わる。そこで添字型を「<code>a</code> の開近傍の全体」（部分型）とし、包含の逆向きで有向にして、各近傍から <code>s</code> の点を <code>Classical.choose</code> で<strong>選んで</strong>ネットを作ると、それは <code>a</code> に収束し、仮定から <code>a ∈ s</code> となって矛盾する。 <code>Top.lean</code> の補題2（選択を避けた）と対照的に、ここでは選択が本質的に要る。できたら <code>#print axioms</code> で確認せよ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isClosed_of_nets {X : <span class="sort">Type</span>} (t : TopologicalSpace X) {s : Set X}
     (h : ∀ (D : DirectedIndex) (net : D.ι → X), (∀ e, net e ∈ s) →
          ∀ a, Converges t D net a → a ∈ s) :
     t.IsOpen sᶜ := <span class="sorry">sorry</span></code></pre>
@@ -545,19 +473,12 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <pre class="lean"><code><span class="kw">example</span> {α β : <span class="sort">Type</span>} (f : α → β) : f ⁻¹&#x27; (Set.univ : Set β) = Set.univ := rfl
 
 <span class="kw">example</span> {α β : <span class="sort">Type</span>} (f : α → β) (s t : Set β) :
-    f ⁻¹&#x27; (s ∩ t) = f ⁻¹&#x27; s ∩ f ⁻¹&#x27; t := rfl
-
-<span class="doc">/-- 問題28: 族の合併との交換は `rfl` では済まない（`∃` の組み替えが要る）ので、</span>
-<span class="doc">補題として示せ。`Set.preimage f &#x27;&#x27; S` は「`S` に属する各集合の逆像を集めた族」</span>
-<span class="doc">（`Part 5` の `Set.compl &#x27;&#x27; S` と同じ書き方）。 -/</span>
-<span class="kw">theorem</span> Set.preimage_sUnion {α β : <span class="sort">Type</span>} (f : α → β) (S : Set (Set β)) :
-    f ⁻¹&#x27; (⋃₀ S) = ⋃₀ (Set.preimage f &#x27;&#x27; S) := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題29: 押し出し位相（終位相の1本版）を完成させよ。</span>
-<span class="doc">`isOpen_univ`・`isOpen_inter` は上の `rfl` 級の交換のおかげで、</span>
-<span class="doc">`tX` の対応する公理を<strong>そのまま</strong>返せば通る。`isOpen_sUnion` は</span>
-<span class="doc">`show tX.IsOpen (f ⁻¹&#x27; (⋃₀ S))` で目標を読み替えてから問題28で書き換える。 -/</span>
-@[reducible] <span class="kw">def</span> TopologicalSpace.coinduced {X Y : <span class="sort">Type</span>} (tX : TopologicalSpace X)
+    f ⁻¹&#x27; (s ∩ t) = f ⁻¹&#x27; s ∩ f ⁻¹&#x27; t := rfl</code></pre>
+<p>問題28: 族の合併との交換は <code>rfl</code> では済まない（<code>∃</code> の組み替えが要る）ので、補題として示せ。<code>Set.preimage f &#x27;&#x27; S</code> は「<code>S</code> に属する各集合の逆像を集めた族」（<code>Part 5</code> の <code>Set.compl &#x27;&#x27; S</code> と同じ書き方）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Set.preimage_sUnion {α β : <span class="sort">Type</span>} (f : α → β) (S : Set (Set β)) :
+    f ⁻¹&#x27; (⋃₀ S) = ⋃₀ (Set.preimage f &#x27;&#x27; S) := <span class="sorry">sorry</span></code></pre>
+<p>問題29: 押し出し位相（終位相の1本版）を完成させよ。 <code>isOpen_univ</code>・<code>isOpen_inter</code> は上の <code>rfl</code> 級の交換のおかげで、 <code>tX</code> の対応する公理を<strong>そのまま</strong>返せば通る。<code>isOpen_sUnion</code> は <code>show tX.IsOpen (f ⁻¹&#x27; (⋃₀ S))</code> で目標を読み替えてから問題28で書き換える。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> TopologicalSpace.coinduced {X Y : <span class="sort">Type</span>} (tX : TopologicalSpace X)
     (f : X → Y) : TopologicalSpace Y <span class="kw">where</span>
   IsOpen s := tX.IsOpen (f ⁻¹&#x27; s)
   isOpen_univ := <span class="sorry">sorry</span>
@@ -568,12 +489,9 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="cm">-- 表示: `TopologicalSpace.coinduced {X Y : Type} (tX : TopologicalSpace X) (f : X → Y) :</span>
 <span class="cm">--        TopologicalSpace Y`</span>
 <span class="cm">-- 読み: 位相と写像を受け取り、行き先の上の位相を返す。`tX.coinduced f` と</span>
-<span class="cm">-- ドット記法で使う。</span>
-
-<span class="doc">/-- 問題30: 終位相（族版）を完成させよ。</span>
-<span class="doc">「族のすべての `f i` について逆像が開」。証明は1本版と同じ形を `∀ i` の下で</span>
-<span class="doc">繰り返すだけである。添字ごとに空間 `Y i` が違ってよい（依存関数型の族）ことに注意。 -/</span>
-@[reducible] <span class="kw">def</span> finalTopology {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+<span class="cm">-- ドット記法で使う。</span></code></pre>
+<p>問題30: 終位相（族版）を完成させよ。「族のすべての <code>f i</code> について逆像が開」。証明は1本版と同じ形を <code>∀ i</code> の下で繰り返すだけである。添字ごとに空間 <code>Y i</code> が違ってよい（依存関数型の族）ことに注意。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> finalTopology {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X) :
     TopologicalSpace X <span class="kw">where</span>
   IsOpen s := ∀ i, (tY i).IsOpen (f i ⁻¹&#x27; s)
@@ -588,10 +506,10 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <h3>引き戻しの困難と、上からの定義</h3>
 <p>引き戻し側を同じ発想で「<code>f i ⁻¹&#x27; u</code>（<code>u</code> は <code>Y i</code> の開集合）の形の集合を開とする」と定めたくなるが、<strong>族ではこれは位相にならない</strong>。別々の添字から来た逆像の共通部分 <code>f i ⁻¹&#x27; u ∩ f j ⁻¹&#x27; v</code> が、また逆像の形になる保証がないからである（1本なら <code>f ⁻¹&#x27; u ∩ f ⁻¹&#x27; v = f ⁻¹&#x27; (u ∩ v)</code> で閉じるが、族では閉じない）。</p>
 <p>教科書はここで「逆像たちから<strong>生成される</strong>位相」（有限交叉の合併を全部足したもの）を取る。同じものを、ここでは<strong>上から</strong>定義する:</p>
-<pre class="quote"><code>s が開 ⟺ すべての f i を連続にする**どの**位相 t&#x27; でも s は開</code></pre>
+<pre class="quote"><code>s が開 ⟺ すべての f i を連続にするどの位相 t&#x27; でも s は開</code></pre>
 <p>つまり「候補すべての共通部分」である。生成の組み合わせ論を経由しないので、公理の検証は拍子抜けするほど短い——各公理は、任意に与えられた <code>t&#x27;</code> の対応する公理をそのまま返すだけで済む。代わりに開集合の<strong>具体形</strong>は定義から直接は読めなくなるが、それは後の問題36で（部分空間の場合に）取り出す。</p>
-<pre class="lean"><code><span class="doc">/-- 問題31: 始位相（族版）を完成させよ。各フィールドは1行で書ける。 -/</span>
-@[reducible] <span class="kw">def</span> initialTopology {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+<p>問題31: 始位相（族版）を完成させよ。各フィールドは1行で書ける。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> initialTopology {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i) :
     TopologicalSpace X <span class="kw">where</span>
   IsOpen s := ∀ t&#x27; : TopologicalSpace X,
@@ -608,28 +526,21 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="cm">-- 反転している。それだけで定義の中身はこれほど変わる。</span></code></pre>
 <h3>定義の確認: 連続性と極値性</h3>
 <p>「すべての <code>f i</code> が連続になる最も細かい／粗い位相」という言明を、 2定理ずつに分けて確かめる。異なる位相を比べるので <code>@Continuous</code> で位相を明示する（冒頭「記法の補足」参照）。</p>
-<pre class="lean"><code><span class="doc">/-- 問題32(1): 終位相のもとで各 `f i` は連続であることを示せ。</span>
-<span class="doc">定義を展開すると、連続性の言明そのものが現れる。 -/</span>
-<span class="kw">theorem</span> continuous_toFinal {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+<p>問題32(1): 終位相のもとで各 <code>f i</code> は連続であることを示せ。定義を展開すると、連続性の言明そのものが現れる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_toFinal {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X) (i : I) :
-    @Continuous (Y i) (tY i) X (finalTopology tY f) (f i) := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題32(2): 終位相は最も細かい:</span>
-<span class="doc">すべての `f i` を連続にする位相 `t&#x27;` の開集合は、終位相でも開であることを示せ。 -/</span>
-<span class="kw">theorem</span> final_finest {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+    @Continuous (Y i) (tY i) X (finalTopology tY f) (f i) := <span class="sorry">sorry</span></code></pre>
+<p>問題32(2): 終位相は最も細かい:すべての <code>f i</code> を連続にする位相 <code>t&#x27;</code> の開集合は、終位相でも開であることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> final_finest {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     {tY : (i : I) → TopologicalSpace (Y i)} {f : (i : I) → Y i → X}
     {t&#x27; : TopologicalSpace X} (h : ∀ i, @Continuous (Y i) (tY i) X t&#x27; (f i)) :
-    ∀ s, t&#x27;.IsOpen s → (finalTopology tY f).IsOpen s := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題33(1): 始位相のもとで各 `f i` は連続であることを示せ。</span>
-<span class="doc">「どの位相でも開」という条件の中に、ちょうど `f i ⁻¹&#x27; u` の開性が入っている。 -/</span>
-<span class="kw">theorem</span> continuous_fromInitial {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+    ∀ s, t&#x27;.IsOpen s → (finalTopology tY f).IsOpen s := <span class="sorry">sorry</span></code></pre>
+<p>問題33(1): 始位相のもとで各 <code>f i</code> は連続であることを示せ。「どの位相でも開」という条件の中に、ちょうど <code>f i ⁻¹&#x27; u</code> の開性が入っている。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_fromInitial {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i) (i : I) :
-    @Continuous X (initialTopology tY f) (Y i) (tY i) (f i) := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題33(2): 始位相は最も粗い:</span>
-<span class="doc">始位相の開集合は、すべての `f i` を連続にするどの位相 `t&#x27;` でも開であることを示せ。 -/</span>
-<span class="kw">theorem</span> initial_coarsest {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
+    @Continuous X (initialTopology tY f) (Y i) (tY i) (f i) := <span class="sorry">sorry</span></code></pre>
+<p>問題33(2): 始位相は最も粗い:始位相の開集合は、すべての <code>f i</code> を連続にするどの位相 <code>t&#x27;</code> でも開であることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> initial_coarsest {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X : <span class="sort">Type</span>}
     {tY : (i : I) → TopologicalSpace (Y i)} {f : (i : I) → X → Y i}
     {t&#x27; : TopologicalSpace X} (h : ∀ i, @Continuous X t&#x27; (Y i) (tY i) (f i)) :
     ∀ s, (initialTopology tY f).IsOpen s → t&#x27;.IsOpen s := <span class="sorry">sorry</span></code></pre>
@@ -640,66 +551,49 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <li>始位相<strong>へ</strong>の写像 <code>g : Z → X</code> が連続 ⟺ 各合成 <code>f i ∘ g</code> が連続</li>
 </ul>
 <p>写像の連続性が、合成の連続性だけで機械的に判定できるようになる。</p>
-<pre class="lean"><code><span class="doc">/-- 問題34(1): 押し出し（1本版）の普遍性。実は<strong>証明を書く必要がない</strong>:</span>
-<span class="doc">両辺を定義に沿って展開すると同じ命題に行き着く（何で閉じられるか考えよ）。</span>
-<span class="doc">`(g ∘ f) ⁻¹&#x27; s` と `f ⁻¹&#x27; (g ⁻¹&#x27; s)` が定義上同じ集合であることが効いている。 -/</span>
-<span class="kw">theorem</span> continuous_fromCoinduced_iff {X Y Z : <span class="sort">Type</span>} (tX : TopologicalSpace X)
+<p>問題34(1): 押し出し（1本版）の普遍性。実は<strong>証明を書く必要がない</strong>:両辺を定義に沿って展開すると同じ命題に行き着く（何で閉じられるか考えよ）。 <code>(g ∘ f) ⁻¹&#x27; s</code> と <code>f ⁻¹&#x27; (g ⁻¹&#x27; s)</code> が定義上同じ集合であることが効いている。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_fromCoinduced_iff {X Y Z : <span class="sort">Type</span>} (tX : TopologicalSpace X)
     (tZ : TopologicalSpace Z) (f : X → Y) (g : Y → Z) :
     @Continuous Y (tX.coinduced f) Z tZ g ↔ @Continuous X tX Z tZ (<span class="kw">fun</span> x =&gt; g (f x)) :=
-  <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題34(2): 終位相（族版）の普遍性を示せ。ヒント: `∀` の順序の入れ替えだけ。 -/</span>
-<span class="kw">theorem</span> continuous_fromFinal_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X Z : <span class="sort">Type</span>}
+  <span class="sorry">sorry</span></code></pre>
+<p>問題34(2): 終位相（族版）の普遍性を示せ。ヒント: <code>∀</code> の順序の入れ替えだけ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_fromFinal_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X Z : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → Y i → X)
     (tZ : TopologicalSpace Z) (g : X → Z) :
     @Continuous X (finalTopology tY f) Z tZ g ↔
-      ∀ i, @Continuous (Y i) (tY i) Z tZ (<span class="kw">fun</span> y =&gt; g (f i y)) := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題35: 始位相の普遍性を示せ。逆向き（各合成が連続 ⇒ `g` が連続）が山場。</span>
-<span class="doc">ヒント: 始位相の開集合 `s` の定義は「…するどの位相でも開」だった。そこに</span>
-<span class="doc">「`tZ` を `g` で<strong>押し出した</strong>位相」を食わせると、ちょうど欲しい</span>
-<span class="doc">`tZ.IsOpen (g ⁻¹&#x27; s)` が出てくる。押し出しが引き戻しの普遍性を支える、</span>
-<span class="doc">この Part の白眉である。 -/</span>
-<span class="kw">theorem</span> continuous_toInitial_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X Z : <span class="sort">Type</span>}
+      ∀ i, @Continuous (Y i) (tY i) Z tZ (<span class="kw">fun</span> y =&gt; g (f i y)) := <span class="sorry">sorry</span></code></pre>
+<p>問題35: 始位相の普遍性を示せ。逆向き（各合成が連続 ⇒ <code>g</code> が連続）が山場。ヒント: 始位相の開集合 <code>s</code> の定義は「…するどの位相でも開」だった。そこに「<code>tZ</code> を <code>g</code> で<strong>押し出した</strong>位相」を食わせると、ちょうど欲しい <code>tZ.IsOpen (g ⁻¹&#x27; s)</code> が出てくる。押し出しが引き戻しの普遍性を支える、この Part の白眉である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_toInitial_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} {X Z : <span class="sort">Type</span>}
     (tY : (i : I) → TopologicalSpace (Y i)) (f : (i : I) → X → Y i)
     (tZ : TopologicalSpace Z) (g : Z → X) :
     @Continuous Z tZ X (initialTopology tY f) g ↔
       ∀ i, @Continuous Z tZ (Y i) (tY i) (<span class="kw">fun</span> z =&gt; f i (g z)) := <span class="sorry">sorry</span></code></pre>
 <h3>部分空間・積・直和・商</h3>
 <p>4つの日常的な構成を、始位相・終位相の特殊化として <code>instance</code> 登録する（ここは問題ではなく、以下すべて与える）。登録した瞬間から、<code>Subtype p</code> や <code>X × Y</code> と書くだけで位相が自動で載るようになる——<code>Intro2.lean</code> 1節で見た class の効き目である。</p>
-<pre class="lean"><code><span class="doc">/-- 1本の写像に沿った引き戻し。族版の `I := Unit`（添字が1点）への特殊化。 -/</span>
-@[reducible] <span class="kw">def</span> TopologicalSpace.induced {X Y : <span class="sort">Type</span>} (f : X → Y)
+<p>1本の写像に沿った引き戻し。族版の <code>I := Unit</code>（添字が1点）への特殊化。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> TopologicalSpace.induced {X Y : <span class="sort">Type</span>} (f : X → Y)
     (t : TopologicalSpace Y) : TopologicalSpace X :=
-  initialTopology (Y := <span class="kw">fun</span> _ : Unit =&gt; Y) (<span class="kw">fun</span> _ =&gt; t) (<span class="kw">fun</span> _ =&gt; f)
-
-<span class="doc">/-- 部分空間位相: 包含写像 `Subtype.val` に沿った引き戻し。</span>
-<span class="doc">`CH.lean` 6節の部分型が、晴れて<strong>部分空間</strong>になる。 -/</span>
-<span class="kw">instance</span> instTopSubtype {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (p : X → <span class="sort">Prop</span>) :
+  initialTopology (Y := <span class="kw">fun</span> _ : Unit =&gt; Y) (<span class="kw">fun</span> _ =&gt; t) (<span class="kw">fun</span> _ =&gt; f)</code></pre>
+<p>部分空間位相: 包含写像 <code>Subtype.val</code> に沿った引き戻し。 <code>CH.lean</code> 6節の部分型が、晴れて<strong>部分空間</strong>になる。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopSubtype {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (p : X → <span class="sort">Prop</span>) :
     TopologicalSpace (Subtype p) :=
-  tX.induced Subtype.val
-
-<span class="doc">/-- 積位相（一般の直積）: 射影の族 `fun g =&gt; g i` の始位相。族版の真価が出る例。 -/</span>
-<span class="kw">instance</span> instTopPi {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)] :
+  tX.induced Subtype.val</code></pre>
+<p>積位相（一般の直積）: 射影の族 <code>fun g =&gt; g i</code> の始位相。族版の真価が出る例。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopPi {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)] :
     TopologicalSpace ((i : I) → Y i) :=
-  initialTopology tY <span class="kw">fun</span> i g =&gt; g i
-
-<span class="doc">/-- 二項の積位相: 射影2本を `I := Bool` の族とみなした始位相。</span>
-<span class="doc">添字によって行き先の型が違う（`true` なら `X`、`false` なら `Y`）ので、</span>
-<span class="doc">族を書くのに `match` による場合分け——依存関数型——が要る。 -/</span>
-<span class="kw">instance</span> instTopProd {X Y : <span class="sort">Type</span>} [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+  initialTopology tY <span class="kw">fun</span> i g =&gt; g i</code></pre>
+<p>二項の積位相: 射影2本を <code>I := Bool</code> の族とみなした始位相。添字によって行き先の型が違う（<code>true</code> なら <code>X</code>、<code>false</code> なら <code>Y</code>）ので、族を書くのに <code>match</code> による場合分け——依存関数型——が要る。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopProd {X Y : <span class="sort">Type</span>} [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
     TopologicalSpace (X × Y) :=
   initialTopology (Y := <span class="kw">fun</span> b =&gt; cond b X Y)
     (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; t₁ | false =&gt; t₂)
-    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd)
-
-<span class="doc">/-- 直和位相: 包含の族 `Sigma.mk i : Y i → (j : I) × Y j` の終位相。 -/</span>
-<span class="kw">instance</span> instTopSigma {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)] :
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd)</code></pre>
+<p>直和位相: 包含の族 <code>Sigma.mk i : Y i → (j : I) × Y j</code> の終位相。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopSigma {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)] :
     TopologicalSpace ((i : I) × Y i) :=
-  finalTopology tY <span class="kw">fun</span> i =&gt; Sigma.mk i
-
-<span class="doc">/-- 商位相: 商への射影 `Quot.mk r` に沿った押し出し。</span>
-<span class="doc">`Quot r` は、型 `X` を関係 `r` で「貼り合わせた」商型である。 -/</span>
-<span class="kw">instance</span> instTopQuot {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] {r : X → X → <span class="sort">Prop</span>} :
+  finalTopology tY <span class="kw">fun</span> i =&gt; Sigma.mk i</code></pre>
+<p>商位相: 商への射影 <code>Quot.mk r</code> に沿った押し出し。 <code>Quot r</code> は、型 <code>X</code> を関係 <code>r</code> で「貼り合わせた」商型である。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopQuot {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] {r : X → X → <span class="sort">Prop</span>} :
     TopologicalSpace (Quot r) :=
   tX.coinduced (Quot.mk r)
 
@@ -714,84 +608,49 @@ details.sol[open] > summary { margin-bottom: .4rem; }
     Continuous (@Prod.fst X Y) :=
   continuous_fromInitial (Y := <span class="kw">fun</span> b =&gt; cond b X Y)
     (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; t₁ | false =&gt; t₂)
-    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd) true
-
-<span class="doc">/-- 問題36: 部分空間位相の開集合の具体形を取り出せ:</span>
-<span class="doc">`s` が開 ⟺ ある開集合 `u` の逆像 `Subtype.val ⁻¹&#x27; u` に等しい。</span>
-<span class="doc"></span>
-<span class="doc">`⟸` は定義どおり。`⟹` が本番で、「`val ⁻¹&#x27; u`（`u` 開）の形の集合の全体」が</span>
-<span class="doc"><strong>位相を成す</strong>ことを示し、それを始位相の定義に食わせる（問題35と同じ発想）。</span>
-<span class="doc">合併のケースでは、各集合ごとに `u` を選ぶと選択公理が要りそうになるが、</span>
-<span class="doc">「逆像が `S` に入るような開集合を<strong>全部</strong>集めた合併」を証人にすれば選択なしで済む。 -/</span>
-<span class="kw">theorem</span> isOpen_subtype_iff {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] {p : X → <span class="sort">Prop</span>}
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd) true</code></pre>
+<p>問題36: 部分空間位相の開集合の具体形を取り出せ: <code>s</code> が開 ⟺ ある開集合 <code>u</code> の逆像 <code>Subtype.val ⁻¹&#x27; u</code> に等しい。</p>
+<p><code>⟸</code> は定義どおり。<code>⟹</code> が本番で、「<code>val ⁻¹&#x27; u</code>（<code>u</code> 開）の形の集合の全体」が <strong>位相を成す</strong>ことを示し、それを始位相の定義に食わせる（問題35と同じ発想）。合併のケースでは、各集合ごとに <code>u</code> を選ぶと選択公理が要りそうになるが、「逆像が <code>S</code> に入るような開集合を<strong>全部</strong>集めた合併」を証人にすれば選択なしで済む。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isOpen_subtype_iff {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] {p : X → <span class="sort">Prop</span>}
     {s : Set (Subtype p)} :
-    IsOpen s ↔ ∃ u, IsOpen u ∧ s = Subtype.val ⁻¹&#x27; u := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題37(1): 射影（直積の各点での値を取る写像）は連続であることを示せ。</span>
-<span class="doc">ヒント: 問題33(1)の特殊化。 -/</span>
-<span class="kw">theorem</span> continuous_apply {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)]
-    (i : I) : Continuous <span class="kw">fun</span> g : (j : I) → Y j =&gt; g i := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題37(2): 直積への写像の連続性は成分ごとに調べればよいことを示せ。</span>
-<span class="doc">ヒント: 問題35の特殊化。「各点収束位相」とも呼ばれる積位相の使い勝手は、</span>
-<span class="doc">すべてこの1行に集約される。 -/</span>
-<span class="kw">theorem</span> continuous_pi_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)]
+    IsOpen s ↔ ∃ u, IsOpen u ∧ s = Subtype.val ⁻¹&#x27; u := <span class="sorry">sorry</span></code></pre>
+<p>問題37(1): 射影（直積の各点での値を取る写像）は連続であることを示せ。ヒント: 問題33(1)の特殊化。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_apply {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)]
+    (i : I) : Continuous <span class="kw">fun</span> g : (j : I) → Y j =&gt; g i := <span class="sorry">sorry</span></code></pre>
+<p>問題37(2): 直積への写像の連続性は成分ごとに調べればよいことを示せ。ヒント: 問題35の特殊化。「各点収束位相」とも呼ばれる積位相の使い勝手は、すべてこの1行に集約される。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_pi_iff {I : <span class="sort">Type</span>} {Y : I → <span class="sort">Type</span>} [tY : (i : I) → TopologicalSpace (Y i)]
     {Z : <span class="sort">Type</span>} [tZ : TopologicalSpace Z] (g : Z → (i : I) → Y i) :
-    Continuous g ↔ ∀ i, Continuous <span class="kw">fun</span> z =&gt; g z i := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題38(1): 商への射影は連続であることを示せ（押し出しの定義そのもの）。 -/</span>
-<span class="kw">theorem</span> continuous_quotMk {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (r : X → X → <span class="sort">Prop</span>) :
-    Continuous (Quot.mk r) := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題38(2): 商からの写像の連続性は、持ち上げる前の写像で調べればよいことを示せ。</span>
-<span class="doc">ヒント: `Quot.lift g hg ∘ Quot.mk r = g` は商型の<strong>計算規則</strong>により定義上の</span>
-<span class="doc">等式なので、問題34(1)がそのまま効く。 -/</span>
-<span class="kw">theorem</span> continuous_quotLift {X Z : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tZ : TopologicalSpace Z]
+    Continuous g ↔ ∀ i, Continuous <span class="kw">fun</span> z =&gt; g z i := <span class="sorry">sorry</span></code></pre>
+<p>問題38(1): 商への射影は連続であることを示せ（押し出しの定義そのもの）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_quotMk {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (r : X → X → <span class="sort">Prop</span>) :
+    Continuous (Quot.mk r) := <span class="sorry">sorry</span></code></pre>
+<p>問題38(2): 商からの写像の連続性は、持ち上げる前の写像で調べればよいことを示せ。ヒント: <code>Quot.lift g hg ∘ Quot.mk r = g</code> は商型の<strong>計算規則</strong>により定義上の等式なので、問題34(1)がそのまま効く。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_quotLift {X Z : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tZ : TopologicalSpace Z]
     {r : X → X → <span class="sort">Prop</span>} {g : X → Z} (hg : ∀ a b, r a b → g a = g b) :
-    Continuous (Quot.lift g hg) ↔ Continuous g := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題39(1): 空族（`I := Empty`）の始位相は密着位相であることを示せ。</span>
-<span class="doc">「どの位相でも開」な集合は `∅` と `univ` しかない（片方向は、</span>
-<span class="doc">密着位相自身を定義に食わせると分かる）。Part 1 の `indiscrete` が、</span>
-<span class="doc">誘導位相の退化した場合として回収される。 -/</span>
-<span class="kw">theorem</span> initialTopology_empty {X : <span class="sort">Type</span>} {Y : Empty → <span class="sort">Type</span>}
+    Continuous (Quot.lift g hg) ↔ Continuous g := <span class="sorry">sorry</span></code></pre>
+<p>問題39(1): 空族（<code>I := Empty</code>）の始位相は密着位相であることを示せ。「どの位相でも開」な集合は <code>∅</code> と <code>univ</code> しかない（片方向は、密着位相自身を定義に食わせると分かる）。Part 1 の <code>indiscrete</code> が、誘導位相の退化した場合として回収される。</p>
+<pre class="lean"><code><span class="kw">theorem</span> initialTopology_empty {X : <span class="sort">Type</span>} {Y : Empty → <span class="sort">Type</span>}
     (tY : (i : Empty) → TopologicalSpace (Y i)) (f : (i : Empty) → X → Y i) :
-    initialTopology tY f = indiscrete X := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題39(2): 空族の終位相は離散位相であることを示せ（条件が空なので何でも開）。</span>
-<span class="doc">Part 3 の随伴の言葉でいえば、離散・密着が「もっとも細かい／粗い」ことと、</span>
-<span class="doc">空族の終位相・始位相であることは、同じ事実の2つの言い方である。 -/</span>
-<span class="kw">theorem</span> finalTopology_empty {X : <span class="sort">Type</span>} {Y : Empty → <span class="sort">Type</span>}
+    initialTopology tY f = indiscrete X := <span class="sorry">sorry</span></code></pre>
+<p>問題39(2): 空族の終位相は離散位相であることを示せ（条件が空なので何でも開）。 Part 3 の随伴の言葉でいえば、離散・密着が「もっとも細かい／粗い」ことと、空族の終位相・始位相であることは、同じ事実の2つの言い方である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> finalTopology_empty {X : <span class="sort">Type</span>} {Y : Empty → <span class="sort">Type</span>}
     (tY : (i : Empty) → TopologicalSpace (Y i)) (f : (i : Empty) → Y i → X) :
     finalTopology tY f = discrete X := <span class="sorry">sorry</span></code></pre>
 <h3>商写像 — 主定理の再訪</h3>
 <p>終域の位相が押し出し位相に<strong>一致する</strong>連続全射を<strong>商写像</strong>と呼ぶ。商写像 <code>f</code> に対しては、問題34(1)の普遍性がそのまま「<code>f</code> を通した連続性判定」になるので、これは「終域が商位相だと思ってよい写像」ということである。</p>
 <p>一般の連続全射は商写像とは限らない（Part 4 の恒等写像 <code>(Bool, 密着) → (Bool, 離散)</code> の逆向き <code>(Bool, 離散) → (Bool, 密着)</code> が反例:押し出しは離散になるが終域は密着）。ところが、<code>Top.lean</code> の主定理とまったく同じ仮定——定義域がコンパクトで終域がハウスドルフ——の下では、連続全射は必ず商写像になる。証明も主定理の核（補題1〜3の連鎖）の再利用である。</p>
-<pre class="lean"><code><span class="doc">/-- 問題40: 全射なら「逆像を取ってから像を取る」と元に戻ることを示せ</span>
-<span class="doc">（`⊇` 向きで全射性を使う）。 -/</span>
-<span class="kw">theorem</span> Set.image_preimage_of_surjective {α β : <span class="sort">Type</span>} {f : α → β}
-    (hf : Function.Surjective f) (u : Set β) : f &#x27;&#x27; (f ⁻¹&#x27; u) = u := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題41: コンパクト空間からハウスドルフ空間への連続全射は商写像であることを示せ。</span>
-<span class="doc"></span>
-<span class="doc">方針: 位相の等式は `TopologicalSpace.ext&#x27;`（Part 5）で開集合の一致に還元する。</span>
-<span class="doc">`⟸` 向きは連続性そのもの。`⟹` 向き（`f ⁻¹&#x27; s` が開 ⇒ `s` が開）は</span>
-<span class="doc">`Top.lean` の主定理の核と同じ連鎖:</span>
-<span class="doc">補集合が閉 → コンパクト → 像がコンパクト → 像が閉、で `sᶜ` の閉性を出す。</span>
-<span class="doc">問題40で `f &#x27;&#x27; (f ⁻¹&#x27; sᶜ) = sᶜ` と書き換えるところで全射性が効く。 -/</span>
-<span class="kw">theorem</span> coinduced_eq_of_surjective {X Y : <span class="sort">Type</span>}
+<p>問題40: 全射なら「逆像を取ってから像を取る」と元に戻ることを示せ（<code>⊇</code> 向きで全射性を使う）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Set.image_preimage_of_surjective {α β : <span class="sort">Type</span>} {f : α → β}
+    (hf : Function.Surjective f) (u : Set β) : f &#x27;&#x27; (f ⁻¹&#x27; u) = u := <span class="sorry">sorry</span></code></pre>
+<p>問題41: コンパクト空間からハウスドルフ空間への連続全射は商写像であることを示せ。</p>
+<p>方針: 位相の等式は <code>TopologicalSpace.ext&#x27;</code>（Part 5）で開集合の一致に還元する。 <code>⟸</code> 向きは連続性そのもの。<code>⟹</code> 向き（<code>f ⁻¹&#x27; s</code> が開 ⇒ <code>s</code> が開）は <code>Top.lean</code> の主定理の核と同じ連鎖:補集合が閉 → コンパクト → 像がコンパクト → 像が閉、で <code>sᶜ</code> の閉性を出す。問題40で <code>f &#x27;&#x27; (f ⁻¹&#x27; sᶜ) = sᶜ</code> と書き換えるところで全射性が効く。</p>
+<pre class="lean"><code><span class="kw">theorem</span> coinduced_eq_of_surjective {X Y : <span class="sort">Type</span>}
     [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [CompactSpace X] [Hausdorff Y]
     {f : X → Y} (hf : Continuous f) (hsurj : Function.Surjective f) :
-    tX.coinduced f = tY := <span class="sorry">sorry</span>
-
-<span class="doc">/-- 問題42（発展）: 主定理の核 `continuous_invFun` を、問題41から再証明せよ。</span>
-<span class="doc"></span>
-<span class="doc">方針: `g` の連続性の主張に現れる位相 `tY` を、問題41の等式で</span>
-<span class="doc">`tX.coinduced f` に書き換える（`rw [← …]`）。すると問題34(1)の普遍性により、</span>
-<span class="doc">`g` の連続性は合成 `fun x =&gt; g (f x)` の連続性に落ち、それは `hgf` により</span>
-<span class="doc">恒等写像だから `continuous_id` で閉じる。</span>
-<span class="doc">`Top.lean` では1ページかかった証明が、商写像の言葉では4行になる。 -/</span>
-<span class="kw">example</span> {X Y : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+    tX.coinduced f = tY := <span class="sorry">sorry</span></code></pre>
+<p>問題42（発展）: 主定理の核 <code>continuous_invFun</code> を、問題41から再証明せよ。</p>
+<p>方針: <code>g</code> の連続性の主張に現れる位相 <code>tY</code> を、問題41の等式で <code>tX.coinduced f</code> に書き換える（<code>rw [← …]</code>）。すると問題34(1)の普遍性により、 <code>g</code> の連続性は合成 <code>fun x =&gt; g (f x)</code> の連続性に落ち、それは <code>hgf</code> により恒等写像だから <code>continuous_id</code> で閉じる。 <code>Top.lean</code> では1ページかかった証明が、商写像の言葉では4行になる。</p>
+<pre class="lean"><code><span class="kw">example</span> {X Y : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [CompactSpace X] [Hausdorff Y] {f : X → Y} (hf : Continuous f) {g : Y → X}
     (hgf : ∀ x, g (f x) = x) (hfg : ∀ y, f (g y) = y) : Continuous g := <span class="sorry">sorry</span>
 

@@ -282,9 +282,8 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre>
 def plus : Nat → Nat → Nat := fun a b =&gt; a + b       -- fun は引数をまとめられる
 def plus (a b : Nat) : Nat := a + b                  -- binder 形式で書く</code></pre>
 <p>また <code>fun</code> の引数には、<code>fun n : Nat =&gt; e</code> のように括弧なしで型を注釈してもよい。</p>
-<pre class="lean"><code><span class="doc">/-- 3引数以上も同じことの繰り返し。</span>
-<span class="doc">`Nat → Nat → Nat → Nat` は `Nat → (Nat → (Nat → Nat))` と読む。 -/</span>
-<span class="kw">def</span> addMul (a b c : Nat) : Nat := a + b * c
+<p>3引数以上も同じことの繰り返し。 <code>Nat → Nat → Nat → Nat</code> は <code>Nat → (Nat → (Nat → Nat))</code> と読む。</p>
+<pre class="lean"><code><span class="kw">def</span> addMul (a b c : Nat) : Nat := a + b * c
 
 <span class="kw">#check</span> addMul</code></pre>
 <pre class="quote"><code>addMul (a b c : Nat) : Nat</code></pre>
@@ -404,7 +403,8 @@ in the application
 <pre class="lean"><code><span class="kw">#check</span> Signal.red</code></pre>
 <pre class="quote"><code>Signal.red : Signal</code></pre>
 <p>この宣言の意味は「<code>Signal</code> の項は <code>Signal.red</code>, <code>Signal.yellow</code>, <code>Signal.green</code> の 3つが<strong>すべて</strong>であり、それ以外にはない」ということ。構成子の正式な名前は <code>型名.構成子名</code> になる（1節の <code>Bool.true</code> はこれだった）。作り方を列挙したら、それで型が決まる。集合のアナロジーでは、列挙型は 3点集合 {red, yellow, green} のような<strong>有限集合</strong>である。</p>
-<p>「それ以外にない」からこそ、場合分け（<code>match</code>）が正当化される。これが帰納型の項の使い方（除去）である。<code>fun</code> で受け取った <code>s</code> を、 <code>match s with</code> で場合分けする:</p>
+<p>もう1つ、対になる保証がある: この3つは互いに<strong>別のもの</strong>である（<code>Signal.red</code> と <code>Signal.green</code> が実は同じだった、ということは起きない。 <code>MyNat</code> のような引数つきの構成子では「中身が違えば違う」まで含む）。「作れるものが全部」と「違う作り方のものは別々」の2つが合わさって、はじめて <code>Signal</code> は本当に3点集合になる。この2つは約束ではなくどちらも <strong>証明できる事実</strong>であり、しかも証明の道具は宣言を受理したときに Lean が自動で用意する——実物は <code>CH.lean</code> 8節で見る。</p>
+<p>「それ以外にない」からこそ、場合分け（<code>match</code>）が正当化される。これが帰納型の項の使い方である。<code>fun</code> で受け取った <code>s</code> を、 <code>match s with</code> で場合分けする:</p>
 <pre class="lean"><code><span class="kw">def</span> next : Signal → Signal := <span class="kw">fun</span> s =&gt;
   <span class="kw">match</span> s <span class="kw">with</span>
   | Signal.red =&gt; Signal.green
@@ -526,6 +526,8 @@ in the application
 
 <span class="kw">#check</span> fromSum</code></pre>
 <pre class="quote"><code>fromSum : MySum Nat Bool → Nat</code></pre>
+<p>ここで書き方を一般に述べておく: <strong>帰納型からの関数は <code>match</code> で書く</strong>。枝は構成子ごとに1本ずつで、全部の枝を与えれば関数が1つ決まる。</p>
+<p>集合のアナロジーの側でこれに当たるのは、<strong>直和の普遍性</strong>である:直和 α ⊔ β からの写像を与えることは、α からの写像と β からの写像を 1本ずつ与えることにほかならない。<code>fromSum</code> では <code>inl</code> の枝が「α = Nat からの写像」（中身をそのまま返す）、<code>inr</code> の枝が「β = Bool からの写像」（<code>0</code> を返す）に当たる。<code>Signal</code> のような列挙型で「各点の行き先を1つずつ指定する」のも、1点集合の直和と思えば同じ形である。 <code>match</code> の書式を見たら、直和の普遍性を連想してほしい。</p>
 <p>取り出す側も、パラメータを持たせて一般的に書ける。次の <code>getLeft</code> は「既定値 <code>d</code> を受け取り、左の札なら中身を、右の札なら <code>d</code> を返す」関数で、 <code>fromSum</code> はその <code>Nat</code>・<code>Bool</code>・<code>0</code> への特殊化に当たる（<code>{α β : Type}</code> という波括弧の意味は6節でまとめて説明する。ここでは「どんな型の組でも使える」という印と読めばよい）:</p>
 <pre class="lean"><code><span class="kw">def</span> getLeft {α β : <span class="sort">Type</span>} (d : α) : MySum α β → α := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
@@ -631,7 +633,7 @@ in the application
 
 <span class="kw">#check</span> MyPoint.x</code></pre>
 <pre class="quote"><code>MyPoint.x : MyPoint → Nat</code></pre>
-<p>帰納型の項の使い方（除去）はいつでも <code>match</code> である——構成子が1つなら、場合分けが1ケースになるだけで、原理は 4節と変わらない。（<code>⟨ ⟩</code> は <code>\&lt;</code> <code>\&gt;</code> で打てる。）</p>
+<p>帰納型の項の使い方はいつでも <code>match</code> である——構成子が1つなら、場合分けが1ケースになるだけで、原理は 4節と変わらない。（<code>⟨ ⟩</code> は <code>\&lt;</code> <code>\&gt;</code> で打てる。）</p>
 <p>この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が <code>structure</code> である。つまり structure は <code>inductive</code> の<strong>特別な場合</strong>であり、 <code>inductive</code> と同じく、新しい型を定義するやり方の1つである。 structure では、構成子の各引数に名前を付けて宣言する。この名前付きの成分を<strong>フィールド</strong>（field）と呼ぶ。利点は2つ:</p>
 <ul>
 <li><strong>フィールドに名前を付けられる</strong>（その名前がそのまま取り出し関数になる）</li>
@@ -706,8 +708,8 @@ in the application
 <p>「型 <code>carrier</code> と、その要素 <code>point</code>」の組——数学でいう<strong>点付き集合</strong>である。 <code>mk</code> の型を推測しよう。フィールドの列そのまま……のはずで、4節の <code>MySum.inl</code> と同じく、<strong>第2引数の型の中に第1引数の名前が現れる</strong>ことになる:</p>
 <pre class="lean"><code><span class="kw">#check</span> PointedType.mk</code></pre>
 <pre class="quote"><code>PointedType.mk (carrier : Type) (point : carrier) : PointedType</code></pre>
-<pre class="lean"><code><span class="doc">/-- 例:「型 `Nat` と、その要素 `0`」の組。 -/</span>
-<span class="kw">def</span> pointedNat : PointedType := ⟨Nat, 0⟩
+<p>例:「型 <code>Nat</code> と、その要素 <code>0</code>」の組。</p>
+<pre class="lean"><code><span class="kw">def</span> pointedNat : PointedType := ⟨Nat, 0⟩
 
 <span class="kw">#check</span> pointedNat</code></pre>
 <pre class="quote"><code>pointedNat : PointedType</code></pre>
@@ -796,8 +798,8 @@ in the application
 <h2>7. ドット記法</h2>
 <p><code>CH.lean</code> の証明では、<code>h.1</code> や <code>.inl</code> のようなドットの略記が頻繁に使われる。向きの違う2つの用法があるので、まとめて押さえておく。</p>
 <p><strong>値の後ろに付けるドット</strong>: <code>p : Point</code> に対して <code>p.x</code> と書くと、Lean は「<code>p</code> の型の名前 <code>Point</code> を接頭辞に持つ関数 <code>Point.x</code> を探し、<code>p</code> を最初の <code>Point</code> 型の引数として渡す」と解釈する。つまり <code>p.x</code> は <code>Point.x p</code> の略記。自動生成されるフィールドに限らず、<code>Point.〜</code> という名前の関数なら何でも使える（<code>型名.関数名</code> という名前の仕組みの一般論——名前空間——は <code>Intro2.lean</code> で扱う）。</p>
-<pre class="lean"><code><span class="doc">/-- 成分を入れ替える関数。名前を `Point.swap` にした。 -/</span>
-<span class="kw">def</span> Point.swap (p : Point) : Point := ⟨p.y, p.x⟩</code></pre>
+<p>成分を入れ替える関数。名前を <code>Point.swap</code> にした。</p>
+<pre class="lean"><code><span class="kw">def</span> Point.swap (p : Point) : Point := ⟨p.y, p.x⟩</code></pre>
 <p>確認してみる。後ろに付けるドットは、名前空間の関数の適用の略記にすぎない:</p>
 <pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2).swap.x</code></pre>
 <pre class="quote"><code>2</code></pre>

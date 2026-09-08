@@ -15,8 +15,9 @@ Lean には「型の世界」と「命題の世界」があり、この2つは�
 **ある型の項を作ることと、ある命題の証明を書くことを対応させられる**ということ。
 
 それを見るために、すでにある型（命題）から新しい型（命題）を作る操作を6つ並べ、
-それぞれについて「どう作るか（導入）」と「どう使うか（除去）」を見比べる
-（その命題を**示したい**ときに見るのが導入、**使いたい**ときに見るのが除去である）。
+それぞれについて、その命題を**示すとき**の書き方と**使うとき**の書き方を見比べる
+（型の側では「項を作るとき」と「項を使うとき」にあたる。論理学で
+導入則・除去則と呼ばれる区別だが、この教材では呼び名もこの2語で通す）。
 対応する項と証明が**同じ字面で書ける**ことが繰り返し現れる。
 
 | | 型 | 命題 |
@@ -89,26 +90,17 @@ theorem one_add_one : 1 + 1 = 2 := rfl
    エラーメッセージがどの規則の破れを指しているか読み取れ。
 -/
 
-variable {α β γ : Type}
-variable {p q r : Prop}
-
-/-!
-（`variable` は「同じ引数を宣言のたびに書く代わりの前置き」で、以後の宣言は
-使った変数だけを引数として受け取る。ここで宣言した `α β γ`・`p q r` は、
-次の節からの宣言で使われる。この教材では宇宙は `Type` に固定する。）
--/
-
 /-! ## 1. 関数型と「ならば」
 
-**導入**: `fun x => e` で作る。`x : α` を仮に置いて `e : β` を作れば `α → β` が得られる。
+**示すとき**: `fun x => e` で作る。`x : α` を仮に置いて `e : β` を作れば `α → β` が得られる。
 「`p` を仮定すれば `q` が示せる」なら `p → q` が言える、というのと同じ形。
 
-**除去**: `f a` と適用する。関数に項を与えれば値が出る。
+**使うとき**: `f a` と適用する。関数に項を与えれば値が出る。
 含意に証明を与えれば結論の証明が出る。
 -/
 
-/-- 型側の導入: `β` の項が1つあれば、`α` から `β` への関数が作れる。 -/
-def constFun (b : β) : α → β := fun _ => b
+/-- 作るとき（型側）: `β` の項が1つあれば、`α` から `β` への関数が作れる。 -/
+def constFun {α β : Type} (b : β) : α → β := fun _ => b
 
 #check constFun
 
@@ -116,8 +108,8 @@ def constFun (b : β) : α → β := fun _ => b
     constFun {α β : Type} (b : β) : α → β
 -/
 
-/-- 命題側の導入: `q` の証明が1つあれば、`p → q` が示せる。字面はまったく同じ。 -/
-theorem constImp (hq : q) : p → q := fun _ => hq
+/-- 示すとき（命題側）: `q` の証明が1つあれば、`p → q` が示せる。字面はまったく同じ。 -/
+theorem constImp {p q : Prop} (hq : q) : p → q := fun _ => hq
 
 #check constImp
 
@@ -128,8 +120,8 @@ theorem constImp (hq : q) : p → q := fun _ => hq
 引数の並びも結果の形も、そのまま重なっている。
 -/
 
-/-- 型側の除去: 適用。 -/
-def applyFun (f : α → β) (a : α) : β := f a
+/-- 使うとき（型側）: 適用。 -/
+def applyFun {α β : Type} (f : α → β) (a : α) : β := f a
 
 #check applyFun
 
@@ -139,8 +131,8 @@ def applyFun (f : α → β) (a : α) : β := f a
 読み:「`f` に `a` を適用して `f a`」。
 -/
 
-/-- 命題側の除去: 適用。これも字面が同じ。 -/
-theorem applyImp (h : p → q) (hp : p) : q := h hp
+/-- 使うとき（命題側）: 適用。これも字面が同じ。 -/
+theorem applyImp {p q : Prop} (h : p → q) (hp : p) : q := h hp
 
 #check applyImp
 
@@ -161,8 +153,9 @@ theorem applyImp (h : p → q) (hp : p) : q := h hp
 型側と命題側を**同じ字面**で書けることを、自分の手で確かめる。
 
 1. 「2回適用」を両方の世界で書け:
-   `def apply2 : (α → α) → α → α` と `theorem applyTwice : (p → p) → p → p`。
-2. 「A より B、B より C」の連鎖 `theorem chain : (p → q) → (q → r) → p → r` を
+   `def apply2 {α : Type} : (α → α) → α → α` と
+   `theorem applyTwice {p : Prop} : (p → p) → p → p`。
+2. 「A より B、B より C」の連鎖 `theorem chain {p q r : Prop} : (p → q) → (q → r) → p → r` を
    項で書け。
 3. 同じ字面 `fun h => h` が、型側の `example : Nat → Nat` と命題側の
    `example : (1 = 1) → (1 = 1)` の**両方**で通ることを確かめよ。
@@ -171,14 +164,14 @@ theorem applyImp (h : p → q) (hp : p) : q := h hp
 
 /-! ## 2. 直積型と「かつ」
 
-**導入**: `⟨a, b⟩` で作る。両方の成分を揃えれば組が作れる。
+**示すとき**: `⟨a, b⟩` で作る。両方の成分を揃えれば組が作れる。
 `p` の証明と `q` の証明を揃えれば `p ∧ q` の証明になる。
 
-**除去**: `.1` と `.2` で取り出す。組からは各成分が取れる。
+**使うとき**: `.1` と `.2` で取り出す。組からは各成分が取れる。
 `p ∧ q` からは `p` も `q` も取れる。
 -/
 
-def mkProd (a : α) (b : β) : α × β := ⟨a, b⟩
+def mkProd {α β : Type} (a : α) (b : β) : α × β := ⟨a, b⟩
 
 #check mkProd
 
@@ -186,7 +179,7 @@ def mkProd (a : α) (b : β) : α × β := ⟨a, b⟩
     mkProd {α β : Type} (a : α) (b : β) : α × β
 -/
 
-theorem mkAnd (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
+theorem mkAnd {p q : Prop} (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
 
 #check mkAnd
 
@@ -197,7 +190,7 @@ theorem mkAnd (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
 -/
 
 /-- 型側: 組を入れ替える。 -/
-def swapProd : α × β → β × α := fun x => ⟨x.2, x.1⟩
+def swapProd {α β : Type} : α × β → β × α := fun x => ⟨x.2, x.1⟩
 
 #check swapProd
 
@@ -206,7 +199,7 @@ def swapProd : α × β → β × α := fun x => ⟨x.2, x.1⟩
 -/
 
 /-- 命題側: 「かつ」を入れ替える。`swapProd` と一字一句同じ証明項で書ける。 -/
-theorem swapAnd : p ∧ q → q ∧ p := fun h => ⟨h.2, h.1⟩
+theorem swapAnd {p q : Prop} : p ∧ q → q ∧ p := fun h => ⟨h.2, h.1⟩
 
 #check swapAnd
 
@@ -218,23 +211,24 @@ theorem swapAnd : p ∧ q → q ∧ p := fun h => ⟨h.2, h.1⟩
 
 /-! ### ✏ 練習
 
-1. `theorem and_left : p ∧ q → p` と型側の対応物 `def fst' : α × β → α` を書き比べよ。
-2. `theorem and_assoc' : (p ∧ q) ∧ r → p ∧ (q ∧ r)` を `⟨…⟩` と `.1` `.2` で書け。
-3. 具体的な命題でも導入は同じであることを、
+1. `theorem and_left {p q : Prop} : p ∧ q → p` と型側の対応物
+   `def fst' {α β : Type} : α × β → α` を書き比べよ。
+2. `theorem and_assoc' {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r)` を `⟨…⟩` と `.1` `.2` で書け。
+3. 具体的な命題でも示し方は同じであることを、
    `example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩` で確かめよ。
 -/
 
 /-! ## 3. 直和型と「または」
 
-**導入**: `.inl` か `.inr` のどちらかで作る。左右どちらかの成分があればよい。
+**示すとき**: `.inl` か `.inr` のどちらかで作る。左右どちらかの成分があればよい。
 `p` の証明があれば `p ∨ q` が言えるし、`q` の証明でもよい。
 
-**除去**: 場合分け（`match`）。和の項を使うには、
+**使うとき**: 場合分け（`match`）。和の項を使うには、
 左のときと右のときの両方について行き先を用意する必要がある。
 「または」を使うときに場合分けするのと同じ。
 -/
 
-def inlSum (a : α) : α ⊕ β := .inl a
+def inlSum {α β : Type} (a : α) : α ⊕ β := .inl a
 
 #check inlSum
 
@@ -242,7 +236,7 @@ def inlSum (a : α) : α ⊕ β := .inl a
     inlSum {α β : Type} (a : α) : α ⊕ β
 -/
 
-theorem inlOr (hp : p) : p ∨ q := .inl hp
+theorem inlOr {p q : Prop} (hp : p) : p ∨ q := .inl hp
 
 #check inlOr
 
@@ -253,7 +247,7 @@ theorem inlOr (hp : p) : p ∨ q := .inl hp
 -/
 
 /-- 型側: 和を入れ替える。左なら右へ、右なら左へ。 -/
-def swapSum : α ⊕ β → β ⊕ α := fun x =>
+def swapSum {α β : Type} : α ⊕ β → β ⊕ α := fun x =>
   match x with
   | .inl a => .inr a
   | .inr b => .inl b
@@ -265,7 +259,7 @@ def swapSum : α ⊕ β → β ⊕ α := fun x =>
 -/
 
 /-- 命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。 -/
-theorem swapOr : p ∨ q → q ∨ p := fun h =>
+theorem swapOr {p q : Prop} : p ∨ q → q ∨ p := fun h =>
   match h with
   | .inl hp => .inr hp
   | .inr hq => .inl hq
@@ -278,8 +272,8 @@ theorem swapOr : p ∨ q → q ∨ p := fun h =>
 `swapSum` と重なる。
 -/
 
-/-- 型側の除去を一般の形で書いたもの。 -/
-def elimSum : α ⊕ β → (α → γ) → (β → γ) → γ := fun x f g =>
+/-- 型側の「使うとき」を一般の形で書いたもの。 -/
+def elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ := fun x f g =>
   match x with
   | .inl a => f a
   | .inr b => g b
@@ -290,8 +284,8 @@ def elimSum : α ⊕ β → (α → γ) → (β → γ) → γ := fun x f g =>
     elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ
 -/
 
-/-- 命題側の除去。`Or.elim` と同じもの。字面は上と同じ。 -/
-theorem elimOr : p ∨ q → (p → r) → (q → r) → r := fun h f g =>
+/-- 命題側の「使うとき」。`Or.elim` と同じもの。字面は上と同じ。 -/
+theorem elimOr {p q r : Prop} : p ∨ q → (p → r) → (q → r) → r := fun h f g =>
   match h with
   | .inl hp => f hp
   | .inr hq => g hq
@@ -306,8 +300,8 @@ theorem elimOr : p ∨ q → (p → r) → (q → r) → r := fun h f g =>
 
 /-! ### ✏ 練習
 
-1. `theorem or_idem : p ∨ p → p` を `match` で書け（どちらの札でも中身は同じ）。
-2. `theorem or_map : (p → q) → p ∨ r → q ∨ r` を書け
+1. `theorem or_idem {p : Prop} : p ∨ p → p` を `match` で書け（どちらの札でも中身は同じ）。
+2. `theorem or_map {p q r : Prop} : (p → q) → p ∨ r → q ∨ r` を書け
    （札を見て、左のときだけ関数を適用する）。
 3. `example : (1 = 2) ∨ (2 = 2) := .inr rfl` が通ることを確かめよ
    （左の札が**偽の命題**でも、右から入れる）。
@@ -317,16 +311,16 @@ theorem elimOr : p ∨ q → (p → r) → (q → r) → r := fun h f g =>
 
 項が1つもない型が `Empty`、証明が1つもない命題が `False`。
 
-**導入**: **ない**。これが空であることの意味そのもので、
+**示すとき**: 手段が**ない**。これが空であることの意味そのもので、
 作り方が用意されていないから項（証明）が存在しない。
 
-**除去**: 場合分けすべき場合が1つもないので、
+**使うとき**: 場合分けすべき場合が1つもないので、
 「もし項が手に入ったなら何でも作れる」という形になる。
 矛盾からは何でも従う、というのと同じ。
 -/
 
 /-- 型側: `Empty` の項があれば何の型の項でも作れる。 -/
-def elimEmpty : Empty → α := fun e => e.elim
+def elimEmpty {α : Type} : Empty → α := fun e => e.elim
 
 #check elimEmpty
 
@@ -335,7 +329,7 @@ def elimEmpty : Empty → α := fun e => e.elim
 -/
 
 /-- 命題側: 矛盾からは何でも従う。 -/
-theorem elimFalse : False → p := fun h => h.elim
+theorem elimFalse {p : Prop} : False → p := fun h => h.elim
 
 #check elimFalse
 
@@ -344,7 +338,7 @@ theorem elimFalse : False → p := fun h => h.elim
 -/
 
 /-- 否定 `¬p` は `p → False` のことなので、実は新しい作り方ではない。 -/
-theorem notIntro (h : p → False) : ¬p := h
+theorem notIntro {p : Prop} (h : p → False) : ¬p := h
 
 #check notIntro
 
@@ -385,9 +379,9 @@ theorem notIntro (h : p → False) : ¬p := h
 
 /-! ### ✏ 練習
 
-1. `theorem noContra : p → ¬p → q` を書け。ヒント: `¬p` は `p → False` なので、
+1. `theorem noContra {p q : Prop} : p → ¬p → q` を書け。ヒント: `¬p` は `p → False` なので、
    適用すると `False` が出る。あとは `.elim`。
-2. `theorem dni : p → ¬¬p` を書け（二重否定の**導入**。ほとんど1語で書ける）。
+2. `theorem dni {p : Prop} : p → ¬¬p` を書け（`¬¬p` を**示す**向き。ほとんど1語で書ける）。
    書けたら、逆向き `¬¬p → p` にも挑戦して、**書けない**ことを確かめよ。
    書き方は `Top.lean` の1節 `compl_compl`（`Classical.byContradiction` を使う）で、
    その代償（公理への依存）は末尾の公理の節で分かる。
@@ -403,13 +397,11 @@ theorem notIntro (h : p → False) : ¬p := h
 命題側で対応するのは全称量化 `∀ a, Q a`。
 `Q : α → Prop` は「`α` の各点に命題を割り当てるもの」で、形はまったく同じ。
 
-**導入・除去**: 関数のときと変わらず `fun x => e` と `f a`。
+**示すとき・使うとき**: 関数のときと変わらず `fun x => e` と `f a`。
 `α → β` は `P` が定数のときの特別な場合なので、これは自然なこと。
 -/
 
-variable {P : α → Type} {Q : α → Prop}
-
-def mkPi (f : (a : α) → P a) : (a : α) → P a := fun a => f a
+def mkPi {α : Type} {P : α → Type} (f : (a : α) → P a) : (a : α) → P a := fun a => f a
 
 #check mkPi
 
@@ -417,7 +409,7 @@ def mkPi (f : (a : α) → P a) : (a : α) → P a := fun a => f a
     mkPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a
 -/
 
-theorem mkForall (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
+theorem mkForall {α : Type} {Q : α → Prop} (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
 
 #check mkForall
 
@@ -425,8 +417,8 @@ theorem mkForall (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
     mkForall {α : Type} {Q : α → Prop} (h : ∀ (a : α), Q a) (a : α) : Q a
 -/
 
-/-- 型側の除去: 点 `a` を与えると `P a` の項が出る。 -/
-def applyPi (f : (a : α) → P a) (a : α) : P a := f a
+/-- 使うとき（型側）: 点 `a` を与えると `P a` の項が出る。 -/
+def applyPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a := f a
 
 #check applyPi
 
@@ -434,8 +426,8 @@ def applyPi (f : (a : α) → P a) (a : α) : P a := f a
     applyPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a
 -/
 
-/-- 命題側の除去: 点 `a` を与えると `Q a` の証明が出る。 -/
-theorem applyForall (h : ∀ a, Q a) (a : α) : Q a := h a
+/-- 使うとき（命題側）: 点 `a` を与えると `Q a` の証明が出る。 -/
+theorem applyForall {α : Type} {Q : α → Prop} (h : ∀ a, Q a) (a : α) : Q a := h a
 
 #check applyForall
 
@@ -476,9 +468,35 @@ theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
 `n * 0` が**計算で** `0` になるからである（0節の `1 + 1 = 2` と同じ理屈）。
 -/
 
+/-!
+### 発展: 対称に見えて `rfl` が通らない `0 * n`
+
+同じ調子で `∀ n, IsZero (0 * n)` も書きたくなるが、こちらは通らない:
+
+    theorem all_zero_mul : ∀ n : Nat, IsZero (0 * n) := fun n => rfl
+
+    error: Type mismatch
+      rfl
+    has type
+      ?m.10 = ?m.10
+    but is expected to have type
+      IsZero (0 * n)
+
+理由は `*` の定義が**第2引数についての再帰**であること。`n * 0` は
+第2引数が `0` なので計算が1歩で進むが、`0 * n` は第2引数が**変数のまま**
+なので計算が止まり、`0 * n` と `0` は「計算で一致」しない。
+数学では対称に見える2つの式が、定義のレベルでは非対称なのである
+（練習2の `0 * 5` が通るのは、`5` が具体的な数字で計算が最後まで走るから）。
+
+変数 `n` のまま示すには `n` についての**数学的帰納法**が要る。Lean では
+帰納法は再帰で書く——実物は `Top.lean` の `mem_interFin` などで見る。
+ライブラリではこの命題（の中身）は `Nat.zero_mul` として証明済みである。
+-/
+
 /-! ### ✏ 練習
 
-1. `theorem all_and {R : α → Prop} : (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a` を
+1. `theorem all_and {α : Type} {Q R : α → Prop} :
+   (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a` を
    書け（各点で証明を組にするだけ）。
 2. `example : IsZero (0 * 5) := rfl` が通ることを確かめよ。
    `IsZero (5 * 0)` は `rfl` でも `all_mul_zero 5` でも証明できるか試せ。
@@ -492,14 +510,14 @@ theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
 `(a : α) × P a`（`P : α → Type`、型の族）。命題側で対応するのが存在量化
 `∃ a, Q a`（`Q : α → Prop`、命題の族）。
 
-**導入**: `⟨a, b⟩`。「どの点か」と「その点で成り立つこと」を組にする。
+**示すとき**: `⟨a, b⟩`。「どの点か」と「その点で成り立つこと」を組にする。
 存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。
 
-**除去**: 組を分解する。型側は `.1` `.2` で取り出せる。
+**使うとき**: 組を分解する。型側は `.1` `.2` で取り出せる。
 命題側にはここだけ制限があるので、後の 11 節で見る。
 -/
 
-def mkSigma (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
+def mkSigma {α : Type} {P : α → Type} (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
 
 #check mkSigma
 
@@ -507,7 +525,7 @@ def mkSigma (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
     mkSigma {α : Type} {P : α → Type} (a : α) (b : P a) : (a : α) × P a
 -/
 
-theorem mkExists (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
+theorem mkExists {α : Type} {Q : α → Prop} (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
 
 #check mkExists
 
@@ -519,7 +537,7 @@ theorem mkExists (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
 -/
 
 /-- 型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。 -/
-def currySigma : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
+def currySigma {α γ : Type} {P : α → Type} : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
   fun f a b => f ⟨a, b⟩
 
 #check currySigma
@@ -530,7 +548,7 @@ def currySigma : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
 
 /-- 命題側: 「存在するなら `r`」は「どの点についても、条件を満たすなら `r`」と同じこと。
 `currySigma` と同じ証明項で書ける。 -/
-theorem curryExists : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
+theorem curryExists {α : Type} {r : Prop} {Q : α → Prop} : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
   fun f a b => f ⟨a, b⟩
 
 #check curryExists
@@ -587,18 +605,19 @@ def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
 
 /-! ### ✏ 練習
 
-1. `theorem exists_map {R : α → Prop} : (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a` を
+1. `theorem exists_map {α : Type} {Q R : α → Prop} :
+   (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a` を
    書け（証人はそのまま、根拠だけ差し替える）。
 2. `#check (last 4).val` の表示を予想してから確かめよ
    （表示に付く `↑` は**強制**の印——`Intro2.lean` 2節の補足で説明する）。
 3. `example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩` が通ることを確かめよ。
 -/
 
-/-! ## 7. 導入と除去のまとめ
+/-! ## 7. 示すときと使うときのまとめ
 
-作り方（導入）と使い方（除去）を並べると、左右で同じ形をしていることが見える。
+示すときの形と使うときの形を並べると、左右で同じ形をしていることが見える。
 
-| | 型 | 命題 | 導入 | 除去 |
+| | 型 | 命題 | 示すとき | 使うとき |
 |---|---|---|---|---|
 | 関数 | `α → β` | `p → q` | `fun x => e` | `f a` |
 | 積 | `α × β` | `p ∧ q` | `⟨a, b⟩` | `.1` / `.2` |
@@ -607,8 +626,8 @@ def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
 | 依存積 | `(a : α) → P a` | `∀ a, Q a` | `fun x => e` | `f a` |
 | 依存和 | `(a : α) × P a` | `∃ a, Q a` | `⟨a, b⟩` | `.1` / `.2`（`∃` は `match` のみ——11節） |
 
-導入は「その型（命題）を作るのに何が要るか」、
-除去は「その型（命題）を持っているとき何が言えるか」。
+示すときの列は「その型（命題）を作るのに何が要るか」、
+使うときの列は「その型（命題）を持っているとき何が言えるか」。
 上の例で見たとおり、対応する両側は多くの場合まったく同じ字面で書ける。
 
 字面が同じになるのは偶然ではない。証明を書くときにしていることは、
@@ -620,14 +639,14 @@ def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
 /-- 型側と命題側で同じ項が通ることの確認。
 `⟨x.2, x.1⟩` という同じ式が、片方では組の入れ替え、
 もう片方では「かつ」の入れ替えの証明になっている。 -/
-example : α × β → β × α := fun x => ⟨x.2, x.1⟩
+example {α β : Type} : α × β → β × α := fun x => ⟨x.2, x.1⟩
 
-example : p ∧ q → q ∧ p := fun x => ⟨x.2, x.1⟩
+example {p q : Prop} : p ∧ q → q ∧ p := fun x => ⟨x.2, x.1⟩
 
 /-! ### ✏ 練習
 
-1. 対照表を見ながら、`theorem andToOr : p ∧ q → p ∨ q` の証明項を書け
-   （`∧` の除去で取り出し、`∨` の導入で包む——1行で書ける）。
+1. 対照表を見ながら、`theorem andToOr {p q : Prop} : p ∧ q → p ∨ q` の証明項を書け
+   （`∧` から取り出し、`∨` を示す形に包む——1行で書ける）。
 -/
 
 /-! ## 8. 例: 自然数の命題を構成子で証明する
@@ -681,7 +700,7 @@ example : 0 ≤ 2 := Nat.le.step (Nat.le.step Nat.le.refl)
 これが7節の主張の実演である。`0 ≤ 2` を証明するとは、帰納型 `Nat.le` の
 項を構成子から組み立てることに他ならず、出来上がった証明は
 データと同じ資格でそこにある。`∧` `∨` `∃` `False` も同様に帰納型として
-定義された命題であり（2〜4節、6節）、導入で使った `⟨_, _⟩` や `.inl` は、
+定義された命題であり（2〜4節、6節）、示すときに使った `⟨_, _⟩` や `.inl` は、
 それらの構成子だったのである。
 
 ### 等式の法則は公理ではない
@@ -716,6 +735,37 @@ Lean では違う。いま見たとおり `Eq` はただの帰納型の宣言で
 主定理が実際に依存するのは、外延性・選択・商型の健全性にあたる3つだけである。
 それは `Top.lean` の末尾で `#print axioms` により確認する。
 
+### 「全部」と「別々」も出てくる
+
+`Intro1.lean` 4節で、帰納型の宣言は2つのことを保証すると述べた:
+構成子で作られたものが項の**全部**であること、そして違う作り方をした項は
+**別々**であることである。この2つも公理ではなく、同じ一般規則から出てくる。
+
+「全部」の保証の正体は、自動生成される帰納法原理そのものである。
+`rec` は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」
+と言っており、`match` の場合分けがそれで尽くせるのはこれによる。
+
+「別々」には、これも宣言の受理時に自動生成される道具 `noConfusion` が使える。
+「違う構成子どうしは等しくない」と「同じ構成子なら中身まで等しい
+（構成子は単射）」の両方がこれで証明できる。実物を `Bool` と `Nat` で見る
+（`a ≠ b` は `¬(a = b)` の記法。初出である）:
+-/
+
+example : true ≠ false := fun h => Bool.noConfusion h
+
+example {m n : Nat} (h : Nat.succ m = Nat.succ n) : m = n :=
+  Nat.noConfusion h (fun h' => h')
+
+#print axioms Bool.noConfusion
+
+/-!
+    'Bool.noConfusion' does not depend on any axioms
+
+`noConfusion` 自体も公理には依存していない——帰納型の仕組みから
+**証明された**定理である。種明かしだけ述べると、「構成子を `match` で見分けて
+`True`／`False` を割り当てる述語」を作り、`Eq.rec`（代入原理）で
+`true = false` の仮定からゴール `False` へ運ぶ——どれも既出の道具である。
+
 ### 実験: 等式をもう1つ作る
 
 `Eq` が特別な組み込みでないことは、実際に作り直してみるとよく分かる。
@@ -734,7 +784,7 @@ inductive MyEq {α : Type} (a : α) : α → Prop where
 /-- 対称律は場合分け（`match`）だけで導ける。構成子は `refl` の1つ、つまり
 `a` と `b` が同じ場合しかないので、返すべきものも `refl` で足りる。
 推移律や代入原理も同様である。 -/
-theorem MyEq.symm {a b : α} (h : MyEq a b) : MyEq b a :=
+theorem MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a :=
   match h with
   | .refl => .refl
 
@@ -801,7 +851,7 @@ theorem MyEq.symm {a b : α} (h : MyEq a b) : MyEq b a :=
 すでに織り込まれている。`match` を使わず、この帰納法原理を直接使っても書ける:
 -/
 
-theorem MyEq.symm' {a b : α} (h : MyEq a b) : MyEq b a :=
+theorem MyEq.symm' {α : Type} {a b : α} (h : MyEq a b) : MyEq b a :=
   MyEq.rec (motive := fun c _ => MyEq c a) MyEq.refl h
 
 /-!
@@ -826,7 +876,7 @@ example : MyEq (1 + 1) 2 := .refl
 位置にある——「`Eq` の唯一の構成子 `Eq.refl` の場合」を表す書き方である。
 -/
 
-theorem myEq_iff_eq {a b : α} : MyEq a b ↔ a = b :=
+theorem myEq_iff_eq {α : Type} {a b : α} : MyEq a b ↔ a = b :=
   ⟨fun h => match h with | .refl => rfl,
    fun h => match h with | rfl => .refl⟩
 
@@ -838,7 +888,7 @@ theorem myEq_iff_eq {a b : α} : MyEq a b ↔ a = b :=
 
 /-- `propext : (p ↔ q) → p = q`（命題の外延性。`Top.lean` の3公理の1つ）まで
 使えば、同値であるにとどまらず、命題として**等しい**ことになる。 -/
-example {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
+example {α : Type} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
 
 /-!
 つまり2つ目の等式を作っても、衝突も分裂も起きず、同じものが増えるだけである。
@@ -861,7 +911,7 @@ example {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
 1. `example : 1 ≤ 3` を `Nat.le` の構成子**だけ**で書け（`step` は何回要るか）。
 2. 本文の `MyEq.symm` にならって、`MyEq.trans` を自分で証明せよ
    （`h₂` を `match` で分ければ `h₁` がそのまま答えになる）。
-3. 逆向きの橋 `theorem MyEq.ofEq {a b : α} (h : a = b) : MyEq a b` を
+3. 逆向きの橋 `theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b` を
    `match` で書け（今度は `Eq` の側で場合分けして、`MyEq` の構成子を置く）。
 -/
 
@@ -915,8 +965,8 @@ def IsEven (n : Nat) : Prop := ∃ k, n = 2 * k
 -/
 
 theorem isEven_double : ∀ n : Nat, IsEven (n + n) :=
-  fun n =>                     -- (1) n を任意に取る（∀ の導入）
-    ⟨n, (Nat.two_mul n).symm⟩  -- (3) 証人は n、(2) 根拠は two_mul の対称形（∃ の導入）
+  fun n =>                     -- (1) n を任意に取る（∀ を示す形）
+    ⟨n, (Nat.two_mul n).symm⟩  -- (3) 証人は n、(2) 根拠は two_mul の対称形（∃ を示す形）
 
 #check isEven_double
 
@@ -938,7 +988,7 @@ f の単射性より x = y。∎」
 3. 仮定 hf を同様に f x = f y に適用して、x = y を得る。これが示すべきことだった。∎
 -/
 
-theorem comp_injective {f : α → β} {g : β → γ}
+theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ}
     (hg : Function.Injective g) (hf : Function.Injective f) :
     Function.Injective (fun x => g (f x)) :=
   fun x y h =>             -- (1) x, y を取り、h を仮定する
@@ -1040,12 +1090,12 @@ theorem isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) 
 
 | 紙の常套句 | 項での正体 |
 |---|---|
-| 「〜とする」「任意に取る」 | `fun`（`→`・`∀` の導入） |
-| 「A と B より C」 | 適用（含意・全称文の除去） |
+| 「〜とする」「任意に取る」 | `fun`（`→`・`∀` を示す形） |
+| 「A と B より C」 | 適用（含意・全称文を使う） |
 | 「C を得た。以下それを使う」 | `have h : C := …` |
 | 「〜となる x を取る」 | `have ⟨x, hx⟩ := …`（`∃` の分解） |
-| 「求めるものは〜である」 | `⟨証人, 根拠⟩`（`∃` の導入） |
-| 「場合分けする」 | `match`（`∨` などの除去） |
+| 「求めるものは〜である」 | `⟨証人, 根拠⟩`（`∃` を示す形） |
+| 「場合分けする」 | `match`（`∨` などを使う） |
 | 「両辺に〜を施す」「= をつなぐ」 | `congrArg`・`Eq.trans` |
 | 「明らか」 | `rfl`（計算で両辺が一致するときだけ書ける） |
 | 「∎」 | 型検査が通ること |
@@ -1107,17 +1157,8 @@ theorem isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) 
 
     error: don't know how to synthesize placeholder for argument `h`
     context:
-    α : Type u
-    β : Type v
-    γ : Type w
-    p q r : Prop
-    P : α → Type v
-    Q : α → Prop
     n : Nat
     ⊢ 1 ≤ n
-
-（`α`〜`Q` は、このファイル冒頭の `variable` がスコープにあるため並んでいる
-だけのもの。いま関係するのは最後の2行、`n : Nat` と `⊢ 1 ≤ n` である。）
 
 このエラーを出したのは、2段構えの**前段**——エラボレータ——である。
 省略された仮定は「未解決のゴール `⊢ 1 ≤ n`」として露出し、
@@ -1162,13 +1203,13 @@ Lean では**埋まらない穴**として必ず現れる。仮定を使うに�
 
 対応は完全ではない。証明は「あるかないか」だけが問題で中身は区別されない
 （同じ命題の2つの証明は等しいものとして扱われる）のに対し、
-項は中身が区別される。この差が、除去のところに現れる。
+項は中身が区別される。この差が、**使うとき**に現れる。
 
 依存和からは第一成分を取り出せるが、存在量化からは取り出せない。
 -/
 
 /-- 型側: どの点だったかを取り出せる。 -/
-def sigmaFst (s : (a : α) × P a) : α := s.1
+def sigmaFst {α : Type} {P : α → Type} (s : (a : α) × P a) : α := s.1
 
 #check sigmaFst
 
@@ -1177,7 +1218,7 @@ def sigmaFst (s : (a : α) × P a) : α := s.1
 -/
 
 /-- 型側: 第二成分も取り出せる。型が第一成分に依存していることに注意。 -/
-def sigmaSnd (s : (a : α) × P a) : P s.1 := s.2
+def sigmaSnd {α : Type} {P : α → Type} (s : (a : α) × P a) : P s.1 := s.2
 
 #check sigmaSnd
 
@@ -1212,8 +1253,8 @@ def sigmaSnd (s : (a : α) × P a) : P s.1 := s.2
 -- 正当なのは、この例外のおかげである。
 
 /-- 結論が命題である限り、分解して使うことはできる。
-`∃` の除去はこの形になる。 -/
-theorem existsElim (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
+`∃` を使うときはこの形になる。 -/
+theorem existsElim {α : Type} {r : Prop} {Q : α → Prop} (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
   match h with
   | ⟨a, ha⟩ => hr a ha
 
@@ -1240,7 +1281,7 @@ theorem existsElim (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
 -- どちらも行き先が同じ世界（型なら型、命題なら命題）に留まっていたから。
 
 /-- 結論が命題であれば、「または」も場合分けして使える。 -/
-theorem orElimToProp (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
+theorem orElimToProp {p q r : Prop} (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
 
 #check orElimToProp
 
@@ -1261,7 +1302,7 @@ theorem orElimToProp (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
 2節の `swapAnd` をタクティクで書き直してみる。
 -/
 
-theorem swapAnd' : p ∧ q → q ∧ p := by
+theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
   intro h            -- `fun h =>` に対応
   exact ⟨h.2, h.1⟩   -- この項をそのまま置く
 
@@ -1316,7 +1357,7 @@ theorem swapAnd' : p ∧ q → q ∧ p := by
    `cases` は `match` ではなく `Or.casesOn` を直接置くからである。
    **それでも型は同じ**であり、検査されるのはその型だけである、
    というのが本節の要点である。
-2. `theorem idTac : p → p` を `intro`・`exact` で書き、`#print idTac` の
+2. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
    表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。
 -/
 

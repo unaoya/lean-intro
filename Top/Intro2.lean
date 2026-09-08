@@ -454,7 +454,20 @@ macro_rules
 /-!
 所属の記号 `∈`（`\in` と打つ）は、標準ライブラリの記法用クラス `Membership` に
 instance 登録すると使えるようになる——1節で見た「記法はクラスで動く」の実戦である。
-中身は「集合（＝述語）`s` に点 `a` を適用する」だけ:
+中身は「集合（＝述語）`s` に点 `a` を適用する」だけ。
+まずクラスそのものを見ておく:
+-/
+
+#check Membership
+
+/-!
+    Membership.{u, v} (α : outParam (Type u)) (γ : Type v) : Type (max u v)
+
+`Membership α γ` は「入れ物 `γ` に要素 `α` が属する」という記法 `∈` のための
+クラスである（表示は宇宙変数付きだが、この教材の範囲ではどれも `Type` と
+読んでよい——`Intro1.lean` 1節）。`outParam` は instance 探索へのヒントで、
+「`∈` の右の入れ物の型 `γ` が分かれば、左の要素の型 `α` はそこから自動で
+決まる」という指定である。次の登録は `γ := Set X`・`α := X` の場合に当たる:
 -/
 
 instance {X : Type} : Membership X (Set X) := ⟨fun s a => s a⟩
