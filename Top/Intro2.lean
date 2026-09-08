@@ -6,7 +6,7 @@ import CH
 
 `Intro1.lean` と `CH.lean` を読み終えた人のためのファイルで、
 `Top.lean`（位相空間）を読むのに必要な残りの道具を揃える:
-class と instance、型の族としての `Fin`、集合の正体、名前空間、記法の自作。
+class と instance、型の族としての `Fin`、記法の自作、集合 `Set` の構築、名前空間。
 
 `CH.lean` を経由したので、ここからは**命題と証明も自由に使う**。
 読み方は今までどおり——項を見たら型を推測し、表示の枠で答え合わせをする。
@@ -218,7 +218,7 @@ instance : Add Point where
 /-!
     Fin (n : Nat) : Type
 
-つまり Fin : Nat → Type
+binder 形式を読み替えれば `Fin : Nat → Type`——1つ渡すと型が返る。
 -/
 
 #check Fin 3
@@ -299,7 +299,8 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 /-!
 これは数字 `2` が**記法**であり、期待される型に応じて別々の項に読まれるからである
 （`Fin` 用の読み方が instance として登録されている——1節で見た仕組みである）。
-`(2 : Nat)` は自然数の項、`(2 : Fin 3)` は `Fin 3` の「2 番」の項で、
+`(2 : Nat)` は自然数の項（それ自体 `Nat.succ (Nat.succ Nat.zero)` の読み替え
+——数字はもともと記法である）、`(2 : Fin 3)` は `Fin 3` の「2 番」の項で、
 **同じ字面の、別の項**なのである。所属判定をしているのではない証拠に、
 `(5 : Fin 3)` すら通り、3 で割った**余り**として読まれる:
 -/
@@ -352,6 +353,10 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 `Nat → Fin 3` の向きには「3 未満に収まっているか」の確認が要るので、
 自動では埋められない。まとめると、`Fin 3` と `Nat` の関係は
 「部分集合と全体」ではなく、**写像 `.val` で結ばれた別々の型**である。
+
+発展: リテラルの読みの正体は `OfNat` というクラスで、`(2 : Fin 3)` は
+`OfNat.ofNat 2` の略記、`Fin n` 用の instance が「`n` で割った余り」として
+実装されている。1節で見た「記法はクラスで動く」がここでも働いている。
 -/
 
 /-! ### ✏ 練習
@@ -363,156 +368,7 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 4. `#eval (first 5).val + (2 : Fin 3).val` の値を予想してから確かめよ。
 -/
 
-/-! ## 3. 集合の先取り — 集合とは述語のこと
-
-`Top.lean` は、数学でいう「集合」を自作するところから始まる。その定義を
-ここで先取りして、`CH.lean` で身につけた証明の書き方を実戦してみよう。
-
-`X` の部分集合を1つ指定することは、「各 `a : X` が入っているかどうか」を
-決めること——つまり **`X` 上の述語を1つ与えること**と同じである。そこで:
--/
-
-def MySet (X : Type) : Type := X → Prop
-
-#check MySet
-
-/-!
-    MySet (X : Type) : Type
-
-「`X` の部分集合の型」を、`Intro1.lean` 3節の `Map` と同じ流儀
-（型を受け取って型を返す関数）で定義した。
-すると「`a` は `s` に属する」は、述語の**適用**そのものになる:
--/
-
-def MySet.mem {X : Type} (s : MySet X) (a : X) : Prop := s a
-
-#check MySet.mem
-
-/-!
-    MySet.mem {X : Type} (s : MySet X) (a : X) : Prop
--/
-
-/-- 部分集合関係。「`s` の要素はすべて `t` の要素」——`∀` と `→` で書ける。 -/
-def MySet.subset {X : Type} (s t : MySet X) : Prop := ∀ a, s a → t a
-
-#check MySet.subset
-
-/-!
-    MySet.subset {X : Type} (s t : MySet X) : Prop
-
-名前を `MySet.〜` としたので、ドット記法（`Intro1.lean` 7節）で
-`s.mem a`・`s.subset t` と書ける。では、`CH.lean` の道具で最初の性質を
-証明してみよう。反射律は「各点で仮定をそのまま返す」だけである:
--/
-
-theorem MySet.subset_refl {X : Type} (s : MySet X) : s.subset s := fun _ ha => ha
-
-#check MySet.subset_refl
-
-/-!
-    MySet.subset_refl {X : Type} (s : MySet X) : s.subset s
-
-`s.subset s` を定義に沿って展開すれば `∀ a, s a → s a`——各点で
-「`p → p`」を示すだけである（`CH.lean` 1節の世界そのもの）。
-
-`Top.lean` では、これと同じものが `Set`・`∈`・`⊆` という名前と記法で
-再登場する。定義が本節と同じ `X → Prop` であることを、読むときに
-確かめてほしい。
--/
-
-/-! ### ✏ 練習
-
-1. 推移律を項で書け（各点で2つの仮定を順に適用する）:
-
-       theorem MySet.subset_trans {X : Type} {s t u : MySet X}
-           (hst : s.subset t) (htu : t.subset u) : s.subset u
-
-2. `def evens : MySet Nat := IsEven` と宣言せよ（`IsEven` は `CH.lean` 9節の
-   述語）。`example : evens.mem 4 := ⟨2, rfl⟩` が通ることを確かめよ。
-3. 全体集合 `def univ : MySet Nat := fun _ => True` を定義し、
-   `theorem subset_univ : ∀ s : MySet Nat, s.subset univ` を書け
-   （各点の証明は `True.intro`）。
-4. `def odds : MySet Nat := fun n => ¬IsEven n` を宣言し、
-   `#check odds.mem 3` の表示を予想してから確かめよ。
--/
-
-/-! ## 4. 宣言を支える小物 — variable・namespace
-
-`Top.lean` の見た目を決めている構文を、あと少しだけ揃える。
-
-### variable — 共通の引数の前置き
-
-同じ引数を宣言のたびに書くかわりに、`variable` でまとめて前置きしておける
-（`CH.lean` の冒頭で使われていたものである）。
-以後の宣言は、その変数を**実際に使ったときだけ**引数として受け取る。
--/
-
-section
-variable {α : Type} (x y : α)
-
-def toPair : Pair α α := ⟨x, y⟩
-
-#check toPair
-
-/-!
-    toPair {α : Type} (x y : α) : Pair α α
-
-variable が引数に取り込まれた
--/
-
-end
-
-/-!
-`section … end` は、`variable` の効き目をそこまでで区切るための囲いである。
-なお `universe u` という前置き（宇宙の段の名前を宣言する。`Intro1.lean` 1節）も
-あるが、この教材では宇宙を `Type` に固定しているので使わない。
-
-### namespace — 名前の接頭辞
-
-`Intro1.lean` 7節のドット記法を支えていた `型名.関数名` という名前は、
-**名前空間**の仕組みの一部である。`namespace N … end N` で囲うと、
-中の宣言の本名に `N.` が付く:
--/
-
-namespace Geometry
-
-def origin : Point := ⟨0, 0⟩
-
-#check origin
-
-/-!
-    Geometry.origin : Point
--/
-
-end Geometry
-
-#check Geometry.origin
-
-/-!
-    Geometry.origin : Point
-
-外からはフルネームで呼ぶ
--/
-
-/-!
-`p.x` が効くのは、`x` が**型名と同じ名前空間** `Point` に置かれているから
-である。`Top.lean` では `Set` の関数（`Set.ext` など）がこの形で置かれる。
-逆に、名前空間の**中**の名前を接頭辞なしで使えるようにする `export N (名前)`
-という宣言もある（`Top.lean` が `TopologicalSpace.IsOpen` を
-`IsOpen` と書くために使っている）。
--/
-
-/-! ### ✏ 練習
-
-1. `namespace Geometry … end Geometry` をもう一度開いて `unitX : Point := ⟨1, 0⟩` を
-   追加し、外から `#check Geometry.unitX` では見え、`#check unitX` では
-   見えないことを確かめよ。
-2. `section` の中で `variable (n : Nat)` を置いて
-   `def addN (m : Nat) : Nat := m + n` を宣言し、`#check addN` の表示
-   （`n` がどの位置に現れるか）を予想してから確かめよ。
--/
-
-/-! ## 5. 記法の自作 — syntax と macro_rules
+/-! ## 3. 記法の自作 — syntax と macro_rules
 
 `Top.lean` は `⋃₀ S` や `{a | p a}` といった数学記法を自作している。仕組みは:
 
@@ -544,7 +400,172 @@ macro_rules
 
 /-!
 記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。
-単純な中置・前置の記法には `infixl` や `prefix` という略記もある（`Top.lean` で使用）。
+単純な中置・前置の記法には `infixl` や `prefix` という略記もある
+（次節と `Top.lean` で使用）。
+-/
+
+/-! ### ✏ 練習
+
+1. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
+   `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
+2. `infixl:65 " ⊞ " => add` で、`Intro1.lean` の `add`（`MyNat` の足し算）に
+   中置記法を与え、`#reduce MyNat.zero.succ ⊞ MyNat.zero.succ` の表示を
+   予想してから確かめよ。
+-/
+
+/-! ## 4. 集合 — `Set` を自作する
+
+`Top.lean` は、数学でいう「集合」の上に位相を組み立てる。その集合を
+ここで作ってしまおう。`CH.lean` で身につけた証明の書き方の、最初の実戦でもある。
+
+`X` の部分集合を1つ指定することは、「各 `a : X` が入っているかどうか」を
+決めること——つまり **`X` 上の述語を1つ与えること**と同じである。そこで:
+-/
+
+/-- `X` の部分集合の型。実体は述語 `X → Prop` そのもので、新しいデータは何もない。 -/
+def Set (X : Type) : Type := X → Prop
+
+#check Set
+
+/-!
+    Set (X : Type) : Type
+
+2節の `Fin` と同じ、「型を受け取って型を返す関数」である。
+
+述語 `p` を集合とみなすときの「宣言」も1つ用意する。定義上は恒等関数だが、
+「述語を集合と読み替えました」という意思表示をこの名前が担う:
+-/
+
+def setOf {X : Type} (p : X → Prop) : Set X := p
+
+#check setOf
+
+/-!
+    setOf {X : Type} (p : X → Prop) : Set X
+
+数学の内包記法 `{a | p a}` も、3節の道具でそのまま自作できる:
+-/
+
+syntax "{" ident " | " term "}" : term
+
+macro_rules
+  | `({ $x:ident | $p }) => `(setOf fun $x => $p)
+
+/-!
+所属の記号 `∈`（`\in` と打つ）は、標準ライブラリの記法用クラス `Membership` に
+instance 登録すると使えるようになる——1節で見た「記法はクラスで動く」の実戦である。
+中身は「集合（＝述語）`s` に点 `a` を適用する」だけ:
+-/
+
+instance {X : Type} : Membership X (Set X) := ⟨fun s a => s a⟩
+
+#check (1 : Nat) ∈ ({n | n = 1} : Set Nat)
+
+/-!
+    1 ∈ setOf fun n ↦ n = 1 : Prop
+
+型が `Prop` と付いた＝登録に成功している。読むときの注意を2つ。
+
+第一に、**型注釈が2つ要る**理由: 数字 `1` も内包記法 `{n | …}` も
+「期待される型に応じて読みが決まる」記法なので、どの型の話かを
+先に教えないと読みが決まらないからである。
+
+第二に、表示が `{n | n = 1}` に戻らず `setOf fun n ↦ n = 1` になる理由:
+自作した記法は**構文解析（読む方向）専用**で、表示（書く方向）の規則までは
+作っていないからである。以後の表示の枠でも、展開先がそのまま見える。
+
+「`a ∈ s` である」ことの証明は、定義を展開すればただの `s a` である。
+実際に確かめてみる:
+-/
+
+example : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl
+
+/-!
+`∈` と `setOf` を定義に沿って展開すると、この命題は `1 = 1` そのものになる。
+だから `rfl` で閉じる——型検査が**定義を展開して**照合してくれるのである。
+
+包含 `⊆` も同じやり方で登録する。「`s` のどの要素も `t` の要素」——
+`∀` と `→` で書けるようになった言明である:
+-/
+
+instance {X : Type} : HasSubset (Set X) := ⟨fun s t => ∀ a, a ∈ s → a ∈ t⟩
+
+#check ({n | n = 1} : Set Nat) ⊆ {n | n = 2}
+
+/-!
+    (setOf fun n ↦ n = 1) ⊆ setOf fun n ↦ n = 2 : Prop
+
+型は `Prop`——包含は命題である。`s ⊆ t` の証明とは、定義から
+「各点で、`s a` の証明から `t a` の証明を作る関数」に他ならない。
+
+最初の性質を証明してみよう。反射律は「各点で仮定をそのまま返す」だけである:
+-/
+
+theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
+
+#check Set.subset_refl
+
+/-!
+    Set.subset_refl {X : Type} (s : Set X) : s ⊆ s
+
+`s ⊆ s` を展開すれば `∀ a, a ∈ s → a ∈ s`——各点で「`p → p`」を示すだけ
+（`CH.lean` 1節の世界そのもの）である。名前を `Set.〜` にしたのは
+ドット記法（`Intro1.lean` 7節）のためで、この命名の仕組みは次節で説明する。
+
+`Top.lean` はこの `Set` を土台に、`∩`・`∪`・補集合・像・逆像・集合族……と
+道具を足していく。
+-/
+
+/-! ### ✏ 練習
+
+1. 推移律を項で書け（各点で2つの仮定を順に適用する）:
+
+       theorem Set.subset_trans {X : Type} {s t u : Set X}
+           (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
+
+2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は `CH.lean`
+   9節の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
+3. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
+   `theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat` を書け
+   （各点の証明は `True.intro`。束縛子 `_n` の `_` は「使わない」印である）。
+4. `def odds : Set Nat := {n | ¬IsEven n}` を宣言し、
+   `#check (3 : Nat) ∈ odds` の表示を予想してから確かめよ。
+-/
+
+/-! ## 5. namespace — 名前の接頭辞
+
+`Intro1.lean` 7節のドット記法や、前節の `Set.subset_refl` という名前を
+支えている**名前空間**の仕組みを見ておく。
+`namespace N … end N` で囲うと、中の宣言の本名に `N.` が付く:
+-/
+
+namespace Geometry
+
+def origin : Point := ⟨0, 0⟩
+
+#check origin
+
+/-!
+    Geometry.origin : Point
+-/
+
+end Geometry
+
+#check Geometry.origin
+
+/-!
+    Geometry.origin : Point
+
+外からはフルネームで呼ぶ
+-/
+
+/-!
+`p.x` が効くのは、`x` が**型名と同じ名前空間** `Point` に置かれているから
+である。`Top.lean` では `namespace Set` の中に集合の関数（`Set.ext` など）を
+置いていく——`s.ext` のようなドット記法が効くのはそのためである。
+逆に、名前空間の**中**の名前を接頭辞なしで使えるようにする `export N (名前)`
+という宣言もある（`Top.lean` が `TopologicalSpace.IsOpen` を
+`IsOpen` と書くために使っている）。
 
 これで `Top.lean` を読む準備が整った。
 
@@ -555,9 +576,7 @@ macro_rules
 
 /-! ### ✏ 練習
 
-1. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
-   `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
-2. `infixl:65 " ⊞ " => add` で、`Intro1.lean` の `add`（`MyNat` の足し算）に
-   中置記法を与え、`#reduce MyNat.zero.succ ⊞ MyNat.zero.succ` の表示を
-   予想してから確かめよ。
+1. `namespace Geometry … end Geometry` をもう一度開いて `unitX : Point := ⟨1, 0⟩` を
+   追加し、外から `#check Geometry.unitX` では見え、`#check unitX` では
+   見えないことを確かめよ。
 -/
