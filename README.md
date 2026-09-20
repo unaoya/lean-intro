@@ -1,100 +1,65 @@
-# lean-intro — Lean 4 入門教材と、その素材となる FTC 形式化
+# lean-intro — Lean 4 で書く位相空間 · ミニ教材
 
-Lean 4 の入門教材（`Text/`）と、その素材・参照実装である微積分学の基本定理（FTC）の形式化
-（`MyProject/`）を収めたリポジトリ。どちらも **mathlib 非依存**で、実数を 5 本の公理から立ち上げている。
+*Lean for the Working Mathematician in the Age of AI* — AI がコードを書く時代の、働く数学者のための
+Lean 入門。**Lean のコードを自分で書けるようになることは目標ではない**（それは AI に任せてよい）。
 
-書名（暫定）: **Lean で読む・書く・開ける微積分 — 公理 5 本から微積分学の基本定理へ**
+公開ページ: **https://unaoya.github.io/lean-intro/** （`src/*.lean` から自動生成）
 
-統一テーゼは「**数学も、道具も、開けて見る**」——信じる対象を 5 本の公理と 1 つの小さなカーネルまで
-切り詰める。
+mathlib を使わず、**Lean 4 の標準ライブラリだけ**で位相空間を組み立て、
+「コンパクト空間からハウスドルフ空間への連続全単射は同相写像である」までを読む。
 
-- **柱 A（数学を開ける）**: 実数の公理だけから出発し、mathlib なしでリーマン積分を構成し FTC を
-  証明する一本道を、読者が演習で自ら登る。監査装置は `#print axioms`
-- **柱 B（道具を開ける）**: タクティクが「なぜ証明になるのか」を `#print`（生成された証明項）と
-  De Bruijn 基準で答え、rw・simp・omega の中身を開け、最後は読者がタクティクを自作する
+## 目標
+
+- **目標1 — Lean を読めるようになる**。Lean のコードを読むとは、書かれた**項の型を推測する**ことである。
+  そしてこの推測は**機械的な手順**で実行できる——だからコンピュータにも実行できる。
+- **目標2 — 検証の仕組みを納得する**。項の型を推測するこの仕組みが、**定理の証明の検証に
+  そのまま使える**ことを納得する。「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。
+
+目標1が主に `Intro1` の、目標2が `CH` の担当。`Intro2` で `Top` のための道具を揃え、
+`Top` では現物の数学についてその両方を実感する。Lean を網羅的に紹介することは目的ではなく、
+必要な最低限の機能しか説明しない。
 
 ## 構成
 
+読む順は **Intro1 → CH → Intro2 → Top（→ 演習 Extra）**。
+
 ```
-Text/            教材の実体（教材コードは MyProject を import しない・自己完結）
-  book/          原稿（mdBook）
-    book.toml
-    src/SUMMARY.md          目次（3 部＋発展部）
-    src/part1/              第一部「型と項で証明する」（md と .lean を共置）
-    src/chNN_*.md           第二部・第三部の章原稿
-  C03_*.lean 〜 C18_*.lean  第二部・第三部のテキスト用 Lean ソース
-  Proto/         試作の記録（M1–M7）
-  NewChapter/    新章の試作（Cauchy・Dedekind）
-Text.lean        第二部以降の umbrella
+src/
+  Intro1.lean   コードの読み方の基礎（項と型・関数・帰納型・structure）
+  CH.lean       証明が検査される仕組み（Curry–Howard 対応）
+  Intro2.lean   Top のための道具（class と instance・Fin・集合 Set・記法の自作・名前空間）
+  Top.lean      位相空間（主定理: コンパクト → ハウスドルフの連続全単射は同相）
+  Extra.lean    発展演習（位相空間の圏・自由忘却随伴・別定義との等価性・誘導位相）
 
-MyProject/       参照実装（FTC が sorry ゼロで証明されている保証・完成品の博物館）
-MyProject.lean   ルートモジュール（#print axioms main で公理を常時監査）
+  Intro1Sol.lean / CHSol.lean / Intro2Sol.lean / TopSol.lean
+                本文の ✏ 練習の解答（`/-! SOL 節.番号 -/` 区切り。HTML に折りたたみで埋め込まれる）
+  ExtraSol.lean Extra の解答（sorry を埋めた版）
 
-docs/
-  textbook_plan.md        教材の設計書
-  part1_writing_guide.md  前半の執筆ガイド＆レビュー基準
+tools/lean2html.py  src/*.lean → docs/*.html の生成スクリプト（依存なし・標準ライブラリのみ）
+docs/               生成された HTML（GitHub Pages の公開ディレクトリ。手で編集しない）
 ```
 
-教材の執筆規約は `Text/README.md`、章立ての最新確定版は `Text/book/src/SUMMARY.md` を参照。
+本文中のすべての Lean コードと Infoview 風の出力表示は、実際のコンパイラ出力で裏を取ってある。
+解答ファイルも `lakefile.lean` の `roots` に入っているので、`lake build` で常に検査される。
 
-## ビルド
+## ビルドと生成
 
 ```bash
-lake build               # 参照実装（Calculus。デフォルトターゲット）
-lake build Text          # 教材 第二部・第三部
-lake build TextI         # 教材 第一部
-mdbook build Text/book   # 原稿を book-html/ に出力
+lake build                  # 教材の全ファイル（本文＋解答）を検査
+python3 tools/lean2html.py  # src/*.lean → docs/*.html を再生成
 ```
 
-`lake build Text` / `TextI` は演習の `sorry` 警告を含む。これをデフォルトビルドから隔離するため、
-`lake build` には教材ターゲットを含めていない。
+`lake build` は `Extra.lean` の演習部分について `sorry` の警告を出す（演習なので意図どおり）。
+それ以外の警告やエラーが出たら退行を疑うこと。
 
-## 参照実装について（MyProject/）
+教材を書き換えたら `lake build` と `python3 tools/lean2html.py` を両方走らせ、
+`docs/` の差分ごとコミットする（Pages の source は `main` ブランチの `/docs`）。
 
-連続関数の向き付き積分は至るところ微分可能で、導関数は元の関数——という FTC を完全証明している
-（`sorry` ゼロ・警告ゼロ）。
-
-```lean
-theorem main' (f : Real → Real) (a x : Real) (hf : Continuous f) :
-    let F := fun x ↦ (OIntegral f a x); HasDerivAt F (f x) x
-```
-
-**公理は 5 本**（`MyProject/Axioms.lean` に集約）:
-
-1. `Real : Type`
-2. `Real.instLOF : LinearOrderedField Real` — 体と順序の公理
-3. `Real.sup` / `Real.sup_ub` / `Real.sup_lub` — 連続性（上限公理）
-
-アルキメデスの性質は上限公理から定理として導出（`Real/Cast.lean`）。他は Lean 標準の `propext` /
-`Classical.choice` / `Quot.sound` のみで、`MyProject.lean` の `#print axioms main` が退行を常時監査する。
-実数は公理的導入で完結とし、構成的定義（Cauchy 列等）は扱わない。
-
-```
-MyProject/
-  Range.lean               Range・有限和 Summation・自然数の min
-  Axioms.lean              代数構造のクラス階層＋実数の公理（5 本）
-  Real/                    実数の基本補題（Algebra → Order → {Div, Sup} → Abs
-                           → MinMax → Summation → Cast → Interval の鎖）
-  Lemmas.lean              ↑の umbrella
-  Limit.lean               極限（IsLimAt）
-  Continuity.lean          連続性・一様連続性・有界性
-  Deriv.lean               微分（HasDerivAt）
-  Integral/
-    Partition.lean         分割・TaggedPartition
-    Insert.lean            分割への点挿入と小区間探索
-    RiemannSum.lean        リーマン和と点挿入評価
-    Refine.lean            細分比較（ステップ関数の原始関数・共通エンベロープ）
-    Def.lean               積分の定義・等分割・一意性
-    Criterion.lean         コーシー型可積分判定（sup 構成）
-    Constant/Linearity/Bounded/IntervalAdd/Monotone   基本性質
-    Oscillation.lean       振動和による |f| の評価
-    Continuous.lean        連続 ⇒ 可積分
-    Abs.lean               |f| の可積分性・三角不等式
-    Oriented.lean          向き付き積分 OIntegral
-  Main.lean                微積分学の基本定理
-```
+PDF は生成ページをブラウザから印刷して `pdf/` に置いている（`.gitignore` 済み・未追跡）。
 
 ## 来歴
 
-本リポジトリは Tsudoi6（`unaoya/my_project`）から教材と参照実装を分離して作られた。
-講演資料（`talk/`・`abst/`）は分離元に残っている。分離後、`MyProject/` の正本は本リポジトリ側とする。
+本リポジトリはもともと Tsudoi6（`unaoya/my_project`）から分離された、
+公理 5 本からの微積分学の基本定理（FTC）の形式化と、それを素材とする入門教材のリポジトリだった。
+現在はこのミニ教材の専用リポジトリであり、旧教材（`Text/` と `MyProject/`）は
+コミット履歴ごと **`unaoya/lean-calculus`** へ移してある。

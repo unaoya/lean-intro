@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Top/*.lean から講義用 HTML を生成する（依存なし・Python 標準ライブラリのみ）。
+"""src/*.lean から講義用 HTML を生成する（依存なし・Python 標準ライブラリのみ）。
 
 使い方:
     python3 tools/lean2html.py
@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "Top"
+SRC = ROOT / "src"
 OUT = ROOT / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
@@ -54,7 +54,7 @@ SITE_NOTE = (
     "読む順は Intro1 → CH → Intro2 → Top（→ 演習 Extra）。"
     "各 ✏ 練習には折りたたみの解答が付いている（解答もすべて Lean の検査済み）。"
     "ソースは <a href=\"https://github.com/unaoya/lean-intro\">GitHub</a> の "
-    "<code>Top/*.lean</code>（このページはそこから自動生成）。"
+    "<code>src/*.lean</code>（このページはそこから自動生成）。"
 )
 
 # ---------------------------------------------------------------- inline md
