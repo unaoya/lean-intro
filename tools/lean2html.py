@@ -17,7 +17,10 @@
 
 import html
 import re
+from collections import defaultdict, deque
 from pathlib import Path
+
+import refs
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
@@ -26,8 +29,8 @@ OUT = ROOT / "docs"
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
 CHAPTERS = ["Intro1", "CH", "Intro2", "Top", "Extra"]
 
-# ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 節.番号 -/` 区切り）。
-# 問題と解答の数・順序が合わなければ生成をエラーで止める。
+# ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
+# 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
 SOL_FILES = {"Intro1": "Intro1Sol", "CH": "CHSol", "Intro2": "Intro2Sol", "Top": "TopSol"}
 
 SITE_TITLE = "Lean 4 で書く位相空間 — ミニ教材"
@@ -62,18 +65,26 @@ SITE_NOTE = (
 
 # ---------------------------------------------------------------- inline md
 
-def inline(text: str) -> str:
+def inline(text: str, chapter: str = "", sections=None) -> str:
     """インライン要素: `code` と **bold**。
     bold はコード片を中に含んでよいので、コードを一旦プレースホルダに退避してから
     bold を処理し、最後に戻す。コード内の ** はそのまま残る。"""
     codes: list[str] = []
 
     def stash(m: re.Match) -> str:
-        codes.append("<code>" + html.escape(m.group(1)) + "</code>")
+        if m['ref'] is not None:
+            value = inline(m['text'])
+            if sections is not None and m['label'] in sections:
+                value = f'<a href="{refs.href(m["label"], chapter, sections)}">{value}</a>'
+        elif m['double'] is not None:
+            value = "<code>" + html.escape(re.fullmatch(r"``\s?(.*?)\s?``", m['double'])[1]) + "</code>"
+        else:
+            value = "<code>" + html.escape(m['code'][1:-1]) + "</code>"
+        codes.append(value)
         return f"\x00{len(codes) - 1}\x00"
 
-    tmp = re.sub(r"``\s?(.*?)\s?``", stash, text)   # ``…`` はバッククォートを含むコード片
-    tmp = re.sub(r"`([^`]*)`", stash, tmp)
+    tokens = r"(?P<double>``\s?.*?\s?``)|(?P<ref>" + refs.REF_RE.pattern + r")|(?P<code>`[^`]*`)"
+    tmp = re.sub(tokens, stash, text)
     e = html.escape(tmp)
     e = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", e)
     return re.sub(r"\x00(\d+)\x00", lambda m: codes[int(m.group(1))], e)
@@ -84,15 +95,22 @@ def smart_join(parts: list[str]) -> str:
     """日本語の折返しは区切りなしで連結するが、行境界のどちらかが
     英数字やコード（バッククォート）のときは空白を1つ入れる。"""
     out = parts[0] if parts else ""
-    for nxt in parts[1:]:
-        if out and nxt and (re.match(r"[A-Za-z0-9`*]", out[-1]) or re.match(r"[A-Za-z0-9`*]", nxt[0])):
-            out += " " + nxt
-        else:
-            out += nxt
+    # Link brackets and destinations do not participate in visible line boundaries.
+    visible = refs.stripped("\n".join(parts)).split("\n")
+    shown = visible[0]
+    for nxt, next_shown in zip(parts[1:], visible[1:]):
+        space = " " if shown and next_shown and (
+            re.match(r"[A-Za-z0-9`*]", shown[-1]) or re.match(r"[A-Za-z0-9`*]", next_shown[0])
+        ) else ""
+        out += space + nxt
+        shown += space + next_shown
     return out
 
 
-def render_prose(lines: list[str]) -> str:
+def render_prose(lines: list[str], chapter: str = "", sections=None, *, section_ids: bool = True) -> str:
+    def md(text):
+        return inline(text, chapter, sections)
+
     out = []
     i = 0
     n = len(lines)
@@ -105,7 +123,10 @@ def render_prose(lines: list[str]) -> str:
         m = re.match(r"^(#{1,4}) (.*)$", line)
         if m:
             level = len(m.group(1))
-            out.append(f"<h{level}>{inline(m.group(2))}</h{level}>")
+            heading = refs.HEADING_RE.fullmatch(line)
+            attr = f' id="sec-{heading["label"]}"' if heading and section_ids else ""
+            title = f'{heading["number"]}. {heading["title"]}' if heading else m.group(2)
+            out.append(f"<h{level}{attr}>{md(title)}</h{level}>")
             i += 1
             continue
         # 表
@@ -116,13 +137,13 @@ def render_prose(lines: list[str]) -> str:
                 i += 1
             out.append("<table>")
             if len(rows) >= 2 and all(re.fullmatch(r":?-+:?", c) for c in rows[1]):
-                out.append("<thead><tr>" + "".join(f"<th>{inline(c)}</th>" for c in rows[0]) + "</tr></thead>")
+                out.append("<thead><tr>" + "".join(f"<th>{md(c)}</th>" for c in rows[0]) + "</tr></thead>")
                 body = rows[2:]
             else:
                 body = rows
             out.append("<tbody>")
             for r in body:
-                out.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>")
+                out.append("<tr>" + "".join(f"<td>{md(c)}</td>" for c in r) + "</tr>")
             out.append("</tbody></table>")
             continue
         # 4字下げの引用コード（間の空行は、次も字下げなら取り込む）
@@ -143,11 +164,11 @@ def render_prose(lines: list[str]) -> str:
                         break
                 else:
                     break
-            out.append('<pre class="quote"><code>' + html.escape("\n".join(code)) + "</code></pre>")
+            out.append('<pre class="quote"><code>' + html.escape(refs.stripped("\n".join(code))) + "</code></pre>")
             continue
         # リスト（* / 1. 、2字下げで入れ子と継続行）
         if re.match(r"^ *(\*|\d+\.) ", line):
-            i, block = render_list(lines, i)
+            i, block = render_list(lines, i, chapter, sections)
             out.append(block)
             continue
         # 段落（日本語の折返しなので区切りなしで連結）
@@ -155,11 +176,11 @@ def render_prose(lines: list[str]) -> str:
         while i < n and lines[i].strip() != "" and not re.match(r"^(#{1,4} |\||    | *(\*|\d+\.) )", lines[i]):
             para.append(lines[i].strip())
             i += 1
-        out.append(f"<p>{inline(smart_join(para))}</p>")
+        out.append(f"<p>{md(smart_join(para))}</p>")
     return "\n".join(out)
 
 
-def render_list(lines: list[str], i: int) -> tuple[int, str]:
+def render_list(lines: list[str], i: int, chapter: str = "", sections=None) -> tuple[int, str]:
     """インデント幅で入れ子を判定する簡易リストパーサ。"""
     items = []  # (indent, kind, [text])
     n = len(lines)
@@ -187,7 +208,7 @@ def render_list(lines: list[str], i: int) -> tuple[int, str]:
                 pos, sub = build(pos, indent)
                 out[-1] = out[-1][:-5] + sub + "</li>"  # 直前の </li> の中に入れる
                 continue
-            out.append("<li>" + inline(smart_join(texts)) + "</li>")
+            out.append("<li>" + inline(smart_join(texts), chapter, sections) + "</li>")
             pos += 1
         out.append(f"</{kind}>")
         return pos, "\n".join(out)
@@ -239,7 +260,7 @@ def esc_comment(text: str) -> str:
 def render_code(lines: list[str]) -> str:
     out = []
     in_doc = False
-    for line in lines:
+    for line in refs.stripped("\n".join(lines)).split("\n"):
         if in_doc:
             out.append(f'<span class="doc">{esc_comment(line)}</span>')
             if "-/" in line:
@@ -260,24 +281,26 @@ def render_code(lines: list[str]) -> str:
 
 # ---------------------------------------------------------------- file parsing
 
-def parse(path: Path) -> list[tuple[str, list[str]]]:
+def parse(path: Path, *, with_line_numbers: bool = False) -> list:
     """ファイルを (kind, lines) のセグメント列に分ける。
     kind は 'prose'（/-! ブロック）・'doc'（行頭の docstring）・'code' のいずれか。
     インデントされた docstring（structure のフィールドなど）は宣言の一部なので
-    code に残す。"""
+    code に残す。with_line_numbers=True では (kind, 開始行番号, lines) を返す。"""
     lines = path.read_text(encoding="utf-8").split("\n")
     segments = []
     cur_kind, cur = None, []
+    cur_start = 0
 
     def flush():
-        nonlocal cur_kind, cur
+        nonlocal cur_kind, cur, cur_start
         if cur_kind == "code":
             while cur and cur[0].strip() == "":
                 cur.pop(0)
+                cur_start += 1
             while cur and cur[-1].strip() == "":
                 cur.pop()
         if cur_kind and cur:
-            segments.append((cur_kind, cur))
+            segments.append((cur_kind, cur_start + 1, cur) if with_line_numbers else (cur_kind, cur))
         cur_kind, cur = None, []
 
     i = 0
@@ -286,6 +309,7 @@ def parse(path: Path) -> list[tuple[str, list[str]]]:
         if line.startswith("/-!") or line.startswith("/--"):
             kind = "prose" if line.startswith("/-!") else "doc"
             flush()
+            cur_start = i
             body = [line[3:].lstrip()]
             while "-/" not in body[-1] and i + 1 < len(lines):
                 i += 1
@@ -298,17 +322,18 @@ def parse(path: Path) -> list[tuple[str, list[str]]]:
             if cur_kind != "code":
                 flush()
                 cur_kind = "code"
+                cur_start = i
             cur.append(line)
         i += 1
     flush()
     return segments
 
 
-SOL_MARK_RE = re.compile(r"^SOL (\d+\.\d+)$")
+SOL_MARK_RE = refs.SOL_RE
 
 
-def parse_solutions(path: Path) -> list[tuple[str, list[tuple[str, list[str]]]]]:
-    """解答ファイルを `/-! SOL 節.番号 -/` 区切りで (ラベル, セグメント列) に分ける。
+def parse_solutions(path: Path) -> list[tuple[tuple[str, int], list[tuple[str, list[str]]]]]:
+    """解答ファイルを `/-! SOL 固定ラベル:問題番号 -/` ごとに分ける。
     最初のマーカーより前（import・ファイル頭の説明）は捨てる。"""
     sols = []
     cur_label, cur_segs = None, []
@@ -317,7 +342,7 @@ def parse_solutions(path: Path) -> list[tuple[str, list[tuple[str, list[str]]]]]
         if m and all(not l.strip() for l in lines[1:]):
             if cur_label is not None:
                 sols.append((cur_label, cur_segs))
-            cur_label, cur_segs = m.group(1), []
+            cur_label, cur_segs = (m['label'], int(m['item'])), []
         elif cur_label is not None:
             cur_segs.append((kind, lines))
     if cur_label is not None:
@@ -326,19 +351,21 @@ def parse_solutions(path: Path) -> list[tuple[str, list[tuple[str, list[str]]]]]
 
 
 EXERCISE_HEAD_RE = re.compile(r"^#{2,4} .*✏ 練習")
-SECTION_RE = re.compile(r"^## (\d+)\.")
 ITEM_RE = re.compile(r"^(\d+)\. ")
 CALLOUT_HEAD_RE = re.compile(r"^### (補足|先取り)(?:[（:]|$)")
 CALLOUT_START_RE = re.compile(r"^CALLOUT_START (optional|preview)$")
 CALLOUT_END = "CALLOUT_END"
 
 
-def render_chapter(name: str, segments) -> str:
+def render_chapter(name: str, segments, sections=None) -> str:
     """本文をレンダリングする。長い注記は CALLOUT_START/END でコードごと囲む。"""
     sol_path = SRC / f"{SOL_FILES[name]}.lean" if name in SOL_FILES else None
     sols = parse_solutions(sol_path) if sol_path and sol_path.exists() else None
+    queues = defaultdict(deque)
+    for (label, item), solution in sols or []:
+        queues[label].append((item, solution))
     body = []
-    sec, sol_i = 0, 0
+    sec, sol_i = None, 0
     active_callout = None
     for kind, lines in segments:
         first = next((l.strip() for l in lines if l.strip()), "")
@@ -358,13 +385,15 @@ def render_chapter(name: str, segments) -> str:
             body.append(render_code(lines))
             continue
         if kind == "doc":
-            body.append(render_prose(lines))
+            body.append(render_prose(lines, name, sections, section_ids=False))
             continue
         for l in lines:
-            m = SECTION_RE.match(l)
+            m = refs.HEADING_RE.fullmatch(l)
             if m:
-                sec = int(m.group(1))
-        rendered = render_prose(lines)
+                sec = m['label']
+            elif l.startswith("## "):
+                sec = None
+        rendered = render_prose(lines, name, sections)
         callout = CALLOUT_HEAD_RE.match(first)
         if callout and active_callout is None:
             kind = "optional" if callout.group(1) == "補足" else "preview"
@@ -373,14 +402,14 @@ def render_chapter(name: str, segments) -> str:
         if sols is None or not any(EXERCISE_HEAD_RE.match(l) for l in lines):
             continue
         for item in [int(m.group(1)) for l in lines if (m := ITEM_RE.match(l))]:
-            label = f"{sec}.{item}"
-            if sol_i >= len(sols):
+            label = f"{sec}:{item}"
+            if not queues[sec]:
                 raise SystemExit(f"error: {name} 練習 {label} の解答がない（{SOL_FILES[name]}.lean）")
-            got, segs2 = sols[sol_i]
+            got, segs2 = queues[sec].popleft()
             sol_i += 1
-            if got != label:
+            if got != item:
                 raise SystemExit(f"error: {name} 練習 {label} の位置に SOL {got}（{SOL_FILES[name]}.lean の順序を確認）")
-            inner = "\n".join(render_code(ls) if k == "code" else render_prose(ls) for k, ls in segs2)
+            inner = "\n".join(render_code(ls) if k == "code" else render_prose(ls, name, sections, section_ids=False) for k, ls in segs2)
             body.append(f'<details class="sol"><summary>解答 {item}</summary>\n{inner}\n</details>')
     if active_callout is not None:
         raise SystemExit(f"error: {name}: CALLOUT_END is missing")
@@ -400,12 +429,15 @@ def chapter_title(segments) -> str:
 
 # ---------------------------------------------------------------- page template
 
-CSS = """
+LIGHT_VARS = """
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
         --link: #0969da; --quote-bg: #f0f4f8;
         --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
         --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+"""
+
+DARK_VARS = """
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
@@ -413,6 +445,9 @@ CSS = """
           --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
           --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
+"""
+
+BASE_CSS = """
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
        font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
@@ -460,6 +495,28 @@ details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
 details.sol[open] > summary { margin-bottom: .4rem; }
 """
 
+# 印刷（PDF）用の上書き。色はライト固定、章の頭で改ページ、
+# コードは横スクロールできないので折り返す。
+PRINT_CSS = """
+:root { color-scheme: light; }
+@page { size: A4; margin: 17mm 15mm; }
+html { font-size: 10.5pt; }
+body { font-size: 1rem; line-height: 1.75; }
+main { max-width: none; padding: 0; }
+section.chapter { page-break-before: always; break-before: page; }
+section.chapter:first-of-type { page-break-before: avoid; break-before: auto; }
+h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
+h1 { margin-top: 0; }
+pre { white-space: pre-wrap; overflow-wrap: break-word; overflow: visible; }
+table { display: table; width: 100%; }
+details.sol > summary { list-style: none; }
+details.sol > summary::-webkit-details-marker { display: none; }
+a { text-decoration: none; }
+"""
+
+CSS = LIGHT_VARS + DARK_VARS + BASE_CSS
+PDF_CSS = LIGHT_VARS + BASE_CSS + PRINT_CSS
+
 
 def nav_html(idx: int) -> str:
     prev_a = ""
@@ -471,14 +528,14 @@ def nav_html(idx: int) -> str:
     return f'<nav><span>{prev_a}</span><a href="index.html">目次</a><span>{next_a}</span></nav>'
 
 
-def page(title: str, body: str, nav: str = "") -> str:
+def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
-<style>{CSS}</style>
+<style>{css}</style>
 </head>
 <body>
 {nav}
@@ -490,36 +547,118 @@ def page(title: str, body: str, nav: str = "") -> str:
 </html>
 """
 
-# ---------------------------------------------------------------- main
+ROLES = {
+    "Intro1": "コードの読み方の基礎（項と型、関数、帰納型、structure）",
+    "CH": "証明が検査される仕組み",
+    "Intro2": "CH のあとに読む後編（class・Fin・集合の正体・記法の自作）",
+    "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
+    "Extra": "演習（sorry を自分で埋める）",
+}
 
-def main():
-    OUT.mkdir(exist_ok=True)
-    (OUT / ".nojekyll").write_text("")
-    titles = {}
-    for idx, name in enumerate(CHAPTERS):
-        segments = parse(SRC / f"{name}.lean")
-        titles[name] = chapter_title(segments)
-        out_path = OUT / f"{name.lower()}.html"
-        out_path.write_text(page(titles[name], render_chapter(name, segments), nav_html(idx)), encoding="utf-8")
-        print(f"  {name}.lean → docs/{name.lower()}.html")
 
-    roles = {
-        "Intro1": "コードの読み方の基礎（項と型、関数、帰納型、structure）",
-        "CH": "証明が検査される仕組み",
-        "Intro2": "CH のあとに読む後編（class・Fin・集合の正体・記法の自作）",
-        "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
-        "Extra": "演習（sorry を自分で埋める）",
-    }
-    toc = [f"<h1>{html.escape(SITE_TITLE)}</h1>",
+def toc_html(titles: dict, href) -> str:
+    """目次。`href(name)` がリンク先を返す（HTML は別ページ、PDF は同一文書内アンカー）。"""
+    out = [f"<h1>{html.escape(SITE_TITLE)}</h1>",
            f"<p>{SITE_CONCEPT}</p>", SITE_GOALS, f"<p>{SITE_NOTE}</p>", "<ol>"]
     for name in CHAPTERS:
-        role = roles.get(name, "")
+        role = ROLES.get(name, "")
         suffix = f" — {role}" if role else ""
-        toc.append(f'<li><a href="{name.lower()}.html">{inline(titles[name])}</a>{suffix}</li>')
-    toc.append("</ol>")
-    (OUT / "index.html").write_text(page(SITE_TITLE, "\n".join(toc)), encoding="utf-8")
+        out.append(f'<li><a href="{href(name)}">{inline(titles[name])}</a>{suffix}</li>')
+    out.append("</ol>")
+    return "\n".join(out)
+
+# ---------------------------------------------------------------- pdf
+
+PDF_OUT = ROOT / "pdf" / "all.pdf"
+
+# Chrome を探す順。環境変数 CHROME で明示的に上書きできる。
+CHROME_CANDIDATES = [
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "google-chrome", "chromium", "chromium-browser", "msedge",
+]
+
+
+def find_chrome() -> str | None:
+    import os
+    import shutil
+    env = os.environ.get("CHROME")
+    if env:
+        return env if Path(env).exists() or shutil.which(env) else None
+    for cand in CHROME_CANDIDATES:
+        if cand.startswith("/"):
+            if Path(cand).exists():
+                return cand
+        elif (found := shutil.which(cand)):
+            return found
+    return None
+
+
+def pdf_html(titles: dict, bodies: dict) -> str:
+    """全章を1つの印刷用 HTML にまとめる。練習の解答はすべて開いた状態にする。"""
+    parts = [f'<section class="chapter" id="ch-index">\n{toc_html(titles, lambda n: f"#ch-{n.lower()}")}\n</section>']
+    for name in CHAPTERS:
+        body = bodies[name].replace('<details class="sol">', '<details class="sol" open>')
+        # Stable labels are globally unique, including in the combined document.
+        body = re.sub(r'href="(?:[a-z0-9]+\.html)?#(sec-[A-Za-z0-9_.-]+)"', r'href="#\1"', body)
+        parts.append(f'<section class="chapter" id="ch-{name.lower()}">\n{body}\n</section>')
+    return page(SITE_TITLE, "\n".join(parts), css=PDF_CSS)
+
+
+def build_pdf(titles: dict, bodies: dict) -> None:
+    """印刷用 HTML を headless Chrome に刷らせて pdf/all.pdf を作る。"""
+    import subprocess
+    import tempfile
+    chrome = find_chrome()
+    if chrome is None:
+        print("  PDF: Chrome が見つからないので省略（環境変数 CHROME で指定できる）")
+        return
+    PDF_OUT.parent.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        src = Path(tmp) / "all.html"
+        src.write_text(pdf_html(titles, bodies), encoding="utf-8")
+        cmd = [chrome, "--headless=new", "--disable-gpu", "--no-sandbox",
+               f"--print-to-pdf={PDF_OUT}", "--no-pdf-header-footer", src.as_uri()]
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    if r.returncode != 0 or not PDF_OUT.exists():
+        print(f"  PDF: 生成に失敗（exit {r.returncode}）\n{r.stderr.strip()}")
+        return
+    print(f"  pdf/all.pdf 生成（{PDF_OUT.stat().st_size / 1e6:.1f} MB）")
+
+# ---------------------------------------------------------------- main
+
+def main(with_pdf: bool = True):
+    references = refs.analyze(SRC, CHAPTERS, SOL_FILES, parse)
+    if references.errors:
+        raise SystemExit("\n".join(references.errors))
+    try:
+        for path in references.write():
+            print(f"  {path.name}: 節番号・参照を更新")
+    except (OSError, ValueError) as exc:
+        raise SystemExit(str(exc)) from exc
+    titles, bodies = {}, {}
+    for name in CHAPTERS:
+        segments = parse(SRC / f"{name}.lean")
+        titles[name] = chapter_title(segments)
+        bodies[name] = render_chapter(name, segments, references.sections)
+    OUT.mkdir(exist_ok=True)
+    (OUT / ".nojekyll").write_text("")
+    for idx, name in enumerate(CHAPTERS):
+        out_path = OUT / f"{name.lower()}.html"
+        out_path.write_text(page(titles[name], bodies[name], nav_html(idx)), encoding="utf-8")
+        print(f"  {name}.lean → docs/{name.lower()}.html")
+
+    (OUT / "index.html").write_text(
+        page(SITE_TITLE, toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
     print("  index.html 生成")
+
+    if with_pdf:
+        build_pdf(titles, bodies)
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser(description="src/*.lean → docs/*.html（＋ pdf/all.pdf）")
+    ap.add_argument("--no-pdf", action="store_true", help="PDF を作らず HTML だけ生成する")
+    main(with_pdf=not ap.parse_args().no_pdf)
