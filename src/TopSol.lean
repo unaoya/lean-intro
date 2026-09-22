@@ -4,17 +4,17 @@ import Top
 `Top.lean` の ✏ 練習の解答。
 -/
 
-/-! SOL 1.1 -/
+/-! SOL Top.sets:1 -/
 
 example : (2 : Nat) ∈ ({n | n < 5} : Set Nat) :=
   Nat.le.step (Nat.le.step Nat.le.refl)
 
 /-!
 `∈` と `setOf` を展開するとゴールは `2 < 5`、すなわち `2 + 1 ≤ 5`。
-`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（`CH.lean` 8節）。
+`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（[`CH.lean` 9節](#sec-CH.nat-proofs)）。
 -/
 
-/-! SOL 1.2 -/
+/-! SOL Top.sets:2 -/
 
 #print axioms Set.compl_compl
 
@@ -25,7 +25,7 @@ example : (2 : Nat) ∈ ({n | n < 5} : Set Nat) :=
 依存が現れる（`propext`・`Quot.sound` はその道連れ）。
 -/
 
-/-! SOL 2.1 -/
+/-! SOL Top.bijections:1 -/
 
 example : Function.Bijective (fun n : Nat => n) :=
   ⟨fun _ _ h => h, fun b => ⟨b, rfl⟩⟩
@@ -36,7 +36,7 @@ example : Function.Bijective (fun n : Nat => n) :=
 全射性: 点 `b` への証人は `b` 自身、根拠は `rfl`。
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Top.topology:1 -/
 
 example : (discrete Nat).IsOpen {n | n = 0} := trivial
 
@@ -44,7 +44,7 @@ example : (discrete Nat).IsOpen {n | n = 0} := trivial
 離散位相の `IsOpen` は定義上どの集合でも `True`。証明は構成子 `trivial`。
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Top.continuity:1 -/
 
 #check @Continuous
 
@@ -56,7 +56,7 @@ example : (discrete Nat).IsOpen {n | n = 0} := trivial
 `[TopologicalSpace X]`・`[TopologicalSpace Y]`——インスタンス引数——で並ぶ。
 -/
 
-/-! SOL 7.1 -/
+/-! SOL Top.compact-image:1 -/
 
 #print axioms Set.subset_preimage_iUnion
 
@@ -66,7 +66,7 @@ example : (discrete Nat).IsOpen {n | n = 0} := trivial
 包含の付け替えだけの証明なので、公理は1つも要らない。
 -/
 
-/-! SOL 10.1 -/
+/-! SOL Top.homeomorphism:1 -/
 
 #print axioms isOpen_empty
 
@@ -78,7 +78,7 @@ example : (discrete Nat).IsOpen {n | n = 0} := trivial
 背理法なしの証明だったことが、ここからも確認できる。
 -/
 
-/-! SOL 10.2 -/
+/-! SOL Top.homeomorphism:2 -/
 
 example : TopologicalSpace Bool := discrete Bool
 
@@ -87,7 +87,7 @@ example : TopologicalSpace Bool := discrete Bool
 `Bool` に適用するだけで項が得られる。
 -/
 
-/-! SOL 10.3 -/
+/-! SOL Top.homeomorphism:3 -/
 
 /-!
 角括弧（インスタンス引数）で現れる:

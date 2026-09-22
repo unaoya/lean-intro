@@ -16,7 +16,7 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 末尾の定理 `Homeomorph.ofContinuousBijective` を信じるのに必要なのは、次の3つだけである。
 
 1. Lean の**カーネル**が正しいこと。エラボレータやタクティクがどれだけ複雑でも、
-   最後に項を検査するのはカーネルの小さな規則集だけである（`CH.lean` の10節）
+   最後に項を検査するのはカーネルの小さな規則集だけである（[`CH.lean` の10節](#sec-CH.type-checking)）
 2. このファイルに書いた**定義**が、意図した数学的概念を写していること
 3. 末尾の `#print axioms` に表示される3つの公理
 
@@ -43,12 +43,12 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 表示は `名前 (x : A) (y : B) : C` という「引数の列 : 結果の型」の形をとる。
 これは関数型 `名前 : A → B → C` と**同じ型の別表示**である。
 `def f (n : α) : β := …` と `def f : α → β := fun n => …` が同じ宣言の2通りの
-書き方である（`Intro1.lean` 3節）のと対応して、表示もこの2つの形を行き来する。
-括弧 `( )` `{ }` の違いは `Intro1.lean` 6節、`[ ]` は `Intro2.lean` 1節。
+書き方である（[`Intro1.lean` 3節](#sec-Intro1.functions)）のと対応して、表示もこの2つの形を行き来する。
+括弧 `( )` `{ }` の違いは [`Intro1.lean` 6節](#sec-Intro1.dependent-functions)、`[ ]` は [`Intro2.lean` 1節](#sec-Intro2.classes)。
 
 ## 読み方: タクティク証明の記号
 
-証明は `CH.lean` 12節のタクティクで書く。同節の早見表にない記号を挙げておく:
+証明は [`CH.lean` 12節](#sec-CH.tactics)のタクティクで書く。同節の早見表にない記号を挙げておく:
 
 * `·` — 場合分けなどで生じた**サブゴールごと**の証明の区切り
 * `t₁; t₂` — `t₁` を実行してから、続けて `t₂` を実行する
@@ -61,24 +61,24 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 
 また、タクティクで書いた証明にはそれぞれ、**同じ命題の項スタイルの証明**を
 対にして並べる（本文の証明の直後の `example`）。どちらの流儀でも
-最終的に同じ型の項に行き着くこと（`CH.lean` 12節）の、実地の見比べである。
+最終的に同じ型の項に行き着くこと（[`CH.lean` 12節](#sec-CH.tactics)）の、実地の見比べである。
 -/
 
-/-! ## 1. 集合
+/-! ## 1. 集合 {#sec-Top.sets}
 
 集合 `Set`（実体は述語 `α → Prop`）と、内包記法 `{a | p a}`・所属 `∈`・
-包含 `⊆` は `Intro2.lean` 4節で作った。ここではその上に、残りの道具——
+包含 `⊆` は [`Intro2.lean` 4節](#sec-Intro2.sets)で作った。ここではその上に、残りの道具——
 `∩`・`∪`・`∅`・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。
 -/
 
--- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 5節）
+-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（[`Intro2.lean` 5節](#sec-Intro2.namespaces)）
 namespace Set
 
 -- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる
 variable {α : Type}
 
 /-!
-`∩` `∪` `∅` の記法も、`Intro2.lean` 4節の `∈`・`⊆` と同じやり方——
+`∩` `∪` `∅` の記法も、[`Intro2.lean` 4節](#sec-Intro2.sets)の `∈`・`⊆` と同じやり方——
 標準ライブラリの記法用クラスへの `instance` 登録——で使えるようにする。
 `⟨…⟩` はクラスの構成子にフィールドの中身を渡す書き方である。
 -/
@@ -185,7 +185,7 @@ def sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 prefix:110 "⋃₀ " => Set.sUnion
 
 /-- 添字づけられた集合族 `U : I → Set α` の合併。族とは「添字を受け取って
-集合を返す関数」である（`Intro2.lean` 2節の型の族の仲間）。`sUnion` が
+集合を返す関数」である（[`Intro2.lean` 2節](#sec-Intro2.families-fin)の型の族の仲間）。`sUnion` が
 「集合の集まり」を受け取るのに対し、こちらは添字でパラメータづけた族を受け取る。 -/
 def iUnion {I : Type} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
@@ -265,7 +265,7 @@ def Finite (s : Set α) : Prop := ∃ (n : Nat) (f : Fin n → α), ∀ a ∈ s,
 -/
 
 /-- 空集合は有限。`n = 0` とし、拾う関数には `Fin.elim0`（`Fin 0` は空の型なので、
-そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` を示す形（`CH.lean` 6節）。 -/
+そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` を示す形（[`CH.lean` 7節](#sec-CH.dependent-sums)）。 -/
 theorem Finite.empty : (∅ : Set α).Finite :=
   ⟨0, Fin.elim0, fun _ ha => False.elim ha⟩
 
@@ -317,14 +317,19 @@ theorem compl_compl (s : Set α) : sᶜᶜ = s :=
     Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s
 
 どの集合 `s` にも適用できる等式。`∀ s, …` と書くのと `(s : Set α)` を
-引数に取るのは同じこと（`CH.lean` 5節: ∀ は依存関数型の記法）。
+引数に取るのは同じこと（[`CH.lean` 6節](#sec-CH.dependent-products): ∀ は依存関数型の記法）。
 -/
 
 /-- 2つの合併は「2つだけからなる族」の合併に書き直せる。
 `{u | u = s ∨ u = t}` は要素が `s` と `t` の2つ（だけ）の集合族。
 位相の公理は族の合併の形で書くので、この橋渡しを補題に切り出しておく
-（位相の節の `isOpen_union` で使う）。証明中の `h ▸ hau` は
-「等式 `h` で `hau` の型を書き換える」記法。 -/
+（位相の節の `isOpen_union` で使う）。
+
+証明中の `have ⟨u, hu, hau⟩ := ha` はここが初出の構文で、「`ha`（`∃` の証明）を
+**分解して名前を付ける**」と読む——`match`（[`CH.lean` 7節](#sec-CH.dependent-sums)）の
+1ケース版の略記であり、タクティクとしても項としても同じ形で書ける。
+分解を伴わない `have h : 主張 := 根拠`（名前を付けて続きで使う）もこの先で
+頻用する。`h ▸ hau` は「等式 `h` で `hau` の型を書き換える」記法。 -/
 theorem union_eq_sUnion (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} := by
   apply ext
   intro a
@@ -366,7 +371,7 @@ example (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} :=
 -/
 
 /-- `n` 個の集合 `W 0, …, W (n-1)` の共通部分。
-`Nat` の構造にそったパターンマッチ（`Intro1.lean` 4節）で定義する:
+`Nat` の構造にそったパターンマッチ（[`Intro1.lean` 4節](#sec-Intro1.inductive-types)）で定義する:
 `0` 個なら `univ`、`n + 1` 個なら「先頭 `W 0`」と「残り `n` 個の共通部分」の `∩`。
 `fun i => W i.succ` は添字を1つずらして「残りの族」を作っている。 -/
 def interFin : (n : Nat) → (Fin n → Set α) → Set α := fun n W =>
@@ -426,12 +431,12 @@ end Set
 
 1. `example : (2 : Nat) ∈ ({n | n < 5} : Set Nat)` を証明せよ。
    ヒント: `∈` と `setOf` を展開すればゴールは `2 < 5`、すなわち `3 ≤ 5`——
-   `CH.lean` 8節の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
+   [`CH.lean` 9節](#sec-CH.nat-proofs)の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
 2. `#print axioms Set.compl_compl` の結果を予想してから確かめよ
    （背理法を使った証明だった）。
 -/
 
-/-! ## 2. 全単射
+/-! ## 2. 全単射 {#sec-Top.bijections}
 
 目標の「連続全単射」を述べるために要る。
 `Function.Injective`（`∀ ⦃a b⦄, f a = f b → a = b`。括弧 `⦃ ⦄` は
@@ -473,7 +478,7 @@ docstring を付けられ、フィールドが増えたり順序が変わった�
 -/
 
 /-- `⋃ i, U i` で族全体の合併を表す（`syntax`・`macro_rules` の仕組みは
-`Intro2.lean` 3節）。 -/
+[`Intro2.lean` 3節](#sec-Intro2.notation)）。 -/
 syntax:110 "⋃ " ident ", " term : term
 /-- `⋃ i ∈ J, U i` で添字を `J` に制限した合併を表す。 -/
 syntax:110 "⋃ " ident " ∈ " term:110 ", " term : term
@@ -489,20 +494,20 @@ macro_rules
 開かれて表示される。以後の表示の枠は、この**展開後の形**で書いてある。
 -/
 
-/-! ## 3. 位相空間
+/-! ## 3. 位相空間 {#sec-Top.topology}
 
 開集合が何であるかを指定するデータ `IsOpen` と、それが満たすべき3つの公理。
 -/
 
 /-- 位相空間の構造。「どの部分集合を開と呼ぶか」のデータ `IsOpen` と、
 それが満たすべき3公理を `class` で束ねる（データ＋性質という構成は
-`Intro1.lean` 5節の structure・`Intro2.lean` 1節の class と同じ）。
+[`Intro1.lean` 5節](#sec-Intro1.structures)の structure・[`Intro2.lean` 1節](#sec-Intro2.classes)の class と同じ）。
 
 `class` にしたので、以後 `[TopologicalSpace X]` と角括弧で書くだけで
 「`X` に載っている位相」がインスタンス引数として暗黙に渡る。
 
 フィールドは `def` と同じく「引数をコロンの左に書く」形で宣言できる
-（`Intro1.lean` 3節の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/
+（[`Intro1.lean` 3節](#sec-Intro1.functions)の binder 形式）。`∀` と `→` を並べて書いても同じ型である。 -/
 class TopologicalSpace (X : Type) where
   /-- その集合が開集合であるという述語。 -/
   IsOpen (s : Set X) : Prop
@@ -538,7 +543,7 @@ variable {X : Type} [TopologicalSpace X]
 /-- 空集合が開であることは公理に含めなくてよい。
 空な集合族の合併が空集合だから、`isOpen_sUnion` から従う。
 
-証明は `by` のタクティク（`CH.lean` 12節）。まず `⋃₀ ∅ = ∅` を `Set.ext` で示し、
+証明は `by` のタクティク（[`CH.lean` 12節](#sec-CH.tactics)）。まず `⋃₀ ∅ = ∅` を `Set.ext` で示し、
 `rw [← h]` で等式 `h` を右辺から左辺の向きに使ってゴールを書き換える。 -/
 theorem isOpen_empty : IsOpen (∅ : Set X) := by
   have h : (⋃₀ (∅ : Set (Set X))) = (∅ : Set X) := by
@@ -564,7 +569,7 @@ theorem isOpen_empty : IsOpen (∅ : Set X) := by
 /-!
 同じ証明を項で直接書くと、次のようになる。`have h : … := …;` の並びが
 タクティクの `have` に、`h ▸ e` が `rw [← h]; exact e` に対応する
-（`▸` は等式 `h` で `e` の型を書き換える演算子。`CH.lean` 9節）。
+（`▸` は等式 `h` で `e` の型を書き換える演算子。[`CH.lean` 11節](#sec-CH.prop-elimination)）。
 -/
 
 example : IsOpen (∅ : Set X) :=
@@ -665,7 +670,7 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
    （離散位相では、どの部分集合の開性も `True`——証明は `trivial`）。
 -/
 
-/-! ## 4. 連続写像
+/-! ## 4. 連続写像 {#sec-Top.continuity}
 
 位相空間の間の写像が連続であることを、開集合だけを使って定義する。
 写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。
@@ -707,7 +712,7 @@ theorem continuous_id : Continuous (fun x : X => x) :=
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
-名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（`Intro1.lean` 7節）。 -/
+名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（[`Intro1.lean` 7節](#sec-Intro1.dot-notation)）。 -/
 theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) :=
   fun s hs => hf _ (hg s hs)
@@ -728,7 +733,7 @@ theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Co
    （2つの空間の位相が、どの種類の括弧で並ぶか）。
 -/
 
-/-! ## 5. ハウスドルフ空間
+/-! ## 5. ハウスドルフ空間 {#sec-Top.hausdorff}
 
 「異なる2点は開集合で見分けられる」という条件。
 -/
@@ -751,7 +756,7 @@ class Hausdorff (X : Type) [TopologicalSpace X] : Prop where
 `TopologicalSpace X : Type`（データ）と違い、こちらは結果が `Prop`（性質）。
 -/
 
-/-! ## 6. コンパクト
+/-! ## 6. コンパクト {#sec-Top.compactness}
 
 「どんな開被覆にも有限部分被覆がある」という条件。
 
@@ -796,7 +801,7 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
     CompactSpace (X : Type) [TopologicalSpace X] : Prop
 -/
 
-/-! ## 7. 補題1: コンパクト集合の連続像はコンパクト
+/-! ## 7. 補題1: コンパクト集合の連続像はコンパクト {#sec-Top.compact-image}
 
 方針: 与えられた `f '' K` の開被覆 `U` に対して
 
@@ -840,7 +845,7 @@ example {α β : Type} {f : α → β} {K : Set α} {I : Type}
   fun x hx => h (f x) ⟨x, hx, rfl⟩
 
 /-- 逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。
-証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（`CH.lean` 6節）。 -/
+証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（[`CH.lean` 7節](#sec-CH.dependent-sums)）。 -/
 theorem Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
     {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹' U i) : f '' K ⊆ ⋃ i ∈ J, U i := by
   intro b hb
@@ -899,7 +904,7 @@ example {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
    （包含の付け替えだけの証明に、公理は要るだろうか）。
 -/
 
-/-! ## 8. 補題2: ハウスドルフ空間のコンパクト集合は閉
+/-! ## 8. 補題2: ハウスドルフ空間のコンパクト集合は閉 {#sec-Top.compact-closed}
 
 ここが証明の山場で、有限性を実際に使うのもここだけ。方針:
 
@@ -954,7 +959,7 @@ example {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
 /-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`
 と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側
 として使い、`right` は `y` を含み、2つは交わらない。フィールドの型が前の
-フィールドに依存している（`Intro1.lean` 5節）ことにも注意。
+フィールドに依存している（[`Intro1.lean` 5節](#sec-Intro1.structures)）ことにも注意。
 
 `K` はどこにも現れない: この structure は「点 `y` を分離する開集合の組」
 だけを束ねたもので、`K` との関係（`left` たちが `K` を覆うこと）は
@@ -1074,7 +1079,7 @@ theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClos
 example [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K :=
   isOpen_of_nhds fun _ hy => hK.exists_disjoint_nhds hy
 
-/-! ## 9. 補題3: コンパクト空間の閉集合はコンパクト
+/-! ## 9. 補題3: コンパクト空間の閉集合はコンパクト {#sec-Top.closed-compact}
 
 方針: `C` の開被覆 `U` に対して
 
@@ -1180,7 +1185,7 @@ example [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCompact C :=
           match hcov x hx with
           | ⟨i, _⟩ => (hI ⟨i⟩).elim⟩)
 
-/-! ## 10. 目標: コンパクトからハウスドルフへの連続全単射は同相
+/-! ## 10. 目標: コンパクトからハウスドルフへの連続全単射は同相 {#sec-Top.homeomorphism}
 
 同相写像とは、連続な全単射であって逆写像も連続なもの。
 一般には逆写像の連続性は自動ではないが、
@@ -1329,7 +1334,7 @@ example [CompactSpace X] [Hausdorff Y]
 
 `where` 構文で `Homeomorph` の6フィールドを埋める。逆写像は、全射性 `hbij.surjective` の
 「存在する」から `Classical.choose` で1つ選んで作る。存在の証明から値を
-取り出すこの操作が普通の項の構成では許されないこと（`CH.lean` 11節の
+取り出すこの操作が普通の項の構成では許されないこと（[`CH.lean` 11節](#sec-CH.prop-elimination)の
 「対応のずれ」）の代金が、公理 `Classical.choice` への依存と
 `noncomputable`（この関数は計算はできないが、項としては正当）という印である。
 

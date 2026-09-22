@@ -10,6 +10,7 @@
         --link: #0969da; --quote-bg: #f0f4f8;
         --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
         --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
@@ -17,6 +18,7 @@
           --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
           --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
+
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
        font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
@@ -127,7 +129,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="cm">-- 問題4（主張も自分で書く）:</span>
 <span class="cm">-- 「密着位相を入れた `Bool` はハウスドルフでない」を形式化し、証明せよ。</span>
-<span class="cm">-- ヒント: 否定 `¬p` は `p → False`（`CH.lean` 4節）。</span>
+<span class="cm">-- ヒント: 否定 `¬p` は `p → False`（`CH.lean` 5節）。</span>
 <span class="cm">-- `true` と `false` を分離する開集合の組が取れたとして、矛盾を導く。</span>
 <span class="cm">-- （ここに theorem を書く）</span></code></pre>
 <h2>Part 2: 圏と関手</h2>
@@ -178,7 +180,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">attribute</span> [<span class="kw">instance</span>] TopSpace.str</code></pre>
 <p>問題6: 位相空間の圏を作れ。対象は <code>TopSpace</code>、射は「関数と、その連続性の証明の組」<code>{ f : A.carrier → B.carrier // Continuous f }</code>。</p>
-<p>これは <code>CH.lean</code> 6節の依存和そのもの（<code>Subtype</code>）である。ヒント: 恒等射は <code>continuous_id</code>、合成は <code>Continuous.comp</code>。射の等しさは <code>Subtype.ext</code>（第一成分が等しければ等しい）で示す。</p>
+<p>これは <a href="ch.html#sec-CH.dependent-sums"><code>CH.lean</code> 7節</a>の依存和そのもの（<code>Subtype</code>）である。ヒント: 恒等射は <code>continuous_id</code>、合成は <code>Continuous.comp</code>。射の等しさは <code>Subtype.ext</code>（第一成分が等しければ等しい）で示す。</p>
 <pre class="lean"><code>@[reducible] <span class="kw">def</span> TopCat : Category :=
   <span class="sorry">sorry</span>
 
@@ -581,12 +583,12 @@ details.sol[open] > summary { margin-bottom: .4rem; }
     @Continuous Z tZ X (initialTopology tY f) g ↔
       ∀ i, @Continuous Z tZ (Y i) (tY i) (<span class="kw">fun</span> z =&gt; f i (g z)) := <span class="sorry">sorry</span></code></pre>
 <h3>部分空間・積・直和・商</h3>
-<p>4つの日常的な構成を、始位相・終位相の特殊化として <code>instance</code> 登録する（ここは問題ではなく、以下すべて与える）。登録した瞬間から、<code>Subtype p</code> や <code>X × Y</code> と書くだけで位相が自動で載るようになる——<code>Intro2.lean</code> 1節で見た class の効き目である。</p>
+<p>4つの日常的な構成を、始位相・終位相の特殊化として <code>instance</code> 登録する（ここは問題ではなく、以下すべて与える）。登録した瞬間から、<code>Subtype p</code> や <code>X × Y</code> と書くだけで位相が自動で載るようになる——<a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で見た class の効き目である。</p>
 <p>1本の写像に沿った引き戻し。族版の <code>I := Unit</code>（添字が1点）への特殊化。</p>
 <pre class="lean"><code>@[reducible] <span class="kw">def</span> TopologicalSpace.induced {X Y : <span class="sort">Type</span>} (f : X → Y)
     (t : TopologicalSpace Y) : TopologicalSpace X :=
   initialTopology (Y := <span class="kw">fun</span> _ : Unit =&gt; Y) (<span class="kw">fun</span> _ =&gt; t) (<span class="kw">fun</span> _ =&gt; f)</code></pre>
-<p>部分空間位相: 包含写像 <code>Subtype.val</code> に沿った引き戻し。 <code>CH.lean</code> 6節の部分型が、晴れて<strong>部分空間</strong>になる。</p>
+<p>部分空間位相: 包含写像 <code>Subtype.val</code> に沿った引き戻し。 <a href="ch.html#sec-CH.dependent-sums"><code>CH.lean</code> 7節</a>の部分型が、晴れて<strong>部分空間</strong>になる。</p>
 <pre class="lean"><code><span class="kw">instance</span> instTopSubtype {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (p : X → <span class="sort">Prop</span>) :
     TopologicalSpace (Subtype p) :=
   tX.induced Subtype.val</code></pre>

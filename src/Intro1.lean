@@ -12,7 +12,7 @@
 * 型を作る部品は実質2つ、**帰納型**（inductive type）と**依存関数型**である。
 
 なお、このファイルは**型の世界**に集中する。命題と証明の世界は、
-1節で顔だけ見せたあとは極力持ち込まず、`CH.lean` でまとめて扱う。
+[1節](#sec-Intro1.terms-types)で顔だけ見せたあとは極力持ち込まず、`CH.lean` でまとめて扱う。
 
 ### この教材の読み方
 
@@ -37,7 +37,7 @@ Lean 4 拡張では、**バックスラッシュ `\` で始まる略記**を打�
 出会った記号はホバーで確かめてもよい。
 -/
 
-/-! ## 1. 項と型
+/-! ## 1. 項と型 {#sec-Intro1.terms-types}
 
 Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは何かの正確な定義は
 ここでは与えないが、さしあたり **`#check` の右側に書いてエラーが出ないものは
@@ -62,7 +62,7 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
     Bool.true : Bool
 
 「項 `true` は型 `Bool`（真偽値の型）を持つ」。表示が `Bool.true` となっているのは、
-これが `true` の正式な名前だからである（この命名の仕組みは4節で見る）。
+これが `true` の正式な名前だからである（この命名の仕組みは[4節](#sec-Intro1.inductive-types)で見る）。
 
 すべての項はちょうど1つの型を持つ（厳密には、定義から計算して一致する型を
 同一視する、などの但し書きが要るが、この教材の範囲では「ちょうど1つ」と
@@ -112,15 +112,15 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 `CH.lean` の主題である）。
 
 型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、
-これがあるから「型を受け取る関数」「型を返す関数」が書ける（3節の `Map` と6節）。
+これがあるから「型を受け取る関数」「型を返す関数」が書ける（[3節](#sec-Intro1.functions)の `Map` と[6節](#sec-Intro1.dependent-functions)）。
 
 -/
 
 /-! CALLOUT_START preview -/
-/-! ### 先取り（3節・CH）: 演算と命題の記号
+/-! ### 先取り（[3節](#sec-Intro1.functions)・CH）: 演算と命題の記号
 
 数の演算や、等式・不等式の記号も、ふつうに書ける。それぞれが正確には何者なのかは
-後で説明することにして（`+` は3節。`=` と `<` はこのファイルでは深入りせず、
+後で説明することにして（`+` は[3節](#sec-Intro1.functions)。`=` と `<` はこのファイルでは深入りせず、
 `CH.lean` で主役になる）、表示だけ先に見ておく。
 -/
 
@@ -161,7 +161,7 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 /-! ### 先取り（CH）: 型の推測が証明の検証になる
 
 最後に、この教材の行き先を、例を1つだけ挙げて予告しておく。
-次の項は `fun`（関数を作る記法、3節）で書かれている。読み方だけ添えると、
+次の項は `fun`（関数を作る記法、[3節](#sec-Intro1.functions)）で書かれている。読み方だけ添えると、
 `p q r : Prop` は3つの命題、`hpq : p → q` は「`p` ならば `q`」の証明、
 `hp : p` は `p` の証明である。細部はまだ追わなくてよい。
 **項全体の型はどこにも書いていない**のに、Lean がどんな型を付けるかを見てみよう:
@@ -200,7 +200,7 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
    別の話である）。
 -/
 
-/-! ## 2. def — 新しい項を定義する
+/-! ## 2. def — 新しい項を定義する {#sec-Intro1.definitions}
 
     def 名前 : 型 := 項
 
@@ -273,7 +273,7 @@ def alsoTwo : Nat := two
    エラーメッセージを本文の例と見比べよ。
 -/
 
-/-! ## 3. 関数
+/-! ## 3. 関数 {#sec-Intro1.functions}
 
 集合 A・B に対して写像全体の集合 Map(A, B) が定まるのと同様に、
 型 `A`・`B` に対して「`A` から `B` への関数の型」`A → B` が定まる
@@ -311,7 +311,7 @@ def double : Nat → Nat := fun n => n + n
 
 /-! ### 先取り（詳しくは Intro2）: `+` の仕組み
 
-本体の `+`（1節で先取りした）は **notation（記法）**であり、
+本体の `+`（[1節](#sec-Intro1.terms-types)で先取りした）は **notation（記法）**であり、
 その意味は **class／instance** という仕組みで型ごとに決まっている
 （正確な仕組みは `Intro2.lean` で説明する）。ここでは `Nat` に対して使っており、
 ざっくり **`+ : Nat → Nat → Nat` という型の2引数関数**と思えばよい
@@ -319,7 +319,7 @@ def double : Nat → Nat := fun n => n + n
 -/
 
 /-!
-この `def` を受理する前の型検査では、2節と同じ照合が走っている。
+この `def` を受理する前の型検査では、[2節](#sec-Intro1.definitions)と同じ照合が走っている。
 コロンの右に注釈した型 `Nat → Nat` から「引数は `n : Nat`」と仮に置き、
 そのもとで本体 `n + n` の型が行き先の `Nat` になるかを調べる。つまり
 **`fun` 記法で書かれた項の型が、注釈した関数型と一致するか**が検査されている。
@@ -517,7 +517,7 @@ binder 形式の表示
 
 /-! ### 定義域や行き先が型でもよい
 
-1節で「型も項である」と述べた。だから、**定義域や行き先が `Type` であるような
+[1節](#sec-Intro1.terms-types)で「型も項である」と述べた。だから、**定義域や行き先が `Type` であるような
 関数**も、まったく同じ書き方で作れる。例えば「2つの型 `A`・`B` を受け取り、
 関数型 `A → B` を返す」関数:
 -/
@@ -533,7 +533,7 @@ def Map : Type → Type → Type := fun A B => A → B
 その Map を、いま Lean の項として定義したことになる。`Map Nat Nat` は
 計算すると `Nat → Nat` になるから、`double` は `Map Nat Nat` の項でもある
 （練習で確かめよ）。「型を受け取る関数」「型を返す関数」は、
-7節（依存関数型）でさらに主役になる。
+[6節](#sec-Intro1.dependent-functions)（依存関数型）でさらに主役になる。
 -/
 
 /-!
@@ -552,7 +552,7 @@ def Map : Type → Type → Type := fun A B => A → B
 
 /-! ### 型は部分項から機械的に計算できる
 
-2節で「型検査が走る」と述べ、この節の冒頭で `double 21` の2点確認を見た。
+[2節](#sec-Intro1.definitions)で「型検査が走る」と述べ、この節の冒頭で `double 21` の2点確認を見た。
 一般の形をまとめておく。適用についての規則はただ1つである:
 
     f : A → B　かつ　a : A　ならば　f a : B
@@ -657,7 +657,7 @@ Lean の型検査器である。読者がこの教材で行う「型の推測」
    が元の版と同じ値になることを確かめよ。
 -/
 
-/-! ## 4. 帰納型（inductive type）
+/-! ## 4. 帰納型（inductive type） {#sec-Intro1.inductive-types}
 
 型を作る部品の1つ目が、帰納型である。帰納型は**構成子（constructor）のリスト**で
 型を定義する。構成子とは「その型の項の**作り方**」のことで、
@@ -691,7 +691,7 @@ inductive Signal where
 /-!
 この宣言の意味は「`Signal` の項は `Signal.red`, `Signal.yellow`, `Signal.green` の
 3つが**すべて**であり、それ以外にはない」ということ。構成子の正式な名前は
-`型名.構成子名` になる（1節の `Bool.true` はこれだった）。
+`型名.構成子名` になる（[1節](#sec-Intro1.terms-types)の `Bool.true` はこれだった）。
 作り方を列挙したら、それで型が決まる。集合のアナロジーでは、列挙型は
 3点集合 {red, yellow, green} のような**有限集合**である。
 
@@ -701,7 +701,7 @@ inductive Signal where
 「作れるものが全部」と「違う作り方のものは別々」の2つが合わさって、
 はじめて `Signal` は本当に3点集合になる。この2つは約束ではなくどちらも
 **証明できる事実**であり、しかも証明の道具は宣言を受理したときに Lean が
-自動で用意する——実物は `CH.lean` 8節で見る。
+自動で用意する——実物は [`CH.lean` 9節](#sec-CH.nat-proofs)で見る。
 
 「それ以外にない」からこそ、場合分け（`match`）が正当化される。
 これが帰納型の項の使い方である。`fun` で受け取った `s` を、
@@ -739,7 +739,7 @@ def next : Signal → Signal := fun s =>
 たしかに赤の次は青になった。
 
 期待される型が分かっている位置では、`Signal.red` を `.red` と省略できる
-（この省略の仕組みは7節のドット記法で説明する）。まず練習で試し、
+（この省略の仕組みは[7節](#sec-Intro1.dot-notation)のドット記法で説明する）。まず練習で試し、
 そのあと本文でも省略形を使う。
 -/
 
@@ -784,7 +784,7 @@ def isRed : Signal → Bool := fun s =>
 
 なお `inductive Signal where` は結果の型を省略した書き方で、正確には
 `inductive Signal : Type where` の略である。ここを `: Prop` にすれば
-**命題**を帰納型として作ることもできる（`CH.lean` 4節で見る）。
+**命題**を帰納型として作ることもできる（[`CH.lean` 5節](#sec-CH.empty-types)で見る）。
 
 構成子の個数を減らしていくと、おなじみの集合が現れる。構成子が1つ・引数なしなら
 **一点集合**（Prelude の `Unit`。項は `Unit.unit` ただ1つ）。構成子を**1つも**
@@ -795,16 +795,16 @@ def isRed : Signal → Bool := fun s =>
 項の作り方がないのだから、`Empty` の項は存在しない。
 （それでも `Empty` **から**の関数は書ける——場合分けすべき場合が1つもないので、
 何も書かずに関数が完成する。空集合からの写像がただ1つあることに当たる。
-`CH.lean` 4節の `elimEmpty` で実物を見る。）
+[`CH.lean` 5節](#sec-CH.empty-types)の `elimEmpty` で実物を見る。）
 
 実は同じことが `Prop` の世界でもできて、命題の `True` と `False` は
 帰納型として定義されている。命題の世界の帰納型の話は、このファイルでは
-扱わず `CH.lean`（4節）でまとめて見る。
+扱わず [`CH.lean` 5節](#sec-CH.empty-types)でまとめて見る。
 
 ### 構成子は引数を取れる
 
 構成子に引数を持たせることもできる。構成子の引数は、
-`def` と同じくコロンの左に書ける（3節の binder 形式）:
+`def` と同じくコロンの左に書ける（[3節](#sec-Intro1.functions)の binder 形式）:
 -/
 
 inductive NatOrBool where
@@ -886,7 +886,7 @@ inductive MySum (α β : Type) where
 /-!
     MySum (α β : Type) : Type
 
-binder 形式を読み替えれば `MySum : Type → Type → Type`——3節の `Map` と
+binder 形式を読み替えれば `MySum : Type → Type → Type`——[3節](#sec-Intro1.functions)の `Map` と
 同じ形の「型を受け取って型を返す関数」でもある
 （ギリシャ文字は `\a` `\b` で打てる）。
 
@@ -900,8 +900,8 @@ binder 形式を読み替えれば `MySum : Type → Type → Type`——3節の
     MySum.inl {α β : Type} (a : α) : MySum α β
 
 推測した引数 `(a : α)` に加えて、パラメータの分の引数 `{α β : Type}` が
-先頭に付いた。波括弧は「文脈から自動で埋まる引数」の印である（6節で説明する）。
-よく見るとこの型は、**引数 `α` の値が後ろの引数の型に現れる**——6節で主役になる
+先頭に付いた。波括弧は「文脈から自動で埋まる引数」の印である（[6節](#sec-Intro1.dependent-functions)で説明する）。
+よく見るとこの型は、**引数 `α` の値が後ろの引数の型に現れる**——[6節](#sec-Intro1.dependent-functions)で主役になる
 依存関数型の、最初の実物である。
 -/
 
@@ -945,12 +945,12 @@ def fromSum : MySum Nat Bool → Nat := fun x =>
 -/
 
 /-! CALLOUT_START preview -/
-/-! ### 先取り（6節）: 暗黙引数を使う汎用版
+/-! ### 先取り（[6節](#sec-Intro1.dependent-functions)）: 暗黙引数を使う汎用版
 
 取り出す側も、パラメータを持たせて一般的に書ける。次の `getLeft` は
 「既定値 `d` を受け取り、左の札なら中身を、右の札なら `d` を返す」関数で、
 `fromSum` はその `Nat`・`Bool`・`0` への特殊化に当たる
-（`{α β : Type}` という波括弧の意味は6節でまとめて説明する。ここでは
+（`{α β : Type}` という波括弧の意味は[6節](#sec-Intro1.dependent-functions)でまとめて説明する。ここでは
 「どんな型の組でも使える」という印と読めばよい）:
 -/
 
@@ -1041,7 +1041,7 @@ def add : MyNat → MyNat → MyNat := fun m n =>
     MyNat.zero.succ.succ
 
 `MyNat.zero.succ.succ` は `MyNat.succ (MyNat.succ MyNat.zero)` のこと
-（値の後ろにドットで関数をつなぐ表示——仕組みは7節のドット記法で見る）。
+（値の後ろにドットで関数をつなぐ表示——仕組みは[7節](#sec-Intro1.dot-notation)のドット記法で見る）。
 たしかに `succ` が2回重なった項、つまり「2」が返ってきた。
 -/
 
@@ -1095,7 +1095,7 @@ def add : MyNat → MyNat → MyNat := fun m n =>
    戻ってくるとよい。）
 -/
 
-/-! ## 5. structure
+/-! ## 5. structure {#sec-Intro1.structures}
 
 構成子が**1つだけ**で、その構成子が**複数の引数**を受け取る帰納型は、
 「成分をまとめて持ち運ぶ入れ物」としてよく使う。まず、ふつうの帰納型として書いてみる。
@@ -1125,7 +1125,7 @@ def MyPoint.x : MyPoint → Nat := fun p =>
     MyPoint.x : MyPoint → Nat
 
 帰納型の項の使い方はいつでも `match` である——構成子が1つなら、
-場合分けが1ケースになるだけで、原理は 4節と変わらない。
+場合分けが1ケースになるだけで、原理は [4節](#sec-Intro1.inductive-types)と変わらない。
 （`⟨ ⟩` は `\<` `\>` で打てる。）
 -/
 
@@ -1169,7 +1169,7 @@ structure Point where
     Point.x (self : Point) : Nat
 
 自動定義された取り出し関数。矢印形式では `Point → Nat`。
-`p.x` とも書ける——7節
+`p.x` とも書ける——[7節](#sec-Intro1.dot-notation)
 -/
 
 #eval (Point.mk 1 2).x
@@ -1197,7 +1197,7 @@ structure Point where
          radius : Nat
 
 2. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
-   さらに `(Point.mk 1 2).y` とも書けることを試せ（7節のドット記法の先取り）。
+   さらに `(Point.mk 1 2).y` とも書けることを試せ（[7節](#sec-Intro1.dot-notation)のドット記法の先取り）。
 3. フィールドの型は、自作の structure でもよい。長方形
 
        structure Rect where
@@ -1207,7 +1207,7 @@ structure Point where
 
    を定義し、`def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩` が受理されることを確かめよ
    （`⟨ ⟩` の入れ子が `corner : Point` の分である）。`#eval r.corner.x` の
-   値を予想してから確かめよ（後ろドットの入れ子。これも7節の先取り）。
+   値を予想してから確かめよ（後ろドットの入れ子。これも[7節](#sec-Intro1.dot-notation)の先取り）。
 -/
 
 /-!
@@ -1268,7 +1268,7 @@ structure（名前は `Prod`）として定義されている。
 /-! ### フィールドは前のフィールドに依存してよい
 
 もう1つ一般化がある: 後のフィールドの型は、前のフィールドに**依存してよい**。
-1節で見たとおり型も項だから、フィールドの値として**型そのもの**を持たせ、
+[1節](#sec-Intro1.terms-types)で見たとおり型も項だから、フィールドの値として**型そのもの**を持たせ、
 次のフィールドの型をその値で決める、ということができる:
 -/
 
@@ -1278,7 +1278,7 @@ structure PointedType where
 
 /-!
 「型 `carrier` と、その要素 `point`」の組——数学でいう**点付き集合**である。
-`mk` の型を推測しよう。フィールドの列そのまま……のはずで、4節の `MySum.inl` と
+`mk` の型を推測しよう。フィールドの列そのまま……のはずで、[4節](#sec-Intro1.inductive-types)の `MySum.inl` と
 同じく、**第2引数の型の中に第1引数の名前が現れる**ことになる:
 -/
 
@@ -1301,7 +1301,7 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 第二フィールド `point` の型が、第一フィールド `carrier` の**値**で決まっている
 （`pointedNat` では `point : Nat`）。なお `#check PointedType` とすると
 `PointedType : Type 1` と表示される——中身に `Type` の項を入れたので、
-入れ物は1節で見た `Type : Type 1` の1段上になるのである。
+入れ物は[1節](#sec-Intro1.terms-types)で見た `Type : Type 1` の1段上になるのである。
 -/
 
 /-! ### 補足（初読は飛ばしてよい）: 依存するフィールドと族の直和
@@ -1318,7 +1318,7 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 **基本は直積、一般には族の直和**を作るもので、直積はその特別な場合
 （定数族の直和）なのである。
 
-この「後の成分が前の成分に依存する組」の一般論は、`CH.lean` の6節（依存和）で
+この「後の成分が前の成分に依存する組」の一般論は、[`CH.lean` の7節](#sec-CH.dependent-sums)（依存和）で
 扱う。特に、第二成分を**命題の証明**にしたもの（部分型）はそこで主役になり、
 `Top.lean` でも「分離データの束」`SeparatingPair` として活躍する。
 命題の話なので、ここではこれ以上踏み込まない。
@@ -1331,18 +1331,18 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 2. `def pointedBool : PointedType := ⟨Bool, true⟩` が受理されることを確かめよ。
    また `#check PointedType.mk Nat` の表示を予想してから確かめよ
    （第1引数を渡すと、第2引数の型が決まる）。
-3. （発展）3節の「カリー化」の正体を自分で書く。組を受け取る関数を
+3. （発展）[3節](#sec-Intro1.functions)の「カリー化」の正体を自分で書く。組を受け取る関数を
    「1つずつ受け取る」形に直す
    `curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat` と、その逆向き
    `uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat` を書け。
    `#eval curryP (fun p => p.fst + p.snd) 3 4` の値を予想してから確かめよ。
 -/
 
-/-! ## 6. 依存関数型
+/-! ## 6. 依存関数型 {#sec-Intro1.dependent-functions}
 
 関数の一般化がもう1段ある。**行き先の型が、入力に応じて変わってよい**とした
 関数——依存関数——である。いちばん簡単な例は「型そのものを最初の引数として
-受け取る」形で作れる。型が引数にできることは、3節の `Map` で見たとおりである。
+受け取る」形で作れる。型が引数にできることは、[3節](#sec-Intro1.functions)の `Map` で見たとおりである。
 -/
 
 /-!
@@ -1435,16 +1435,16 @@ def idAt (α : Type) (a : α) : α := a
     Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β
 
 は、コロンの左に引数の列が並び、最後の `: Pair α β` が結果の型、と読む
-（3節で見た binder 形式である）。引数を1つ渡すたびに列の左から1つ消えていき、
+（[3節](#sec-Intro1.functions)で見た binder 形式である）。引数を1つ渡すたびに列の左から1つ消えていき、
 全部渡すと結果の型の項が得られる。そして各段階で「渡した項の型が、引数の型と
-一致するか」の型検査が走っている。2節からやってきたことの一般形である。
+一致するか」の型検査が走っている。[2節](#sec-Intro1.definitions)からやってきたことの一般形である。
 
 引数を包む括弧は、「その引数を**誰が埋めるか**」を表している。
 
 * `(fst : α)` — **明示引数**。使う側が自分で書く。
 * `{α : Type}` — **暗黙引数**。使う側は書かない。Lean が読み込みの段階で、
   他の引数とのつじつま合わせ（単一化）から埋める（この前処理を
-  **エラボレーション**と呼ぶ。型検査との関係は `CH.lean` 10節で整理する）。
+  **エラボレーション**と呼ぶ。型検査との関係は [`CH.lean` 10節](#sec-CH.type-checking)で整理する）。
   `Pair.mk 1 true` と書けば `1 : Nat` と `true : Bool` から
   `α := Nat`、`β := Bool` が決まる。
 
@@ -1464,7 +1464,7 @@ def idAt (α : Type) (a : α) : α := a
 /-!
 行き先の型は、`Type` の住人でなくてもよい。**命題を返す関数**（数学でいう述語）を
 作り、「すべての `n` について…」の証明そのものを依存関数として書く——それが
-`CH.lean` の5節の主題である。`Top.lean` に出てくる「集合の族」 `U : I → Set X` や
+[`CH.lean` の6節](#sec-CH.dependent-products)の主題である。`Top.lean` に出てくる「集合の族」 `U : I → Set X` や
 「型の族」 `P : α → Type` も、この「型（や集合、命題）を返す関数」の仲間である。
 -/
 
@@ -1474,7 +1474,7 @@ def idAt (α : Type) (a : α) : α := a
    （`Map` に1つだけ渡すと、何が返るか）。
 -/
 
-/-! ## 7. ドット記法
+/-! ## 7. ドット記法 {#sec-Intro1.dot-notation}
 
 `CH.lean` の証明では、`h.1` や `.inl` のようなドットの略記が頻繁に使われる。
 向きの違う2つの用法があるので、まとめて押さえておく。
@@ -1519,13 +1519,13 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 -/
 
 /-!
-4節の `#reduce` の表示 `MyNat.zero.succ.succ` も、この「値の後ろに付けるドット」の
+[4節](#sec-Intro1.inductive-types)の `#reduce` の表示 `MyNat.zero.succ.succ` も、この「値の後ろに付けるドット」の
 連鎖だった（`.succ` は `MyNat.succ` の略記で、`MyNat.zero` に2回適用されている）。
 
 **型が分かっている場所で前に付けるドット**: 期待される型が `Point` だと
 分かっている位置では、構成子 `Point.mk` を `.mk` と省略できる。
 今度は「**期待される型**の名前空間から探す」という解決である。
-4節のパターンマッチで使った `.red` や `.succ` もこの用法で、
+[4節](#sec-Intro1.inductive-types)のパターンマッチで使った `.red` や `.succ` もこの用法で、
 `match` の各ケースは `Signal.red` などの略記だった。
 -/
 
@@ -1557,7 +1557,7 @@ example : Point := .mk 1 2
    通ることを確かめよ（前ドットが「期待される型」から解決されている）。
 -/
 
-/-! ## 8. まとめ練習 — 小さな型つき言語で書く
+/-! ## 8. まとめ練習 — 小さな型つき言語で書く {#sec-Intro1.exercises}
 
 ここまでの部品——`fun` と適用、`match`、`inductive`、`structure`、
 型を引数に取る関数——だけで、Lean は小さな**型つきプログラミング言語**として
@@ -1582,17 +1582,17 @@ example : Point := .mk 1 2
    書け。`#eval (mapPoint double (Point.mk 2 3)).y` の値を予想してから確かめよ。
 5. 札を掛け替える `swapMySum (A B : Type) : MySum A B → MySum B A` を書け。
    `#eval fromSum (swapMySum Bool Nat (MySum.inl true))` の値を予想してから
-   確かめよ（`fromSum : MySum Nat Bool → Nat` は4節で定義した）。
-6. `pointedOf (A : Type) (a : A) : PointedType` を書け（5節の `pointedNat` や
+   確かめよ（`fromSum : MySum Nat Bool → Nat` は[4節](#sec-Intro1.inductive-types)で定義した）。
+6. `pointedOf (A : Type) (a : A) : PointedType` を書け（[5節](#sec-Intro1.structures)の `pointedNat` や
    練習の `pointedBool` を、どの型でも作れるように一般化したもの）。
    `#check pointedOf Bool true` の表示を予想してから確かめよ。
 7. （発展）回数も引数にした
    `applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A`（`F` を `n` 回適用）を
-   書け。`n` の `match` は `| 0 => …`・`| k + 1 => …` の形（4節の練習の
+   書け。`n` の `match` は `| 0 => …`・`| k + 1 => …` の形（[4節](#sec-Intro1.inductive-types)の練習の
    `ofN` と同じ）。`#eval applyN Nat double 3 1` の値を予想してから確かめよ。
 8. （発展）型だけで中身がほぼ決まる例: `diag (A : Type) (a : A) : Pair A A` を
    書け。この型に合う項は、実質1通りしか書きようがない——書いたうえで
-   `#eval (diag Nat 3).fst` を確かめよ。3節の練習（`(Nat → Nat) → Nat` の項を
+   `#eval (diag Nat 3).fst` を確かめよ。[3節](#sec-Intro1.functions)の練習（`(Nat → Nat) → Nat` の項を
    2つ書く）とは対照的に、**型が中身をどこまで決めるかは型の形による**のである。
 -/
 

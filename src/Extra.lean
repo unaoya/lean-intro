@@ -80,7 +80,7 @@ theorem continuous_to_indiscrete {X Y : Type} [tX : TopologicalSpace X] (f : X �
 
 -- 問題4（主張も自分で書く）:
 -- 「密着位相を入れた `Bool` はハウスドルフでない」を形式化し、証明せよ。
--- ヒント: 否定 `¬p` は `p → False`（`CH.lean` 4節）。
+-- ヒント: 否定 `¬p` は `p → False`（[`CH.lean` 5節](#sec-CH.empty-types)）。
 -- `true` と `false` を分離する開集合の組が取れたとして、矛盾を導く。
 -- （ここに theorem を書く）
 
@@ -116,7 +116,7 @@ structure Category where
 #check Category
 -- 表示: `Cat.Category : Type 2`
 -- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。
--- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
+-- [`Intro1.lean` 1節](#sec-Intro1.terms-types)の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。
 
 /-- 問題5: 型の圏を作れ。対象は型、射は関数。
 
@@ -148,7 +148,7 @@ attribute [instance] TopSpace.str
 /-- 問題6: 位相空間の圏を作れ。対象は `TopSpace`、
 射は「関数と、その連続性の証明の組」`{ f : A.carrier → B.carrier // Continuous f }`。
 
-これは `CH.lean` 6節の依存和そのもの（`Subtype`）である。
+これは [`CH.lean` 7節](#sec-CH.dependent-sums)の依存和そのもの（`Subtype`）である。
 ヒント: 恒等射は `continuous_id`、合成は `Continuous.comp`。
 射の等しさは `Subtype.ext`（第一成分が等しければ等しい）で示す。 -/
 @[reducible] def TopCat : Category :=
@@ -719,7 +719,7 @@ theorem continuous_toInitial_iff {I : Type} {Y : I → Type} {X Z : Type}
 
 4つの日常的な構成を、始位相・終位相の特殊化として `instance` 登録する
 （ここは問題ではなく、以下すべて与える）。登録した瞬間から、`Subtype p` や
-`X × Y` と書くだけで位相が自動で載るようになる——`Intro2.lean` 1節で見た
+`X × Y` と書くだけで位相が自動で載るようになる——[`Intro2.lean` 1節](#sec-Intro2.classes)で見た
 class の効き目である。
 -/
 
@@ -729,7 +729,7 @@ class の効き目である。
   initialTopology (Y := fun _ : Unit => Y) (fun _ => t) (fun _ => f)
 
 /-- 部分空間位相: 包含写像 `Subtype.val` に沿った引き戻し。
-`CH.lean` 6節の部分型が、晴れて**部分空間**になる。 -/
+[`CH.lean` 7節](#sec-CH.dependent-sums)の部分型が、晴れて**部分空間**になる。 -/
 instance instTopSubtype {X : Type} [tX : TopologicalSpace X] (p : X → Prop) :
     TopologicalSpace (Subtype p) :=
   tX.induced Subtype.val

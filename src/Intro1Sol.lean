@@ -1,12 +1,12 @@
 import Intro1
 
 /-!
-`Intro1.lean` の ✏ 練習の解答。`/-! SOL 節.番号 -/` の区切りごとに1問の解答で、
+`Intro1.lean` の ✏ 練習の解答。`/-! SOL 固定ラベル:問題番号 -/` の区切りごとに1問の解答で、
 HTML では対応する練習の直下に折りたたみで埋め込まれる（このファイル自体は
 公開ページにしない）。解答もすべて Lean の検査を通してある。
 -/
 
-/-! SOL 1.1 -/
+/-! SOL Intro1.terms-types:1 -/
 
 #check Bool
 
@@ -24,7 +24,7 @@ HTML では対応する練習の直下に折りたたみで埋め込まれる（
 宇宙の階段は1段のぼる: `Type n : Type (n + 1)`。
 -/
 
-/-! SOL 1.2 -/
+/-! SOL Intro1.terms-types:2 -/
 
 #check 3 < 5
 
@@ -35,7 +35,7 @@ HTML では対応する練習の直下に折りたたみで埋め込まれる（
 調べていない——「命題として文法・型が通っているか」だけを見ている。
 -/
 
-/-! SOL 2.1 -/
+/-! SOL Intro1.definitions:1 -/
 
 def five : Nat := 5
 
@@ -60,7 +60,7 @@ def five : Nat := 5
 `#check` は型、`#eval` は計算した値、`#print` は宣言そのものを表示する。
 -/
 
-/-! SOL 2.2 -/
+/-! SOL Intro1.definitions:2 -/
 
 /-!
 受理されない。`two` の型は `Nat` で、コロンの右の `Bool` と一致しないから
@@ -79,7 +79,7 @@ def five : Nat := 5
 宣言された型と照合する」という手順の破れがそのまま報告されている。
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Intro1.functions:1 -/
 
 def inc : Nat → Nat := fun n => n + 1
 
@@ -95,7 +95,7 @@ def inc : Nat → Nat := fun n => n + 1
     5
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Intro1.functions:1 -/
 
 def triple (n : Nat) : Nat := n + n + n
 
@@ -107,7 +107,7 @@ def triple (n : Nat) : Nat := n + n + n
 binder 形式のまま表示される。`triple : Nat → Nat` と読み替えられること。
 -/
 
-/-! SOL 3.2 -/
+/-! SOL Intro1.functions:2 -/
 
 #eval double (double 5)
 
@@ -117,7 +117,7 @@ binder 形式のまま表示される。`triple : Nat → Nat` と読み替え�
 内側から: `double 5 = 10`、`double 10 = 20`。
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Intro1.functions:1 -/
 
 def addThree : Nat → Nat := plus 3
 
@@ -133,7 +133,7 @@ def addThree : Nat → Nat := plus 3
     7
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Intro1.functions:1 -/
 
 def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
 
@@ -149,7 +149,7 @@ def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
     12
 -/
 
-/-! SOL 3.1 -/
+/-! SOL Intro1.functions:1 -/
 
 /-!
 型の計算: `(3 + 4) * 2` は `Nat`。`plus (double 3)` は `plus : Nat → Nat → Nat` に
@@ -183,7 +183,7 @@ def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
     fun n ↦ plus n n : Nat → Nat
 -/
 
-/-! SOL 3.2 -/
+/-! SOL Intro1.functions:2 -/
 
 #eval applyTo21 (plus 100)
 
@@ -193,7 +193,7 @@ def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
 `applyTo21 F` は `F 21` だから、`plus 100 21 = 121`。
 -/
 
-/-! SOL 3.3 -/
+/-! SOL Intro1.functions:3 -/
 
 def evalAt (F : Nat → Nat) (x : Nat) : Nat := F x
 
@@ -226,7 +226,7 @@ def shift (F : Nat → Nat) : Nat → Nat := fun x => F (x + 1)
 `x = 3` なら `double 4 = 8`。
 -/
 
-/-! SOL 3.4 -/
+/-! SOL Intro1.functions:4 -/
 
 #check Map Nat Bool
 
@@ -243,7 +243,7 @@ def double2 : Map Nat Nat := double
 通る。`Map Nat Nat` を計算すると `Nat → Nat` で、`double` の型と一致する。
 -/
 
-/-! SOL 3.5 -/
+/-! SOL Intro1.functions:5 -/
 
 def useF1 : (Nat → Nat) → Nat := fun F => F 21
 
@@ -264,7 +264,7 @@ def useF2 : (Nat → Nat) → Nat := fun _ => 0
 決めており、返し方（中身）は何通りもある。
 -/
 
-/-! SOL 3.6 -/
+/-! SOL Intro1.functions:6 -/
 
 def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (F a)
 
@@ -277,7 +277,7 @@ def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (
 -/
 
 
-/-! SOL 3.7 -/
+/-! SOL Intro1.functions:7 -/
 
 def evalAt' (A B : Type) (F : A → B) (x : A) : B := F x
 
@@ -297,7 +297,7 @@ def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun x => F (g x)
 どちらも元の版と同じ値。型を引数にすると、同じ中身が任意の型で使い回せる。
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def signalCode : Signal → Nat := fun s =>
   match s with
@@ -311,7 +311,7 @@ def signalCode : Signal → Nat := fun s =>
     1
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def prev : Signal → Signal := fun s =>
   match s with
@@ -327,7 +327,7 @@ def prev : Signal → Signal := fun s =>
 `next Signal.red = Signal.green`、`prev Signal.green = Signal.red` で戻ってくる。
 -/
 
-/-! SOL 4.2 -/
+/-! SOL Intro1.inductive-types:2 -/
 
 def isGreen : Signal → Bool := fun s =>
   match s with
@@ -340,7 +340,7 @@ def isGreen : Signal → Bool := fun s =>
     false
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def tagOf : NatOrBool → Bool := fun x =>
   match x with
@@ -353,7 +353,7 @@ def tagOf : NatOrBool → Bool := fun x =>
     true
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 #eval valueOf (NatOrBool.bool true)
 
@@ -363,7 +363,7 @@ def tagOf : NatOrBool → Bool := fun x =>
 `bool` の札なので2つめの枝に入り、中身によらず `0` を返す。
 -/
 
-/-! SOL 4.2 -/
+/-! SOL Intro1.inductive-types:2 -/
 
 def flagOf : NatOrBool → Bool := fun x =>
   match x with
@@ -376,7 +376,7 @@ def flagOf : NatOrBool → Bool := fun x =>
     true
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def mergeBool : MySum Bool Bool → Bool := fun x =>
   match x with
@@ -395,7 +395,7 @@ def mergeBool : MySum Bool Bool → Bool := fun x =>
     false
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 #eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)
 
@@ -405,7 +405,7 @@ def mergeBool : MySum Bool Bool → Bool := fun x =>
 `inl` の札なので、既定値 `7` ではなく中身の `3` が返る。
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def isZeroMyNat : MyNat → Bool := fun n =>
   match n with
@@ -424,7 +424,7 @@ def isZeroMyNat : MyNat → Bool := fun n =>
     false
 -/
 
-/-! SOL 4.2 -/
+/-! SOL Intro1.inductive-types:2 -/
 
 def toN : MyNat → Nat := fun m =>
   match m with
@@ -437,7 +437,7 @@ def toN : MyNat → Nat := fun m =>
     2
 -/
 
-/-! SOL 4.1 -/
+/-! SOL Intro1.inductive-types:1 -/
 
 def myThree : MyNat := MyNat.succ (MyNat.succ (MyNat.succ MyNat.zero))
 
@@ -449,7 +449,7 @@ def myThree : MyNat := MyNat.succ (MyNat.succ (MyNat.succ MyNat.zero))
 `add m .zero => m` の枝に入るので、`myThree` そのものが返る。
 -/
 
-/-! SOL 4.2 -/
+/-! SOL Intro1.inductive-types:2 -/
 
 inductive Two where
   | a
@@ -471,7 +471,7 @@ def ofBool : Bool → Two := fun b =>
     true
 -/
 
-/-! SOL 4.3 -/
+/-! SOL Intro1.inductive-types:3 -/
 
 def g1 : Two → Bool := fun t =>
   match t with
@@ -499,7 +499,7 @@ def g4 : Two → Bool := fun t =>
 ちょうど対応表の書き方になっている。
 -/
 
-/-! SOL 4.4 -/
+/-! SOL Intro1.inductive-types:4 -/
 
 def mul : MyNat → MyNat → MyNat := fun m n =>
   match n with
@@ -515,7 +515,7 @@ def mul : MyNat → MyNat → MyNat := fun m n =>
 -/
 
 
-/-! SOL 4.5 -/
+/-! SOL Intro1.inductive-types:5 -/
 
 def ofN : Nat → MyNat := fun n =>
   match n with
@@ -530,7 +530,7 @@ def ofN : Nat → MyNat := fun n =>
 `ofN 3` は `succ (succ (succ zero))`、それを `toN` で戻すと `3`。
 -/
 
-/-! SOL 5.1 -/
+/-! SOL Intro1.structures:1 -/
 
 def moveRight (p : Point) : Point :=
   Point.mk (Point.x p + 1) (Point.y p)
@@ -541,7 +541,7 @@ def moveRight (p : Point) : Point :=
     2
 -/
 
-/-! SOL 5.1 -/
+/-! SOL Intro1.structures:1 -/
 
 structure Circle where
   center : Point
@@ -561,7 +561,7 @@ structure Circle where
 構成子 `mk` と、フィールドごとの取り出し関数が自動で定義されている。
 -/
 
-/-! SOL 5.2 -/
+/-! SOL Intro1.structures:2 -/
 
 #eval Point.y (Point.mk 1 2)
 
@@ -577,7 +577,7 @@ structure Circle where
 同じ値。後ろに付けるドットは `Point.y (…)` の略記である。
 -/
 
-/-! SOL 5.3 -/
+/-! SOL Intro1.structures:3 -/
 
 structure Rect where
   corner : Point
@@ -596,7 +596,7 @@ def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩
 -/
 
 
-/-! SOL 5.1 -/
+/-! SOL Intro1.structures:1 -/
 
 #check Pair.mk true 0
 
@@ -606,7 +606,7 @@ def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩
 第1引数 `true` から `α = Bool`、第2引数 `0` から `β = Nat` に決まる。
 -/
 
-/-! SOL 5.2 -/
+/-! SOL Intro1.structures:2 -/
 
 def pointedBool : PointedType := ⟨Bool, true⟩
 
@@ -619,7 +619,7 @@ def pointedBool : PointedType := ⟨Bool, true⟩
 依存関数の部分適用である。
 -/
 
-/-! SOL 5.3 -/
+/-! SOL Intro1.structures:3 -/
 
 def curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat := fun a b => F ⟨a, b⟩
 
@@ -631,12 +631,12 @@ def uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat := fun p => G p.fs
     7
 
 `curryP` は「1つずつ受け取って、組にしてから `F` に渡す」、`uncurryP` は
-「組を受け取って、成分にばらしてから `G` に渡す」。3節の「2引数関数の正体は
+「組を受け取って、成分にばらしてから `G` に渡す」。[3節](#sec-Intro1.functions)の「2引数関数の正体は
 1引数関数の入れ子」という話の、行き来を自分で書いたことになる。
 -/
 
 
-/-! SOL 6.1 -/
+/-! SOL Intro1.dependent-functions:1 -/
 
 def makePair (α β : Type) (a : α) (b : β) : Pair α β := Pair.mk a b
 
@@ -646,7 +646,7 @@ def makePair (α β : Type) (a : α) (b : β) : Pair α β := Pair.mk a b
     makePair Nat Bool 3 true : Pair Nat Bool
 -/
 
-/-! SOL 6.2 -/
+/-! SOL Intro1.dependent-functions:2 -/
 
 def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
 
@@ -656,7 +656,7 @@ def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
     swapAt Nat Bool : Nat → Bool → Pair Bool Nat
 -/
 
-/-! SOL 6.1 -/
+/-! SOL Intro1.dependent-functions:1 -/
 
 #check idAt (Nat → Nat)
 
@@ -675,7 +675,7 @@ def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
 `idAt (Nat → Nat) double` は `double` そのもの。
 -/
 
-/-! SOL 6.2 -/
+/-! SOL Intro1.dependent-functions:2 -/
 
 #check idAt Signal
 
@@ -683,7 +683,7 @@ def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
     idAt Signal : Signal → Signal
 -/
 
-/-! SOL 6.3 -/
+/-! SOL Intro1.dependent-functions:3 -/
 
 def constAt (A B : Type) (a : A) : B → A := fun _ => a
 
@@ -702,7 +702,7 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 -/
 
 
-/-! SOL 6.1 -/
+/-! SOL Intro1.dependent-functions:1 -/
 
 #check Map Nat
 
@@ -712,7 +712,7 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 2引数のうち1つだけ渡したので、「残り1つの型を受け取って型を返す」部分適用。
 -/
 
-/-! SOL 7.1 -/
+/-! SOL Intro1.dot-notation:1 -/
 
 def Point.zeroX (p : Point) : Point := .mk 0 p.y
 
@@ -722,7 +722,7 @@ def Point.zeroX (p : Point) : Point := .mk 0 p.y
     0
 -/
 
-/-! SOL 7.1 -/
+/-! SOL Intro1.dot-notation:1 -/
 
 #eval (Point.mk 1 2).swap.swap.x
 
@@ -739,7 +739,7 @@ def Point.zeroX (p : Point) : Point := .mk 0 p.y
     1
 -/
 
-/-! SOL 7.2 -/
+/-! SOL Intro1.dot-notation:2 -/
 
 example : Signal := .red
 
@@ -748,7 +748,7 @@ example : Signal := .red
 -/
 
 
-/-! SOL 8.1 -/
+/-! SOL Intro1.exercises:1 -/
 
 def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
 
@@ -760,7 +760,7 @@ def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
 `flipNat F 3 10 = F 10 3 = 10 - 3`。
 -/
 
-/-! SOL 8.2 -/
+/-! SOL Intro1.exercises:2 -/
 
 def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
@@ -772,7 +772,7 @@ def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 `1 → 2 → 4 → 8`。
 -/
 
-/-! SOL 8.3 -/
+/-! SOL Intro1.exercises:3 -/
 
 def boolToSignal : Bool → Signal := fun b =>
   match b with
@@ -794,7 +794,7 @@ def signalToBool : Signal → Bool := fun s =>
 2点の型と3点の型なので、両方向の往復が恒等にはなりようがない）。
 -/
 
-/-! SOL 8.4 -/
+/-! SOL Intro1.exercises:4 -/
 
 def mapPoint (F : Nat → Nat) (p : Point) : Point := ⟨F p.x, F p.y⟩
 
@@ -804,7 +804,7 @@ def mapPoint (F : Nat → Nat) (p : Point) : Point := ⟨F p.x, F p.y⟩
     6
 -/
 
-/-! SOL 8.5 -/
+/-! SOL Intro1.exercises:5 -/
 
 def swapMySum (A B : Type) : MySum A B → MySum B A := fun x =>
   match x with
@@ -820,7 +820,7 @@ def swapMySum (A B : Type) : MySum A B → MySum B A := fun x =>
 `fromSum` は `.inr` の枝で `0` を返す。
 -/
 
-/-! SOL 8.6 -/
+/-! SOL Intro1.exercises:6 -/
 
 def pointedOf (A : Type) (a : A) : PointedType := ⟨A, a⟩
 
@@ -832,7 +832,7 @@ def pointedOf (A : Type) (a : A) : PointedType := ⟨A, a⟩
 `pointedNat = pointedOf Nat 0`、`pointedBool = pointedOf Bool true` である。
 -/
 
-/-! SOL 8.7 -/
+/-! SOL Intro1.exercises:7 -/
 
 def applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A :=
   match n with
@@ -847,7 +847,7 @@ def applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A :=
 `iterate3` の一般化。`applyN Nat double 3 = iterate3 double` である。
 -/
 
-/-! SOL 8.8 -/
+/-! SOL Intro1.exercises:8 -/
 
 def diag (A : Type) (a : A) : Pair A A := ⟨a, a⟩
 

@@ -12,10 +12,33 @@ class と instance、型の族としての `Fin`、記法の自作、集合 `Set
 読み方は今までどおり——項を見たら型を推測し、表示の枠で答え合わせをする。
 -/
 
-/-! ## 1. class と instance
+/-! ## 1. class と instance {#sec-Intro2.classes}
 
 `class` は structure の変種で、「この型の項は `instance` として登録しておき、
 必要になったら Lean が登録簿から探して使う」という使い方を宣言したもの。
+
+[`Intro1.lean` 5節](#sec-Intro1.structures)の点付き集合 `PointedType` を
+思い出そう。あれは「型 `carrier` と、その要素 `point`」を**1つの項に束ねて**
+持ち歩く structure だった。同じ内容は、`class` では視点を変えてこう書ける:
+-/
+
+class Pointed (α : Type) where
+  point : α
+
+#check Pointed
+
+/-!
+    Pointed (α : Type) : Type
+
+`carrier` がフィールドから**パラメータ** `α` に昇格し、フィールドは点だけに
+なった。`PointedType` の項 `⟨Nat, 0⟩` が束ねていた情報は、こちらでは
+「パラメータ `Nat`」と「登録する中身 `0`」に分かれる。つまり `PointedType` が
+「点付きの型」というデータを**持ち歩く**のに対し、`Pointed α` は「既にある
+型 `α` に点を**登録する**」ための器である——そして登録簿に載せるからこそ、
+束ねて運ばなくても機械が見つけてくれる、というのがこの節の主題である。
+
+同じ形で、点に「ゼロ」という意図の名前を付けたのが、この節で使っていく
+`HasZero` である:
 -/
 
 class HasZero (α : Type) where
@@ -44,7 +67,7 @@ instance : HasZero Nat where
 型を見ると、インスタンス引数 `[i : α]` を受け取ってそのまま返すだけの関数で、
 「探す」仕事は括弧 `[ ]` の仕組みがやっていることが分かる。
 
-これで括弧が3種類そろった。`Intro1.lean` 6節の `( )`（明示）・`{ }`（暗黙）に
+これで括弧が3種類そろった。[`Intro1.lean` 6節](#sec-Intro1.dependent-functions)の `( )`（明示）・`{ }`（暗黙）に
 加えて、`[inst : C α]` が**インスタンス引数**である——他の引数との単一化だけでは
 決まらず、エラボレータが `instance` として登録された項の中から探索して埋める。
 -/
@@ -105,7 +128,7 @@ def zeroPair (α : Type) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.z
 /-! ### 自作型にもインスタンスを与える
 
 クラスの効き目は、**あとから自分の型を仲間に入れられる**ことにある。
-`Intro1.lean` 5節で作った `Point` にゼロを登録してみる。
+[`Intro1.lean` 5節](#sec-Intro1.structures)で作った `Point` にゼロを登録してみる。
 -/
 
 instance : HasZero Point where
@@ -149,7 +172,7 @@ example : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point
 
 /-! ### 記法もクラスで動いている
 
-`Intro1.lean` 3節の「正確には」で、「`+` の正体は汎用の演算で、どの型の足し算かは
+[`Intro1.lean` 3節](#sec-Intro1.functions)の「正確には」で、「`+` の正体は汎用の演算で、どの型の足し算かは
 登録簿から決まる」と述べた。その登録簿が、標準ライブラリのクラス `Add` である:
 
     class Add (α : Type u) where
@@ -186,7 +209,7 @@ instance : Add Point where
 記法まで使えるようになる。登録簿の検索は、このように**連鎖**する。
 
 数字のリテラルにも同じ仕組みがあり、そちらは `OfNat` というクラスが担っている
-（2節の補足で、`(2 : Fin 3)` のようなリテラルが通る理由として再登場する）。
+（[2節](#sec-Intro2.families-fin)の補足で、`(2 : Fin 3)` のようなリテラルが通る理由として再登場する）。
 
 なお、この教材の `HasZero` は練習用の自作クラスで、記法とは独立している
 （登録しても `0` と書けるようにはならない）。mathlib にはよく似た `Zero` という
@@ -207,11 +230,11 @@ instance : Add Point where
    を登録し、`#eval (Point.mk 2 3 * Point.mk 4 5).x` の値を予想してから確かめよ。
 -/
 
-/-! ## 2. 型の族と Fin
+/-! ## 2. 型の族と Fin {#sec-Intro2.families-fin}
 
-`Intro1.lean` 6節の依存関数型が本領を発揮するのは、**型を返す関数**（型の族）と
+[`Intro1.lean` 6節](#sec-Intro1.dependent-functions)の依存関数型が本領を発揮するのは、**型を返す関数**（型の族）と
 組み合わせたときである。標準ライブラリの `Fin` は「`n` 未満の番号の型」を
-返す関数である（この型の中身——値と証明の組——は `CH.lean` の6節で見た）。
+返す関数である（この型の中身——値と証明の組——は [`CH.lean` の7節](#sec-CH.dependent-sums)で見た）。
 -/
 
 #check Fin
@@ -261,7 +284,7 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 （`0` と書けるのは `Fin` 用のリテラルの読みが登録されているからで、
 すぐ下の補足で詳しく見る。）
 
-`CH.lean` 6節の `last` と見比べてほしい。`first` の値は常に 0 番なので
+[`CH.lean` 7節](#sec-CH.dependent-sums)の `last` と見比べてほしい。`first` の値は常に 0 番なので
 証明なしで書けるが、`last` は値 `n` が型の上限すれすれに依存するぶん、
 `n < n + 1` の証明を添える必要があった。
 -/
@@ -274,16 +297,16 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 因子が点ごとに変わってよい一般化になっている。
 対になる**族の直和** ∐ₐ P a——「どの a か」の札付きで各 P a の要素を集めたもの——に
 当たる**依存和** `(a : α) × P a` もあり、`Pair`（直積）と `MySum`（直和）の
-共通の一般化である（`CH.lean` の6節で主役だったもの）。
+共通の一般化である（[`CH.lean` の7節](#sec-CH.dependent-sums)で主役だったもの）。
 -/
 
 /-!
 
 「`Fin 3` は 3 未満の番号の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、
 「自然数 `2` はそのまま `Fin 3` の項でもあるのか」と考えたくなる。そうではない。
-`Intro1.lean` 1節で見たとおり**項はちょうど1つの型を持ち**、型どうしは集合のように重ならない
+[`Intro1.lean` 1節](#sec-Intro1.terms-types)で見たとおり**項はちょうど1つの型を持ち**、型どうしは集合のように重ならない
 ——集合のアナロジーの限界がここにある。`Fin 3` は `Nat` の部分集合ではなく、
-`Nat` とは**別に作られた型**である（作りは `CH.lean` の6節で見た）。
+`Nat` とは**別に作られた型**である（作りは [`CH.lean` の7節](#sec-CH.dependent-sums)で見た）。
 -/
 
 /-! CALLOUT_START optional -/
@@ -306,7 +329,7 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 
 /-!
 これは数字 `2` が**記法**であり、期待される型に応じて別々の項に読まれるからである
-（`Fin` 用の読み方が instance として登録されている——1節で見た仕組みである）。
+（`Fin` 用の読み方が instance として登録されている——[1節](#sec-Intro2.classes)で見た仕組みである）。
 `(2 : Nat)` は自然数の項（それ自体 `Nat.succ (Nat.succ Nat.zero)` の読み替え
 ——数字はもともと記法である）、`(2 : Fin 3)` は `Fin 3` の「2 番」の項で、
 **同じ字面の、別の項**なのである。所属判定をしているのではない証拠に、
@@ -364,7 +387,7 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 
 なお、リテラルの読みの正体は `OfNat` というクラスで、`(2 : Fin 3)` は
 `OfNat.ofNat 2` の略記、`Fin n` 用の instance が「`n` で割った余り」として
-実装されている。1節で見た「記法はクラスで動く」がここでも働いている。
+実装されている。[1節](#sec-Intro2.classes)で見た「記法はクラスで動く」がここでも働いている。
 -/
 
 /-! CALLOUT_END -/
@@ -378,14 +401,14 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 4. （補足の確認）`#eval (first 5).val + (2 : Fin 3).val` の値を予想してから確かめよ。
 -/
 
-/-! ## 3. 記法の自作 — syntax と macro_rules
+/-! ## 3. 記法の自作 — syntax と macro_rules {#sec-Intro2.notation}
 
 `Top.lean` は `⋃₀ S` や `{a | p a}` といった数学記法を自作している。仕組みは:
 
 * `syntax` — 「この書き方を受け付けよ」と構文を追加する
 * `macro_rules` — 「その書き方はこの項の略記である」と展開を与える
 
-試しに、`Intro1.lean` 5節の `Pair` のための記法を作ってみる。
+試しに、[`Intro1.lean` 5節](#sec-Intro1.structures)の `Pair` のための記法を作ってみる。
 -/
 
 syntax "⟪" term ", " term "⟫" : term
@@ -423,7 +446,7 @@ macro_rules
    予想してから確かめよ。
 -/
 
-/-! ## 4. 集合 — `Set` を自作する
+/-! ## 4. 集合 — `Set` を自作する {#sec-Intro2.sets}
 
 `Top.lean` は、数学でいう「集合」の上に位相を組み立てる。その集合を
 ここで作ってしまおう。`CH.lean` で身につけた証明の書き方の、最初の実戦でもある。
@@ -440,7 +463,7 @@ def Set (X : Type) : Type := X → Prop
 /-!
     Set (X : Type) : Type
 
-2節の `Fin` と同じ、「型を受け取って型を返す関数」である。
+[2節](#sec-Intro2.families-fin)の `Fin` と同じ、「型を受け取って型を返す関数」である。
 
 述語 `p` を集合とみなすときの「宣言」も1つ用意する。定義上は恒等関数だが、
 「述語を集合と読み替えました」という意思表示をこの名前が担う:
@@ -453,7 +476,7 @@ def setOf {X : Type} (p : X → Prop) : Set X := p
 /-!
     setOf {X : Type} (p : X → Prop) : Set X
 
-数学の内包記法 `{a | p a}` も、3節の道具でそのまま自作できる:
+数学の内包記法 `{a | p a}` も、[3節](#sec-Intro2.notation)の道具でそのまま自作できる:
 -/
 
 syntax "{" ident " | " term "}" : term
@@ -463,7 +486,7 @@ macro_rules
 
 /-!
 所属の記号 `∈`（`\in` と打つ）は、標準ライブラリの記法用クラス `Membership` に
-instance 登録すると使えるようになる——1節で見た「記法はクラスで動く」の実戦である。
+instance 登録すると使えるようになる——[1節](#sec-Intro2.classes)で見た「記法はクラスで動く」の実戦である。
 中身は「集合（＝述語）`s` に点 `a` を適用する」だけ。
 まずクラスそのものを見ておく:
 -/
@@ -480,7 +503,7 @@ instance 登録すると使えるようになる——1節で見た「記法は�
 /-! ### 補足（初読は飛ばしてよい）: `Membership` の宇宙変数と `outParam`
 
 表示は宇宙変数付きだが、この教材の範囲ではどれも `Type` と読んでよい
-（`Intro1.lean` 1節）。`outParam` は instance 探索へのヒントで、
+（[`Intro1.lean` 1節](#sec-Intro1.terms-types)）。`outParam` は instance 探索へのヒントで、
 「`∈` の右の入れ物の型 `γ` が分かれば、左の要素の型 `α` はそこから自動で
 決まる」という指定である。
 -/
@@ -537,8 +560,8 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
     Set.subset_refl {X : Type} (s : Set X) : s ⊆ s
 
 `s ⊆ s` を展開すれば `∀ a, a ∈ s → a ∈ s`——各点で「`p → p`」を示すだけ
-（`CH.lean` 1節の世界そのもの）である。名前を `Set.〜` にしたのは
-ドット記法（`Intro1.lean` 7節）のためで、この命名の仕組みは次節で説明する。
+（[`CH.lean` 2節](#sec-CH.implication)の世界そのもの）である。名前を `Set.〜` にしたのは
+ドット記法（[`Intro1.lean` 7節](#sec-Intro1.dot-notation)）のためで、この命名の仕組みは次節で説明する。
 
 `Top.lean` はこの `Set` を土台に、`∩`・`∪`・補集合・像・逆像・集合族……と
 道具を足していく。
@@ -551,8 +574,8 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
        theorem Set.subset_trans {X : Type} {s t u : Set X}
            (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
 
-2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は `CH.lean`
-   9節の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
+2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [`CH.lean`
+   0節](#sec-CH.reading-proofs)の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
 3. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
    `theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat` を書け
    （各点の証明は `True.intro`。束縛子 `_n` の `_` は「使わない」印である）。
@@ -560,9 +583,9 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
    `#check (3 : Nat) ∈ odds` の表示を予想してから確かめよ。
 -/
 
-/-! ## 5. namespace — 名前の接頭辞
+/-! ## 5. namespace — 名前の接頭辞 {#sec-Intro2.namespaces}
 
-`Intro1.lean` 7節のドット記法や、前節の `Set.subset_refl` という名前を
+[`Intro1.lean` 7節](#sec-Intro1.dot-notation)のドット記法や、前節の `Set.subset_refl` という名前を
 支えている**名前空間**の仕組みを見ておく。
 `namespace N … end N` で囲うと、中の宣言の本名に `N.` が付く:
 -/
