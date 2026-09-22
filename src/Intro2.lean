@@ -37,30 +37,20 @@ class Pointed (α : Type) where
 型 `α` に点を**登録する**」ための器である——そして登録簿に載せるからこそ、
 束ねて運ばなくても機械が見つけてくれる、というのがこの節の主題である。
 
-同じ形で、点に「ゼロ」という意図の名前を付けたのが、この節で使っていく
-`HasZero` である:
+登録は `instance` 宣言で行う:
 -/
 
-class HasZero (α : Type) where
-  zero : α
-
-#check HasZero
+instance : Pointed Nat where
+  point := 0
 
 /-!
-    HasZero (α : Type) : Type
--/
-
-instance : HasZero Nat where
-  zero := 0
-
-/-!
-`HasZero α` の項は「`α` のどの項をゼロと呼ぶかの指定」で、
-`instance` 宣言によって `Nat` のゼロとして `0` を登録した。
+`Pointed α` の項は「`α` のどの項を**基点**と呼ぶかの指定」で、
+`instance` 宣言によって `Nat` の基点として `0` を登録した。
 
 `instance` は**名前を付けない宣言**である（中身は `def` と同じで、
 宣言と同時に登録簿へ載る）。使う側は登録簿から探すだけで名前で呼ばないから、
-名前を書く必要がない。実際には Lean が `instHasZeroNat` のような名前を
-自動で付けており、`instance myZero : HasZero Nat where …` と
+名前を書く必要がない。実際には Lean が `instPointedNat` のような名前を
+自動で付けており、`instance myPoint : Pointed Nat where …` と
 自分で名前を付けることもできる。
 
 登録簿から探す操作そのものを項として書いたのが `inferInstance` である。
@@ -89,16 +79,16 @@ instance : HasZero Nat where
 載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。
 -/
 
-example : HasZero Nat := inferInstance
+example : Pointed Nat := inferInstance
 
 /-!
 登録してあるので、これは見つかって受理される（`example` は受理されると
 Infoview には何も表示しない）。登録していない型では失敗する:
 
-    example : HasZero Bool := inferInstance
+    example : Pointed Bool := inferInstance
 
     error(lean.synthInstanceFailed): failed to synthesize instance of type class
-      HasZero Bool
+      Pointed Bool
 
     Hint: Type class instance resolution failures can be inspected with the
     `set_option trace.Meta.synthInstance true` command.
@@ -107,19 +97,19 @@ Infoview には何も表示しない）。登録していない型では失敗�
 以後の引用ではどちらも省略することがある。）
 -/
 
-/-- インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。
-`zeroPair Nat` と書くだけで、`HasZero Nat` の項は登録簿から自動で渡される。 -/
-def zeroPair (α : Type) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.zero⟩
+/-- インスタンス引数の使いどころ: 「基点が登録されたどんな型でも」働く関数が書ける。
+`pointPair Nat` と書くだけで、`Pointed Nat` の項は登録簿から自動で渡される。 -/
+def pointPair (α : Type) [Pointed α] : Pair α α := ⟨Pointed.point, Pointed.point⟩
 
-#check zeroPair
+#check pointPair
 
 /-!
-    zeroPair (α : Type) [HasZero α] : Pair α α
+    pointPair (α : Type) [Pointed α] : Pair α α
 
-`(zeroPair Nat).fst` の値は、登録簿に載せた `zero`——つまり `0`——のはずである:
+`(pointPair Nat).fst` の値は、登録簿に載せた `point`——つまり `0`——のはずである:
 -/
 
-#eval (zeroPair Nat).fst
+#eval (pointPair Nat).fst
 
 /-!
     0
@@ -128,22 +118,22 @@ def zeroPair (α : Type) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.z
 /-! ### 自作型にもインスタンスを与える
 
 クラスの効き目は、**あとから自分の型を仲間に入れられる**ことにある。
-[`Intro1.lean` 5節](#sec-Intro1.structures)で作った `Point` にゼロを登録してみる。
+[`Intro1.lean` 5節](#sec-Intro1.structures)で作った `Point` に基点（原点）を登録してみる。
 -/
 
-instance : HasZero Point where
-  zero := ⟨0, 0⟩
+instance : Pointed Point where
+  point := ⟨0, 0⟩
 
-#check zeroPair Point
+#check pointPair Point
 
 /-!
-    zeroPair Point : Pair Point Point
+    pointPair Point : Pair Point Point
 
-登録した瞬間から、`HasZero` を使う汎用の道具がすべて `Point` でも
+登録した瞬間から、`Pointed` を使う汎用の道具がすべて `Point` でも
 使えるようになった。
 -/
 
-#eval (zeroPair Point).fst.x
+#eval (pointPair Point).fst.x
 
 /-!
     0
@@ -152,23 +142,46 @@ instance : HasZero Point where
 /-! ### インスタンスを受け取る定理
 
 インスタンス引数は `def` だけでなく `theorem` にも書ける。
-「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:
+「基点が登録されたどんな型でも成り立つ」一般的な定理が作れる:
 -/
 
-theorem zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
+theorem pointPair_fst (α : Type) [Pointed α] : (pointPair α).fst = Pointed.point := rfl
 
-#check zeroPair_fst
+#check pointPair_fst
 
 /-!
-    zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero
+    pointPair_fst (α : Type) [Pointed α] : (pointPair α).fst = Pointed.point
 
-使うときは `α` を指定するだけでよく、`HasZero α` の証明（項）は登録簿から
+使うときは `α` を指定するだけでよく、`Pointed α` の証明（項）は登録簿から
 自動で供給される。
 -/
 
 -- 登録済みの型なら、どれにでも同じ定理が適用できる
-example : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
-example : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point
+example : (pointPair Nat).fst = Pointed.point := pointPair_fst Nat
+example : (pointPair Point).fst = Pointed.point := pointPair_fst Point
+
+/-! ### 積に構造を誘導する
+
+登録簿のもう1つの効き目は、**インスタンスからインスタンスを作れる**ことである。
+基点付きの型が2つあれば、その積にも「基点の組」という自然な基点が決まる。
+この「積への構造の誘導」も、前提にインスタンス引数を取る instance として
+登録できる:
+-/
+
+instance {α β : Type} [Pointed α] [Pointed β] : Pointed (Pair α β) where
+  point := ⟨Pointed.point, Pointed.point⟩
+
+#eval (Pointed.point : Pair Nat Point).snd.x
+
+/-!
+    0
+
+`Pair Nat Point` の基点はどこにも直接は登録していないのに、見つかった。
+探索が**連鎖**するからである: `Pointed (Pair Nat Point)` を探す → 上の誘導
+instance が形に合う → その前提 `Pointed Nat`・`Pointed Point` をさらに
+登録簿から探す——と、機械が自動でつないでいく。`Extra.lean` の発展演習で
+「積空間 `X × Y` に位相が自動で載る」のも、これと同じ仕組みである。
+-/
 
 /-! ### 記法もクラスで動いている
 
@@ -211,22 +224,33 @@ instance : Add Point where
 数字のリテラルにも同じ仕組みがあり、そちらは `OfNat` というクラスが担っている
 （[2節](#sec-Intro2.families-fin)の補足で、`(2 : Fin 3)` のようなリテラルが通る理由として再登場する）。
 
-なお、この教材の `HasZero` は練習用の自作クラスで、記法とは独立している
-（登録しても `0` と書けるようにはならない）。mathlib にはよく似た `Zero` という
-クラスがあり、そちらは `OfNat` への橋渡しを備えているので、
-登録すると `0` と書けるようになる。
+なお、この教材の `Pointed` は練習用の自作クラスである。標準ライブラリにも
+同じ形のクラス `Inhabited`（フィールド名は `default`）があり、
+「少なくとも1つ項を持つ型」の既定値として広く使われている。
 -/
 
 /-! ### ✏ 練習
 
-1. 本文で `HasZero Bool` が未登録のため `inferInstance` が失敗する例を見た。
-   `instance : HasZero Bool where zero := false` を登録し、
-   `example : HasZero Bool := inferInstance` と `#check zeroPair Bool` が
-   通るようになることを確かめよ。
-2. 前問の instance を登録した状態で、
-   `example : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool` が
-   通ることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。
-3. `Add` にならって `instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩`
+本文で `Pointed` に対して行った操作を、**二項演算付きの型**（マグマと
+呼ばれる）で一通り繰り返す。
+
+1. 本文で `Pointed Bool` が未登録のため `inferInstance` が失敗する例を見た。
+   `instance : Pointed Bool where point := false` を登録し、
+   `example : Pointed Bool := inferInstance` と
+   `example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool` が
+   通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。
+2. `Pointed` と同じ手順でマグマを自作する:
+   `class Magma (α : Type) where op : α → α → α` を宣言し、
+   `instance : Magma Nat where op := Nat.add` を登録して、
+   `example : Magma Nat := inferInstance` が通ることを確かめよ。
+3. `pointPair` にならって、汎用関数
+   `opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a` を書き、
+   `#eval opSelf Nat 3` の値を予想してから確かめよ。
+4. 本文の「積に構造を誘導する」にならって、成分ごとに演算する
+   `instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)` を登録し、
+   `#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd` の値を
+   予想してから確かめよ（探索の連鎖まで含めて、`Pointed` と同じに動く）。
+5. `Add` にならって `instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩`
    を登録し、`#eval (Point.mk 2 3 * Point.mk 4 5).x` の値を予想してから確かめよ。
 -/
 

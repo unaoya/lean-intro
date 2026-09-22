@@ -591,7 +591,7 @@ inductive False : Prop</code></pre>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem noContra {p q : Prop} : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</li>
-<li><code>theorem dni {p : Prop} : p → ¬¬p</code> を書け（<code>¬¬p</code> を<strong>示す</strong>向き。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <a href="top.html#sec-Top.sets"><code>Top.lean</code> の1節</a> <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</li>
+<li><code>theorem dni {p : Prop} : p → ¬¬p</code> を書け（<code>¬¬p</code> を<strong>示す</strong>向き。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <a href="top.html#sec-Top.sets"><code>Top.lean</code> の2節</a> <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</li>
 <li><code>example : ¬False := fun h =&gt; h</code> が通ることを確かめよ（<code>¬False</code> は <code>False → False</code>——恒等関数が証明になる）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
@@ -602,7 +602,7 @@ inductive False : Prop</code></pre>
 <details class="sol"><summary>解答 2</summary>
 <pre class="lean"><code><span class="kw">theorem</span> dni {p : <span class="sort">Prop</span>} : p → ¬¬p := <span class="kw">fun</span> hp hnp =&gt; hnp hp</code></pre>
 <p><code>¬¬p</code> は <code>(p → False) → False</code>。<code>hnp : p → False</code> を受け取って <code>hp</code> に適用するだけである。</p>
-<p>逆向き <code>¬¬p → p</code> は書けない。手持ちは <code>hnn : (p → False) → False</code> だけで、これをどう適用しても出てくるのは <code>False</code> であって、<code>p</code> の証明を<strong>作る</strong> 手段がない。この向きに必要なのが背理法（<code>Classical.byContradiction</code>）で、 <a href="top.html#sec-Top.sets"><code>Top.lean</code> 1節</a>の <code>compl_compl</code> がそれを使う。代償（公理への依存）は本文末尾の公理の節のとおり。</p>
+<p>逆向き <code>¬¬p → p</code> は書けない。手持ちは <code>hnn : (p → False) → False</code> だけで、これをどう適用しても出てくるのは <code>False</code> であって、<code>p</code> の証明を<strong>作る</strong> 手段がない。この向きに必要なのが背理法（<code>Classical.byContradiction</code>）で、 <a href="top.html#sec-Top.sets"><code>Top.lean</code> 2節</a>の <code>compl_compl</code> がそれを使う。代償（公理への依存）は本文末尾の公理の節のとおり。</p>
 </details>
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : ¬False := <span class="kw">fun</span> h =&gt; h</code></pre>
@@ -856,7 +856,7 @@ fun {α} {a b} h ↦
 <p>読み: 「すべての添字 <code>a_1</code> と <code>t : MyEq a a_1</code> について <code>motive a_1 t</code>」を結論するのに、要求される義務は <strong><code>refl</code> の場合の <code>motive a ⋯</code> ただ1つ</strong>である。「<code>refl</code> の場合だけ示せばよい」という形の中に、「そのとき添字は <code>a</code>」がすでに織り込まれている。<code>match</code> を使わず、この帰納法原理を直接使っても書ける:</p>
 <pre class="lean"><code><span class="kw">theorem</span> MyEq.symm&#x27; {α : <span class="sort">Type</span>} {a b : α} (h : MyEq a b) : MyEq b a :=
   MyEq.rec (motive := <span class="kw">fun</span> c _ =&gt; MyEq c a) MyEq.refl h</code></pre>
-<p>まとめると: <code>Signal</code> の <code>match</code> は場合の列挙だけだったが、添字つきの族への <code>match</code> は枝ごとに<strong>添字の情報が増える</strong>（依存パターンマッチと呼ばれる）。「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが <code>Eq</code> の帰納法原理 <code>Eq.rec</code>（代入原理）の中身であり、<a href="#sec-CH.tactics">12節</a>で見る <code>rw</code> が裏でやっていることの正体でもある。</p>
+<p>まとめると: <code>Signal</code> の <code>match</code> は場合の列挙だけだったが、添字つきの族への <code>match</code> は枝ごとに<strong>添字の情報が増える</strong>（依存パターンマッチと呼ばれる）。「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが <code>Eq</code> の帰納法原理 <code>Eq.rec</code>（代入原理）の中身であり、<a href="top.html#sec-Top.tactics"><code>Top.lean</code> 1節</a>で見る <code>rw</code> が裏でやっていることの正体でもある。</p>
 <p>型検査が両辺を計算してから比べる仕組みも <code>Eq</code> 専用ではないので、 <code>1 + 1 = 2</code> に当たる命題はやはり構成子だけで証明できる。</p>
 <pre class="lean"><code><span class="kw">example</span> : MyEq (1 + 1) 2 := .refl</code></pre>
 <p>しかも、<code>Eq</code> と同値であることを系の中で証明できる。 <code>p ↔ q</code>（同値、<code>\iff</code> と打つ）はここが初出だが、これも「<code>p → q</code> の証明と <code>q → p</code> の証明の組」という2フィールドの structure にすぎず、 <code>⟨→の証明, ←の証明⟩</code> で作れる。両方向とも「相手の等式で場合分けして、自分の構成子を置く」だけである。なお2つ目の <code>match h with | rfl =&gt; …</code> の <code>rfl</code> は、証明項ではなく<strong>パターン</strong>の位置にある——「<code>Eq</code> の唯一の構成子 <code>Eq.refl</code> の場合」を表す書き方である。</p>
@@ -868,7 +868,7 @@ fun {α} {a b} h ↦
 <pre class="quote"><code>myEq_iff_eq {α : Type} {a b : α} : MyEq a b ↔ a = b</code></pre>
 <p><code>propext : (p ↔ q) → p = q</code>（命題の外延性。<code>Top.lean</code> の3公理の1つ）まで使えば、同値であるにとどまらず、命題として<strong>等しい</strong>ことになる。</p>
 <pre class="lean"><code><span class="kw">example</span> {α : <span class="sort">Type</span>} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq</code></pre>
-<p>つまり2つ目の等式を作っても、衝突も分裂も起きず、同じものが増えるだけである。実際 <code>h : MyEq a b</code> を「<code>a = b</code> が証明できた」と解釈しても問題ない——上で示した同値 <code>myEq_iff_eq</code> が、その読み替えの正当化である。 <code>Eq</code> に残る特別さは論理の側にはなく、道具立ての側にある: <code>=</code> という記法や、<code>rw</code>・<code>simp</code> などのタクティク（<a href="#sec-CH.tactics">12節</a>で登場する、証明のもう1つの書き方の道具）は <code>Eq</code> に向けて作られているので、 <code>MyEq</code> では使えない。例えば <code>h : MyEq a b</code> で <code>rw [h]</code> とすると</p>
+<p>つまり2つ目の等式を作っても、衝突も分裂も起きず、同じものが増えるだけである。実際 <code>h : MyEq a b</code> を「<code>a = b</code> が証明できた」と解釈しても問題ない——上で示した同値 <code>myEq_iff_eq</code> が、その読み替えの正当化である。 <code>Eq</code> に残る特別さは論理の側にはなく、道具立ての側にある: <code>=</code> という記法や、<code>rw</code>・<code>simp</code> などのタクティク（<a href="top.html#sec-Top.tactics"><code>Top.lean</code> 1節</a>で登場する、証明のもう1つの書き方の道具）は <code>Eq</code> に向けて作られているので、 <code>MyEq</code> では使えない。例えば <code>h : MyEq a b</code> で <code>rw [h]</code> とすると</p>
 <pre class="quote"><code>error: Invalid rewrite argument: Expected an equality or iff proof
 or definition name, but `h` is a proof of
   MyEq a b</code></pre>
@@ -905,7 +905,7 @@ or definition name, but `h` is a proof of
 <p>ここまで「型検査」と一括りに呼んできた処理は、正確には2段階に分かれている。</p>
 <pre class="quote"><code>ソースコード
   → エラボレータ: 記法を展開し、省略された引数（暗黙引数・インスタンス引数）を
-    埋め、タクティク（12節）を実行して、省略のない項を組み立てる
+    埋め、タクティク（`Top.lean` 1節）を実行して、省略のない項を組み立てる
   → カーネル: 完成した項の型を、小さな規則集だけで検査する</code></pre>
 <p>賢い処理はすべて前段のエラボレータに、信頼はすべて後段のカーネルにある。この分業のおかげで、前段がどれだけ複雑でも——記法が凝っていても、インスタンス探索が連鎖しても、タクティクが長大でも——<strong>誤った項が組み上がればカーネルが拒否する</strong>。証明の信頼性を支えているのは、エラボレータの賢さではなくカーネルの単純さである。これまで「型検査が暗黙引数を埋める」のように言ってきた箇所も、正確にはエラボレータの仕事である。</p>
 <p>この2段構えが仮定の飛ばしをどう捕まえるのかを、数学でよくある誤りで見ておく。 <strong>補題を使うとき、その仮定の確認が甘い</strong>という誤りである。</p>
@@ -1024,60 +1024,7 @@ which has propositional type
   ∃ a, Q a</code></pre>
 <p>「命題の証明から、命題でないもの（ここでは <code>α</code> の項）を取り出すことは許されない」という規則の破れが報告されている。</p>
 </details>
-<h2 id="sec-CH.tactics">12. タクティク — 証明のもう1つの書き方</h2>
-<p>ここまで、証明はすべて項として直接書いてきた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 <a href="#sec-CH.products">3節</a>の <code>swapAnd</code> をタクティクで書き直してみる。</p>
-<pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">by</span>
-  <span class="kw">intro</span> h            <span class="cm">-- `fun h =&gt;` に対応</span>
-  <span class="kw">exact</span> ⟨h.2, h.1⟩   <span class="cm">-- この項をそのまま置く</span>
-
-<span class="kw">#check</span> swapAnd&#x27;</code></pre>
-<pre class="quote"><code>swapAnd&#x27; {p q : Prop} : p ∧ q → q ∧ p</code></pre>
-<p><code>intro</code> は <code>fun</code>、<code>exact</code> は項そのものに対応していて、どちらの流儀でも、最終的に出来上がるのは<strong>同じ型を持つ項</strong>である（字面まで同じになるとは限らない）。つまりタクティクは証明そのものではなく、<strong>項を組み立てるためのメタなプログラム</strong>であり、 <code>by</code> ブロックは実行されると項を生成する。検査されるのはあくまで生成された項のほう。生成結果は <code>#print</code> で見られる:</p>
-<pre class="lean"><code><span class="kw">#print</span> swapAnd&#x27;</code></pre>
-<pre class="quote"><code>theorem swapAnd&#x27; : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
-fun {p q} h ↦ ⟨h.right, h.left⟩</code></pre>
-<p>タクティクが生成した項は、<a href="#sec-CH.products">3節</a>で手書きした <code>swapAnd</code> と同じものである。</p>
-<p>だから<a href="#sec-CH.type-checking">10節</a>の話はそのまま当てはまる: タクティクで書いた証明も、出来上がった項が型検査を通ることで検証される。</p>
-<p>このファイルは対応を見るために項を直接書いてきたが、<code>Top.lean</code> は証明が長いのでタクティク主体で書かれている。出てくるものの早見表:</p>
-<ul>
-<li><code>intro h</code> — 仮定を1つ取り込む（<code>fun h =&gt;</code>）</li>
-<li><code>exact e</code> — 項 <code>e</code> でゴールを閉じる</li>
-<li><code>refine ⟨?_, ?_⟩</code> — 項の穴 <code>?_</code> を残して置き、穴を続きのゴールにする</li>
-<li><code>apply f</code> — 結論から逆向きに <code>f</code> を適用し、引数をゴールとして残す</li>
-<li><code>constructor</code> — ゴールの型の構成子を適用する</li>
-<li><code>cases h with …</code> — 帰納型の項 <code>h</code> を場合分けする（<code>match</code> に対応）</li>
-<li><code>rw [heq]</code> — 等式 <code>heq</code> でゴールを書き換える</li>
-<li><code>show t</code> — ゴールを定義上等しい形 <code>t</code> に読み替える</li>
-<li><code>have h : t := e</code> — 補助的な項に名前を付けて続ける</li>
-<li><code>by_cases h : p</code> — <code>p</code> が成り立つ場合と否定の場合に分ける（古典論理）</li>
-</ul>
-<h3>✏ 練習</h3>
-<ol>
-<li><code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、 <code>#print</code> で生成された項を本文の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
-<li><code>theorem idTac {p : Prop} : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
-</ol>
-<details class="sol"><summary>解答 1</summary>
-<pre class="lean"><code><span class="kw">theorem</span> swapOrTac {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">by</span>
-  <span class="kw">intro</span> h
-  <span class="kw">cases</span> h <span class="kw">with</span>
-  | inl hp =&gt; <span class="kw">exact</span> Or.inr hp
-  | inr hq =&gt; <span class="kw">exact</span> Or.inl hq
-
-<span class="kw">#print</span> swapOrTac</code></pre>
-<pre class="quote"><code>theorem swapOrTac : ∀ {p q : Prop}, p ∨ q → q ∨ p :=
-fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)</code></pre>
-<p>本文の <code>swapOr</code>（<code>match</code> で書いた項）と字面は一致しない——<code>cases</code> は <code>Or.casesOn</code> を直接置くからである。それでも型は同じ <code>p ∨ q → q ∨ p</code> であり、検査されるのはその型だけである。</p>
-</details>
-<details class="sol"><summary>解答 2</summary>
-<pre class="lean"><code><span class="kw">theorem</span> idTac {p : <span class="sort">Prop</span>} : p → p := <span class="kw">by</span>
-  <span class="kw">intro</span> h
-  <span class="kw">exact</span> h
-
-<span class="kw">#print</span> idTac</code></pre>
-<pre class="quote"><code>theorem idTac : ∀ {p : Prop}, p → p :=
-fun {p} h ↦ h</code></pre>
-<p>こちらは手書きの <code>fun h =&gt; h</code> と同じ字面に戻る。</p>
-</details>
+<p>これでこのファイルの仕事——対応を作り、検査の正体を見届けること——は終わりである。なお Lean には、証明を<strong>命令の列</strong>で書くもう1つの流儀（タクティク）があり、<code>Top.lean</code> の実戦ではそちらが主体になる。紹介は<a href="top.html#sec-Top.tactics"><code>Top.lean</code> 1節</a>で行う。</p>
 </main>
 <nav><span><a href="intro1.html">← Intro1</a></span><a href="index.html">目次</a><span><a href="intro2.html">Intro2 →</a></span></nav>
 </body>

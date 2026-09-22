@@ -83,60 +83,63 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">#check</span> Pointed</code></pre>
 <pre class="quote"><code>Pointed (α : Type) : Type</code></pre>
 <p><code>carrier</code> がフィールドから<strong>パラメータ</strong> <code>α</code> に昇格し、フィールドは点だけになった。<code>PointedType</code> の項 <code>⟨Nat, 0⟩</code> が束ねていた情報は、こちらでは「パラメータ <code>Nat</code>」と「登録する中身 <code>0</code>」に分かれる。つまり <code>PointedType</code> が「点付きの型」というデータを<strong>持ち歩く</strong>のに対し、<code>Pointed α</code> は「既にある型 <code>α</code> に点を<strong>登録する</strong>」ための器である——そして登録簿に載せるからこそ、束ねて運ばなくても機械が見つけてくれる、というのがこの節の主題である。</p>
-<p>同じ形で、点に「ゼロ」という意図の名前を付けたのが、この節で使っていく <code>HasZero</code> である:</p>
-<pre class="lean"><code><span class="kw">class</span> HasZero (α : <span class="sort">Type</span>) <span class="kw">where</span>
-  zero : α
-
-<span class="kw">#check</span> HasZero</code></pre>
-<pre class="quote"><code>HasZero (α : Type) : Type</code></pre>
-<pre class="lean"><code><span class="kw">instance</span> : HasZero Nat <span class="kw">where</span>
-  zero := 0</code></pre>
-<p><code>HasZero α</code> の項は「<code>α</code> のどの項をゼロと呼ぶかの指定」で、 <code>instance</code> 宣言によって <code>Nat</code> のゼロとして <code>0</code> を登録した。</p>
-<p><code>instance</code> は<strong>名前を付けない宣言</strong>である（中身は <code>def</code> と同じで、宣言と同時に登録簿へ載る）。使う側は登録簿から探すだけで名前で呼ばないから、名前を書く必要がない。実際には Lean が <code>instHasZeroNat</code> のような名前を自動で付けており、<code>instance myZero : HasZero Nat where …</code> と自分で名前を付けることもできる。</p>
+<p>登録は <code>instance</code> 宣言で行う:</p>
+<pre class="lean"><code><span class="kw">instance</span> : Pointed Nat <span class="kw">where</span>
+  point := 0</code></pre>
+<p><code>Pointed α</code> の項は「<code>α</code> のどの項を<strong>基点</strong>と呼ぶかの指定」で、 <code>instance</code> 宣言によって <code>Nat</code> の基点として <code>0</code> を登録した。</p>
+<p><code>instance</code> は<strong>名前を付けない宣言</strong>である（中身は <code>def</code> と同じで、宣言と同時に登録簿へ載る）。使う側は登録簿から探すだけで名前で呼ばないから、名前を書く必要がない。実際には Lean が <code>instPointedNat</code> のような名前を自動で付けており、<code>instance myPoint : Pointed Nat where …</code> と自分で名前を付けることもできる。</p>
 <p>登録簿から探す操作そのものを項として書いたのが <code>inferInstance</code> である。型を見ると、インスタンス引数 <code>[i : α]</code> を受け取ってそのまま返すだけの関数で、「探す」仕事は括弧 <code>[ ]</code> の仕組みがやっていることが分かる。</p>
 <p>これで括弧が3種類そろった。<a href="intro1.html#sec-Intro1.dependent-functions"><code>Intro1.lean</code> 6節</a>の <code>( )</code>（明示）・<code>{ }</code>（暗黙）に加えて、<code>[inst : C α]</code> が<strong>インスタンス引数</strong>である——他の引数との単一化だけでは決まらず、エラボレータが <code>instance</code> として登録された項の中から探索して埋める。</p>
 <pre class="lean"><code><span class="kw">#check</span> @inferInstance</code></pre>
 <pre class="quote"><code>@inferInstance : {α : Sort u_1} → [i : α] → α</code></pre>
 <p>表示に、初めて見る記法が2つある。頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は <code>Prop</code> と <code>Type</code> たちを束ねる書き方で、<code>Prop = Sort 0</code>、 <code>Type = Sort 1</code>、<code>Type 1 = Sort 2</code>、…と読む。つまりこの関数はどの宇宙の型に対しても使える、ということである。</p>
 <p>確かめてみる。次の <code>example</code> も名前を付けない宣言で、こちらは登録簿にも載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。</p>
-<pre class="lean"><code><span class="kw">example</span> : HasZero Nat := inferInstance</code></pre>
+<pre class="lean"><code><span class="kw">example</span> : Pointed Nat := inferInstance</code></pre>
 <p>登録してあるので、これは見つかって受理される（<code>example</code> は受理されると Infoview には何も表示しない）。登録していない型では失敗する:</p>
-<pre class="quote"><code>example : HasZero Bool := inferInstance
+<pre class="quote"><code>example : Pointed Bool := inferInstance
 
 error(lean.synthInstanceFailed): failed to synthesize instance of type class
-  HasZero Bool
+  Pointed Bool
 
 Hint: Type class instance resolution failures can be inspected with the
 `set_option trace.Meta.synthInstance true` command.</code></pre>
 <p>（<code>error(…)</code> の丸括弧はエラーの分類名。<code>Hint:</code> は調査のヒントで、以後の引用ではどちらも省略することがある。）</p>
-<p>インスタンス引数の使いどころ: 「ゼロが登録されたどんな型でも」働く関数が書ける。 <code>zeroPair Nat</code> と書くだけで、<code>HasZero Nat</code> の項は登録簿から自動で渡される。</p>
-<pre class="lean"><code><span class="kw">def</span> zeroPair (α : <span class="sort">Type</span>) [HasZero α] : Pair α α := ⟨HasZero.zero, HasZero.zero⟩
+<p>インスタンス引数の使いどころ: 「基点が登録されたどんな型でも」働く関数が書ける。 <code>pointPair Nat</code> と書くだけで、<code>Pointed Nat</code> の項は登録簿から自動で渡される。</p>
+<pre class="lean"><code><span class="kw">def</span> pointPair (α : <span class="sort">Type</span>) [Pointed α] : Pair α α := ⟨Pointed.point, Pointed.point⟩
 
-<span class="kw">#check</span> zeroPair</code></pre>
-<pre class="quote"><code>zeroPair (α : Type) [HasZero α] : Pair α α</code></pre>
-<p><code>(zeroPair Nat).fst</code> の値は、登録簿に載せた <code>zero</code>——つまり <code>0</code>——のはずである:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (zeroPair Nat).fst</code></pre>
+<span class="kw">#check</span> pointPair</code></pre>
+<pre class="quote"><code>pointPair (α : Type) [Pointed α] : Pair α α</code></pre>
+<p><code>(pointPair Nat).fst</code> の値は、登録簿に載せた <code>point</code>——つまり <code>0</code>——のはずである:</p>
+<pre class="lean"><code><span class="kw">#eval</span> (pointPair Nat).fst</code></pre>
 <pre class="quote"><code>0</code></pre>
 <h3>自作型にもインスタンスを与える</h3>
-<p>クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。 <a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>で作った <code>Point</code> にゼロを登録してみる。</p>
-<pre class="lean"><code><span class="kw">instance</span> : HasZero Point <span class="kw">where</span>
-  zero := ⟨0, 0⟩
+<p>クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。 <a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>で作った <code>Point</code> に基点（原点）を登録してみる。</p>
+<pre class="lean"><code><span class="kw">instance</span> : Pointed Point <span class="kw">where</span>
+  point := ⟨0, 0⟩
 
-<span class="kw">#check</span> zeroPair Point</code></pre>
-<pre class="quote"><code>zeroPair Point : Pair Point Point</code></pre>
-<p>登録した瞬間から、<code>HasZero</code> を使う汎用の道具がすべて <code>Point</code> でも使えるようになった。</p>
-<pre class="lean"><code><span class="kw">#eval</span> (zeroPair Point).fst.x</code></pre>
+<span class="kw">#check</span> pointPair Point</code></pre>
+<pre class="quote"><code>pointPair Point : Pair Point Point</code></pre>
+<p>登録した瞬間から、<code>Pointed</code> を使う汎用の道具がすべて <code>Point</code> でも使えるようになった。</p>
+<pre class="lean"><code><span class="kw">#eval</span> (pointPair Point).fst.x</code></pre>
 <pre class="quote"><code>0</code></pre>
 <h3>インスタンスを受け取る定理</h3>
-<p>インスタンス引数は <code>def</code> だけでなく <code>theorem</code> にも書ける。「ゼロが登録されたどんな型でも成り立つ」一般的な定理が作れる:</p>
-<pre class="lean"><code><span class="kw">theorem</span> zeroPair_fst (α : <span class="sort">Type</span>) [HasZero α] : (zeroPair α).fst = HasZero.zero := rfl
+<p>インスタンス引数は <code>def</code> だけでなく <code>theorem</code> にも書ける。「基点が登録されたどんな型でも成り立つ」一般的な定理が作れる:</p>
+<pre class="lean"><code><span class="kw">theorem</span> pointPair_fst (α : <span class="sort">Type</span>) [Pointed α] : (pointPair α).fst = Pointed.point := rfl
 
-<span class="kw">#check</span> zeroPair_fst</code></pre>
-<pre class="quote"><code>zeroPair_fst (α : Type) [HasZero α] : (zeroPair α).fst = HasZero.zero</code></pre>
-<p>使うときは <code>α</code> を指定するだけでよく、<code>HasZero α</code> の証明（項）は登録簿から自動で供給される。</p>
+<span class="kw">#check</span> pointPair_fst</code></pre>
+<pre class="quote"><code>pointPair_fst (α : Type) [Pointed α] : (pointPair α).fst = Pointed.point</code></pre>
+<p>使うときは <code>α</code> を指定するだけでよく、<code>Pointed α</code> の証明（項）は登録簿から自動で供給される。</p>
 <pre class="lean"><code><span class="cm">-- 登録済みの型なら、どれにでも同じ定理が適用できる</span>
-<span class="kw">example</span> : (zeroPair Nat).fst = HasZero.zero := zeroPair_fst Nat
-<span class="kw">example</span> : (zeroPair Point).fst = HasZero.zero := zeroPair_fst Point</code></pre>
+<span class="kw">example</span> : (pointPair Nat).fst = Pointed.point := pointPair_fst Nat
+<span class="kw">example</span> : (pointPair Point).fst = Pointed.point := pointPair_fst Point</code></pre>
+<h3>積に構造を誘導する</h3>
+<p>登録簿のもう1つの効き目は、<strong>インスタンスからインスタンスを作れる</strong>ことである。基点付きの型が2つあれば、その積にも「基点の組」という自然な基点が決まる。この「積への構造の誘導」も、前提にインスタンス引数を取る instance として登録できる:</p>
+<pre class="lean"><code><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Pointed α] [Pointed β] : Pointed (Pair α β) <span class="kw">where</span>
+  point := ⟨Pointed.point, Pointed.point⟩
+
+<span class="kw">#eval</span> (Pointed.point : Pair Nat Point).snd.x</code></pre>
+<pre class="quote"><code>0</code></pre>
+<p><code>Pair Nat Point</code> の基点はどこにも直接は登録していないのに、見つかった。探索が<strong>連鎖</strong>するからである: <code>Pointed (Pair Nat Point)</code> を探す → 上の誘導 instance が形に合う → その前提 <code>Pointed Nat</code>・<code>Pointed Point</code> をさらに登録簿から探す——と、機械が自動でつないでいく。<code>Extra.lean</code> の発展演習で「積空間 <code>X × Y</code> に位相が自動で載る」のも、これと同じ仕組みである。</p>
 <h3>記法もクラスで動いている</h3>
 <p><a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の「正確には」で、「<code>+</code> の正体は汎用の演算で、どの型の足し算かは登録簿から決まる」と述べた。その登録簿が、標準ライブラリのクラス <code>Add</code> である:</p>
 <pre class="quote"><code>class Add (α : Type u) where
@@ -153,28 +156,51 @@ Hint: Type class instance resolution failures can be inspected with the
 <aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>+</code> と数値リテラルの登録簿</h3>
 <p>正確に言うと、<code>+</code> の読み先は <code>HAdd</code>（左右の型が違ってもよい、さらに一般の版）なのだが、「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。</p>
 <p>数字のリテラルにも同じ仕組みがあり、そちらは <code>OfNat</code> というクラスが担っている（<a href="#sec-Intro2.families-fin">2節</a>の補足で、<code>(2 : Fin 3)</code> のようなリテラルが通る理由として再登場する）。</p>
-<p>なお、この教材の <code>HasZero</code> は練習用の自作クラスで、記法とは独立している（登録しても <code>0</code> と書けるようにはならない）。mathlib にはよく似た <code>Zero</code> というクラスがあり、そちらは <code>OfNat</code> への橋渡しを備えているので、登録すると <code>0</code> と書けるようになる。</p></aside>
+<p>なお、この教材の <code>Pointed</code> は練習用の自作クラスである。標準ライブラリにも同じ形のクラス <code>Inhabited</code>（フィールド名は <code>default</code>）があり、「少なくとも1つ項を持つ型」の既定値として広く使われている。</p></aside>
 <h3>✏ 練習</h3>
+<p>本文で <code>Pointed</code> に対して行った操作を、<strong>二項演算付きの型</strong>（マグマと呼ばれる）で一通り繰り返す。</p>
 <ol>
-<li>本文で <code>HasZero Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : HasZero Bool where zero := false</code> を登録し、 <code>example : HasZero Bool := inferInstance</code> と <code>#check zeroPair Bool</code> が通るようになることを確かめよ。</li>
-<li>前問の instance を登録した状態で、 <code>example : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool</code> が通ることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</li>
+<li>本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>example : Pointed Bool := inferInstance</code> と <code>example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</li>
+<li><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>example : Magma Nat := inferInstance</code> が通ることを確かめよ。</li>
+<li><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</li>
+<li>本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</li>
 <li><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
-<pre class="lean"><code><span class="kw">instance</span> : HasZero Bool <span class="kw">where</span>
-  zero := false
+<pre class="lean"><code><span class="kw">instance</span> : Pointed Bool <span class="kw">where</span>
+  point := false
 
-<span class="kw">example</span> : HasZero Bool := inferInstance
+<span class="kw">example</span> : Pointed Bool := inferInstance
 
-<span class="kw">#check</span> zeroPair Bool</code></pre>
-<pre class="quote"><code>zeroPair Bool : Pair Bool Bool</code></pre>
-<p>登録した瞬間から、<code>inferInstance</code> も <code>zeroPair Bool</code> のインスタンス引数の自動解決も通るようになる。</p>
+<span class="kw">example</span> : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code></pre>
+<p>登録した瞬間から、<code>inferInstance</code> の探索も、汎用関数 <code>pointPair</code> も、一般的な定理 <code>pointPair_fst</code> も、すべて <code>Bool</code> で使えるようになる。</p>
 </details>
 <details class="sol"><summary>解答 2</summary>
-<pre class="lean"><code><span class="kw">example</span> : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool</code></pre>
-<p><code>zeroPair_fst</code> は「ゼロが登録されたどんな型でも」成り立つ一般的な定理。 <code>Bool</code> を登録した瞬間から、その <code>Bool</code> での特殊化も使える。</p>
+<pre class="lean"><code><span class="kw">class</span> Magma (α : <span class="sort">Type</span>) <span class="kw">where</span>
+  op : α → α → α
+
+<span class="kw">instance</span> : Magma Nat <span class="kw">where</span>
+  op := Nat.add
+
+<span class="kw">example</span> : Magma Nat := inferInstance</code></pre>
+<p>手順は <code>Pointed</code> とまったく同じ——クラスを宣言し、<code>instance</code> で登録簿に載せれば、<code>inferInstance</code> が見つける。フィールドが「点」から「二項演算」に変わっただけである。</p>
 </details>
 <details class="sol"><summary>解答 3</summary>
+<pre class="lean"><code><span class="kw">def</span> opSelf (α : <span class="sort">Type</span>) [Magma α] (a : α) : α := Magma.op a a
+
+<span class="kw">#eval</span> opSelf Nat 3</code></pre>
+<pre class="quote"><code>6</code></pre>
+<p><code>Nat</code> の登録簿には <code>op := Nat.add</code> を載せたので、<code>opSelf Nat 3 = 3 + 3</code>。</p>
+</details>
+<details class="sol"><summary>解答 4</summary>
+<pre class="lean"><code><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Magma α] [Magma β] : Magma (Pair α β) <span class="kw">where</span>
+  op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
+
+<span class="kw">#eval</span> (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code></pre>
+<pre class="quote"><code>22</code></pre>
+<p><code>Magma (Pair Nat Nat)</code> は直接は登録していないが、誘導 instance と <code>Magma Nat</code> の連鎖で見つかる。<code>.snd</code> は <code>2 + 20</code>。</p>
+</details>
+<details class="sol"><summary>解答 5</summary>
 <pre class="lean"><code><span class="kw">instance</span> : Mul Point <span class="kw">where</span>
   mul p q := ⟨p.x * q.x, p.y * q.y⟩
 

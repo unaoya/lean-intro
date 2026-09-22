@@ -134,6 +134,8 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p>本体 <code>hqr (hpq hp)</code> では、証明がふつうの関数と同じように適用されている: <code>hpq</code> に <code>p</code> の証明 <code>hp</code> を渡して <code>q</code> の証明を作り、それを <code>hqr</code> に渡して <code>r</code> の証明を作る。「含意の証明は関数であり、仮定を使うことは関数適用である」——この対応の種明かしが <code>CH.lean</code> である。</p>
 <p>項の型を自動で推測できる、というだけの機能が、そのまま定理の証明の検証に使える——これが目標2の意味である。次の節からは、この「型の推測」を自分の手でできるようになるための道具立てを、順に説明していく。</p>
 </aside>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>Nat</code> や <code>Bool</code> はどこから来たか——Prelude</h3>
+<p><code>import</code> を1行も書いていないのに <code>Nat</code>・<code>Bool</code>・<code>+</code> が使えるのは、Lean が起動時に <strong>Prelude</strong>——標準ライブラリの核——を自動で読み込んでいるからである。この教材で「標準ライブラリ」と呼ぶものの実体はただの Lean のソースファイルで、 <code>Nat</code> も <code>Bool</code> も、<a href="#sec-Intro1.inductive-types">4節</a>・<a href="#sec-Intro1.structures">5節</a>で自作する型とまったく同じ仕組みで定義されている。特別なのは「最初から読み込まれている」ことだけである。</p></aside>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>#check Bool</code> と <code>#check Type 2</code> の表示を予想してから確かめよ。</li>

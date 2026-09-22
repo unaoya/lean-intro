@@ -6,30 +6,61 @@ import Intro2
 
 /-! SOL Intro2.classes:1 -/
 
-instance : HasZero Bool where
-  zero := false
+instance : Pointed Bool where
+  point := false
 
-example : HasZero Bool := inferInstance
+example : Pointed Bool := inferInstance
 
-#check zeroPair Bool
+example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool
 
 /-!
-    zeroPair Bool : Pair Bool Bool
-
-登録した瞬間から、`inferInstance` も `zeroPair Bool` のインスタンス引数の
-自動解決も通るようになる。
+登録した瞬間から、`inferInstance` の探索も、汎用関数 `pointPair` も、
+一般的な定理 `pointPair_fst` も、すべて `Bool` で使えるようになる。
 -/
 
 /-! SOL Intro2.classes:2 -/
 
-example : (zeroPair Bool).fst = HasZero.zero := zeroPair_fst Bool
+class Magma (α : Type) where
+  op : α → α → α
+
+instance : Magma Nat where
+  op := Nat.add
+
+example : Magma Nat := inferInstance
 
 /-!
-`zeroPair_fst` は「ゼロが登録されたどんな型でも」成り立つ一般的な定理。
-`Bool` を登録した瞬間から、その `Bool` での特殊化も使える。
+手順は `Pointed` とまったく同じ——クラスを宣言し、`instance` で登録簿に
+載せれば、`inferInstance` が見つける。フィールドが「点」から「二項演算」に
+変わっただけである。
 -/
 
 /-! SOL Intro2.classes:3 -/
+
+def opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a
+
+#eval opSelf Nat 3
+
+/-!
+    6
+
+`Nat` の登録簿には `op := Nat.add` を載せたので、`opSelf Nat 3 = 3 + 3`。
+-/
+
+/-! SOL Intro2.classes:4 -/
+
+instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β) where
+  op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
+
+#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd
+
+/-!
+    22
+
+`Magma (Pair Nat Nat)` は直接は登録していないが、誘導 instance と
+`Magma Nat` の連鎖で見つかる。`.snd` は `2 + 20`。
+-/
+
+/-! SOL Intro2.classes:5 -/
 
 instance : Mul Point where
   mul p q := ⟨p.x * q.x, p.y * q.y⟩

@@ -86,19 +86,68 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <h2>読み方: 主要な宣言のあとの <code>#check</code></h2>
 <p>主要な名前付きの定義・定理の直後に <code>#check 名前</code> を置き、その表示を <code>Intro1.lean</code> と同じ Infoview 風の枠で書き添えてある。 <code>Intro1.lean</code> 以来の読み方——表示を見る前に「いま何がどんな型で手に入るはずか」を<strong>予想</strong>してから確かめる——を、ここでも続けてほしい。</p>
 <p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> の違いは <a href="intro1.html#sec-Intro1.dependent-functions"><code>Intro1.lean</code> 6節</a>、<code>[ ]</code> は <a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>。</p>
-<h2>読み方: タクティク証明の記号</h2>
-<p>証明は <a href="ch.html#sec-CH.tactics"><code>CH.lean</code> 12節</a>のタクティクで書く。同節の早見表にない記号を挙げておく:</p>
+<h2 id="sec-Top.tactics">1. タクティク — 証明のもう1つの書き方</h2>
+<p><code>CH.lean</code> では、証明はすべて項として直接書いた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 <a href="ch.html#sec-CH.products"><code>CH.lean</code> 3節</a>の <code>swapAnd</code> をタクティクで書き直してみる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">by</span>
+  <span class="kw">intro</span> h            <span class="cm">-- `fun h =&gt;` に対応</span>
+  <span class="kw">exact</span> ⟨h.2, h.1⟩   <span class="cm">-- この項をそのまま置く</span>
+
+<span class="kw">#check</span> swapAnd&#x27;</code></pre>
+<pre class="quote"><code>swapAnd&#x27; {p q : Prop} : p ∧ q → q ∧ p</code></pre>
+<p><code>intro</code> は <code>fun</code>、<code>exact</code> は項そのものに対応していて、どちらの流儀でも、最終的に出来上がるのは<strong>同じ型を持つ項</strong>である（字面まで同じになるとは限らない）。つまりタクティクは証明そのものではなく、<strong>項を組み立てるためのメタなプログラム</strong>であり、 <code>by</code> ブロックは実行されると項を生成する。検査されるのはあくまで生成された項のほう。生成結果は <code>#print</code> で見られる:</p>
+<pre class="lean"><code><span class="kw">#print</span> swapAnd&#x27;</code></pre>
+<pre class="quote"><code>theorem swapAnd&#x27; : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
+fun {p q} h ↦ ⟨h.right, h.left⟩</code></pre>
+<p>タクティクが生成した項は、<a href="ch.html#sec-CH.products"><code>CH.lean</code> 3節</a>で手書きした <code>swapAnd</code> と同じものである。</p>
+<p>だから<a href="ch.html#sec-CH.type-checking"><code>CH.lean</code> 10節</a>の話はそのまま当てはまる: タクティクで書いた証明も、出来上がった項が型検査を通ることで検証される。</p>
+<p>このファイルは証明が長いので、タクティク主体で書く。出てくるものの早見表:</p>
 <ul>
+<li><code>intro h</code> — 仮定を1つ取り込む（<code>fun h =&gt;</code>）</li>
+<li><code>exact e</code> — 項 <code>e</code> でゴールを閉じる</li>
+<li><code>refine ⟨…, ?_, ?_⟩</code> — 項の形を先に与え、埋め残す部分を <code>?_</code> の穴にして続きのゴールとする</li>
+<li><code>apply f</code> — 結論から逆向きに <code>f</code> を適用し、引数をゴールとして残す</li>
+<li><code>constructor</code> — ゴールの型の構成子を適用する</li>
+<li><code>cases h with …</code> — 帰納型の項 <code>h</code> を場合分けする（<code>match</code> に対応）</li>
+<li><code>cases i using Fin.cases</code> — どの場合分けのしかたを使うかを名指しする</li>
+<li><code>rw [heq]</code> — 等式 <code>heq</code> でゴールを書き換える</li>
+<li><code>rw [h] at hmem</code> — ゴールではなく<strong>仮定</strong> <code>hmem</code> の側を書き換える</li>
+<li><code>show t</code> — ゴールを定義上等しい形 <code>t</code> に読み替える</li>
+<li><code>have h : t := e</code> — 補助的な項に名前を付けて続ける</li>
+<li><code>by_cases h : p</code> — <code>p</code> が成り立つ場合と否定の場合に分ける（古典論理）</li>
 <li><code>·</code> — 場合分けなどで生じた<strong>サブゴールごと</strong>の証明の区切り</li>
 <li><code>t₁; t₂</code> — <code>t₁</code> を実行してから、続けて <code>t₂</code> を実行する</li>
-<li><code>rw [h] at hmem</code> — ゴールではなく<strong>仮定</strong> <code>hmem</code> の側を書き換える</li>
-<li><code>refine ⟨…, ?_, ?_⟩</code> — 項の形を先に与え、あとで埋める部分を <code>?_</code> の穴にする</li>
-<li><code>cases i using Fin.cases</code> — どの場合分けのしかたを使うかを名指しする</li>
-<li><code>h ▸ e</code> — 等式 <code>h</code> で <code>e</code> の型を書き換える（<code>rw</code> の項版）</li>
+<li><code>h ▸ e</code> — 等式 <code>h</code> で <code>e</code> の型を書き換える（<code>rw</code> の項版。タクティクではなく項の記法）</li>
 </ul>
 <p>初出の箇所にも、それぞれ短い説明を添えてある。</p>
-<p>また、タクティクで書いた証明にはそれぞれ、<strong>同じ命題の項スタイルの証明</strong>を対にして並べる（本文の証明の直後の <code>example</code>）。どちらの流儀でも最終的に同じ型の項に行き着くこと（<a href="ch.html#sec-CH.tactics"><code>CH.lean</code> 12節</a>）の、実地の見比べである。</p>
-<h2 id="sec-Top.sets">1. 集合</h2>
+<p>また、タクティクで書いた証明にはそれぞれ、<strong>同じ命題の項スタイルの証明</strong>を対にして並べる（本文の証明の直後の <code>example</code>）。どちらの流儀でも最終的に同じ型の項に行き着くことの、実地の見比べである。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><a href="ch.html#sec-CH.sums"><code>CH.lean</code> 4節</a>の <code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、<code>#print</code> で生成された項を元の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
+<li><code>theorem idTac {p : Prop} : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
+</ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">theorem</span> swapOrTac {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">by</span>
+  <span class="kw">intro</span> h
+  <span class="kw">cases</span> h <span class="kw">with</span>
+  | inl hp =&gt; <span class="kw">exact</span> Or.inr hp
+  | inr hq =&gt; <span class="kw">exact</span> Or.inl hq
+
+<span class="kw">#print</span> swapOrTac</code></pre>
+<pre class="quote"><code>theorem swapOrTac : ∀ {p q : Prop}, p ∨ q → q ∨ p :=
+fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)</code></pre>
+<p><code>CH.lean</code> の <code>swapOr</code>（<code>match</code> で書いた項）と字面は一致しない——<code>cases</code> は <code>Or.casesOn</code> を直接置くからである。それでも型は同じ <code>p ∨ q → q ∨ p</code> であり、検査されるのはその型だけである。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">theorem</span> idTac {p : <span class="sort">Prop</span>} : p → p := <span class="kw">by</span>
+  <span class="kw">intro</span> h
+  <span class="kw">exact</span> h
+
+<span class="kw">#print</span> idTac</code></pre>
+<pre class="quote"><code>theorem idTac : ∀ {p : Prop}, p → p :=
+fun {p} h ↦ h</code></pre>
+<p>こちらは手書きの <code>fun h =&gt; h</code> と同じ字面に戻る。</p>
+</details>
+<h2 id="sec-Top.sets">2. 集合</h2>
 <p>集合 <code>Set</code>（実体は述語 <code>α → Prop</code>）と、内包記法 <code>{a | p a}</code>・所属 <code>∈</code>・包含 <code>⊆</code> は <a href="intro2.html#sec-Intro2.sets"><code>Intro2.lean</code> 4節</a>で作った。ここではその上に、残りの道具—— <code>∩</code>・<code>∪</code>・<code>∅</code>・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。</p>
 <pre class="lean"><code><span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 5節）</span>
 <span class="kw">namespace</span> Set
@@ -303,7 +352,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="quote"><code>&#x27;Set.compl_compl&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
 <p>背理法 <code>Classical.byContradiction</code> を使ったので、<code>Classical.choice</code> への依存が現れる（<code>propext</code>・<code>Quot.sound</code> はその道連れ）。</p>
 </details>
-<h2 id="sec-Top.bijections">2. 全単射</h2>
+<h2 id="sec-Top.bijections">3. 全単射</h2>
 <p>目標の「連続全単射」を述べるために要る。 <code>Function.Injective</code>（<code>∀ ⦃a b⦄, f a = f b → a = b</code>。括弧 <code>⦃ ⦄</code> は暗黙引数 <code>{ }</code> の変種で、この教材では <code>∀ a b, f a = f b → a = b</code> と読んでよい）と <code>Function.Surjective</code>（<code>∀ b, ∃ a, f a = b</code>）は標準ライブラリにあるので、全単射だけを定義する。</p>
 <p>全単射: 単射かつ全射。2つの性質を名前付きフィールドに束ねる。中身が命題だけなので <code>structure … : Prop</code> にできる。</p>
 <pre class="lean"><code><span class="kw">structure</span> Function.Bijective {α β : <span class="sort">Type</span>} (f : α → β) : <span class="sort">Prop</span> <span class="kw">where</span>
@@ -335,7 +384,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
   | `(⋃ $i, $U) =&gt; `(Set.iUnion <span class="kw">fun</span> $i =&gt; $U)
   | `(⋃ $i ∈ $J, $U) =&gt; `(Set.biUnion $J <span class="kw">fun</span> $i =&gt; $U)</code></pre>
 <p>注意: この <code>⋃</code> も <code>setOf</code> と同じく<strong>読む方向だけ</strong>の記法なので、<code>#check</code> の表示では展開先の <code>Set.iUnion fun i ↦ …</code>／<code>J.biUnion fun i ↦ …</code> が見える。同様に、<code>∀ a ∈ s, P</code> は <code>∀ (a : X), a ∈ s → P</code> に、<code>a ∉ K</code> は <code>¬a ∈ K</code> に開かれて表示される。以後の表示の枠は、この<strong>展開後の形</strong>で書いてある。</p>
-<h2 id="sec-Top.topology">3. 位相空間</h2>
+<h2 id="sec-Top.topology">4. 位相空間</h2>
 <p>開集合が何であるかを指定するデータ <code>IsOpen</code> と、それが満たすべき3つの公理。</p>
 <p>位相空間の構造。「どの部分集合を開と呼ぶか」のデータ <code>IsOpen</code> と、それが満たすべき3公理を <code>class</code> で束ねる（データ＋性質という構成は <a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>の structure・<a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>の class と同じ）。</p>
 <p><code>class</code> にしたので、以後 <code>[TopologicalSpace X]</code> と角括弧で書くだけで「<code>X</code> に載っている位相」がインスタンス引数として暗黙に渡る。</p>
@@ -361,7 +410,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="cm">-- 以後 `X` は位相空間: 位相はインスタンス引数として各宣言に暗黙に付く</span>
 <span class="kw">variable</span> {X : <span class="sort">Type</span>} [TopologicalSpace X]</code></pre>
 <p>空集合が開であることは公理に含めなくてよい。空な集合族の合併が空集合だから、<code>isOpen_sUnion</code> から従う。</p>
-<p>証明は <code>by</code> のタクティク（<a href="ch.html#sec-CH.tactics"><code>CH.lean</code> 12節</a>）。まず <code>⋃₀ ∅ = ∅</code> を <code>Set.ext</code> で示し、 <code>rw [← h]</code> で等式 <code>h</code> を右辺から左辺の向きに使ってゴールを書き換える。</p>
+<p>証明は <code>by</code> のタクティク（<a href="#sec-Top.tactics"><code>Top.lean</code> 1節</a>）。まず <code>⋃₀ ∅ = ∅</code> を <code>Set.ext</code> で示し、 <code>rw [← h]</code> で等式 <code>h</code> を右辺から左辺の向きに使ってゴールを書き換える。</p>
 <pre class="lean"><code><span class="kw">theorem</span> isOpen_empty : IsOpen (∅ : Set X) := <span class="kw">by</span>
   <span class="kw">have</span> h : (⋃₀ (∅ : Set (Set X))) = (∅ : Set X) := <span class="kw">by</span>
     <span class="kw">apply</span> Set.ext
@@ -440,7 +489,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="lean"><code><span class="kw">example</span> : (discrete Nat).IsOpen {n | n = 0} := trivial</code></pre>
 <p>離散位相の <code>IsOpen</code> は定義上どの集合でも <code>True</code>。証明は構成子 <code>trivial</code>。</p>
 </details>
-<h2 id="sec-Top.continuity">4. 連続写像</h2>
+<h2 id="sec-Top.continuity">5. 連続写像</h2>
 <p>位相空間の間の写像が連続であることを、開集合だけを使って定義する。写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。</p>
 <pre class="lean"><code><span class="kw">variable</span> {Y : <span class="sort">Type</span>} [TopologicalSpace Y] {Z : <span class="sort">Type</span>} [TopologicalSpace Z]</code></pre>
 <p>連続写像: 開集合の逆像がつねに開。</p>
@@ -476,7 +525,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="quote"><code>@Continuous : {X : Type} → [TopologicalSpace X] → {Y : Type} → [TopologicalSpace Y] → (X → Y) → Prop</code></pre>
 <p><code>@</code> 付きの表示では、暗黙引数も含めた引数の列が <code>→</code> でつながった 1本の関数型として見える。2つの空間の位相は、どちらも角括弧 <code>[TopologicalSpace X]</code>・<code>[TopologicalSpace Y]</code>——インスタンス引数——で並ぶ。</p>
 </details>
-<h2 id="sec-Top.hausdorff">5. ハウスドルフ空間</h2>
+<h2 id="sec-Top.hausdorff">6. ハウスドルフ空間</h2>
 <p>「異なる2点は開集合で見分けられる」という条件。</p>
 <p>ハウスドルフ空間であるという<strong>性質</strong>。フィールドが命題1つだけの <code>class : Prop</code> で、データは持たない。位相を前提にするので <code>[TopologicalSpace X]</code> を引数に取る。</p>
 <p>空間ごとに決まる常置的な性質なので <code>class</code> にしてある: 以後の定理は <code>[Hausdorff Y]</code> と書くだけで、その証明が登録簿から自動で供給される。</p>
@@ -488,7 +537,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> Hausdorff</code></pre>
 <pre class="quote"><code>Hausdorff (X : Type) [TopologicalSpace X] : Prop</code></pre>
 <p><code>TopologicalSpace X : Type</code>（データ）と違い、こちらは結果が <code>Prop</code>（性質）。</p>
-<h2 id="sec-Top.compactness">6. コンパクト</h2>
+<h2 id="sec-Top.compactness">7. コンパクト</h2>
 <p>「どんな開被覆にも有限部分被覆がある」という条件。</p>
 <p>被覆は添字づけられた族 <code>U : I → Set X</code> で表し、部分被覆は添字の部分集合 <code>J ⊆ I</code> を取ることで表す。 <code>J</code> が有限であることは <code>Set.Finite</code>（<code>Fin n</code> で番号づけられること）で表す。</p>
 <p>コンパクト集合。定義を読み下すと:任意の添字型 <code>I</code>（暗黙引数）と開集合族 <code>U : I → Set X</code> について、 <code>U</code> が <code>K</code> を覆うなら、<strong>添字の有限部分集合</strong> <code>J</code> に間引いても <code>K</code> を覆える。</p>
@@ -507,7 +556,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 
 <span class="kw">#check</span> CompactSpace</code></pre>
 <pre class="quote"><code>CompactSpace (X : Type) [TopologicalSpace X] : Prop</code></pre>
-<h2 id="sec-Top.compact-image">7. 補題1: コンパクト集合の連続像はコンパクト</h2>
+<h2 id="sec-Top.compact-image">8. 補題1: コンパクト集合の連続像はコンパクト</h2>
 <p>方針: 与えられた <code>f &#x27;&#x27; K</code> の開被覆 <code>U</code> に対して</p>
 <ol>
 <li>被覆を <code>f</code> で引き戻して <code>K</code> の開被覆 <code>f ⁻¹&#x27; U i</code> を作る（<code>Set.subset_preimage_iUnion</code>）</li>
@@ -580,7 +629,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="quote"><code>&#x27;Set.subset_preimage_iUnion&#x27; does not depend on any axioms</code></pre>
 <p>包含の付け替えだけの証明なので、公理は1つも要らない。</p>
 </details>
-<h2 id="sec-Top.compact-closed">8. 補題2: ハウスドルフ空間のコンパクト集合は閉</h2>
+<h2 id="sec-Top.compact-closed">9. 補題2: ハウスドルフ空間のコンパクト集合は閉</h2>
 <p>ここが証明の山場で、有限性を実際に使うのもここだけ。方針:</p>
 <ol>
 <li>「各点が開近傍ごと入っている集合は開」という一般論を用意する（<code>isOpen_of_nhds</code>）</li>
@@ -705,7 +754,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="cm">-- 補題が返す ∃ の中身が `isOpen_of_nhds` の要求とそのまま一致している</span>
 <span class="kw">example</span> [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K :=
   isOpen_of_nhds <span class="kw">fun</span> _ hy =&gt; hK.exists_disjoint_nhds hy</code></pre>
-<h2 id="sec-Top.closed-compact">9. 補題3: コンパクト空間の閉集合はコンパクト</h2>
+<h2 id="sec-Top.closed-compact">10. 補題3: コンパクト空間の閉集合はコンパクト</h2>
 <p>方針: <code>C</code> の開被覆 <code>U</code> に対して</p>
 <ol>
 <li>各成分に開集合 <code>Cᶜ</code> を足した族 <code>U i ∪ Cᶜ</code> は空間全体を覆う（<code>Set.univ_subset_iUnion_union_compl</code>）</li>
@@ -785,7 +834,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
         ⟨∅, Set.Finite.empty, <span class="kw">fun</span> x hx =&gt;
           <span class="kw">match</span> hcov x hx <span class="kw">with</span>
           | ⟨i, _⟩ =&gt; (hI ⟨i⟩).elim⟩)</code></pre>
-<h2 id="sec-Top.homeomorphism">10. 目標: コンパクトからハウスドルフへの連続全単射は同相</h2>
+<h2 id="sec-Top.homeomorphism">11. 目標: コンパクトからハウスドルフへの連続全単射は同相</h2>
 <p>同相写像とは、連続な全単射であって逆写像も連続なもの。一般には逆写像の連続性は自動ではないが、定義域がコンパクトで終域がハウスドルフならそれが従う、というのがここでの定理。</p>
 <p>方針: 示すべきは「<code>X</code> の開集合 <code>s</code> について <code>g ⁻¹&#x27; s</code> が開」。</p>
 <ol>
