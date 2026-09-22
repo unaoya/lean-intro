@@ -7,11 +7,15 @@
 <style>
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
-        --link: #0969da; --quote-bg: #f0f4f8; }
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
-          --link: #58a6ff; --quote-bg: #24292e; }
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
@@ -30,6 +34,14 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
 .kw { color: var(--kw); font-weight: 600; }
 .doc { color: var(--doc); }
 .cm { color: var(--cm); }
@@ -74,7 +86,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <li>解答は <code>ExtraSol.lean</code> にある。</li>
 <li>各宣言の直後の <code>#check</code> には、<code>Top.lean</code> と同じ流儀で「表示」と「読み」を添えてある。</li>
 </ul>
-<h2>記法の補足</h2>
+<h2>記法の準備</h2>
 <p><code>Top.lean</code> の <code>Continuous</code> は位相をインスタンス引数で受け取るので、 1つの型に別の位相を載せて論じるには <code>@</code> で位相を明示する。例えば <code>@Continuous X (discrete X) Y tY f</code> は「<code>X</code> に離散位相を入れたとき <code>f</code> は連続」。</p>
 <h2>Part 1: 密着位相</h2>
 <p>離散位相（<code>Top.lean</code> の <code>discrete</code>、すべての部分集合が開）の対極として、開集合が <code>∅</code> と <code>univ</code> しかない位相を<strong>密着位相</strong>という。</p>

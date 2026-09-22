@@ -469,7 +469,7 @@ theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
 -/
 
 /-!
-### 発展: 対称に見えて `rfl` が通らない `0 * n`
+### 補足（初読は飛ばしてよい）: 対称に見えて `rfl` が通らない `0 * n`
 
 同じ調子で `∀ n, IsZero (0 * n)` も書きたくなるが、こちらは通らない:
 
@@ -498,7 +498,7 @@ theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
 1. `theorem all_and {α : Type} {Q R : α → Prop} :
    (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a` を
    書け（各点で証明を組にするだけ）。
-2. `example : IsZero (0 * 5) := rfl` が通ることを確かめよ。
+2. （補足の確認）`example : IsZero (0 * 5) := rfl` が通ることを確かめよ。
    `IsZero (5 * 0)` は `rfl` でも `all_mul_zero 5` でも証明できるか試せ。
 3. `#check applyForall all_mul_zero 7` の表示を予想してから確かめよ
    （一般論に点を代入すると、命題も特殊化される）。
@@ -744,6 +744,10 @@ Lean では違う。いま見たとおり `Eq` はただの帰納型の宣言で
 「全部」の保証の正体は、自動生成される帰納法原理そのものである。
 `rec` は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」
 と言っており、`match` の場合分けがそれで尽くせるのはこれによる。
+-/
+
+/-! CALLOUT_START optional -/
+/-! ### 補足（初読は飛ばしてよい）: 構成子が別々であることと `noConfusion`
 
 「別々」には、これも宣言の受理時に自動生成される道具 `noConfusion` が使える。
 「違う構成子どうしは等しくない」と「同じ構成子なら中身まで等しい
@@ -765,8 +769,12 @@ example {m n : Nat} (h : Nat.succ m = Nat.succ n) : m = n :=
 **証明された**定理である。種明かしだけ述べると、「構成子を `match` で見分けて
 `True`／`False` を割り当てる述語」を作り、`Eq.rec`（代入原理）で
 `true = false` の仮定からゴール `False` へ運ぶ——どれも既出の道具である。
+-/
 
-### 実験: 等式をもう1つ作る
+/-! CALLOUT_END -/
+
+/-! CALLOUT_START optional -/
+/-! ### 補足（初読は飛ばしてよい）: 等式をもう1つ作る実験
 
 `Eq` が特別な組み込みでないことは、実際に作り直してみるとよく分かる。
 同じ形の帰納型 `MyEq` を宣言すると、帰納法原理も同じ形で自動生成される。
@@ -794,9 +802,9 @@ theorem MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a :=
     MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a
 -/
 
-/-! ### 発展: なぜこの `match` が通るのか——添字の単一化
+/-! #### なぜこの `match` が通るのか——添字の単一化
 
-（この小節は発展的な話題である。初読では飛ばして、次の `example` へ
+（ここはこの補足の中でも特に細かい話である。飛ばして、次の `example` へ
 進んでよい。）
 
 上の証明をよく見ると、不思議なことが起きている。ゴールは `MyEq b a` なのに、
@@ -906,12 +914,14 @@ example {α : Type} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
 と断られる。逆に言えば、それだけの違いしかない。
 -/
 
+/-! CALLOUT_END -/
+
 /-! ### ✏ 練習
 
 1. `example : 1 ≤ 3` を `Nat.le` の構成子**だけ**で書け（`step` は何回要るか）。
-2. 本文の `MyEq.symm` にならって、`MyEq.trans` を自分で証明せよ
+2. （補足の確認）本文の `MyEq.symm` にならって、`MyEq.trans` を自分で証明せよ
    （`h₂` を `match` で分ければ `h₁` がそのまま答えになる）。
-3. 逆向きの橋 `theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b` を
+3. （補足の確認）逆向きの橋 `theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b` を
    `match` で書け（今度は `Eq` の側で場合分けして、`MyEq` の構成子を置く）。
 -/
 
@@ -1061,6 +1071,27 @@ theorem isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) 
 
 /-!
     isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m)
+-/
+
+/-!
+(6) の途中の項も `#check` で確かめよう。`h1` と `h2` は定理の中だけの名前なので、
+ここでは既習の `fun` で同じ文脈を用意する。
+-/
+
+#check fun (n m k l : Nat)
+    (h1 : n + m = 2 * k + m)
+    (h2 : 2 * k + m = 2 * k + 2 * l) =>
+  h1.trans h2
+
+/-!
+    fun n m k l h1 h2 ↦
+      Eq.trans h1 h2 : ∀ (n m k l : Nat), n + m = 2 * k + m → 2 * k + m = 2 * k + 2 * l → n + m = 2 * k + 2 * l
+-/
+
+/-!
+出力全体は `fun` で作った関数の型であり、最後の `n + m = 2 * k + 2 * l` が、
+この文脈での `h1.trans h2` の型である。その右辺は `h3` の左辺と一致するので、
+さらに `.trans h3` とつなげて `n + m = 2 * (k + l)` を得る。
 -/
 
 /-!
@@ -1241,16 +1272,22 @@ def sigmaSnd {α : Type} {P : α → Type} (s : (a : α) × P a) : P s.1 := s.2
 -- 計算に影響することになってしまう。そこで Lean は、`∃` のように
 -- **証人という中身**を持つ命題の証明から、命題でないものを取り出すことを
 -- 許していない。
---
--- なお、この制限には例外がある。`False`（そもそも証明がないので、取り出しで
--- 矛盾が起きようがない）や `Eq`（構成子が1つで中身の区別が生じない）は、
--- 命題でないものへも分解してよい:
---
---   #check @False.elim   -- @False.elim : {C : Sort u_1} → False → C
---
--- `Prop` の世界から `Type` の世界へ渡れている。4節からずっと使ってきた
--- `.elim` や、等式によるデータの書き換え（`▸`、`Top.lean` で使用）が
--- 正当なのは、この例外のおかげである。
+
+/-!
+ただし例外もある。`False` や `Eq` の証明は、命題でない型への分解にも使える。
+4節の `False.elim` や等式によるデータの書き換えは、その例である。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 除去制限の例外
+
+`False` にはそもそも証明がなく、取り出しで矛盾は起きない。
+`Eq` の構成子は1つで、中身の区別は生じない。だから命題でないものへも分解できる:
+
+    #check @False.elim   -- @False.elim : {C : Sort u_1} → False → C
+
+`Prop` の世界から `Type` の世界へ渡れている。4節から使ってきた `.elim` や、
+等式によるデータの書き換え（`▸`、`Top.lean` で使用）が正当なのはこのためである。
+-/
 
 /-- 結論が命題である限り、分解して使うことはできる。
 `∃` を使うときはこの形になる。 -/
@@ -1360,4 +1397,3 @@ theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
 2. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
    表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。
 -/
-

@@ -114,7 +114,8 @@ instance : EmptyCollection (Set α) := ⟨{_a | False}⟩
     ∅ : Set Nat
 -/
 
-/-!
+/-! ### 補足（初読は飛ばしてよい）: `instance` の内部名
+
 `instance` は名前のない宣言だが、実際には Lean が自動で命名している。
 上の3つは `Set.instInter` のような名前になる
 （`set_option pp.explicit true` で項を表示すると中に見える）。
@@ -222,7 +223,10 @@ infixl:80 " ⁻¹' " => Set.preimage
 -- 確認: 逆像も定義どおりに展開される。両辺は計算（関数適用の簡約）で一致するので `rfl`
 example : (fun n : Nat => n + 1) ⁻¹' {m | m = 3} = {n | n + 1 = 3} := rfl
 
-/-! ### 記法の結合の強さ
+/-! 括弧を省いた記法は結合の強さに従って読まれる。細かい順位は次の補足で確かめる。 -/
+
+/-! CALLOUT_START optional -/
+/-! ### 補足（初読は飛ばしてよい）: 記法の結合の強さ
 
 `postfix:max` や `infixl:80` の数字は結合の強さで、大きいほど強く結合する。
 ここまでの記法と標準ライブラリの `∩`（70）・`∪`（65）の間には
@@ -236,6 +240,8 @@ example : (fun n : Nat => n + 1) ⁻¹' {m | m = 3} = {n | n + 1 = 3} := rfl
 example (f : Nat → Nat) (s t : Set Nat) : f '' s ∩ t = (f '' s) ∩ t := rfl
 example (s t : Set Nat) : s ∩ tᶜ = s ∩ (tᶜ) := rfl
 example (s t u : Set Nat) : s ∩ t ∪ u = (s ∩ t) ∪ u := rfl
+
+/-! CALLOUT_END -/
 
 /-- 有限集合: ある `n` について、`Fin n` からの写像で `s` の点をすべて拾えること。
 
@@ -434,14 +440,8 @@ end Set
 全単射だけを定義する。
 -/
 
-/-- 全単射: 単射かつ全射。
-
-`Function.Injective f ∧ Function.Surjective f` と `∧` で束ねても内容は同じだが、
-ここでは `structure` にする。利点はフィールドに**名前**が付くこと:
-取り出しが `hbij.1` ではなく `hbij.injective` と書けて、読み手に意図が伝わる。
-ほかにも、フィールドごとに説明（docstring）を付けられる、
-フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、
-という利点がある。中身が命題だけなので `structure … : Prop` にできる。 -/
+/-- 全単射: 単射かつ全射。2つの性質を名前付きフィールドに束ねる。
+中身が命題だけなので `structure … : Prop` にできる。 -/
 structure Function.Bijective {α β : Type} (f : α → β) : Prop where
   /-- 単射性: 送り先が同じなら元も同じ。 -/
   injective : Function.Injective f
@@ -454,6 +454,15 @@ structure Function.Bijective {α β : Type} (f : α → β) : Prop where
     Function.Bijective {α β : Type} (f : α → β) : Prop
 
 写像の性質（写像を受け取って命題を返す）。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: なぜ `∧` でなく `structure` なのか
+
+`Function.Injective f ∧ Function.Surjective f` と束ねても内容は同じだが、
+ここでは `structure` にする。取り出しが `hbij.1` ではなく
+`hbij.injective` と書けて、読み手に意図が伝わる。フィールドごとに
+docstring を付けられ、フィールドが増えたり順序が変わったりしても
+使う側の記述が壊れにくい、という利点もある。
 -/
 
 /-! ### ✏ 練習
@@ -511,8 +520,11 @@ class TopologicalSpace (X : Type) where
 
 クラスも「型を受け取って型を返す関数」。`TopologicalSpace X` は
 「`X` 上の位相全体の型」で、その項1つが位相1つに当たる。
+-/
 
-なお、主フィールドの型 `Set X → Prop` は `Set (Set X)` と同じもの——
+/-! ### 補足（初読は飛ばしてよい）: 開集合系を「集合の集合」と見る
+
+主フィールドの型 `Set X → Prop` は `Set (Set X)` と同じもの——
 つまり `IsOpen` は「部分集合の集まり」P(P(X)) の元である。
 「開集合系を指定する」という日常の言い方が、そのまま型に写っている。
 -/
@@ -751,12 +763,7 @@ class Hausdorff (X : Type) [TopologicalSpace X] : Prop where
 /-- コンパクト集合。定義を読み下すと:
 任意の添字型 `I`（暗黙引数）と開集合族 `U : I → Set X` について、
 `U` が `K` を覆うなら、**添字の有限部分集合** `J` に間引いても `K` を覆える。
-
-`Hausdorff` と違って、こちらは `class` にしない。`IsCompact` は個々の
-部分集合ごとの述語で、`hK : IsCompact K` というふつうの仮定として渡したり、
-補題の**結論**として新しく作ったりする対象だからである
-（集合ごとに登録簿へ載せる運用はできない）。
-空間全体の性質である `CompactSpace`（下）は `Hausdorff` と同様 `class` にする。 -/
+-/
 def IsCompact (K : Set X) : Prop :=
   ∀ {I : Type} (U : I → Set X), (∀ i, IsOpen (U i)) → K ⊆ (⋃ i, U i) →
     ∃ J : Set I, J.Finite ∧ K ⊆ (⋃ i ∈ J, U i)
@@ -767,6 +774,15 @@ def IsCompact (K : Set X) : Prop :=
     IsCompact {X : Type} [TopologicalSpace X] (K : Set X) : Prop
 
 表示は短いが、定義の中身は上のとおり `∀` が3つ重なった命題である。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: `IsCompact` を `class` にしない理由
+
+`Hausdorff` と違って、こちらは `class` にしない。`IsCompact` は個々の
+部分集合ごとの述語で、`hK : IsCompact K` というふつうの仮定として渡したり、
+補題の**結論**として新しく作ったりする対象だからである
+（集合ごとに登録簿へ載せる運用はできない）。
+空間全体の性質である `CompactSpace`（下）は `Hausdorff` と同様 `class` にする。
 -/
 
 /-- 空間そのものがコンパクトであること: 全体集合 `univ` がコンパクト集合である。
@@ -790,6 +806,9 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
 
 1 と 3 は位相と無関係な、像と逆像についての一般的な補題である。
 有限性は受け取った `J` をそのまま使い回すだけなので、`Fin n` を開ける必要はない。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: `lemma` という宣言名
 
 なお mathlib では、細かい補題を `theorem` の同義語 `lemma` で宣言する慣例が
 あるが、`lemma` は core Lean にはない（mathlib がマクロで定義している）。
@@ -1353,9 +1372,7 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
   （途中の `#print axioms` で確認したとおり、選択公理なしで証明できた）
 * `Classical.choice` が入る経路は3つだけ:
   1. `Set.compl_compl` の背理法（`Classical.byContradiction`）
-  2. 補題3まわりの `by_cases`（`x ∈ C` と `Nonempty I`）。任意の述語への
-     排中律であり、Lean の排中律は Diaconescu の定理によって
-     choice から導かれた**定理**である
+  2. 補題3まわりの `by_cases`（`x ∈ C` と `Nonempty I`）。任意の述語への排中律
   3. 主定理での逆写像の構成（`Classical.choose`。「存在する」から
      データを取り出す、choice のもっとも直接的な使用）
 
@@ -1370,6 +1387,13 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
 
 /-!
     'Homeomorph.ofContinuousBijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 排中律から選択公理への依存経路
+
+`by_cases` は排中律を使う。Lean では排中律は公理として直接追加されたものではなく、
+Diaconescu の定理によって `Classical.choice` から導かれた**定理**である。
+したがって `by_cases` を使った証明の公理一覧にも `Classical.choice` が現れる。
 -/
 
 /-! ### ✏ 練習

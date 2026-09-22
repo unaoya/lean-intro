@@ -81,6 +81,22 @@ def five : Nat := 5
 
 /-! SOL 3.1 -/
 
+def inc : Nat → Nat := fun n => n + 1
+
+#check inc
+
+/-!
+    inc : Nat → Nat
+-/
+
+#eval inc 4
+
+/-!
+    5
+-/
+
+/-! SOL 3.1 -/
+
 def triple (n : Nat) : Nat := n + n + n
 
 #check triple
@@ -99,6 +115,38 @@ binder 形式のまま表示される。`triple : Nat → Nat` と読み替え�
     20
 
 内側から: `double 5 = 10`、`double 10 = 20`。
+-/
+
+/-! SOL 3.1 -/
+
+def addThree : Nat → Nat := plus 3
+
+#check addThree
+
+/-!
+    addThree : Nat → Nat
+-/
+
+#eval addThree 4
+
+/-!
+    7
+-/
+
+/-! SOL 3.1 -/
+
+def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
+
+#check twice double
+
+/-!
+    twice double : Nat → Nat
+-/
+
+#eval twice double 3
+
+/-!
+    12
 -/
 
 /-! SOL 3.1 -/
@@ -197,6 +245,40 @@ def double2 : Map Nat Nat := double
 
 /-! SOL 3.5 -/
 
+def useF1 : (Nat → Nat) → Nat := fun F => F 21
+
+def useF2 : (Nat → Nat) → Nat := fun _ => 0
+
+#check useF1
+
+/-!
+    useF1 : (Nat → Nat) → Nat
+-/
+
+#check useF2
+
+/-!
+    useF2 : (Nat → Nat) → Nat
+
+どちらも同じ型を持つ。型は「関数を受け取って `Nat` を返す」という仕様だけを
+決めており、返し方（中身）は何通りもある。
+-/
+
+/-! SOL 3.6 -/
+
+def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (F a)
+
+#eval compose Nat Nat Nat double (fun n => n + 1) 3
+
+/-!
+    8
+
+内側から: `F = fun n => n + 1` で `3` が `4` に、`G = double` で `8` になる。
+-/
+
+
+/-! SOL 3.7 -/
+
 def evalAt' (A B : Type) (F : A → B) (x : A) : B := F x
 
 def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun x => F (g x)
@@ -213,6 +295,20 @@ def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun x => F (g x)
     8
 
 どちらも元の版と同じ値。型を引数にすると、同じ中身が任意の型で使い回せる。
+-/
+
+/-! SOL 4.1 -/
+
+def signalCode : Signal → Nat := fun s =>
+  match s with
+  | .red => 0
+  | .yellow => 1
+  | .green => 2
+
+#eval signalCode Signal.yellow
+
+/-!
+    1
 -/
 
 /-! SOL 4.1 -/
@@ -246,6 +342,19 @@ def isGreen : Signal → Bool := fun s =>
 
 /-! SOL 4.1 -/
 
+def tagOf : NatOrBool → Bool := fun x =>
+  match x with
+  | .nat _ => true
+  | .bool _ => false
+
+#eval tagOf (NatOrBool.nat 3)
+
+/-!
+    true
+-/
+
+/-! SOL 4.1 -/
+
 #eval valueOf (NatOrBool.bool true)
 
 /-!
@@ -269,12 +378,63 @@ def flagOf : NatOrBool → Bool := fun x =>
 
 /-! SOL 4.1 -/
 
+def mergeBool : MySum Bool Bool → Bool := fun x =>
+  match x with
+  | .inl b => b
+  | .inr b => b
+
+#eval mergeBool (MySum.inl true)
+
+/-!
+    true
+-/
+
+#eval mergeBool (MySum.inr false)
+
+/-!
+    false
+-/
+
+/-! SOL 4.1 -/
+
 #eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)
 
 /-!
     3
 
 `inl` の札なので、既定値 `7` ではなく中身の `3` が返る。
+-/
+
+/-! SOL 4.1 -/
+
+def isZeroMyNat : MyNat → Bool := fun n =>
+  match n with
+  | .zero => true
+  | .succ _ => false
+
+#eval isZeroMyNat MyNat.zero
+
+/-!
+    true
+-/
+
+#eval isZeroMyNat (MyNat.succ MyNat.zero)
+
+/-!
+    false
+-/
+
+/-! SOL 4.2 -/
+
+def toN : MyNat → Nat := fun m =>
+  match m with
+  | .zero   => 0
+  | .succ k => toN k + 1
+
+#eval toN (MyNat.succ (MyNat.succ MyNat.zero))
+
+/-!
+    2
 -/
 
 /-! SOL 4.1 -/
@@ -313,10 +473,49 @@ def ofBool : Bool → Two := fun b =>
 
 /-! SOL 4.3 -/
 
-def toN : MyNat → Nat := fun m =>
-  match m with
-  | .zero   => 0
-  | .succ k => toN k + 1
+def g1 : Two → Bool := fun t =>
+  match t with
+  | .a => true
+  | .b => true
+
+def g2 : Two → Bool := fun t =>
+  match t with
+  | .a => true
+  | .b => false
+
+def g3 : Two → Bool := fun t =>
+  match t with
+  | .a => false
+  | .b => true
+
+def g4 : Two → Bool := fun t =>
+  match t with
+  | .a => false
+  | .b => false
+
+/-!
+`g2` が前問の `toBool` と同じ対応である。2点 `a`・`b` それぞれに行き先が
+2通りずつあるので、関数は 2 × 2 = 4 通り——`match` の枝の埋め方が
+ちょうど対応表の書き方になっている。
+-/
+
+/-! SOL 4.4 -/
+
+def mul : MyNat → MyNat → MyNat := fun m n =>
+  match n with
+  | .zero   => .zero
+  | .succ k => add (mul m k) m
+
+#eval toN (mul myThree myThree)
+
+/-!
+    9
+
+`add` と同じく、第2引数の構造にそった再帰である。3 × 3 = 9。
+-/
+
+
+/-! SOL 4.5 -/
 
 def ofN : Nat → MyNat := fun n =>
   match n with
@@ -329,6 +528,17 @@ def ofN : Nat → MyNat := fun n =>
     3
 
 `ofN 3` は `succ (succ (succ zero))`、それを `toN` で戻すと `3`。
+-/
+
+/-! SOL 5.1 -/
+
+def moveRight (p : Point) : Point :=
+  Point.mk (Point.x p + 1) (Point.y p)
+
+#eval Point.x (moveRight (Point.mk 1 2))
+
+/-!
+    2
 -/
 
 /-! SOL 5.1 -/
@@ -367,6 +577,25 @@ structure Circle where
 同じ値。後ろに付けるドットは `Point.y (…)` の略記である。
 -/
 
+/-! SOL 5.3 -/
+
+structure Rect where
+  corner : Point
+  width : Nat
+  height : Nat
+
+def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩
+
+#eval r.corner.x
+
+/-!
+    1
+
+外側の `⟨ ⟩` が `Rect` の3フィールド、内側の `⟨1, 2⟩` が `corner : Point` の
+2フィールドに当たる。`r.corner.x` は `Point.x (Rect.corner r)` の略記である。
+-/
+
+
 /-! SOL 5.1 -/
 
 #check Pair.mk true 0
@@ -388,6 +617,43 @@ def pointedBool : PointedType := ⟨Bool, true⟩
 
 第1引数に `Nat` を渡した瞬間、残りの引数の型が `Nat` に決まる——
 依存関数の部分適用である。
+-/
+
+/-! SOL 5.3 -/
+
+def curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat := fun a b => F ⟨a, b⟩
+
+def uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat := fun p => G p.fst p.snd
+
+#eval curryP (fun p => p.fst + p.snd) 3 4
+
+/-!
+    7
+
+`curryP` は「1つずつ受け取って、組にしてから `F` に渡す」、`uncurryP` は
+「組を受け取って、成分にばらしてから `G` に渡す」。3節の「2引数関数の正体は
+1引数関数の入れ子」という話の、行き来を自分で書いたことになる。
+-/
+
+
+/-! SOL 6.1 -/
+
+def makePair (α β : Type) (a : α) (b : β) : Pair α β := Pair.mk a b
+
+#check makePair Nat Bool 3 true
+
+/-!
+    makePair Nat Bool 3 true : Pair Nat Bool
+-/
+
+/-! SOL 6.2 -/
+
+def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
+
+#check swapAt Nat Bool
+
+/-!
+    swapAt Nat Bool : Nat → Bool → Pair Bool Nat
 -/
 
 /-! SOL 6.1 -/
@@ -417,6 +683,25 @@ def pointedBool : PointedType := ⟨Bool, true⟩
     idAt Signal : Signal → Signal
 -/
 
+/-! SOL 6.3 -/
+
+def constAt (A B : Type) (a : A) : B → A := fun _ => a
+
+#check constAt Nat Bool 5
+
+/-!
+    constAt Nat Bool 5 : Bool → Nat
+-/
+
+#eval constAt Nat Bool 5 true
+
+/-!
+    5
+
+`idAt A` が恒等関数を返すのに対し、`constAt A B a` は定数関数を返す。
+-/
+
+
 /-! SOL 6.1 -/
 
 #check Map Nat
@@ -425,6 +710,16 @@ def pointedBool : PointedType := ⟨Bool, true⟩
     Map Nat : Type → Type
 
 2引数のうち1つだけ渡したので、「残り1つの型を受け取って型を返す」部分適用。
+-/
+
+/-! SOL 7.1 -/
+
+def Point.zeroX (p : Point) : Point := .mk 0 p.y
+
+#eval (Point.mk 1 2).zeroX.x
+
+/-!
+    0
 -/
 
 /-! SOL 7.1 -/
@@ -450,4 +745,118 @@ example : Signal := .red
 
 /-!
 期待される型が `Signal` なので、`.red` は `Signal.red` に解決される。
+-/
+
+
+/-! SOL 8.1 -/
+
+def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
+
+#eval flipNat (fun a b => a - b) 3 10
+
+/-!
+    7
+
+`flipNat F 3 10 = F 10 3 = 10 - 3`。
+-/
+
+/-! SOL 8.2 -/
+
+def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
+
+#eval iterate3 double 1
+
+/-!
+    8
+
+`1 → 2 → 4 → 8`。
+-/
+
+/-! SOL 8.3 -/
+
+def boolToSignal : Bool → Signal := fun b =>
+  match b with
+  | true  => .green
+  | false => .red
+
+def signalToBool : Signal → Bool := fun s =>
+  match s with
+  | .green => true
+  | _      => false
+
+#eval signalToBool (boolToSignal true)
+
+/-!
+    true
+
+`true → .green → true` と往復する（`false` 側も同様に戻る。ただし
+`.yellow` から出発すると `false → .red` となり、往復では戻らない——
+2点の型と3点の型なので、両方向の往復が恒等にはなりようがない）。
+-/
+
+/-! SOL 8.4 -/
+
+def mapPoint (F : Nat → Nat) (p : Point) : Point := ⟨F p.x, F p.y⟩
+
+#eval (mapPoint double (Point.mk 2 3)).y
+
+/-!
+    6
+-/
+
+/-! SOL 8.5 -/
+
+def swapMySum (A B : Type) : MySum A B → MySum B A := fun x =>
+  match x with
+  | .inl a => .inr a
+  | .inr b => .inl b
+
+#eval fromSum (swapMySum Bool Nat (MySum.inl true))
+
+/-!
+    0
+
+`.inl true : MySum Bool Nat` は札を掛け替えると `.inr true : MySum Nat Bool`。
+`fromSum` は `.inr` の枝で `0` を返す。
+-/
+
+/-! SOL 8.6 -/
+
+def pointedOf (A : Type) (a : A) : PointedType := ⟨A, a⟩
+
+#check pointedOf Bool true
+
+/-!
+    pointedOf Bool true : PointedType
+
+`pointedNat = pointedOf Nat 0`、`pointedBool = pointedOf Bool true` である。
+-/
+
+/-! SOL 8.7 -/
+
+def applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A :=
+  match n with
+  | 0     => a
+  | k + 1 => F (applyN A F k a)
+
+#eval applyN Nat double 3 1
+
+/-!
+    8
+
+`iterate3` の一般化。`applyN Nat double 3 = iterate3 double` である。
+-/
+
+/-! SOL 8.8 -/
+
+def diag (A : Type) (a : A) : Pair A A := ⟨a, a⟩
+
+#eval (diag Nat 3).fst
+
+/-!
+    3
+
+手持ちの `A` の項は `a` だけなので、`⟨a, a⟩` 以外に返せるものがない。
+型が具体的（`(Nat → Nat) → Nat` など）だと中身の自由度が大きく、
+型変数だけで書かれた仕様ほど中身が絞られる、という対比である。
 -/

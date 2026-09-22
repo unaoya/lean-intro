@@ -7,11 +7,15 @@
 <style>
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
-        --link: #0969da; --quote-bg: #f0f4f8; }
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
-          --link: #58a6ff; --quote-bg: #24292e; }
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
@@ -30,6 +34,14 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
 .kw { color: var(--kw); font-weight: 600; }
 .doc { color: var(--doc); }
 .cm { color: var(--cm); }
@@ -375,7 +387,7 @@ inductive False : Prop</code></pre>
 <span class="kw">#check</span> all_mul_zero</code></pre>
 <pre class="quote"><code>all_mul_zero (n : Nat) : IsZero (n * 0)</code></pre>
 <p>証明が <code>fun _ =&gt; rfl</code> で済むのは、<code>IsZero (n * 0)</code> が定義上 <code>n * 0 = 0</code> で、 <code>n * 0</code> が<strong>計算で</strong> <code>0</code> になるからである（0節の <code>1 + 1 = 2</code> と同じ理屈）。</p>
-<h3>発展: 対称に見えて <code>rfl</code> が通らない <code>0 * n</code></h3>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 対称に見えて <code>rfl</code> が通らない <code>0 * n</code></h3>
 <p>同じ調子で <code>∀ n, IsZero (0 * n)</code> も書きたくなるが、こちらは通らない:</p>
 <pre class="quote"><code>theorem all_zero_mul : ∀ n : Nat, IsZero (0 * n) := fun n =&gt; rfl
 
@@ -386,11 +398,11 @@ has type
 but is expected to have type
   IsZero (0 * n)</code></pre>
 <p>理由は <code>*</code> の定義が<strong>第2引数についての再帰</strong>であること。<code>n * 0</code> は第2引数が <code>0</code> なので計算が1歩で進むが、<code>0 * n</code> は第2引数が<strong>変数のまま</strong> なので計算が止まり、<code>0 * n</code> と <code>0</code> は「計算で一致」しない。数学では対称に見える2つの式が、定義のレベルでは非対称なのである（練習2の <code>0 * 5</code> が通るのは、<code>5</code> が具体的な数字で計算が最後まで走るから）。</p>
-<p>変数 <code>n</code> のまま示すには <code>n</code> についての<strong>数学的帰納法</strong>が要る。Lean では帰納法は再帰で書く——実物は <code>Top.lean</code> の <code>mem_interFin</code> などで見る。ライブラリではこの命題（の中身）は <code>Nat.zero_mul</code> として証明済みである。</p>
+<p>変数 <code>n</code> のまま示すには <code>n</code> についての<strong>数学的帰納法</strong>が要る。Lean では帰納法は再帰で書く——実物は <code>Top.lean</code> の <code>mem_interFin</code> などで見る。ライブラリではこの命題（の中身）は <code>Nat.zero_mul</code> として証明済みである。</p></aside>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem all_and {α : Type} {Q R : α → Prop} :(∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け（各点で証明を組にするだけ）。</li>
-<li><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> でも <code>all_mul_zero 5</code> でも証明できるか試せ。</li>
+<li>（補足の確認）<code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> でも <code>all_mul_zero 5</code> でも証明できるか試せ。</li>
 <li><code>#check applyForall all_mul_zero 7</code> の表示を予想してから確かめよ（一般論に点を代入すると、命題も特殊化される）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
@@ -540,6 +552,8 @@ but is expected to have type
 <h3>「全部」と「別々」も出てくる</h3>
 <p><code>Intro1.lean</code> 4節で、帰納型の宣言は2つのことを保証すると述べた:構成子で作られたものが項の<strong>全部</strong>であること、そして違う作り方をした項は <strong>別々</strong>であることである。この2つも公理ではなく、同じ一般規則から出てくる。</p>
 <p>「全部」の保証の正体は、自動生成される帰納法原理そのものである。 <code>rec</code> は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」と言っており、<code>match</code> の場合分けがそれで尽くせるのはこれによる。</p>
+<aside class="note note--optional">
+<h3>補足（初読は飛ばしてよい）: 構成子が別々であることと <code>noConfusion</code></h3>
 <p>「別々」には、これも宣言の受理時に自動生成される道具 <code>noConfusion</code> が使える。「違う構成子どうしは等しくない」と「同じ構成子なら中身まで等しい（構成子は単射）」の両方がこれで証明できる。実物を <code>Bool</code> と <code>Nat</code> で見る（<code>a ≠ b</code> は <code>¬(a = b)</code> の記法。初出である）:</p>
 <pre class="lean"><code><span class="kw">example</span> : true ≠ false := <span class="kw">fun</span> h =&gt; Bool.noConfusion h
 
@@ -549,7 +563,9 @@ but is expected to have type
 <span class="kw">#print</span> axioms Bool.noConfusion</code></pre>
 <pre class="quote"><code>&#x27;Bool.noConfusion&#x27; does not depend on any axioms</code></pre>
 <p><code>noConfusion</code> 自体も公理には依存していない——帰納型の仕組みから <strong>証明された</strong>定理である。種明かしだけ述べると、「構成子を <code>match</code> で見分けて <code>True</code>／<code>False</code> を割り当てる述語」を作り、<code>Eq.rec</code>（代入原理）で <code>true = false</code> の仮定からゴール <code>False</code> へ運ぶ——どれも既出の道具である。</p>
-<h3>実験: 等式をもう1つ作る</h3>
+</aside>
+<aside class="note note--optional">
+<h3>補足（初読は飛ばしてよい）: 等式をもう1つ作る実験</h3>
 <p><code>Eq</code> が特別な組み込みでないことは、実際に作り直してみるとよく分かる。同じ形の帰納型 <code>MyEq</code> を宣言すると、帰納法原理も同じ形で自動生成される。</p>
 <pre class="lean"><code><span class="kw">inductive</span> MyEq {α : <span class="sort">Type</span>} (a : α) : α → <span class="sort">Prop</span> <span class="kw">where</span>
   | refl : MyEq a a
@@ -563,8 +579,8 @@ but is expected to have type
 
 <span class="kw">#check</span> MyEq.symm</code></pre>
 <pre class="quote"><code>MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a</code></pre>
-<h3>発展: なぜこの <code>match</code> が通るのか——添字の単一化</h3>
-<p>（この小節は発展的な話題である。初読では飛ばして、次の <code>example</code> へ進んでよい。）</p>
+<h4>なぜこの <code>match</code> が通るのか——添字の単一化</h4>
+<p>（ここはこの補足の中でも特に細かい話である。飛ばして、次の <code>example</code> へ進んでよい。）</p>
 <p>上の証明をよく見ると、不思議なことが起きている。ゴールは <code>MyEq b a</code> なのに、返しているのは <code>.refl</code>——その型は <code>MyEq a a</code> であって、<code>a</code> と <code>b</code> は別の変数のはずである。なぜ型が合うのか。</p>
 <p>鍵は、<code>MyEq</code> の宣言のコロンの<strong>左右</strong>の違いにある。<code>(a : α)</code> は <strong>パラメータ</strong>（どの構成子でも共通・固定）、コロンの右の <code>α → Prop</code> の引数は <strong>添字</strong>（構成子ごとに値を決められる）である。<code>MyEq a</code> は「各 <code>b</code> に命題 <code>MyEq a b</code> を割り当てる族」だが、唯一の構成子 <code>refl</code> は、この族のうち <strong>対角線 <code>MyEq a a</code> にしか項を作らない</strong>。</p>
 <p>ここで <code>Intro1.lean</code> 4節の原則——帰納型の項は、構成子で作られたものがすべて——を当てはめる。手元には <code>h : MyEq a b</code> という項がある。項はすべて構成子から作られ、構成子は <code>refl</code> だけで、<code>refl</code> が作る項の型は <code>MyEq a a</code>。したがって、<strong><code>MyEq a b</code> に項があるということ自体が、<code>b</code> は実は <code>a</code> だったことを意味する</strong>。</p>
@@ -600,11 +616,12 @@ fun {α} {a b} h ↦
 or definition name, but `h` is a proof of
   MyEq a b</code></pre>
 <p>と断られる。逆に言えば、それだけの違いしかない。</p>
+</aside>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</li>
-<li>本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</li>
-<li>逆向きの橋 <code>theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
+<li>（補足の確認）本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</li>
+<li>（補足の確認）逆向きの橋 <code>theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">example</span> : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
@@ -701,6 +718,14 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 
 <span class="kw">#check</span> isEven_add</code></pre>
 <pre class="quote"><code>isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m)</code></pre>
+<p>(6) の途中の項も <code>#check</code> で確かめよう。<code>h1</code> と <code>h2</code> は定理の中だけの名前なので、ここでは既習の <code>fun</code> で同じ文脈を用意する。</p>
+<pre class="lean"><code><span class="kw">#check</span> <span class="kw">fun</span> (n m k l : Nat)
+    (h1 : n + m = 2 * k + m)
+    (h2 : 2 * k + m = 2 * k + 2 * l) =&gt;
+  h1.trans h2</code></pre>
+<pre class="quote"><code>fun n m k l h1 h2 ↦
+  Eq.trans h1 h2 : ∀ (n m k l : Nat), n + m = 2 * k + m → 2 * k + m = 2 * k + 2 * l → n + m = 2 * k + 2 * l</code></pre>
+<p>出力全体は <code>fun</code> で作った関数の型であり、最後の <code>n + m = 2 * k + 2 * l</code> が、この文脈での <code>h1.trans h2</code> の型である。その右辺は <code>h3</code> の左辺と一致するので、さらに <code>.trans h3</code> とつなげて <code>n + m = 2 * (k + l)</code> を得る。</p>
 <h3>種明かし: <code>have</code> も適用である</h3>
 <p>例3で使った <code>have</code> はタクティクではなく項の構文で、しかもただの略記である:</p>
 <pre class="quote"><code>have h : C := e
@@ -822,17 +847,12 @@ n : Nat
 <span class="cm">-- 証明から値を取り出せてしまうと、中身を区別しないはずの証明が</span>
 <span class="cm">-- 計算に影響することになってしまう。そこで Lean は、`∃` のように</span>
 <span class="cm">-- <strong>証人という中身</strong>を持つ命題の証明から、命題でないものを取り出すことを</span>
-<span class="cm">-- 許していない。</span>
-<span class="cm">--</span>
-<span class="cm">-- なお、この制限には例外がある。`False`（そもそも証明がないので、取り出しで</span>
-<span class="cm">-- 矛盾が起きようがない）や `Eq`（構成子が1つで中身の区別が生じない）は、</span>
-<span class="cm">-- 命題でないものへも分解してよい:</span>
-<span class="cm">--</span>
-<span class="cm">--   #check @False.elim   -- @False.elim : {C : Sort u_1} → False → C</span>
-<span class="cm">--</span>
-<span class="cm">-- `Prop` の世界から `Type` の世界へ渡れている。4節からずっと使ってきた</span>
-<span class="cm">-- `.elim` や、等式によるデータの書き換え（`▸`、`Top.lean` で使用）が</span>
-<span class="cm">-- 正当なのは、この例外のおかげである。</span></code></pre>
+<span class="cm">-- 許していない。</span></code></pre>
+<p>ただし例外もある。<code>False</code> や <code>Eq</code> の証明は、命題でない型への分解にも使える。 4節の <code>False.elim</code> や等式によるデータの書き換えは、その例である。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 除去制限の例外</h3>
+<p><code>False</code> にはそもそも証明がなく、取り出しで矛盾は起きない。 <code>Eq</code> の構成子は1つで、中身の区別は生じない。だから命題でないものへも分解できる:</p>
+<pre class="quote"><code>#check @False.elim   -- @False.elim : {C : Sort u_1} → False → C</code></pre>
+<p><code>Prop</code> の世界から <code>Type</code> の世界へ渡れている。4節から使ってきた <code>.elim</code> や、等式によるデータの書き換え（<code>▸</code>、<code>Top.lean</code> で使用）が正当なのはこのためである。</p></aside>
 <p>結論が命題である限り、分解して使うことはできる。 <code>∃</code> を使うときはこの形になる。</p>
 <pre class="lean"><code><span class="kw">theorem</span> existsElim {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>} (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
   <span class="kw">match</span> h <span class="kw">with</span>

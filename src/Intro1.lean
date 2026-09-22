@@ -25,8 +25,9 @@
 
 各節末の ✏ 練習も、**書いた項に、自分が予想した型が付くかどうかを、
 機械に答え合わせさせる**ためのものである。
+-/
 
-### 補足: 記号の入力のしかた
+/-! ### 補足（初読は飛ばしてよい）: 記号の入力のしかた
 
 Lean のコードには `→` や `⟨ ⟩` のような記号が多く出てくる。VS Code の
 Lean 4 拡張では、**バックスラッシュ `\` で始まる略記**を打つと記号に変換される
@@ -86,14 +87,21 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 `Type` もまた項であり、その型は `Type 1`。この階段は上へ続いていく:
 -/
 
+/-! CALLOUT_START optional -/
+/-! ### 補足（初読は飛ばしてよい）: 宇宙の階段 -/
+
 #check Type 1
 
 /-!
     Type 1 : Type 2
 
 `Type`, `Type 1`, `Type 2`, … の階層を宇宙（universe）と呼ぶ。
-この教材では宇宙には**深入りしない**。もう1つ、次の宇宙がある:
+この教材では宇宙には**深入りしない**。
 -/
+
+/-! CALLOUT_END -/
+
+/-! もう1つ、次の宇宙がある: -/
 
 #check Prop
 
@@ -106,7 +114,10 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、
 これがあるから「型を受け取る関数」「型を返す関数」が書ける（3節の `Map` と6節）。
 
-### 先取り: 演算と命題の記号
+-/
+
+/-! CALLOUT_START preview -/
+/-! ### 先取り（3節・CH）: 演算と命題の記号
 
 数の演算や、等式・不等式の記号も、ふつうに書ける。それぞれが正確には何者なのかは
 後で説明することにして（`+` は3節。`=` と `<` はこのファイルでは深入りせず、
@@ -137,11 +148,17 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 
 「`2 < 1` という項は `Prop` 型を持つ」。`2 < 1` のような**偽の命題も**、命題としては立派な項であることに注意
 （真偽と証明の話は `CH.lean` で）。
+-/
 
+/-! CALLOUT_END -/
+
+/-!
 この節で覚えるべきことは2つだけである:
 **項の型はいつでも `#check` で調べられる**こと、そして**型も項である**こと。
+-/
 
-### 予告: 型の推測が証明の検証になる
+/-! CALLOUT_START preview -/
+/-! ### 先取り（CH）: 型の推測が証明の検証になる
 
 最後に、この教材の行き先を、例を1つだけ挙げて予告しておく。
 次の項は `fun`（関数を作る記法、3節）で書かれている。読み方だけ添えると、
@@ -173,6 +190,8 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 使える——これが目標2の意味である。次の節からは、この「型の推測」を
 自分の手でできるようになるための道具立てを、順に説明していく。
 -/
+
+/-! CALLOUT_END -/
 
 /-! ### ✏ 練習
 
@@ -284,18 +303,22 @@ def double : Nat → Nat := fun n => n + n
 /-!
     double : Nat → Nat
 
-注釈した型が、そのまま `double` の型になっている。2つ補足する。
-
-第一に、`fun n => n + n` の `n` には型を書いていないが、注釈 `Nat → Nat` の
+注釈した型が、そのまま `double` の型になっている。
+`fun n => n + n` の `n` には型を書いていないが、注釈 `Nat → Nat` の
 定義域から `n : Nat` と**推論**されている（`fun (n : Nat) => n + n` と
 書いたのと同じ）。
+-/
 
-第二に、本体の `+`（1節で先取りした）は **notation（記法）**であり、
+/-! ### 先取り（詳しくは Intro2）: `+` の仕組み
+
+本体の `+`（1節で先取りした）は **notation（記法）**であり、
 その意味は **class／instance** という仕組みで型ごとに決まっている
 （正確な仕組みは `Intro2.lean` で説明する）。ここでは `Nat` に対して使っており、
 ざっくり **`+ : Nat → Nat → Nat` という型の2引数関数**と思えばよい
 （2引数の型の読み方はこの節の後半で）。
+-/
 
+/-!
 この `def` を受理する前の型検査では、2節と同じ照合が走っている。
 コロンの右に注釈した型 `Nat → Nat` から「引数は `n : Nat`」と仮に置き、
 そのもとで本体 `n + n` の型が行き先の `Nat` になるかを調べる。つまり
@@ -316,8 +339,9 @@ def double : Nat → Nat := fun n => n + n
 
 「本体 `true` の型 `Bool` が、注釈から要求される行き先の型 `Nat` と一致しない」
 という報告である。
+-/
 
-### 適用の書き方
+/-! ### 適用の書き方
 
 関数を使うには、`double 21` のように**関数と引数を並べて**書く（括弧は不要）。
 数学で「f(x)」と書くとき、私たちは f が関数で x がその定義域の元であることを
@@ -338,6 +362,12 @@ def double : Nat → Nat := fun n => n + n
 
 /-!
     42
+-/
+
+/-! ### ✏ 練習（書く）
+
+1. `def inc : Nat → Nat := fun n => …` の本体を埋めて、入力を1増やす関数を
+   書け。`#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。
 -/
 
 /-! ### 表示の読み方: binder 形式
@@ -431,6 +461,12 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
     7
 -/
 
+/-! ### ✏ 練習（書く）
+
+1. `plus 3 : Nat → Nat` を利用して、`def addThree : Nat → Nat := …` を
+   書け。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。
+-/
+
 def applyTo21 (F : Nat → Nat) : Nat := F 21
 
 #check applyTo21
@@ -447,6 +483,14 @@ def applyTo21 (F : Nat → Nat) : Nat := F 21
 
 /-!
     42
+-/
+
+/-! ### ✏ 練習（書く）
+
+1. `F : Nat → Nat` を受け取り、入力 `n` に `F` を2回適用する
+   `def twice (F : Nat → Nat) : Nat → Nat := …` を書け。
+   `#check twice double` の型と `#eval twice double 3` の値を
+   予想してから確かめよ。
 -/
 
 /-!
@@ -597,7 +641,16 @@ Lean の型検査器である。読者がこの教材で行う「型の推測」
 4. `#check Map Nat Bool` の表示を予想してから確かめよ。また
    `def double2 : Map Nat Nat := double` が通るかどうか試せ
    （`Map Nat Nat` は計算すると `Nat → Nat` になる）。
-5. （発展）前問の `evalAt` と `shift` を、`Nat` 限定でなく**どんな型でも**
+5. 「型から項を書く」練習: `(Nat → Nat) → Nat` という型を持つ項を、
+   **中身の違うもので2つ**書け（例えば「21 に適用する」と「関数を無視して
+   `0` を返す」）。`def useF1 : (Nat → Nat) → Nat := …` の形で宣言し、
+   `#check` で型を確かめよ。同じ型に項は何通りもある——型は仕様であって、
+   中身までは決めない。
+6. （発展）合成関数 `compose (A B C : Type) (G : B → C) (F : A → B) : A → C` を
+   書け（数学の G ∘ F。返すのは「`a` を受け取って `G (F a)` を返す関数」である）。
+   `#eval compose Nat Nat Nat double (fun n => n + 1) 3` の値を予想してから
+   確かめよ。
+7. （発展）練習 3 の `evalAt` と `shift` を、`Nat` 限定でなく**どんな型でも**
    使えるように一般化せよ: `evalAt' (A B : Type) (F : A → B) (x : A) : B` と、
    ずらし方も引数にした `shift' (A : Type) (g : A → A) (F : A → A) : A → A` である。
    `#eval evalAt' Nat Nat double 5` と `#eval shift' Nat (fun x => x + 1) double 3`
@@ -686,7 +739,15 @@ def next : Signal → Signal := fun s =>
 たしかに赤の次は青になった。
 
 期待される型が分かっている位置では、`Signal.red` を `.red` と省略できる
-（この省略の仕組みは7節のドット記法で説明する）。以後は省略形も使う:
+（この省略の仕組みは7節のドット記法で説明する）。まず練習で試し、
+そのあと本文でも省略形を使う。
+-/
+
+/-! ### ✏ 練習（書く）
+
+1. `Signal.red`・`Signal.yellow`・`Signal.green` をそれぞれ `0`・`1`・`2` に
+   送る `signalCode : Signal → Nat` を `match` で書け。各枝の結果が同じ型に
+   なることを確かめ、`#eval signalCode Signal.yellow` の値を予想してから実行せよ。
 -/
 
 def isRed : Signal → Bool := fun s =>
@@ -794,6 +855,13 @@ def valueOf : NatOrBool → Nat := fun x =>
 名前を付けると Lean が警告を出す）。
 -/
 
+/-! ### ✏ 練習（書く）
+
+1. 中身の値には触れず、`.nat` の札なら `true`、`.bool` の札なら `false` を
+   返す `tagOf : NatOrBool → Bool` を書け。不要な中身には `_` を使える。
+   `#eval tagOf (NatOrBool.nat 3)` の値を予想してから確かめよ。
+-/
+
 /-! ### ✏ 練習
 
 1. `#eval valueOf (NatOrBool.bool true)` の値を予想してから確かめよ
@@ -855,6 +923,14 @@ def fromSum : MySum Nat Bool → Nat := fun x =>
     fromSum : MySum Nat Bool → Nat
 -/
 
+/-! ### ✏ 練習（書く）
+
+1. `MySum Bool Bool` の左右どちらの札からも、中身の `Bool` をそのまま返す
+   `mergeBool : MySum Bool Bool → Bool` を書け。
+   `#eval mergeBool (MySum.inl true)` と
+   `#eval mergeBool (MySum.inr false)` を予想してから確かめよ。
+-/
+
 /-!
 ここで書き方を一般に述べておく: **帰納型からの関数は `match` で書く**。
 枝は構成子ごとに1本ずつで、全部の枝を与えれば関数が1つ決まる。
@@ -868,7 +944,9 @@ def fromSum : MySum Nat Bool → Nat := fun x =>
 `match` の書式を見たら、直和の普遍性を連想してほしい。
 -/
 
-/-!
+/-! CALLOUT_START preview -/
+/-! ### 先取り（6節）: 暗黙引数を使う汎用版
+
 取り出す側も、パラメータを持たせて一般的に書ける。次の `getLeft` は
 「既定値 `d` を受け取り、左の札なら中身を、右の札なら `d` を返す」関数で、
 `fromSum` はその `Nat`・`Bool`・`0` への特殊化に当たる
@@ -897,6 +975,8 @@ def getLeft {α β : Type} (d : α) : MySum α β → α := fun x =>
     0
 -/
 
+/-! CALLOUT_END -/
+
 /-! ### ✏ 練習
 
 1. `#eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)` の値を予想してから
@@ -924,6 +1004,9 @@ inductive MyNat where
 `MyNat` の項は、`zero` に `succ` を有限回適用したものがすべて。
 列挙型と違って項は無限にあるが、どの項も**有限の手順**で作られている。
 だから場合分けに加えて、構造が小さくなる方向への**再帰**が正当化される。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 集合の方程式としての再帰
 
 集合のアナロジーでは、`MyNat` は方程式
 
@@ -960,7 +1043,19 @@ def add : MyNat → MyNat → MyNat := fun m n =>
 `MyNat.zero.succ.succ` は `MyNat.succ (MyNat.succ MyNat.zero)` のこと
 （値の後ろにドットで関数をつなぐ表示——仕組みは7節のドット記法で見る）。
 たしかに `succ` が2回重なった項、つまり「2」が返ってきた。
+-/
 
+/-! ### ✏ 練習（書く）
+
+1. `isZeroMyNat : MyNat → Bool` を `match` で書き、`.zero` なら `true`、
+   `.succ _` なら `false` を返せ。`#eval isZeroMyNat MyNat.zero` と
+   `#eval isZeroMyNat (MyNat.succ MyNat.zero)` の値を予想して確かめよ。
+2. `toN : MyNat → Nat` を再帰で書け。`.zero` は `0`、`.succ k` は
+   `toN k + 1` に送る。`#eval toN (MyNat.succ (MyNat.succ MyNat.zero))` の
+   値を予想してから確かめよ。
+-/
+
+/-!
 標準ライブラリの型はほとんどすべて帰納型である。
 `Bool` `Unit` `Empty`（上で引用した）、`Nat`（リテラル `3` は
 `succ (succ (succ zero))` の表示）、`CH.lean` に出てくる `×` `⊕`、
@@ -980,11 +1075,22 @@ def add : MyNat → MyNat → MyNat := fun m n =>
    `toBool : Two → Bool` と `ofBool : Bool → Two` を書き、
    `#eval toBool (ofBool true)` を確かめよ（`Bool` は表示の仕組みが
    登録済みなので `#eval` が使える）。
-3. （発展）前問の `Nat` 版: `MyNat` と `Nat` も、型としては別物だが
-   「同型」である。往復の関数 `toN : MyNat → Nat`（再帰で `+ 1` していく）と
+3. `Two → Bool` の関数は、集合のアナロジーで数えると 2 × 2 = 4 通り
+   あるはずである。その4つすべてを `def g1 : Two → Bool := …` から `g4` まで
+   書け（前問の `toBool` はその1つ）。有限型の間の関数を書くことは、
+   **値の対応表を書くこと**にほかならない。
+4. （発展）掛け算 `mul : MyNat → MyNat → MyNat` を、本文の `add` の再帰に
+   ならって書け（`m × 0 = 0`、`m × (k + 1) = m × k + m` を写す:
+   `.zero` の枝は `.zero`、`.succ k` の枝は `add (mul m k) m`）。
+   `#eval toN (mul myThree myThree)` の値を予想してから確かめよ
+   （`toN`・`myThree` は前の練習で書いたもの）。
+5. （発展）上で書いた `toN : MyNat → Nat` の逆向きの関数
    `ofN : Nat → MyNat` を書き、`#eval toN (ofN 3)` の値を予想してから確かめよ。
    （`ofN` では `Nat` の項を `match n with | 0 => … | k + 1 => …` で
-   場合分けできる——この書き方はここが初出である。また、**すべての** `n` で
+   場合分けできる。`| k + 1` は `| .succ k` と同じ「後続の自然数」の場合で、
+   `k` は一つ前の自然数を表す。したがって `ofN k` は元の入力より小さい数への
+   再帰である。これは方程式 `n = k + 1` を解く操作ではなく、`Nat` の構成子に
+   よる場合分けである。この書き方はここが初出である。また、**すべての** `n` で
    往復が恒等になることの証明には数学的帰納法が要る。`CH.lean` のあとで
    戻ってくるとよい。）
 -/
@@ -1074,6 +1180,13 @@ structure Point where
 第1フィールドに入れた値が、そのまま返ってきた。
 -/
 
+/-! ### ✏ 練習（書く）
+
+1. `Point` の第1成分だけを1増やす `moveRight : Point → Point` を書け。
+   成分の取り出しには `Point.x`・`Point.y`、作成には `Point.mk` を使う。
+   `#eval Point.x (moveRight (Point.mk 1 2))` の値を予想して確かめよ。
+-/
+
 /-! ### ✏ 練習
 
 1. 次の structure を定義し、`#check` で構成子と取り出し関数が
@@ -1085,6 +1198,16 @@ structure Point where
 
 2. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
    さらに `(Point.mk 1 2).y` とも書けることを試せ（7節のドット記法の先取り）。
+3. フィールドの型は、自作の structure でもよい。長方形
+
+       structure Rect where
+         corner : Point
+         width : Nat
+         height : Nat
+
+   を定義し、`def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩` が受理されることを確かめよ
+   （`⟨ ⟩` の入れ子が `corner : Point` の分である）。`#eval r.corner.x` の
+   値を予想してから確かめよ（後ろドットの入れ子。これも7節の先取り）。
 -/
 
 /-!
@@ -1121,6 +1244,9 @@ structure Pair (α β : Type) where
 つまり structure は「**直積の各成分に名前を付けたもの**」と思ってよい。
 実際、標準ライブラリの `×` 自身が `fst`/`snd` という2フィールドの
 structure（名前は `Prod`）として定義されている。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 帰納型を直和と直積で見る
 
 前節の直和とここの直積をまとめると、帰納型の一般形は集合の言葉でこう読める:
 
@@ -1137,8 +1263,9 @@ structure（名前は `Prod`）として定義されている。
 なおアナロジーの注意を1つ。集合と違って、型は**外延（要素の一致）では
 同一視されない**。`Point` と `Pair Nat Nat` は「中身」は同じだが別の型である
 （この話は `Intro2.lean` の `Fin` の補足でも再登場する）。
+-/
 
-### フィールドは前のフィールドに依存してよい
+/-! ### フィールドは前のフィールドに依存してよい
 
 もう1つ一般化がある: 後のフィールドの型は、前のフィールドに**依存してよい**。
 1節で見たとおり型も項だから、フィールドの値として**型そのもの**を持たせ、
@@ -1174,7 +1301,10 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 第二フィールド `point` の型が、第一フィールド `carrier` の**値**で決まっている
 （`pointedNat` では `point : Nat`）。なお `#check PointedType` とすると
 `PointedType : Type 1` と表示される——中身に `Type` の項を入れたので、
-入れ物は1節の宇宙の階段を1段のぼるのである。
+入れ物は1節で見た `Type : Type 1` の1段上になるのである。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 依存するフィールドと族の直和
 
 集合のアナロジーもここで1段更新される。フィールドが依存しない範囲では
 「structure は直積」だったが、依存を許した一般形が作るのは**族の直和**
@@ -1201,6 +1331,11 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 2. `def pointedBool : PointedType := ⟨Bool, true⟩` が受理されることを確かめよ。
    また `#check PointedType.mk Nat` の表示を予想してから確かめよ
    （第1引数を渡すと、第2引数の型が決まる）。
+3. （発展）3節の「カリー化」の正体を自分で書く。組を受け取る関数を
+   「1つずつ受け取る」形に直す
+   `curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat` と、その逆向き
+   `uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat` を書け。
+   `#eval curryP (fun p => p.fst + p.snd) 3 4` の値を予想してから確かめよ。
 -/
 
 /-! ## 6. 依存関数型
@@ -1258,12 +1393,28 @@ def idAt (α : Type) (a : α) : α := a
 
 と書く（束縛した名前 `α` が矢印の右側に現れるのが目印）。これが Lean の
 関数型の一般形で、`A → B` は「行き先が入力に依存しない特別な場合」の略記である。
+-/
+
+/-! ### 補足（初読は飛ばしてよい）: 依存関数型と集合族の直積
+
 集合のアナロジーでは、依存関数型は**集合族の直積** ∏ にあたる
 （各点 `a` ごとに「行き先の集合」から要素を1つずつ選ぶ選び方、と読める）。
+-/
 
+/-!
 なお、この「型を渡してから使う」仕組みこそ多相性の正体で、これまでも表示に
 顔を出してきた暗黙引数 `{α : Type}`（すぐ下でまとめる）は、この第1引数を
 文脈から自動で埋めてもらう書き方である。
+-/
+
+/-! ### ✏ 練習（書く）
+
+1. 型 `α`・`β` とその項 `a : α`・`b : β` を受け取る
+   `makePair (α β : Type) (a : α) (b : β) : Pair α β` を書け。
+   `#check makePair Nat Bool 3 true` の型を予想して確かめよ。
+2. 同じ引数から成分の順を入れ替えた `Pair β α` を返す
+   `swapAt (α β : Type) (a : α) (b : β) : Pair β α` を書け。
+   `#check swapAt Nat Bool` で残りの関数型を予想して確かめよ。
 -/
 
 /-! ### ✏ 練習
@@ -1271,6 +1422,10 @@ def idAt (α : Type) (a : α) : α := a
 1. `#check idAt (Nat → Nat)` の型を予想してから確かめよ（矢印の結合に注意）。
    `#eval idAt (Nat → Nat) double 21` はどうなるか。
 2. `#check idAt Signal` の表示を予想してから確かめよ。
+3. 「2つめの引数を無視する」依存関数 `constAt (A B : Type) (a : A) : B → A` を
+   書け（`idAt` と同じく、型を受け取ってから中身が始まる）。
+   `#check constAt Nat Bool 5` の型と `#eval constAt Nat Bool 5 true` の値を
+   予想してから確かめよ。
 -/
 
 /-! ### 型の読み方と括弧 `( )`・`{ }`
@@ -1376,6 +1531,13 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 
 example : Point := .mk 1 2
 
+/-! ### ✏ 練習（書く）
+
+1. `Point.zeroX (p : Point) : Point` を定義し、第1成分だけを `0` にせよ。
+   本体では `p.y` と `.mk` の両方を使う。`#eval (Point.mk 1 2).zeroX.x`
+   の値を予想して確かめよ。
+-/
+
 /-!
 証明でもこの記法が多用される。`CH.lean` では `h.1`・`h.elim`、`Top.lean` では
 `hK : IsCompact K` に対する `hK.image hf`（＝ `IsCompact.image hK hf`）の
@@ -1393,6 +1555,45 @@ example : Point := .mk 1 2
    一致を確かめよ。
 2. `example : Point := .mk 1 2` にならって、`example : Signal := .red` が
    通ることを確かめよ（前ドットが「期待される型」から解決されている）。
+-/
+
+/-! ## 8. まとめ練習 — 小さな型つき言語で書く
+
+ここまでの部品——`fun` と適用、`match`、`inductive`、`structure`、
+型を引数に取る関数——だけで、Lean は小さな**型つきプログラミング言語**として
+使える。仕上げに、**型を仕様書として読み、それに合う項を書く**総合練習を置く。
+
+どの問題も、書いたら `#check` で型を、`#eval` で値を、機械に答え合わせ
+させること。行き詰まったら、まず矢印の形に合わせて `fun` の引数を並べ、
+返すべきものの型を確かめるとよい——**型が設計図である**。
+-/
+
+/-! ### ✏ 練習
+
+1. 引数の順序を入れ替える `flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat`
+   （`flipNat F a b` が `F b a` になる）を書け。
+   `#eval flipNat (fun a b => a - b) 3 10` の値を予想してから確かめよ。
+2. `iterate3 (F : Nat → Nat) : Nat → Nat`（`F` を3回適用する関数を返す）を
+   書け。`#eval iterate3 double 1` の値を予想してから確かめよ。
+3. `boolToSignal : Bool → Signal`（`true` は `.green` に、`false` は `.red` に
+   送る）と、`signalToBool : Signal → Bool`（`.green` のときだけ `true`）を
+   書け。`#eval signalToBool (boolToSignal true)` を確かめよ。
+4. 両成分に同じ関数を適用する `mapPoint (F : Nat → Nat) (p : Point) : Point` を
+   書け。`#eval (mapPoint double (Point.mk 2 3)).y` の値を予想してから確かめよ。
+5. 札を掛け替える `swapMySum (A B : Type) : MySum A B → MySum B A` を書け。
+   `#eval fromSum (swapMySum Bool Nat (MySum.inl true))` の値を予想してから
+   確かめよ（`fromSum : MySum Nat Bool → Nat` は4節で定義した）。
+6. `pointedOf (A : Type) (a : A) : PointedType` を書け（5節の `pointedNat` や
+   練習の `pointedBool` を、どの型でも作れるように一般化したもの）。
+   `#check pointedOf Bool true` の表示を予想してから確かめよ。
+7. （発展）回数も引数にした
+   `applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A`（`F` を `n` 回適用）を
+   書け。`n` の `match` は `| 0 => …`・`| k + 1 => …` の形（4節の練習の
+   `ofN` と同じ）。`#eval applyN Nat double 3 1` の値を予想してから確かめよ。
+8. （発展）型だけで中身がほぼ決まる例: `diag (A : Type) (a : A) : Pair A A` を
+   書け。この型に合う項は、実質1通りしか書きようがない——書いたうえで
+   `#eval (diag Nat 3).fst` を確かめよ。3節の練習（`(Nat → Nat) → Nat` の項を
+   2つ書く）とは対照的に、**型が中身をどこまで決めるかは型の形による**のである。
 -/
 
 /-! ## 付録: 記号の打ち方まとめ

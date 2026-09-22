@@ -6,6 +6,9 @@
 
 変換規則:
   * `/-! ... -/` ブロック → 地の文（この教材で使う Markdown サブセットを HTML 化）
+  * `### 補足` / `### 先取り` → その地の文ブロックを枠で囲む
+  * `/-! CALLOUT_START optional|preview -/` から `/-! CALLOUT_END -/` まで
+    → コード・出力をまたぐ長い枠（開始・終了マーカー自体は表示しない）
   * 行頭の docstring `/-- ... -/` → 地の文（直後の宣言の説明として、コードの直前に置く）
   * それ以外（宣言・フィールドの docstring・コメント・#check）→ コードブロック（簡易ハイライト付き）
 
@@ -325,15 +328,32 @@ def parse_solutions(path: Path) -> list[tuple[str, list[tuple[str, list[str]]]]]
 EXERCISE_HEAD_RE = re.compile(r"^#{2,4} .*✏ 練習")
 SECTION_RE = re.compile(r"^## (\d+)\.")
 ITEM_RE = re.compile(r"^(\d+)\. ")
+CALLOUT_HEAD_RE = re.compile(r"^### (補足|先取り)(?:[（:]|$)")
+CALLOUT_START_RE = re.compile(r"^CALLOUT_START (optional|preview)$")
+CALLOUT_END = "CALLOUT_END"
 
 
 def render_chapter(name: str, segments) -> str:
-    """本文をレンダリングし、✏ 練習の各問の直後に解答を折りたたみで挟む。"""
+    """本文をレンダリングする。長い注記は CALLOUT_START/END でコードごと囲む。"""
     sol_path = SRC / f"{SOL_FILES[name]}.lean" if name in SOL_FILES else None
     sols = parse_solutions(sol_path) if sol_path and sol_path.exists() else None
     body = []
     sec, sol_i = 0, 0
+    active_callout = None
     for kind, lines in segments:
+        first = next((l.strip() for l in lines if l.strip()), "")
+        if kind == "prose" and (start := CALLOUT_START_RE.fullmatch(first)):
+            if active_callout is not None or sum(bool(l.strip()) for l in lines) != 1:
+                raise SystemExit(f"error: {name}: invalid nested CALLOUT_START")
+            active_callout = start.group(1)
+            body.append(f'<aside class="note note--{active_callout}">')
+            continue
+        if kind == "prose" and first == CALLOUT_END:
+            if active_callout is None or sum(bool(l.strip()) for l in lines) != 1:
+                raise SystemExit(f"error: {name}: unexpected CALLOUT_END")
+            body.append("</aside>")
+            active_callout = None
+            continue
         if kind == "code":
             body.append(render_code(lines))
             continue
@@ -344,7 +364,12 @@ def render_chapter(name: str, segments) -> str:
             m = SECTION_RE.match(l)
             if m:
                 sec = int(m.group(1))
-        body.append(render_prose(lines))
+        rendered = render_prose(lines)
+        callout = CALLOUT_HEAD_RE.match(first)
+        if callout and active_callout is None:
+            kind = "optional" if callout.group(1) == "補足" else "preview"
+            rendered = f'<aside class="note note--{kind}">{rendered}</aside>'
+        body.append(rendered)
         if sols is None or not any(EXERCISE_HEAD_RE.match(l) for l in lines):
             continue
         for item in [int(m.group(1)) for l in lines if (m := ITEM_RE.match(l))]:
@@ -357,6 +382,8 @@ def render_chapter(name: str, segments) -> str:
                 raise SystemExit(f"error: {name} 練習 {label} の位置に SOL {got}（{SOL_FILES[name]}.lean の順序を確認）")
             inner = "\n".join(render_code(ls) if k == "code" else render_prose(ls) for k, ls in segs2)
             body.append(f'<details class="sol"><summary>解答 {item}</summary>\n{inner}\n</details>')
+    if active_callout is not None:
+        raise SystemExit(f"error: {name}: CALLOUT_END is missing")
     if sols is not None and sol_i != len(sols):
         raise SystemExit(f"error: {name} で解答が {len(sols) - sol_i} 個余っている（{SOL_FILES[name]}.lean）")
     return "\n".join(body)
@@ -376,11 +403,15 @@ def chapter_title(segments) -> str:
 CSS = """
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
-        --link: #0969da; --quote-bg: #f0f4f8; }
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
-          --link: #58a6ff; --quote-bg: #24292e; }
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
@@ -399,6 +430,14 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
 .kw { color: var(--kw); font-weight: 600; }
 .doc { color: var(--doc); }
 .cm { color: var(--cm); }

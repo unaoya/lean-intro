@@ -7,11 +7,15 @@
 <style>
 :root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
         --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
-        --link: #0969da; --quote-bg: #f0f4f8; }
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
 @media (prefers-color-scheme: dark) {
   :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
           --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
-          --link: #58a6ff; --quote-bg: #24292e; }
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
 }
 * { box-sizing: border-box; }
 body { color: var(--fg); background: var(--bg); margin: 0;
@@ -30,6 +34,14 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
 .kw { color: var(--kw); font-weight: 600; }
 .doc { color: var(--doc); }
 .cm { color: var(--cm); }
@@ -109,7 +121,8 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> (∅ : Set Nat)</code></pre>
 <pre class="quote"><code>∅ : Set Nat</code></pre>
-<p><code>instance</code> は名前のない宣言だが、実際には Lean が自動で命名している。上の3つは <code>Set.instInter</code> のような名前になる（<code>set_option pp.explicit true</code> で項を表示すると中に見える）。 <code>instance memInst : Membership α (Set α) := …</code> と自分で名前を付けてもよい。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>instance</code> の内部名</h3>
+<p><code>instance</code> は名前のない宣言だが、実際には Lean が自動で命名している。上の3つは <code>Set.instInter</code> のような名前になる（<code>set_option pp.explicit true</code> で項を表示すると中に見える）。 <code>instance memInst : Membership α (Set α) := …</code> と自分で名前を付けてもよい。</p></aside>
 <p>全体集合。どの点も属する集合（つねに <code>True</code> を返す述語）。束縛子を <code>_a</code> としたのは、述語の中で点を使わないから（<code>_</code> は「使わない」印）。</p>
 <pre class="lean"><code><span class="kw">def</span> univ : Set α := {_a | True}
 
@@ -165,13 +178,16 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="cm">-- 確認: 逆像も定義どおりに展開される。両辺は計算（関数適用の簡約）で一致するので `rfl`</span>
 <span class="kw">example</span> : (<span class="kw">fun</span> n : Nat =&gt; n + 1) ⁻¹&#x27; {m | m = 3} = {n | n + 1 = 3} := rfl</code></pre>
-<h3>記法の結合の強さ</h3>
+<p>括弧を省いた記法は結合の強さに従って読まれる。細かい順位は次の補足で確かめる。</p>
+<aside class="note note--optional">
+<h3>補足（初読は飛ばしてよい）: 記法の結合の強さ</h3>
 <p><code>postfix:max</code> や <code>infixl:80</code> の数字は結合の強さで、大きいほど強く結合する。ここまでの記法と標準ライブラリの <code>∩</code>（70）・<code>∪</code>（65）の間には</p>
 <pre class="quote"><code>ᶜ (max)　&gt;　&#x27;&#x27; と ⁻¹&#x27; (80)　&gt;　∩ (70)　&gt;　∪ (65)</code></pre>
 <p>の関係がある。次の等式は「左辺を規則どおりに読むと右辺になる」ことの確認で、両辺が<strong>同じ項</strong>に構文解析されるからこそ <code>rfl</code> で通る。</p>
 <pre class="lean"><code><span class="kw">example</span> (f : Nat → Nat) (s t : Set Nat) : f &#x27;&#x27; s ∩ t = (f &#x27;&#x27; s) ∩ t := rfl
 <span class="kw">example</span> (s t : Set Nat) : s ∩ tᶜ = s ∩ (tᶜ) := rfl
 <span class="kw">example</span> (s t u : Set Nat) : s ∩ t ∪ u = (s ∩ t) ∪ u := rfl</code></pre>
+</aside>
 <p>有限集合: ある <code>n</code> について、<code>Fin n</code> からの写像で <code>s</code> の点をすべて拾えること。</p>
 <p><code>Fin n</code> は <code>0, 1, …, n-1</code> のちょうど <code>n</code> 個からなる型なので、「<code>Fin n</code> で番号づけられる」がそのまま「点が有限個しかない」を意味する。</p>
 <p><code>f</code> は <code>s</code> の外の点を拾ってもよい（<code>Fin n</code> と <code>s</code> の全単射までは要求しない）。「高々 <code>n</code> 個」で十分であり、こうしておくと部分集合の有限性がただちに従う。</p>
@@ -286,8 +302,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 </details>
 <h2>2. 全単射</h2>
 <p>目標の「連続全単射」を述べるために要る。 <code>Function.Injective</code>（<code>∀ ⦃a b⦄, f a = f b → a = b</code>。括弧 <code>⦃ ⦄</code> は暗黙引数 <code>{ }</code> の変種で、この教材では <code>∀ a b, f a = f b → a = b</code> と読んでよい）と <code>Function.Surjective</code>（<code>∀ b, ∃ a, f a = b</code>）は標準ライブラリにあるので、全単射だけを定義する。</p>
-<p>全単射: 単射かつ全射。</p>
-<p><code>Function.Injective f ∧ Function.Surjective f</code> と <code>∧</code> で束ねても内容は同じだが、ここでは <code>structure</code> にする。利点はフィールドに<strong>名前</strong>が付くこと:取り出しが <code>hbij.1</code> ではなく <code>hbij.injective</code> と書けて、読み手に意図が伝わる。ほかにも、フィールドごとに説明（docstring）を付けられる、フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、という利点がある。中身が命題だけなので <code>structure … : Prop</code> にできる。</p>
+<p>全単射: 単射かつ全射。2つの性質を名前付きフィールドに束ねる。中身が命題だけなので <code>structure … : Prop</code> にできる。</p>
 <pre class="lean"><code><span class="kw">structure</span> Function.Bijective {α β : <span class="sort">Type</span>} (f : α → β) : <span class="sort">Prop</span> <span class="kw">where</span>
 <span class="doc">  /-- 単射性: 送り先が同じなら元も同じ。 -/</span>
   injective : Function.Injective f
@@ -297,6 +312,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> Function.Bijective</code></pre>
 <pre class="quote"><code>Function.Bijective {α β : Type} (f : α → β) : Prop</code></pre>
 <p>写像の性質（写像を受け取って命題を返す）。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: なぜ <code>∧</code> でなく <code>structure</code> なのか</h3>
+<p><code>Function.Injective f ∧ Function.Surjective f</code> と束ねても内容は同じだが、ここでは <code>structure</code> にする。取り出しが <code>hbij.1</code> ではなく <code>hbij.injective</code> と書けて、読み手に意図が伝わる。フィールドごとに docstring を付けられ、フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、という利点もある。</p></aside>
 <h3>✏ 練習</h3>
 <ol>
 <li>恒等写像が全単射であること <code>example : Function.Bijective (fun n : Nat =&gt; n)</code> を証明せよ（<code>injective</code> は仮定をそのまま返し、<code>surjective</code> は証人 <code>b</code> と <code>rfl</code>）。</li>
@@ -333,7 +350,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> TopologicalSpace</code></pre>
 <pre class="quote"><code>TopologicalSpace (X : Type) : Type</code></pre>
 <p>クラスも「型を受け取って型を返す関数」。<code>TopologicalSpace X</code> は「<code>X</code> 上の位相全体の型」で、その項1つが位相1つに当たる。</p>
-<p>なお、主フィールドの型 <code>Set X → Prop</code> は <code>Set (Set X)</code> と同じもの——つまり <code>IsOpen</code> は「部分集合の集まり」P(P(X)) の元である。「開集合系を指定する」という日常の言い方が、そのまま型に写っている。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 開集合系を「集合の集合」と見る</h3>
+<p>主フィールドの型 <code>Set X → Prop</code> は <code>Set (Set X)</code> と同じもの——つまり <code>IsOpen</code> は「部分集合の集まり」P(P(X)) の元である。「開集合系を指定する」という日常の言い方が、そのまま型に写っている。</p></aside>
 <pre class="lean"><code><span class="cm">-- `export` で `TopologicalSpace.IsOpen` などを接頭辞なしの `IsOpen` で書けるようにする</span>
 <span class="kw">export</span> TopologicalSpace (IsOpen isOpen_univ isOpen_inter isOpen_sUnion)
 
@@ -471,7 +489,6 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <p>「どんな開被覆にも有限部分被覆がある」という条件。</p>
 <p>被覆は添字づけられた族 <code>U : I → Set X</code> で表し、部分被覆は添字の部分集合 <code>J ⊆ I</code> を取ることで表す。 <code>J</code> が有限であることは <code>Set.Finite</code>（<code>Fin n</code> で番号づけられること）で表す。</p>
 <p>コンパクト集合。定義を読み下すと:任意の添字型 <code>I</code>（暗黙引数）と開集合族 <code>U : I → Set X</code> について、 <code>U</code> が <code>K</code> を覆うなら、<strong>添字の有限部分集合</strong> <code>J</code> に間引いても <code>K</code> を覆える。</p>
-<p><code>Hausdorff</code> と違って、こちらは <code>class</code> にしない。<code>IsCompact</code> は個々の部分集合ごとの述語で、<code>hK : IsCompact K</code> というふつうの仮定として渡したり、補題の<strong>結論</strong>として新しく作ったりする対象だからである（集合ごとに登録簿へ載せる運用はできない）。空間全体の性質である <code>CompactSpace</code>（下）は <code>Hausdorff</code> と同様 <code>class</code> にする。</p>
 <pre class="lean"><code><span class="kw">def</span> IsCompact (K : Set X) : <span class="sort">Prop</span> :=
   ∀ {I : <span class="sort">Type</span>} (U : I → Set X), (∀ i, IsOpen (U i)) → K ⊆ (⋃ i, U i) →
     ∃ J : Set I, J.Finite ∧ K ⊆ (⋃ i ∈ J, U i)
@@ -479,6 +496,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> IsCompact</code></pre>
 <pre class="quote"><code>IsCompact {X : Type} [TopologicalSpace X] (K : Set X) : Prop</code></pre>
 <p>表示は短いが、定義の中身は上のとおり <code>∀</code> が3つ重なった命題である。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>IsCompact</code> を <code>class</code> にしない理由</h3>
+<p><code>Hausdorff</code> と違って、こちらは <code>class</code> にしない。<code>IsCompact</code> は個々の部分集合ごとの述語で、<code>hK : IsCompact K</code> というふつうの仮定として渡したり、補題の<strong>結論</strong>として新しく作ったりする対象だからである（集合ごとに登録簿へ載せる運用はできない）。空間全体の性質である <code>CompactSpace</code>（下）は <code>Hausdorff</code> と同様 <code>class</code> にする。</p></aside>
 <p>空間そのものがコンパクトであること: 全体集合 <code>univ</code> がコンパクト集合である。 <code>Hausdorff</code> と同じく、命題1つだけの <code>class : Prop</code>。</p>
 <pre class="lean"><code><span class="kw">class</span> CompactSpace (X : <span class="sort">Type</span>) [TopologicalSpace X] : <span class="sort">Prop</span> <span class="kw">where</span>
   isCompact_univ : IsCompact (Set.univ : Set X)
@@ -493,7 +512,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <li>同じ <code>J</code> が <code>f &#x27;&#x27; K</code> の有限部分被覆を与える（<code>Set.image_subset_biUnion</code>）</li>
 </ol>
 <p>1 と 3 は位相と無関係な、像と逆像についての一般的な補題である。有限性は受け取った <code>J</code> をそのまま使い回すだけなので、<code>Fin n</code> を開ける必要はない。</p>
-<p>なお mathlib では、細かい補題を <code>theorem</code> の同義語 <code>lemma</code> で宣言する慣例があるが、<code>lemma</code> は core Lean にはない（mathlib がマクロで定義している）。この教材では一貫して <code>theorem</code> を使う。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>lemma</code> という宣言名</h3>
+<p>なお mathlib では、細かい補題を <code>theorem</code> の同義語 <code>lemma</code> で宣言する慣例があるが、<code>lemma</code> は core Lean にはない（mathlib がマクロで定義している）。この教材では一貫して <code>theorem</code> を使う。</p></aside>
 <p>像が族で覆われるなら、元の集合は逆像の族で覆われる（方針の 1）。位相と無関係な補題なので、節の変数 <code>X Y</code>（位相つき）ではなく新しい型変数 <code>α β</code> で述べる。</p>
 <pre class="lean"><code><span class="kw">theorem</span> Set.subset_preimage_iUnion {α β : <span class="sort">Type</span>} {f : α → β} {K : Set α} {I : <span class="sort">Type</span>}
     {U : I → Set β} (h : f &#x27;&#x27; K ⊆ ⋃ i, U i) : K ⊆ ⋃ i, f ⁻¹&#x27; U i := <span class="kw">by</span>
@@ -888,7 +908,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <li>補題2の核 <code>IsCompact.exists_disjoint_nhds</code> は <code>propext</code> のみ（途中の <code>#print axioms</code> で確認したとおり、選択公理なしで証明できた）</li>
 <li><code>Classical.choice</code> が入る経路は3つだけ:<ol>
 <li><code>Set.compl_compl</code> の背理法（<code>Classical.byContradiction</code>）</li>
-<li>補題3まわりの <code>by_cases</code>（<code>x ∈ C</code> と <code>Nonempty I</code>）。任意の述語への排中律であり、Lean の排中律は Diaconescu の定理によって choice から導かれた<strong>定理</strong>である</li>
+<li>補題3まわりの <code>by_cases</code>（<code>x ∈ C</code> と <code>Nonempty I</code>）。任意の述語への排中律</li>
 <li>主定理での逆写像の構成（<code>Classical.choose</code>。「存在する」からデータを取り出す、choice のもっとも直接的な使用）</li>
 </ol></li>
 </ul>
@@ -896,6 +916,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <p>なお <code>propext</code> は集合を述語として定義したことから、<code>Quot.sound</code> は <code>Set.ext</code> の中の <code>funext</code>（Lean では定理）から来ている。</p>
 <pre class="lean"><code><span class="kw">#print</span> axioms Homeomorph.ofContinuousBijective</code></pre>
 <pre class="quote"><code>&#x27;Homeomorph.ofContinuousBijective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 排中律から選択公理への依存経路</h3>
+<p><code>by_cases</code> は排中律を使う。Lean では排中律は公理として直接追加されたものではなく、 Diaconescu の定理によって <code>Classical.choice</code> から導かれた<strong>定理</strong>である。したがって <code>by_cases</code> を使った証明の公理一覧にも <code>Classical.choice</code> が現れる。</p></aside>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>#print axioms isOpen_empty</code> の結果を予想してから確かめよ。 <code>Classical.choice</code> は入るだろうか（合併の公理と <code>Set.ext</code> だけで示した証明だった）。</li>
