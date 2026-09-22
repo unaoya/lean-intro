@@ -896,7 +896,7 @@ theorem notIntro {p : Prop} (h : p → False) : ¬p := h
    適用すると `False` が出る。あとは `.elim`。
 2. `theorem dni {p : Prop} : p → ¬¬p` を書け（`¬¬p` を**示す**向き。ほとんど1語で書ける）。
    書けたら、逆向き `¬¬p → p` にも挑戦して、**書けない**ことを確かめよ。
-   書き方は [`Top.lean` の1節](#sec-Top.sets) `compl_compl`（`Classical.byContradiction` を使う）で、
+   書き方は [`Top.lean` の2節](#sec-Top.sets) `compl_compl`（`Classical.byContradiction` を使う）で、
    その代償（公理への依存）は末尾の公理の節で分かる。
 3. `example : ¬False := fun h => h` が通ることを確かめよ
    （`¬False` は `False → False`——恒等関数が証明になる）。
@@ -1379,7 +1379,7 @@ theorem MyEq.symm' {α : Type} {a b : α} (h : MyEq a b) : MyEq b a :=
 まとめると: `Signal` の `match` は場合の列挙だけだったが、添字つきの族への
 `match` は枝ごとに**添字の情報が増える**（依存パターンマッチと呼ばれる）。
 「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが
-`Eq` の帰納法原理 `Eq.rec`（代入原理）の中身であり、[12節](#sec-CH.tactics)で見る `rw` が
+`Eq` の帰納法原理 `Eq.rec`（代入原理）の中身であり、[`Top.lean` 1節](#sec-Top.tactics)で見る `rw` が
 裏でやっていることの正体でもある。
 -/
 
@@ -1416,7 +1416,7 @@ example {α : Type} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
 実際 `h : MyEq a b` を「`a = b` が証明できた」と解釈しても問題ない——
 上で示した同値 `myEq_iff_eq` が、その読み替えの正当化である。
 `Eq` に残る特別さは論理の側にはなく、道具立ての側にある:
-`=` という記法や、`rw`・`simp` などのタクティク（[12節](#sec-CH.tactics)で登場する、証明の
+`=` という記法や、`rw`・`simp` などのタクティク（[`Top.lean` 1節](#sec-Top.tactics)で登場する、証明の
 もう1つの書き方の道具）は `Eq` に向けて作られているので、
 `MyEq` では使えない。例えば `h : MyEq a b` で `rw [h]` とすると
 
@@ -1461,7 +1461,7 @@ example {α : Type} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq
 
     ソースコード
       → エラボレータ: 記法を展開し、省略された引数（暗黙引数・インスタンス引数）を
-        埋め、タクティク（[12節](#sec-CH.tactics)）を実行して、省略のない項を組み立てる
+        埋め、タクティク（[`Top.lean` 1節](#sec-Top.tactics)）を実行して、省略のない項を組み立てる
       → カーネル: 完成した項の型を、小さな規則集だけで検査する
 
 賢い処理はすべて前段のエラボレータに、信頼はすべて後段のカーネルにある。
@@ -1646,66 +1646,9 @@ theorem orElimToProp {p q r : Prop} (h : p ∨ q) (f : p → r) (g : q → r) : 
    エラーメッセージを自分の目で確かめよ。
 -/
 
-/-! ## 12. タクティク — 証明のもう1つの書き方 {#sec-CH.tactics}
-
-ここまで、証明はすべて項として直接書いてきた。Lean にはもう1つの流儀があり、
-`by` に続けて、項を組み立てる**命令**（タクティク）の列を書く。
-[3節](#sec-CH.products)の `swapAnd` をタクティクで書き直してみる。
--/
-
-theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
-  intro h            -- `fun h =>` に対応
-  exact ⟨h.2, h.1⟩   -- この項をそのまま置く
-
-#check swapAnd'
-
 /-!
-    swapAnd' {p q : Prop} : p ∧ q → q ∧ p
--/
-
-/-!
-`intro` は `fun`、`exact` は項そのものに対応していて、
-どちらの流儀でも、最終的に出来上がるのは**同じ型を持つ項**である
-（字面まで同じになるとは限らない）。
-つまりタクティクは証明そのものではなく、**項を組み立てるためのメタなプログラム**であり、
-`by` ブロックは実行されると項を生成する。検査されるのはあくまで生成された項のほう。
-生成結果は `#print` で見られる:
--/
-
-#print swapAnd'
-
-/-!
-    theorem swapAnd' : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
-    fun {p q} h ↦ ⟨h.right, h.left⟩
-タクティクが生成した項は、[3節](#sec-CH.products)で手書きした `swapAnd` と同じものである。
--/
-
-/-!
-だから[10節](#sec-CH.type-checking)の話はそのまま当てはまる: タクティクで書いた証明も、
-出来上がった項が型検査を通ることで検証される。
-
-このファイルは対応を見るために項を直接書いてきたが、`Top.lean` は
-証明が長いのでタクティク主体で書かれている。出てくるものの早見表:
-
-* `intro h` — 仮定を1つ取り込む（`fun h =>`）
-* `exact e` — 項 `e` でゴールを閉じる
-* `refine ⟨?_, ?_⟩` — 項の穴 `?_` を残して置き、穴を続きのゴールにする
-* `apply f` — 結論から逆向きに `f` を適用し、引数をゴールとして残す
-* `constructor` — ゴールの型の構成子を適用する
-* `cases h with …` — 帰納型の項 `h` を場合分けする（`match` に対応）
-* `rw [heq]` — 等式 `heq` でゴールを書き換える
-* `show t` — ゴールを定義上等しい形 `t` に読み替える
-* `have h : t := e` — 補助的な項に名前を付けて続ける
-* `by_cases h : p` — `p` が成り立つ場合と否定の場合に分ける（古典論理）
--/
-
-/-! ### ✏ 練習
-
-1. `swapOr` をタクティク（`intro`・`cases`・`exact`）で書き直し、
-   `#print` で生成された項を本文の `swapOr` と見比べよ。字面は一致しない——
-   `cases` は `match` ではなく `Or.casesOn` を直接置くからである。
-   **それでも型は同じ**であり、検査されるのはその型だけである、
-   というのが本節の要点である。
-2. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
-   表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。
+これでこのファイルの仕事——対応を作り、検査の正体を見届けること——は
+終わりである。なお Lean には、証明を**命令の列**で書くもう1つの流儀
+（タクティク）があり、`Top.lean` の実戦ではそちらが主体になる。
+紹介は[`Top.lean` 1節](#sec-Top.tactics)で行う。
 -/

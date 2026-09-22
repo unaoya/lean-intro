@@ -46,25 +46,85 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 書き方である（[`Intro1.lean` 3節](#sec-Intro1.functions)）のと対応して、表示もこの2つの形を行き来する。
 括弧 `( )` `{ }` の違いは [`Intro1.lean` 6節](#sec-Intro1.dependent-functions)、`[ ]` は [`Intro2.lean` 1節](#sec-Intro2.classes)。
 
-## 読み方: タクティク証明の記号
+-/
 
-証明は [`CH.lean` 12節](#sec-CH.tactics)のタクティクで書く。同節の早見表にない記号を挙げておく:
+/-! ## 1. タクティク — 証明のもう1つの書き方 {#sec-Top.tactics}
 
+`CH.lean` では、証明はすべて項として直接書いた。Lean にはもう1つの流儀があり、
+`by` に続けて、項を組み立てる**命令**（タクティク）の列を書く。
+[`CH.lean` 3節](#sec-CH.products)の `swapAnd` をタクティクで書き直してみる。
+-/
+
+theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
+  intro h            -- `fun h =>` に対応
+  exact ⟨h.2, h.1⟩   -- この項をそのまま置く
+
+#check swapAnd'
+
+/-!
+    swapAnd' {p q : Prop} : p ∧ q → q ∧ p
+-/
+
+/-!
+`intro` は `fun`、`exact` は項そのものに対応していて、
+どちらの流儀でも、最終的に出来上がるのは**同じ型を持つ項**である
+（字面まで同じになるとは限らない）。
+つまりタクティクは証明そのものではなく、**項を組み立てるためのメタなプログラム**であり、
+`by` ブロックは実行されると項を生成する。検査されるのはあくまで生成された項のほう。
+生成結果は `#print` で見られる:
+-/
+
+#print swapAnd'
+
+/-!
+    theorem swapAnd' : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
+    fun {p q} h ↦ ⟨h.right, h.left⟩
+
+タクティクが生成した項は、[`CH.lean` 3節](#sec-CH.products)で手書きした `swapAnd` と同じものである。
+-/
+
+/-!
+だから[`CH.lean` 10節](#sec-CH.type-checking)の話はそのまま当てはまる: タクティクで書いた証明も、
+出来上がった項が型検査を通ることで検証される。
+
+このファイルは証明が長いので、タクティク主体で書く。出てくるものの早見表:
+
+* `intro h` — 仮定を1つ取り込む（`fun h =>`）
+* `exact e` — 項 `e` でゴールを閉じる
+* `refine ⟨…, ?_, ?_⟩` — 項の形を先に与え、埋め残す部分を `?_` の穴にして
+  続きのゴールとする
+* `apply f` — 結論から逆向きに `f` を適用し、引数をゴールとして残す
+* `constructor` — ゴールの型の構成子を適用する
+* `cases h with …` — 帰納型の項 `h` を場合分けする（`match` に対応）
+* `cases i using Fin.cases` — どの場合分けのしかたを使うかを名指しする
+* `rw [heq]` — 等式 `heq` でゴールを書き換える
+* `rw [h] at hmem` — ゴールではなく**仮定** `hmem` の側を書き換える
+* `show t` — ゴールを定義上等しい形 `t` に読み替える
+* `have h : t := e` — 補助的な項に名前を付けて続ける
+* `by_cases h : p` — `p` が成り立つ場合と否定の場合に分ける（古典論理）
 * `·` — 場合分けなどで生じた**サブゴールごと**の証明の区切り
 * `t₁; t₂` — `t₁` を実行してから、続けて `t₂` を実行する
-* `rw [h] at hmem` — ゴールではなく**仮定** `hmem` の側を書き換える
-* `refine ⟨…, ?_, ?_⟩` — 項の形を先に与え、あとで埋める部分を `?_` の穴にする
-* `cases i using Fin.cases` — どの場合分けのしかたを使うかを名指しする
-* `h ▸ e` — 等式 `h` で `e` の型を書き換える（`rw` の項版）
+* `h ▸ e` — 等式 `h` で `e` の型を書き換える（`rw` の項版。タクティクではなく項の記法）
 
 初出の箇所にも、それぞれ短い説明を添えてある。
 
 また、タクティクで書いた証明にはそれぞれ、**同じ命題の項スタイルの証明**を
 対にして並べる（本文の証明の直後の `example`）。どちらの流儀でも
-最終的に同じ型の項に行き着くこと（[`CH.lean` 12節](#sec-CH.tactics)）の、実地の見比べである。
+最終的に同じ型の項に行き着くことの、実地の見比べである。
 -/
 
-/-! ## 1. 集合 {#sec-Top.sets}
+/-! ### ✏ 練習
+
+1. [`CH.lean` 4節](#sec-CH.sums)の `swapOr` をタクティク（`intro`・`cases`・`exact`）で
+   書き直し、`#print` で生成された項を元の `swapOr` と見比べよ。字面は一致しない——
+   `cases` は `match` ではなく `Or.casesOn` を直接置くからである。
+   **それでも型は同じ**であり、検査されるのはその型だけである、
+   というのが本節の要点である。
+2. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
+   表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。
+-/
+
+/-! ## 2. 集合 {#sec-Top.sets}
 
 集合 `Set`（実体は述語 `α → Prop`）と、内包記法 `{a | p a}`・所属 `∈`・
 包含 `⊆` は [`Intro2.lean` 4節](#sec-Intro2.sets)で作った。ここではその上に、残りの道具——
@@ -436,7 +496,7 @@ end Set
    （背理法を使った証明だった）。
 -/
 
-/-! ## 2. 全単射 {#sec-Top.bijections}
+/-! ## 3. 全単射 {#sec-Top.bijections}
 
 目標の「連続全単射」を述べるために要る。
 `Function.Injective`（`∀ ⦃a b⦄, f a = f b → a = b`。括弧 `⦃ ⦄` は
@@ -494,7 +554,7 @@ macro_rules
 開かれて表示される。以後の表示の枠は、この**展開後の形**で書いてある。
 -/
 
-/-! ## 3. 位相空間 {#sec-Top.topology}
+/-! ## 4. 位相空間 {#sec-Top.topology}
 
 開集合が何であるかを指定するデータ `IsOpen` と、それが満たすべき3つの公理。
 -/
@@ -543,7 +603,7 @@ variable {X : Type} [TopologicalSpace X]
 /-- 空集合が開であることは公理に含めなくてよい。
 空な集合族の合併が空集合だから、`isOpen_sUnion` から従う。
 
-証明は `by` のタクティク（[`CH.lean` 12節](#sec-CH.tactics)）。まず `⋃₀ ∅ = ∅` を `Set.ext` で示し、
+証明は `by` のタクティク（[`Top.lean` 1節](#sec-Top.tactics)）。まず `⋃₀ ∅ = ∅` を `Set.ext` で示し、
 `rw [← h]` で等式 `h` を右辺から左辺の向きに使ってゴールを書き換える。 -/
 theorem isOpen_empty : IsOpen (∅ : Set X) := by
   have h : (⋃₀ (∅ : Set (Set X))) = (∅ : Set X) := by
@@ -670,7 +730,7 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
    （離散位相では、どの部分集合の開性も `True`——証明は `trivial`）。
 -/
 
-/-! ## 4. 連続写像 {#sec-Top.continuity}
+/-! ## 5. 連続写像 {#sec-Top.continuity}
 
 位相空間の間の写像が連続であることを、開集合だけを使って定義する。
 写像の向きと逆に、行き先の開集合を引き戻して考えるのがポイント。
@@ -733,7 +793,7 @@ theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Co
    （2つの空間の位相が、どの種類の括弧で並ぶか）。
 -/
 
-/-! ## 5. ハウスドルフ空間 {#sec-Top.hausdorff}
+/-! ## 6. ハウスドルフ空間 {#sec-Top.hausdorff}
 
 「異なる2点は開集合で見分けられる」という条件。
 -/
@@ -756,7 +816,7 @@ class Hausdorff (X : Type) [TopologicalSpace X] : Prop where
 `TopologicalSpace X : Type`（データ）と違い、こちらは結果が `Prop`（性質）。
 -/
 
-/-! ## 6. コンパクト {#sec-Top.compactness}
+/-! ## 7. コンパクト {#sec-Top.compactness}
 
 「どんな開被覆にも有限部分被覆がある」という条件。
 
@@ -801,7 +861,7 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
     CompactSpace (X : Type) [TopologicalSpace X] : Prop
 -/
 
-/-! ## 7. 補題1: コンパクト集合の連続像はコンパクト {#sec-Top.compact-image}
+/-! ## 8. 補題1: コンパクト集合の連続像はコンパクト {#sec-Top.compact-image}
 
 方針: 与えられた `f '' K` の開被覆 `U` に対して
 
@@ -904,7 +964,7 @@ example {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
    （包含の付け替えだけの証明に、公理は要るだろうか）。
 -/
 
-/-! ## 8. 補題2: ハウスドルフ空間のコンパクト集合は閉 {#sec-Top.compact-closed}
+/-! ## 9. 補題2: ハウスドルフ空間のコンパクト集合は閉 {#sec-Top.compact-closed}
 
 ここが証明の山場で、有限性を実際に使うのもここだけ。方針:
 
@@ -1079,7 +1139,7 @@ theorem IsCompact.isClosed [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClos
 example [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K :=
   isOpen_of_nhds fun _ hy => hK.exists_disjoint_nhds hy
 
-/-! ## 9. 補題3: コンパクト空間の閉集合はコンパクト {#sec-Top.closed-compact}
+/-! ## 10. 補題3: コンパクト空間の閉集合はコンパクト {#sec-Top.closed-compact}
 
 方針: `C` の開被覆 `U` に対して
 
@@ -1185,7 +1245,7 @@ example [CompactSpace X] {C : Set X} (hC : IsClosed C) : IsCompact C :=
           match hcov x hx with
           | ⟨i, _⟩ => (hI ⟨i⟩).elim⟩)
 
-/-! ## 10. 目標: コンパクトからハウスドルフへの連続全単射は同相 {#sec-Top.homeomorphism}
+/-! ## 11. 目標: コンパクトからハウスドルフへの連続全単射は同相 {#sec-Top.homeomorphism}
 
 同相写像とは、連続な全単射であって逆写像も連続なもの。
 一般には逆写像の連続性は自動ではないが、

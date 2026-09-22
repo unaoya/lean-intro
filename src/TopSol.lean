@@ -4,6 +4,40 @@ import Top
 `Top.lean` の ✏ 練習の解答。
 -/
 
+/-! SOL Top.tactics:1 -/
+
+theorem swapOrTac {p q : Prop} : p ∨ q → q ∨ p := by
+  intro h
+  cases h with
+  | inl hp => exact Or.inr hp
+  | inr hq => exact Or.inl hq
+
+#print swapOrTac
+
+/-!
+    theorem swapOrTac : ∀ {p q : Prop}, p ∨ q → q ∨ p :=
+    fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)
+
+`CH.lean` の `swapOr`（`match` で書いた項）と字面は一致しない——`cases` は
+`Or.casesOn` を直接置くからである。それでも型は同じ `p ∨ q → q ∨ p` であり、
+検査されるのはその型だけである。
+-/
+
+/-! SOL Top.tactics:2 -/
+
+theorem idTac {p : Prop} : p → p := by
+  intro h
+  exact h
+
+#print idTac
+
+/-!
+    theorem idTac : ∀ {p : Prop}, p → p :=
+    fun {p} h ↦ h
+
+こちらは手書きの `fun h => h` と同じ字面に戻る。
+-/
+
 /-! SOL Top.sets:1 -/
 
 example : (2 : Nat) ∈ ({n | n < 5} : Set Nat) :=

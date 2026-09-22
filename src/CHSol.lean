@@ -218,7 +218,7 @@ theorem dni {p : Prop} : p → ¬¬p := fun hp hnp => hnp hp
 逆向き `¬¬p → p` は書けない。手持ちは `hnn : (p → False) → False` だけで、
 これをどう適用しても出てくるのは `False` であって、`p` の証明を**作る**
 手段がない。この向きに必要なのが背理法（`Classical.byContradiction`）で、
-[`Top.lean` 1節](#sec-Top.sets)の `compl_compl` がそれを使う。代償（公理への依存）は
+[`Top.lean` 2節](#sec-Top.sets)の `compl_compl` がそれを使う。代償（公理への依存）は
 本文末尾の公理の節のとおり。
 -/
 
@@ -376,38 +376,4 @@ example : ∀ n : Nat, n + 1 - 1 = n := fun n => Nat.add_sub_cancel n 1
 
 「命題の証明から、命題でないもの（ここでは `α` の項）を取り出すことは
 許されない」という規則の破れが報告されている。
--/
-
-/-! SOL CH.tactics:1 -/
-
-theorem swapOrTac {p q : Prop} : p ∨ q → q ∨ p := by
-  intro h
-  cases h with
-  | inl hp => exact Or.inr hp
-  | inr hq => exact Or.inl hq
-
-#print swapOrTac
-
-/-!
-    theorem swapOrTac : ∀ {p q : Prop}, p ∨ q → q ∨ p :=
-    fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)
-
-本文の `swapOr`（`match` で書いた項）と字面は一致しない——`cases` は
-`Or.casesOn` を直接置くからである。それでも型は同じ `p ∨ q → q ∨ p` であり、
-検査されるのはその型だけである。
--/
-
-/-! SOL CH.tactics:2 -/
-
-theorem idTac {p : Prop} : p → p := by
-  intro h
-  exact h
-
-#print idTac
-
-/-!
-    theorem idTac : ∀ {p : Prop}, p → p :=
-    fun {p} h ↦ h
-
-こちらは手書きの `fun h => h` と同じ字面に戻る。
 -/
