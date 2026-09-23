@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "tools/slides"
 CONFIG = ROOT / "slides"
 MAX_HEIGHT = 450
+# 通読版と同じ追加の <head> 要素（数式を描画する KaTeX の読み込みなど）。build() で受け取る。
+EXTRA_HEAD = ""
 VOID = {"br", "hr", "img", "input", "meta", "link", "wbr"}
 
 
@@ -393,7 +395,7 @@ def html_page(chapter, title, pages, chapters):
     content = re.sub(r'href="([^"]+)"', lambda match: 'target="_blank" rel="noopener" href="' +
                      textbook_href(match[1]) + '"', content)
     return (template.replace("@@TITLE@@", html.escape(title)).replace("@@CHAPTER@@", html.escape(chapter))
-            .replace("@@CHAPTER_OPTIONS@@", options).replace("@@STYLE@@", (ASSETS / "style.css").read_text())
+            .replace("@@CHAPTER_OPTIONS@@", options).replace("@@STYLE@@", (ASSETS / "style.css").read_text()).replace("@@HEAD@@", EXTRA_HEAD)
             .replace("@@SLIDES@@", content).replace("@@SCRIPT@@", (ASSETS / "lecture.js").read_text()))
 
 
@@ -401,10 +403,12 @@ def print_html(all_pages, titles):
     style = (ASSETS / "style.css").read_text() + "\n" + (ASSETS / "print.css").read_text()
     body = "\n".join(slide_articles(pages, print_steps=True, chapter=name) for name, pages in all_pages.items())
     return '<!doctype html><html lang="ja"><meta charset="utf-8"><title>はじめての Lean · スライド</title>' + \
-           f'<style>{style}</style><body class="print-deck">{body}</body></html>'
+           f'<style>{style}</style>{EXTRA_HEAD}<body class="print-deck">{body}</body></html>'
 
 
-def build(titles, bodies, chapters, out):
+def build(titles, bodies, chapters, out, head=""):
+    global EXTRA_HEAD
+    EXTRA_HEAD = head
     folder = out / "slides"
     folder.mkdir(exist_ok=True)
     all_pages = {}

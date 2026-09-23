@@ -157,7 +157,17 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   .enhanced:not(.include-optional) .slide[data-kind="optional"],
   .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
 }
+
+/* 推論規則（前提 / 横線 / 結論）。通読版の .rule と同じ組み方 */
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85em; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--ink); padding: .15em .5em 0; }
 </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
   <header class="toolbar">

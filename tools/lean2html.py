@@ -771,7 +771,7 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
 
     if with_slides:
         import slides
-        slide_document, _ = slides.build(titles, bodies, CHAPTERS, OUT)
+        slide_document, _ = slides.build(titles, bodies, CHAPTERS, OUT, head=KATEX_HEAD)
     if with_pdf:
         build_pdf(titles, bodies)
         if with_slides:
