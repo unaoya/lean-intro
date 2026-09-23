@@ -44,6 +44,8 @@ tools/slides/       講義用の HTML/CSS/JavaScript テンプレート
 slides/            章ごとの区切り設定。本文のコピーや段落の連番は持たない
 tools/check_refs.py 固定ラベルの検査・節番号と参照番号の自動更新
 docs/               生成された HTML（GitHub Pages の公開ディレクトリ。手で編集しない）
+student/            受講者用の Lean ファイル（解説を省いた版。tools/student.py が src/ から自動生成し、
+                    HTML 生成時に作り直す。`lake -d student build` で検査、公開は docs/student/）
 editions/original/  2往復構成に改める前の旧版（Intro1 → CH → …）。比較・参照用
                     （`python3 editions/original/build.py` で docs/original/ に生成）
 archive/plans/      採用・実施済み／不採用の構成案。現在の作業計画ではない

@@ -765,10 +765,20 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
         out_path.write_text(page(titles[name], slide_link + bodies[name], nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
+    # 受講者用の Lean ファイル（解説を省いた版）は、正本の src/ からだけ作る
+    with_student = SRC == ROOT / "src"
+    links = []
+    if with_slides:
+        links.append('<a href="slides/index.html">講義用スライド</a>')
+    if with_student:
+        links.append('<a href="student/index.html">受講者用の Lean ファイル</a>')
     (OUT / "index.html").write_text(
-        page(SITE_TITLE, ('<p><a href="slides/index.html">講義用スライド</a></p>' if with_slides else '') +
+        page(SITE_TITLE, (f'<p>{"・".join(links)}</p>' if links else '') +
              toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
     print("  index.html 生成")
+    if with_student:
+        import student
+        student.main(docs=OUT / "student", titles=titles)
 
     if with_slides:
         import slides

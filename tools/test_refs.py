@@ -229,7 +229,7 @@ class RefTests(unittest.TestCase):
         dest.mkdir()
         for name in ['lean2html.py', 'refs.py', 'check_refs.py', 'render_support.py']:
             shutil.copy(Path(__file__).parent/name, dest/name)
-        for name in ['CH1', 'Intro1b', 'CH2', 'Intro2', 'Top', 'Extra',
+        for name in ['CH1', 'Intro1b', 'CH2', 'Intro2', 'Top', 'Extra', 'Ascoli',
                      'Intro1aSol', 'CH1Sol', 'Intro1bSol', 'CH2Sol', 'Intro2Sol', 'TopSol']:
             self.put(name, '')
         self.put('Intro1a', '/-! ## 最初 {#sec-first}\n[節](#sec-first)\n-/\n')
