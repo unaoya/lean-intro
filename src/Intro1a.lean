@@ -303,7 +303,7 @@ docstring は直後の宣言に結び付けられ、エディタで名前にカ�
 /-!
 ## 3. 関数 {#sec-Intro1.functions}
 
-集合 A・B に対して写像全体の集合 Map(A, B) が定まるのと同様に、
+集合 $A$・$B$ に対して写像全体の集合 $\mathrm{Map}(A, B)$ が定まるのと同様に、
 型 `A`・`B` に対して「`A` から `B` への関数の型」`A → B` が定まる。
 つまり矢印 `→` は、**2つの型から新しい型を1つ作る
 操作**を表す記号であって、それ自体が具体的な関数を定めるのではない。
@@ -385,7 +385,7 @@ def double : Nat → Nat := fun n => n + n
 数学ではふつう `f(x)` と書く関数適用を、Lean では **`f x` と、関数と引数を
 半角スペースで区切って**書く。項を書く場所で、関数を表す項のあとに引数の項を
 このように並べると、関数適用として読まれる。例えば `double 21` である。
-数学で「f(x)」と書くとき、私たちは f が関数で x がその定義域の元であることを
+数学で「$f(x)$」と書くとき、私たちは $f$ が関数で $x$ がその定義域の元であることを
 前提している。Lean の `f x` も同じ約束の記法で、
 **`f` が関数型を持ち、`x` がその定義域の型を持つこと**を要求する。
 
@@ -417,9 +417,9 @@ def double : Nat → Nat := fun n => n + n
 /-!
 ### ✏ 練習（書く）
 
-1. 関数 inc : ℕ → ℕ を inc(n) = n + 1 で定める。これを `fun` を用いて Lean で定義せよ。
+1. 関数 $\mathrm{inc} : \mathbb{N} \to \mathbb{N}$ を $\mathrm{inc}(n) = n + 1$ で定める。これを `fun` を用いて Lean で定義せよ。
    `#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。
-2. 関数 f : ℕ → ℕ を f(n) = 2n + 3 で定める。これを `fun` を用いて Lean で定義せよ
+2. 関数 $f : \mathbb{N} \to \mathbb{N}$ を $f(n) = 2n + 3$ で定める。これを `fun` を用いて Lean で定義せよ
    （掛け算は `*` と書く）。`#check f` の型と `#eval f 4` の値を予想してから確かめよ。
 -/
 
@@ -452,30 +452,30 @@ def double' (n : Nat) : Nat := n + n
 /-!
 ### ✏ 練習
 
-1. 関数 triple : ℕ → ℕ、triple(n) = n + n + n を binder 形式で定義せよ。
+1. 関数 $\mathrm{triple} : \mathbb{N} \to \mathbb{N}$、$\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。
    `#check triple` の表示を予想してから確かめよ。
 2. `#eval double (double 5)` の値を予想してから実行せよ。
-3. 先ほどの inc(n) = n + 1 を、今度は binder 形式で `inc'` という名前で定義せよ。
+3. 先ほどの $\mathrm{inc}(n) = n + 1$ を、今度は binder 形式で `inc'` という名前で定義せよ。
    `#check inc'` の表示と `#eval inc' 4` の値を予想して確かめ、`inc` と比較せよ。
-4. 同様に f(n) = 2n + 3 を、binder 形式で `f'` という名前で定義せよ。
+4. 同様に $f(n) = 2n + 3$ を、binder 形式で `f'` という名前で定義せよ。
    `#check f'` の表示と `#eval f' 4` の値を予想して確かめ、`f` と比較せよ。
 -/
 
 /-!
 ### 多変数関数はカリー化で表す
 
-まず、ふつうの数学の話から始めよう。集合 X・Y・Z に対して、写像全体の集合には
+まず、ふつうの数学の話から始めよう。集合 $X$・$Y$・$Z$ に対して、写像全体の集合には
 次の自然な1対1対応がある:
 
-    Map(X × Y, Z) ≅ Map(X, Map(Y, Z))
+$$\mathrm{Map}(X \times Y, Z) \cong \mathrm{Map}(X, \mathrm{Map}(Y, Z))$$
 
-左辺の写像 f に、x を固定して得られる写像「y ↦ f(x, y)」を対応させる。
-つまり x ↦ (y ↦ f(x, y)) という右辺の写像にする。この操作を**カリー化（currying）**、
-逆に右辺の写像 g から (x, y) ↦ g(x)(y) を作る操作を**アンカリー化（uncurrying）**と呼ぶ。
+左辺の写像 $f$ に、$x$ を固定して得られる写像「$y \mapsto f(x, y)$」を対応させる。
+つまり $x \mapsto (y \mapsto f(x, y))$ という右辺の写像にする。この操作を**カリー化（currying）**、
+逆に右辺の写像 $g$ から $(x, y) \mapsto g(x)(y)$ を作る操作を**アンカリー化（uncurrying）**と呼ぶ。
 
 Lean では、この対応を使い、多変数関数も基本的に1引数関数を重ねた形で表す。
 2引数なら、「1つ目の引数を受け取ると、**残り1引数の関数を返す**」形になる。
-例えば、数学でいう写像 ℕ × ℕ → ℕ、(a, b) ↦ a + b をカリー化したものを、
+例えば、数学でいう写像 $\mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$(a, b) \mapsto a + b$ をカリー化したものを、
 `plus : Nat → Nat → Nat` として定義してみよう:
 -/
 
@@ -535,9 +535,9 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 /-!
 ### ✏ 練習（書く）
 
-1. 関数 addThree : ℕ → ℕ、addThree(n) = 3 + n を、`plus 3 : Nat → Nat` を使って
+1. 関数 $\mathrm{addThree} : \mathbb{N} \to \mathbb{N}$、$\mathrm{addThree}(n) = 3 + n$ を、`plus 3 : Nat → Nat` を使って
    Lean で定義せよ。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。
-2. 関数 g : ℕ × ℕ → ℕ、g(a, b) = 2a + 3b を、カリー化して Lean で定義せよ。
+2. 関数 $g : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$g(a, b) = 2a + 3b$ を、カリー化して Lean で定義せよ。
    型は `Nat → Nat → Nat` とし、`fun a => fun b => …` を使うこと。
    `#check g`・`#check g 2` の型と `#eval g 2 4` の値を予想してから確かめよ。
 -/
@@ -564,7 +564,7 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 /-!
 ### ✏ 練習（書く）
 
-1. 先ほどの g(a, b) = 2a + 3b を、binder 形式で2通りに書け。
+1. 先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。
    `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。
    `#check g'`・`#check g''` の表示と、`#eval g' 2 4`・`#eval g'' 2 4` の値を
    予想してから確かめよ。
@@ -589,7 +589,7 @@ def addMul (a b c : Nat) : Nat := a + b * c
 /-!
 ### 関数を引数として受け取る
 
-数学でいう写像 Map(ℕ, ℕ) → ℕ、F ↦ F(21) を Lean で定義してみよう。
+数学でいう写像 $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$、$F \mapsto F(21)$ を Lean で定義してみよう。
 引数 `F` の型は、数の型 `Nat` ではなく関数型 `Nat → Nat` になる:
 -/
 
@@ -614,8 +614,8 @@ def applyTo21 (F : Nat → Nat) : Nat := F 21
 /-!
 ### 型の異なる引数の binder 形式
 
-引数の型が異なる場合は、型ごとに括弧を分けて書く。例えば、F と n を受け取って
-F(n) を返す関数では、`F : Nat → Nat` と `n : Nat` を別々に注釈する:
+引数の型が異なる場合は、型ごとに括弧を分けて書く。例えば、$F$ と $n$ を受け取って
+$F(n)$ を返す関数では、`F : Nat → Nat` と `n : Nat` を別々に注釈する:
 -/
 
 def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
@@ -633,12 +633,12 @@ def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
 /-!
 ### ✏ 練習（書く）
 
-1. 写像 twice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(n))) で定める。
-   つまり、F を同じ入力に2回使うのではなく、1回目の結果にもう一度 F を適用する。
+1. 写像 $\mathrm{twice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(n)))$ で定める。
+   つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。
    これを Lean で `def twice (F : Nat → Nat) : Nat → Nat := …` と定義せよ。
    `#check twice`・`#check twice double` の表示と `#eval twice double 3` の値を
    予想してから確かめよ。
-2. 写像 thrice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(F(n)))) で定める。
+2. 写像 $\mathrm{thrice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(F(n))))$ で定める。
    これを Lean で定義し、`#check thrice`・`#check thrice double` の表示と
    `#eval thrice double 3` の値を予想してから確かめよ。
 -/
@@ -660,8 +660,8 @@ def Map : Type → Type → Type := fun A B => A → B
 /-!
     Map : Type → Type → Type
 
-節の冒頭で「`A → B` は写像全体の集合 Map(A, B) と同じ役割を持つ」と述べたが、
-その Map を、いま Lean の項として定義したことになる。`Map Nat Nat` は
+節の冒頭で「`A → B` は写像全体の集合 $\mathrm{Map}(A, B)$ と同じ役割を持つ」と述べたが、
+その $\mathrm{Map}$ を、いま Lean の項として定義したことになる。`Map Nat Nat` は
 計算すると `Nat → Nat` になるから、`double` は `Map Nat Nat` の項でもある
 （直後の練習で確かめよう）。「型を受け取る関数」「型を返す関数」は、
 [4節](#sec-Intro1.dependent-functions)（依存関数型）でさらに主役になる。
@@ -671,7 +671,7 @@ def Map : Type → Type → Type := fun A B => A → B
 ### ✏ 練習
 
 1. `#check Map Nat Bool` の表示を予想してから確かめよ。また、数学でいう
-   関数 double : ℕ → ℕ、double(n) = n + n を、`Map Nat Nat` 型の項としても使えるか考えよ。
+   関数 $\mathrm{double} : \mathbb{N} \to \mathbb{N}$、$\mathrm{double}(n) = n + n$ を、`Map Nat Nat` 型の項としても使えるか考えよ。
    `def double2 : Map Nat Nat := double` が受理されるか予想してから試せ。
    受理されたら、`#check double2` の表示も予想してから確かめよ。
 2. `#check Map Nat` の表示を予想してから確かめよ
@@ -868,24 +868,24 @@ Lean の型検査器である。読者がこの教材で行う「型の推測」
    `applyTo21 (plus 3)`、`fun n : Nat => plus n n`。それから確かめよ。
 2. `#eval applyTo21 (plus 100)` の値を予想してから実行せよ。
 3. 次の2つの写像を Lean で定義し、`#check` の表示を予想してから確かめよ:
-   * evalAt : Map(ℕ, ℕ) × ℕ → ℕ、evalAt(F, n) = F(n)。カリー化して定義すること。
+   * $\mathrm{evalAt} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \times \mathbb{N} \to \mathbb{N}$、$\mathrm{evalAt}(F, n) = F(n)$。カリー化して定義すること。
      `#eval evalAt double 5` の値も予想してから実行せよ。
-   * shift : Map(ℕ, ℕ) → Map(ℕ, ℕ)、F ↦ (n ↦ F(n + 1))。
+   * $\mathrm{shift} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$、$F \mapsto (n \mapsto F(n + 1))$。
      関数を受け取って**関数を返す**関数である。
      `#eval shift double 3` の値も予想してから実行せよ。
-4. 「型から項を書く」練習: Map(ℕ, ℕ) → ℕ という写像を、**中身の違うもので2つ**考えよ
-   （例えば F ↦ F(21) と F ↦ 0）。それらを Lean で `useF1`・`useF2` と名付けて定義し、
+4. 「型から項を書く」練習: $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$ という写像を、**中身の違うもので2つ**考えよ
+   （例えば $F \mapsto F(21)$ と $F \mapsto 0$）。それらを Lean で `useF1`・`useF2` と名付けて定義し、
    型を予想してから `#check` で確かめよ。どちらも `(Nat → Nat) → Nat` 型になるはずである。
    同じ型に項は何通りもある——型は仕様であって、中身までは決めない。
-5. （発展）写像 G : B → C と F : A → B に合成 G ∘ F : A → C を対応させる写像を考える。
-   型 A・B・C も引数に取り、これを Lean で
+5. （発展）写像 $G : B \to C$ と $F : A \to B$ に合成 $G \circ F : A \to C$ を対応させる写像を考える。
+   型 $A$・$B$・$C$ も引数に取り、これを Lean で
    `compose (A B C : Type) (G : B → C) (F : A → B) : A → C` と定義せよ。
    `#check compose` の表示と、
    `#eval compose Nat Nat Nat double (fun n => n + 1) 3` の値を予想してから
    確かめよ。
-6. （発展）練習 3 を一般化し、任意の A・B に対する写像 Map(A, B) × A → B、(F, a) ↦ F(a) と、
-   写像 g : A → A に対する変換 Map(A, A) → Map(A, A)、F ↦ (a ↦ F(g(a))) を考える。
-   型や g も引数として受け取るように、Lean で
+6. （発展）練習 3 を一般化し、任意の $A$・$B$ に対する写像 $\mathrm{Map}(A, B) \times A \to B$、$(F, a) \mapsto F(a)$ と、
+   写像 $g : A \to A$ に対する変換 $\mathrm{Map}(A, A) \to \mathrm{Map}(A, A)$、$F \mapsto (a \mapsto F(g(a)))$ を考える。
+   型や $g$ も引数として受け取るように、Lean で
    `evalAt' (A B : Type) (F : A → B) (a : A) : B` と
    `shift' (A : Type) (g : A → A) (F : A → A) : A → A` を定義せよ。
    両者の `#check` の表示と、
@@ -954,8 +954,8 @@ def idAt (α : Type) (a : α) : α := a
 /-!
 ### 数を添字にする型の族
 
-依存する入力は、型そのものでなくてもよい。自然数 n ごとに「自然数の n 個組の型」を
-考えよう。数学では ℕⁿ を、n 点集合から ℕ への写像全体として表せる。
+依存する入力は、型そのものでなくてもよい。自然数 $n$ ごとに「自然数の $n$ 個組の型」を
+考えよう。数学では $\mathbb{N}^n$ を、$n$ 点集合から $\mathbb{N}$ への写像全体として表せる。
 
 標準環境の `Fin n` は、0 以上 n 未満の番号の型である。
 ここでは `Nat` や `Bool` と同様、意味と型を知って使う。
@@ -1034,7 +1034,7 @@ def constTuple : (n : Nat) → Tuple n :=
 `constTuple 3` の型が `Tuple 3` になったのは、この代入である。
 結果の型が入力によらない場合が、これまでの `A → C` である。
 
-集合族の言葉では、各 a に B(a) の要素を一つずつ指定するので、族の直積 ∏_{a∈A} B(a)
+集合族の言葉では、各 $a$ に $B(a)$ の要素を一つずつ指定するので、族の直積 $\prod_{a \in A} B(a)$
 の要素に相当する。`idAt` も、各型 α に恒等写像という `α → α` の項を指定する例だった。
 -/
 

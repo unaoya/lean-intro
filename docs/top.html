@@ -620,7 +620,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> IsCompact.image</code></pre>
 <pre class="quote"><code>IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {K : Set X} (hK : IsCompact K)
   {f : X → Y} (hf : Continuous f) : IsCompact (f &#x27;&#x27; K)</code></pre>
-<p>数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、そのまま「証明を2つ受け取って証明を返す関数」の型になっている。</p>
+<p>数学の主張「$K$ コンパクト、$f$ 連続 $\Rightarrow$ $f(K)$ コンパクト」が、そのまま「証明を2つ受け取って証明を返す関数」の型になっている。</p>
 <pre class="lean"><code><span class="cm">-- 項で。`intro` が `fun` に、`have` の分解が `match` に、`exact` が組の構成に対応する</span>
 <span class="kw">example</span> {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
     IsCompact (f &#x27;&#x27; K) :=

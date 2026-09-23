@@ -316,9 +316,9 @@ is not definitionally equal to the right-hand side
 <li>hf を同様に f x = f y に適用して、x = y。これが示すべきことだった。∎</li>
 </ol>
 <p>（教科書なら「g (f x) = g (f y) とすると、g の単射性より f x = f y、f の単射性より x = y。∎」と2行で済ませるところである。）</p>
-<p><strong>論理式</strong>。示すべき結論「合成 g∘f が単射」を、単射の定義まで開くと</p>
-<pre class="quote"><code>∀x ∀y (g(f(x)) = g(f(y)) → x = y)</code></pre>
-<p>である。仮定 hg・hf も同じ形の論理式（∀u ∀v (g(u) = g(v) → u = v) など）であることが、この例の主役になる。</p>
+<p><strong>論理式</strong>。示すべき結論「合成 $g \circ f$ が単射」を、単射の定義まで開くと</p>
+<p>$$\forall x\, \forall y\, \bigl(g(f(x)) = g(f(y)) \to x = y\bigr)$$</p>
+<p>である。仮定 <code>hg</code>・<code>hf</code> も同じ形の論理式（$\forall u\, \forall v\, \bigl(g(u) = g(v) \to u = v\bigr)$ など）であることが、この例の主役になる。</p>
 <p><strong>形式化を意識した版</strong>。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。だから頭の動きは「x, y を取り、さらに仮定 h を取る」。</p>
 <p>今度は、仮定 hg・hf の<strong>使い方</strong>が主役になる。hg 自身が全称+ならばの命題、つまり「<strong>当てはめて使う道具</strong>」である。<strong>全称文・ならば文の使い方は、対象を当てはめて適用すること</strong>——例1で <code>hPQ</code> に <code>hP</code> を渡したのと、実は同じ動きである。仮定も既知の定理も、文脈にある<strong>部品</strong>という資格は変わらない。</p>
 <p><strong>項</strong>。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の形で書く）:</p>
