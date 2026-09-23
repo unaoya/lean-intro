@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>発展演習: Ascoli の定理（ブルバキ流）</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
+}
+
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+<nav><span><a href="extra.html">← Extra</a></span><a href="index.html">目次</a><span></span></nav>
+<main>
+<p class="lecture-link"><a href="slides/ascoli.html">講義用スライド</a></p><pre class="lean"><code><span class="kw">import</span> Top</code></pre>
+<h1>発展演習: Ascoli の定理（ブルバキ流）</h1>
+<p><code>Top.lean</code> まで読み終えた人のための、もう1つの演習問題集（<code>Extra.lean</code> とは独立に読める）。題材は関数空間のコンパクト性の定理 <strong>Ascoli の定理</strong>である。</p>
+<h2>古典版とブルバキ版</h2>
+<p>古典的な Arzelà–Ascoli の定理は「<code>C([a, b])</code> の部分集合が相対コンパクトであるための必要十分条件は、一様有界かつ同程度連続（等連続）であること」と述べられ、証明には点列と対角線論法を使う。</p>
+<p>ブルバキ（『位相』第X章 §2）はこれを次の2段に分解した。</p>
+<ol>
+<li><strong>Théorème 1</strong>: 等連続な関数族の上では、各点収束と一様収束が（コンパクト集合上で）一致する</li>
+<li><strong>Théorème 2 (Ascoli)</strong>: 等連続で、各点での値の集合が全有界（précompact）な族は、一様収束について全有界である。コンパクト性はその系として出る</li>
+</ol>
+<p>点列も対角線論法も使わない。本質は 1——「等連続なら、有限個の点での値を見れば全体が一様に制御できる」——であり、2 はそこから有限被覆を掛け合わせるだけで出る。この演習ではこの分解に沿って進む。</p>
+<h2>この演習での取捨</h2>
+<p>ブルバキは一様構造をフィルターで定義し、<code>𝔖</code>-収束（部分集合族 <code>𝔖</code> 上での一様収束）の一般論の中で定理を述べる。mathlib の <code>Mathlib.Topology.UniformSpace.Ascoli</code> もほぼそのまま形式化している。この演習では次のように絞る。</p>
+<ul>
+<li>一様構造は<strong>近縁（entourage）の集合族</strong>として直接公理化する（標準形の5公理）</li>
+<li>関数空間は「コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像全体」に <strong>全体での一様収束</strong>の一様構造を入れたものだけを扱う</li>
+<li>Théorème 1 は「一様構造の一致」という抽象的な形ではなく、 <strong>有限点制御補題</strong>（Part C）という具体的な形で証明する</li>
+<li>有限性は <code>List</code> で扱う（<code>Top.lean</code> の <code>Set.Finite</code> との橋渡しは与える）</li>
+</ul>
+<h2>構成</h2>
+<ul>
+<li>Part A: 一様構造と、そこから定まる位相</li>
+<li>Part B: 一様収束の一様構造と等連続性</li>
+<li>Part C: 核心補題（Théorème 1 の有限版）</li>
+<li>Part D: 全有界性と主定理（全有界版）</li>
+<li>Part E: 反例——等連続性の仮定は外せない</li>
+<li>Part F: 逆向き——全有界なら等連続</li>
+<li>Part G: フィルターと Zorn の補題（コンパクト版の準備）</li>
+<li>Part H: 主定理のコンパクト版</li>
+</ul>
+<p>Part A〜D が本体で、ここまでに選択公理による「選択」は有限点制御補題の近傍の選択（<code>Classical.choose</code>）しか使わない。Part G・H は重い。一般の一様空間で「全有界 ⇒（完備なら）コンパクト」を示すには <strong>超フィルター補題</strong>が要り、これは選択公理より真に弱いが、選択公理なしの集合論（ZF）では証明できない。core Lean には Zorn の補題がないので、Part G で自作する。</p>
+<h2>進め方</h2>
+<p><code>Extra.lean</code> と同じく、<code>sorry</code> を自分の証明で置き換える。解答は <code>AscoliSol.lean</code> にある。与えてある宣言（<code>sorry</code> のないもの）も、問題を解くときに使ってよい。</p>
+<h2>Part A: 一様構造</h2>
+<p>まず集合の道具を少し足す。<code>compRel V W</code> は関係の合成（<code>a</code> から <code>V</code> で <code>z</code> へ、<code>z</code> から <code>W</code> で <code>b</code> へ行ける）、<code>swapRel V</code> は逆関係である。リストと有限性の橋渡し2つも与える。</p>
+<pre class="lean"><code><span class="kw">namespace</span> Set
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p>2つの集合が互いに含み合えば等しい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> subset_antisymm {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
+  ext <span class="kw">fun</span> a =&gt; ⟨h₁ a, h₂ a⟩</code></pre>
+<p>関係の合成 <code>V ○ W</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> compRel (V W : Set (α × α)) : Set (α × α) := {p | ∃ z, (p.1, z) ∈ V ∧ (z, p.2) ∈ W}</code></pre>
+<p>逆関係 <code>V⁻¹</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> swapRel (V : Set (α × α)) : Set (α × α) := {p | (p.2, p.1) ∈ V}</code></pre>
+<p>リストに載っている元の全体は有限集合。</p>
+<pre class="lean"><code><span class="kw">theorem</span> finite_of_list (L : List α) : Set.Finite {a | a ∈ L} :=
+  ⟨L.length, L.get, <span class="kw">fun</span> _ ha =&gt; List.get_of_mem ha⟩</code></pre>
+<p>有限集合の元はすべて、あるリストに載せられる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Finite.exists_list {s : Set α} (hs : s.Finite) : ∃ L : List α, ∀ a ∈ s, a ∈ L :=
+  <span class="kw">have</span> ⟨_, f, hf⟩ := hs
+  ⟨List.ofFn f, <span class="kw">fun</span> a ha =&gt; List.mem_ofFn.mpr (hf a ha)⟩
+
+<span class="kw">end</span> Set</code></pre>
+<p>一様構造は「2点が <code>V</code>-近い」という関係 <code>V ⊆ α × α</code> たち（<strong>近縁</strong>）を指定する。距離空間なら <code>V_ε = {(a, b) | d(a, b) &lt; ε}</code> を含む関係が近縁である。 5つの公理はそれぞれ、距離の性質の抽象化になっている。</p>
+<ul>
+<li><code>univ_mem</code>・<code>mono</code>・<code>inter_mem</code>: 近縁の全体はフィルターをなす（<code>ε</code> の取り方の自由度）</li>
+<li><code>refl</code>: 近縁は対角線を含む（<code>d(a, a) = 0</code>）</li>
+<li><code>symm</code>: 近縁の逆も近縁（<code>d(a, b) = d(b, a)</code>）</li>
+<li><code>comp</code>: どの近縁 <code>V</code> にも、<code>W ○ W ⊆ V</code> となる近縁 <code>W</code> がある（三角不等式、<code>ε/2</code>）</li>
+</ul>
+<p>一様構造（標準形）。</p>
+<pre class="lean"><code><span class="kw">class</span> UniformSpace (α : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 近縁の全体。 -/</span>
+  Entourage : Set (Set (α × α))
+<span class="doc">  /-- 全体の関係は近縁。 -/</span>
+  univ_mem : Set.univ ∈ Entourage
+<span class="doc">  /-- 近縁より大きい関係は近縁。 -/</span>
+  mono : ∀ {V W : Set (α × α)}, V ∈ Entourage → V ⊆ W → W ∈ Entourage
+<span class="doc">  /-- 2つの近縁の共通部分は近縁。 -/</span>
+  inter_mem : ∀ {V W : Set (α × α)}, V ∈ Entourage → W ∈ Entourage → V ∩ W ∈ Entourage
+<span class="doc">  /-- 近縁は対角線を含む。 -/</span>
+  refl : ∀ {V : Set (α × α)}, V ∈ Entourage → ∀ a, (a, a) ∈ V
+<span class="doc">  /-- 近縁の逆関係は近縁。 -/</span>
+  symm : ∀ {V : Set (α × α)}, V ∈ Entourage → Set.swapRel V ∈ Entourage
+<span class="doc">  /-- 「半分」の近縁がある。 -/</span>
+  comp : ∀ {V : Set (α × α)}, V ∈ Entourage → ∃ W, W ∈ Entourage ∧ Set.compRel W W ⊆ V</code></pre>
+<p><code>𝓤 α</code> で <code>α</code> の近縁の全体を表す（mathlib と同じ記号）。</p>
+<pre class="lean"><code>notation &quot;𝓤 &quot; α:max =&gt; @UniformSpace.Entourage α _
+
+<span class="kw">namespace</span> UniformSpace
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>} [UniformSpace α]</code></pre>
+<p>問題1: 対称な「半分」の近縁を作れ。古典的な議論の「<code>ε/2</code> を取る」に当たる。</p>
+<p>ヒント: <code>comp</code> で <code>W ○ W ⊆ V</code> となる <code>W</code> を取り、<code>W ∩ swapRel W</code> を使う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_half {V : Set (α × α)} (hV : V ∈ 𝓤 α) :
+    ∃ W ∈ 𝓤 α, (∀ a b, (a, b) ∈ W → (b, a) ∈ W) ∧
+      ∀ a b c, (a, b) ∈ W → (b, c) ∈ W → (a, c) ∈ V :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題2: 対称な「3分の1」の近縁を作れ。これが Part C・F の「<code>ε/3</code> 論法」の道具になる。</p>
+<p>ヒント: 問題1を2回使う（<code>V</code> の半分 <code>W₁</code>、<code>W₁</code> の半分 <code>W₂</code>）。 <code>(c, d) ∈ W₂</code> から <code>(c, d) ∈ W₁</code> を出すには、<code>(d, d) ∈ W₂</code>（<code>refl</code>）をつなげばよい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_third {V : Set (α × α)} (hV : V ∈ 𝓤 α) :
+    ∃ W ∈ 𝓤 α, (∀ a b, (a, b) ∈ W → (b, a) ∈ W) ∧
+      ∀ a b c d, (a, b) ∈ W → (b, c) ∈ W → (c, d) ∈ W → (a, d) ∈ V :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題3: 一様構造から位相が定まることを示せ。 <code>s</code> が開 ⟺ <code>s</code> のどの点 <code>a</code> にも、<code>a</code> の「<code>V</code>-球」<code>{b | (a, b) ∈ V}</code> が <code>s</code> に収まる近縁 <code>V</code> がある。</p>
+<p>距離空間で「どの点にも、その点を中心とする <code>ε</code>-球が収まる」とするのと同じ定義である。 <code>instance</code> にしたので、以後一様空間には自動でこの位相が載る。</p>
+<pre class="lean"><code><span class="kw">instance</span> toTopologicalSpace : TopologicalSpace α <span class="kw">where</span>
+  IsOpen s := ∀ a ∈ s, ∃ V ∈ 𝓤 α, ∀ b, (a, b) ∈ V → b ∈ s
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題4: <code>V</code>-球そのものは開とは限らないが、中心を含む開集合を内側に含むことを示せ。</p>
+<p>ヒント: <code>O = {y | ∃ W ∈ 𝓤 α, ∀ z, (y, z) ∈ W → (a, z) ∈ V}</code>（<code>y</code> の周りに <code>V</code>-球に収まる近縁がある点の全体）が求めるもの。開であることは、 <code>W</code> の半分 <code>W&#x27;</code>（<code>comp</code>）を <code>y</code> の近くの点の証人に使えば示せる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_open_ball {V : Set (α × α)} (hV : V ∈ 𝓤 α) (a : α) :
+    ∃ O : Set α, IsOpen O ∧ a ∈ O ∧ ∀ b ∈ O, (a, b) ∈ V :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> UniformSpace
+
+<span class="kw">open</span> UniformSpace</code></pre>
+<h2>Part B: 一様収束の一様構造と等連続性</h2>
+<p>写像 <code>f, g : X → Y</code> が「一様に <code>V</code>-近い」とは、すべての <code>x</code> で <code>(f x, g x) ∈ V</code> となること。この関係 <code>unifRel V</code> を含む関係を近縁とするのが、<strong>一様収束の一様構造</strong>である。 Part A の位相と組み合わせると、<code>X → Y</code> には一様収束の位相が自動で載る。</p>
+<pre class="lean"><code><span class="kw">section</span> FunctionSpace
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>近縁 <code>V</code> から作る「一様に <code>V</code>-近い」写像の組の全体。</p>
+<pre class="lean"><code><span class="kw">def</span> unifRel (V : Set (Y × Y)) : Set ((X → Y) × (X → Y)) := {p | ∀ x, (p.1 x, p.2 x) ∈ V}</code></pre>
+<p>問題5: 一様収束の一様構造が公理を満たすことを示せ。</p>
+<p><code>Entourage</code> を展開すると <code>∃ V ∈ 𝓤 Y, unifRel V ⊆ 𝒱</code> なので、各公理は <code>Y</code> 側の同じ公理から出る。<code>comp</code> では <code>Y</code> 側の半分 <code>W</code> に対する <code>unifRel W</code> を使う。</p>
+<pre class="lean"><code><span class="kw">instance</span> uniformFun : UniformSpace (X → Y) <span class="kw">where</span>
+  Entourage := {𝒱 | ∃ V ∈ 𝓤 Y, unifRel V ⊆ 𝒱}
+  univ_mem := <span class="sorry">sorry</span>
+  mono := <span class="sorry">sorry</span>
+  inter_mem := <span class="sorry">sorry</span>
+  refl := <span class="sorry">sorry</span>
+  symm := <span class="sorry">sorry</span>
+  comp := <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p><strong>等連続性</strong>は、族 <code>H</code> のすべての写像について、連続性の <code>U</code> が <code>f</code> によらず共通に取れることをいう。定義域 <code>X</code> は位相空間でよい（一様構造は要らない）。</p>
+<p>点 <code>x</code> での等連続性: どの近縁 <code>V</code> にも <code>x</code> の開近傍 <code>U</code> があって、 <code>H</code> のどの <code>f</code> についても <code>U</code> の点での値が <code>f x</code> と <code>V</code>-近い。</p>
+<pre class="lean"><code><span class="kw">def</span> EquicontinuousAt (H : Set (X → Y)) (x : X) : <span class="sort">Prop</span> :=
+  ∀ V ∈ 𝓤 Y, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ f ∈ H, ∀ x&#x27; ∈ U, (f x, f x&#x27;) ∈ V</code></pre>
+<p>等連続性: すべての点で等連続。</p>
+<pre class="lean"><code><span class="kw">def</span> Equicontinuous (H : Set (X → Y)) : <span class="sort">Prop</span> := ∀ x, EquicontinuousAt H x</code></pre>
+<p>問題6: 等連続な族の部分族は等連続であることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Equicontinuous.mono {H H&#x27; : Set (X → Y)} (hH : Equicontinuous H) (h : H&#x27; ⊆ H) :
+    Equicontinuous H&#x27; :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題7: 連続写像1つだけからなる族は等連続であることを示せ。等連続性が連続性の「族版」であることの確認である。</p>
+<p>ヒント: 問題4で <code>f x</code> の周りの開集合 <code>O</code> を取り、その逆像 <code>f ⁻¹&#x27; O</code> を <code>U</code> にする。</p>
+<pre class="lean"><code><span class="kw">theorem</span> equicontinuous_singleton {f : X → Y} (hf : Continuous f) :
+    Equicontinuous {g | g = f} :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part C: 核心補題（Théorème 1 の有限版）</h2>
+<p>ブルバキの Théorème 1 は「等連続集合の上では、各点収束の一様構造とコンパクト収束の一様構造が一致する」と述べる。<code>X</code> がコンパクトなときにこれを具体的に言い直したのが次の補題である:</p>
+<p>&gt; 等連続族 <code>H</code> と近縁 <code>V</code> に対して、有限個の点 <code>P</code> と近縁 <code>W</code> があって、&gt; <code>H</code> の2つの写像が <code>P</code> の各点で <code>W</code>-近いなら、<strong>すべての点で</strong> <code>V</code>-近い。</p>
+<p>「一様に近い」かどうかが、有限個の点での値だけで判定できる。これが Ascoli の定理の心臓部で、証明は古典的な <code>ε/3</code> 論法そのものである。</p>
+<p>問題8: 有限点制御補題を示せ。</p>
+<p>方針:</p>
+<ol>
+<li>問題2で <code>V</code> の対称な3分の1 <code>W</code> を取る</li>
+<li>各点 <code>x</code> で等連続性を <code>W</code> に使い、開近傍 <code>U x</code> を <code>Classical.choose</code> で選ぶ</li>
+<li><code>U</code> は <code>X</code> を覆うので、コンパクト性（<code>CompactSpace.isCompact_univ</code>）で有限個の添字の集合 <code>J</code> に間引き、<code>Set.Finite.exists_list</code> でリスト <code>P</code> にする</li>
+<li>任意の <code>x</code> は、ある <code>y ∈ J</code> について <code>x ∈ U y</code>。すると <code>(f x, f y)</code>・<code>(f y, g y)</code>・<code>(g y, g x)</code> がどれも <code>W</code> に入り、3つつなげて <code>(f x, g x) ∈ V</code></li>
+</ol>
+<pre class="lean"><code><span class="kw">theorem</span> Equicontinuous.finite_control [CompactSpace X] {H : Set (X → Y)}
+    (hH : Equicontinuous H) {V : Set (Y × Y)} (hV : V ∈ 𝓤 Y) :
+    ∃ W ∈ 𝓤 Y, ∃ P : List X, ∀ f ∈ H, ∀ g ∈ H,
+      (∀ p ∈ P, (f p, g p) ∈ W) → ∀ x, (f x, g x) ∈ V :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> FunctionSpace</code></pre>
+<h2>Part D: 全有界性と主定理</h2>
+<p>集合 <code>A</code> が <strong><code>V</code>-小さい</strong>とは、<code>A</code> のどの2点も <code>V</code>-近いこと。集合 <code>s</code> が<strong>全有界</strong>（ブルバキの précompact）とは、どの近縁 <code>V</code> についても有限個の <code>V</code>-小さい集合で覆えること。距離空間なら「どの <code>ε</code> についても直径 <code>ε</code> 以下の有限個の集合で覆える」である。</p>
+<pre class="lean"><code><span class="kw">section</span> TotallyBounded
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p><code>A</code> は <code>V</code>-小さい。</p>
+<pre class="lean"><code><span class="kw">def</span> Small (V : Set (α × α)) (A : Set α) : <span class="sort">Prop</span> := ∀ a ∈ A, ∀ b ∈ A, (a, b) ∈ V</code></pre>
+<p>全有界: どの近縁 <code>V</code> についても、<code>V</code>-小さい集合の有限リストで覆える。</p>
+<pre class="lean"><code><span class="kw">def</span> TotallyBounded [UniformSpace α] (s : Set α) : <span class="sort">Prop</span> :=
+  ∀ V ∈ 𝓤 α, ∃ L : List (Set α), (∀ A ∈ L, Small V A) ∧ ∀ a ∈ s, ∃ A ∈ L, a ∈ A</code></pre>
+<p>2つの有限被覆 <code>L</code>・<code>M</code> の<strong>共通細分</strong>——<code>A ∩ B</code>（<code>A ∈ L</code>、<code>B ∈ M</code>）の全体——も有限被覆である。個数で言えば <code>|L| × |M|</code> 個だが、<code>Fin</code> の積の番号づけを避けて <code>List.flatMap</code> で作る。この組合せ論の部分は与える。</p>
+<p>2つの有限被覆の共通細分。</p>
+<pre class="lean"><code><span class="kw">def</span> List.interCover (L M : List (Set α)) : List (Set α) :=
+  L.flatMap <span class="kw">fun</span> A =&gt; M.map <span class="kw">fun</span> B =&gt; A ∩ B</code></pre>
+<p>共通細分の各片は <code>A ∩ B</code> の形。</p>
+<pre class="lean"><code><span class="kw">theorem</span> List.mem_interCover {L M : List (Set α)} {C : Set α} (h : C ∈ List.interCover L M) :
+    ∃ A ∈ L, ∃ B ∈ M, C = A ∩ B := <span class="kw">by</span>
+  <span class="kw">have</span> ⟨A, hA, hC⟩ := List.mem_flatMap.mp h
+  <span class="kw">have</span> ⟨B, hB, hAB⟩ := List.mem_map.mp hC
+  <span class="kw">exact</span> ⟨A, hA, B, hB, hAB.symm⟩</code></pre>
+<p><code>L</code> と <code>M</code> がともに <code>s</code> を覆うなら、共通細分も <code>s</code> を覆う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> List.interCover_covers {s : Set α} {L M : List (Set α)}
+    (hL : ∀ a ∈ s, ∃ A ∈ L, a ∈ A) (hM : ∀ a ∈ s, ∃ B ∈ M, a ∈ B) :
+    ∀ a ∈ s, ∃ C ∈ List.interCover L M, a ∈ C := <span class="kw">by</span>
+  <span class="kw">intro</span> a ha
+  <span class="kw">have</span> ⟨A, hA, haA⟩ := hL a ha
+  <span class="kw">have</span> ⟨B, hB, haB⟩ := hM a ha
+  <span class="kw">exact</span> ⟨A ∩ B, List.mem_flatMap.mpr ⟨A, hA, List.mem_map_of_mem hB⟩, haA, haB⟩</code></pre>
+<p>問題9: 全有界な集合の部分集合は全有界であることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.subset [UniformSpace α] {s t : Set α} (hs : TotallyBounded s)
+    (h : t ⊆ s) : TotallyBounded t :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>問題10: 各点で値の集合が全有界なら、有限個の点 <code>P</code> を固定するごとに、 <code>H</code> を「<code>P</code> の各点で <code>W</code>-近い」写像の集まり有限個で覆えることを示せ。</p>
+<p><code>P</code> についての帰納法（再帰）で示す。</p>
+<ul>
+<li><code>P = []</code>: 条件は空なので、<code>[Set.univ]</code> 1つで覆える</li>
+<li><code>P = x :: P&#x27;</code>: <code>P&#x27;</code> についての被覆 <code>C</code> と、<code>x</code> での値の <code>W</code>-小さい被覆 <code>L</code> を取り、 <code>L</code> の各片の逆像 <code>(fun f =&gt; f x) ⁻¹&#x27; A</code> のリストと <code>C</code> の共通細分を取る</li>
+</ul>
+<p>ブルバキの証明では、ここが「有限個の全有界集合の積は全有界」に当たる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> finite_points_cover {H : Set (X → Y)}
+    (hpt : ∀ x, TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H)) {W : Set (Y × Y)} (hW : W ∈ 𝓤 Y) :
+    ∀ P : List X, ∃ C : List (Set (X → Y)),
+      (∀ S ∈ C, ∀ f ∈ S, ∀ g ∈ S, ∀ p ∈ P, (f p, g p) ∈ W) ∧ ∀ f ∈ H, ∃ S ∈ C, f ∈ S :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p>問題11（主定理・Ascoli の定理、全有界版）:コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像の族 <code>H</code> が等連続で、各点での値の集合が全有界なら、<code>H</code> は一様収束について全有界であることを示せ。</p>
+<p>方針: 近縁 <code>𝒱 ⊇ unifRel V</code> を取る。問題8で <code>V</code> に対する <code>W</code> と有限個の点 <code>P</code> を取り、問題10で <code>P</code> についての被覆 <code>C</code> を作る。各片を <code>S ∩ H</code> に取り替えれば、問題8により <code>𝒱</code>-小さくなる（問題8は <code>H</code> の写像にしか使えないので <code>∩ H</code> が要る）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> ascoli [CompactSpace X] {H : Set (X → Y)} (hH : Equicontinuous H)
+    (hpt : ∀ x, TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H)) : TotallyBounded H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> TotallyBounded</code></pre>
+<h2>Part E: 反例——等連続性の仮定は外せない</h2>
+<p><code>X</code> を「自然数に無限遠点を1つ付け加えた空間」（1点コンパクト化）、<code>Y</code> を <code>Bool</code> とし、 <code>H</code> を「点 <code>n</code> だけで <code>true</code> になる関数 <code>δ n</code>」の全体とする。値は <code>Bool</code> にしかならないので各点での全有界性はただで成り立つが、 <code>H</code> は無限遠点で等連続でなく、実際に一様収束について全有界でない。</p>
+<p><code>Option Nat</code> の <code>none</code> を無限遠点とする。<code>none</code> を含む開集合は、ある番号から先の自然数をすべて含むもの（補集合が有限であることに相当する）とする。</p>
+<pre class="lean"><code><span class="kw">namespace</span> Counterexample</code></pre>
+<p>1点コンパクト化 <code>Option Nat</code> の位相（与える）。</p>
+<pre class="lean"><code><span class="kw">instance</span> : TopologicalSpace (Option Nat) <span class="kw">where</span>
+  IsOpen s := none ∈ s → ∃ N, ∀ n, N ≤ n → some n ∈ s
+  isOpen_univ := <span class="kw">fun</span> _ =&gt; ⟨0, <span class="kw">fun</span> _ _ =&gt; trivial⟩
+  isOpen_inter := <span class="kw">by</span>
+    <span class="kw">intro</span> s t hs ht ⟨h₁, h₂⟩
+    <span class="kw">have</span> ⟨N₁, hN₁⟩ := hs h₁
+    <span class="kw">have</span> ⟨N₂, hN₂⟩ := ht h₂
+    <span class="kw">exact</span> ⟨N₁ + N₂, <span class="kw">fun</span> n hn =&gt;
+      ⟨hN₁ n (Nat.le_trans (Nat.le_add_right N₁ N₂) hn),
+       hN₂ n (Nat.le_trans (Nat.le_add_left N₂ N₁) hn)⟩⟩
+  isOpen_sUnion := <span class="kw">by</span>
+    <span class="kw">intro</span> S hS ⟨s, hsS, hs⟩
+    <span class="kw">have</span> ⟨N, hN⟩ := hS s hsS hs
+    <span class="kw">exact</span> ⟨N, <span class="kw">fun</span> n hn =&gt; ⟨s, hsS, hN n hn⟩⟩</code></pre>
+<p>問題12: <code>Option Nat</code> はコンパクトであることを示せ。</p>
+<p>ヒント: <code>none</code> を覆う <code>U i₀</code> は、ある <code>N</code> 以上の <code>some n</code> をすべて含む。残りの <code>some 0, …, some (N-1)</code> を覆う添字を1つずつ <code>Classical.choose</code> で選び、 <code>i₀</code> と合わせて <code>Fin (N + 1) → I</code> で番号づける（<code>match</code> で <code>0</code> と <code>k + 1</code> に分ける）。</p>
+<pre class="lean"><code><span class="kw">instance</span> : CompactSpace (Option Nat) <span class="kw">where</span>
+  isCompact_univ := <span class="sorry">sorry</span></code></pre>
+<p>対角線。</p>
+<pre class="lean"><code><span class="kw">def</span> diagonal (α : <span class="sort">Type</span>) : Set (α × α) := {p | p.1 = p.2}</code></pre>
+<p>離散一様構造: 対角線を含む関係がすべて近縁（与える）。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> discreteUniformity (α : <span class="sort">Type</span>) : UniformSpace α <span class="kw">where</span>
+  Entourage := {V | ∀ a, (a, a) ∈ V}
+  univ_mem := <span class="kw">fun</span> _ =&gt; trivial
+  mono := <span class="kw">fun</span> hV h a =&gt; h _ (hV a)
+  inter_mem := <span class="kw">fun</span> hV hW a =&gt; ⟨hV a, hW a⟩
+  refl := <span class="kw">fun</span> hV =&gt; hV
+  symm := <span class="kw">fun</span> hV a =&gt; hV a
+  comp := <span class="kw">fun</span> hV =&gt;
+    ⟨diagonal α, <span class="kw">fun</span> _ =&gt; rfl, <span class="kw">fun</span> ⟨a, b⟩ ⟨z, (h₁ : a = z), (h₂ : z = b)⟩ =&gt; <span class="kw">by</span>
+      <span class="kw">rw</span> [← h₂, ← h₁]
+      <span class="kw">exact</span> hV a⟩
+
+<span class="kw">instance</span> : UniformSpace Bool := discreteUniformity Bool</code></pre>
+<p>点 <code>n</code> だけで <code>true</code> になる関数。無限遠点では <code>false</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> δ (n : Nat) : Option Nat → Bool
+  | none =&gt; false
+  | some m =&gt; decide (m = n)</code></pre>
+<p>反例の族。</p>
+<pre class="lean"><code><span class="kw">def</span> H : Set (Option Nat → Bool) := {f | ∃ n, f = δ n}</code></pre>
+<p>問題13: <code>Bool</code> の部分集合はすべて全有界であることを示せ。</p>
+<p>ヒント: <code>[{b | b = true}, {b | b = false}]</code> で覆う。各片は1点なので、どの近縁についても小さい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> totallyBounded_bool (s : Set Bool) : TotallyBounded s :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題14: <code>H</code> は無限遠点で等連続でないことを示せ。</p>
+<p>ヒント: 近縁として対角線 <code>diagonal Bool</code> を使う。<code>none</code> の開近傍は十分大きい <code>some N</code> を含むが、 <code>δ N none = false</code> と <code>δ N (some N) = true</code> は近くない。</p>
+<pre class="lean"><code><span class="kw">theorem</span> not_equicontinuousAt : ¬ EquicontinuousAt H none :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題15: <code>unifRel (diagonal Bool)</code> について小さい集合は <code>δ</code> を高々1つしか含まない。そこで、そのような集合の有限リストに対し、どこまで先に行ってもどの片にも入らない <code>δ n</code> があることを示せ（鳩の巣原理の代わり）。</p>
+<p>ヒント: リストについての帰納法。<code>A :: L</code> では、<code>L</code> を避ける <code>δ n</code>（<code>N ≤ n</code>）と、さらに <code>L</code> を避ける <code>δ m</code>（<code>n + 1 ≤ m</code>）を取る。<code>A</code> が両方を含むことはない（点 <code>some n</code> での値が <code>true</code> と <code>false</code> で異なる）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_avoid (L : List (Set (Option Nat → Bool)))
+    (hL : ∀ A ∈ L, Small (unifRel (diagonal Bool)) A) :
+    ∀ N, ∃ n, N ≤ n ∧ ∀ A ∈ L, δ n ∉ A :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題16: <code>H</code> は一様収束について全有界でないことを示せ。問題12〜14と合わせると、主定理の「等連続」を外すと結論が成り立たないことがわかる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> not_totallyBounded : ¬ TotallyBounded H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Counterexample</code></pre>
+<h2>Part F: 逆向き——全有界なら等連続</h2>
+<p>ブルバキの Théorème 2 は必要十分条件である。逆向き（Arzelà が示した向き）は <code>X</code> のコンパクト性も要らない。ただし <code>H</code> の各写像が連続であることは仮定する。</p>
+<pre class="lean"><code><span class="kw">section</span> Converse
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>問題17: 一様収束について全有界な族は、各点での値の集合も全有界であることを示せ。</p>
+<p>ヒント: <code>unifRel V</code> についての被覆の各片の、<code>x</code> での値の像を並べる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.eval {H : Set (X → Y)} (hH : TotallyBounded H) (x : X) :
+    TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p>問題18: 連続写像からなる、一様収束について全有界な族は等連続であることを示せ。</p>
+<p>方針: 3分の1の近縁 <code>W</code> を取り、<code>unifRel W</code> について <code>H</code> を有限個の小さい片で覆う。被覆のリストについての帰納法で、「どの片 <code>S</code> についても、<code>S ∩ H</code> の写像がすべて <code>U</code> 上で <code>V</code>-振れに収まる」開近傍 <code>U</code> を作る。片 <code>S</code> が <code>H</code> の元 <code>g</code> を含むなら、 <code>g</code> の連続性で近傍を縮め、<code>(f x, g x)</code>・<code>(g x, g x&#x27;)</code>・<code>(g x&#x27;, f x&#x27;)</code> の3つをつなぐ（含まないなら縮めなくてよい）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.equicontinuous {H : Set (X → Y)} (hc : ∀ f ∈ H, Continuous f)
+    (hH : TotallyBounded H) : Equicontinuous H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Converse</code></pre>
+<h2>Part G: フィルターと Zorn の補題</h2>
+<p>コンパクト版の証明には、コンパクト性をフィルターで言い換える必要がある。 <strong>フィルター</strong>は「十分大きい集合」の集まりで、一様構造の近縁の全体（Part A の <code>univ_mem</code>・<code>mono</code>・<code>inter_mem</code>）がまさにその例になっている。</p>
+<p>フィルター。</p>
+<pre class="lean"><code><span class="kw">structure</span> Filter (α : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 属する集合の全体。 -/</span>
+  sets : Set (Set α)
+<span class="doc">  /-- 全体集合は属する。 -/</span>
+  univ_mem : Set.univ ∈ sets
+<span class="doc">  /-- 属する集合より大きい集合は属する。 -/</span>
+  mono : ∀ {s t : Set α}, s ∈ sets → s ⊆ t → t ∈ sets
+<span class="doc">  /-- 2つの共通部分も属する。 -/</span>
+  inter_mem : ∀ {s t : Set α}, s ∈ sets → t ∈ sets → s ∩ t ∈ sets
+
+<span class="kw">namespace</span> Filter
+
+<span class="kw">variable</span> {α β : <span class="sort">Type</span>}</code></pre>
+<p><code>s ∈ F</code> で <code>s ∈ F.sets</code> を表す。</p>
+<pre class="lean"><code><span class="kw">instance</span> : Membership (Set α) (Filter α) := ⟨<span class="kw">fun</span> F s =&gt; s ∈ F.sets⟩</code></pre>
+<p>超フィルター: 空集合を含まず、どの集合もそれ自身か補集合のどちらかが属する。</p>
+<pre class="lean"><code><span class="kw">structure</span> IsUltra (F : Filter α) : <span class="sort">Prop</span> <span class="kw">where</span>
+<span class="doc">  /-- 空集合は属さない。 -/</span>
+  empty_not_mem : (∅ : Set α) ∉ F
+<span class="doc">  /-- どの集合も、それ自身か補集合が属する。 -/</span>
+  mem_or_compl_mem : ∀ s : Set α, s ∈ F ∨ sᶜ ∈ F</code></pre>
+<p>超フィルターに属さない集合の補集合は属する。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsUltra.compl_mem {F : Filter α} (hF : F.IsUltra) {s : Set α} (hs : s ∉ F) : sᶜ ∈ F :=
+  (hF.mem_or_compl_mem s).resolve_left hs</code></pre>
+<p>空集合を含まないフィルターの元は空でない。</p>
+<pre class="lean"><code><span class="kw">theorem</span> nonempty_of_mem {F : Filter α} (hF : (∅ : Set α) ∉ F) {s : Set α} (hs : s ∈ F) :
+    ∃ a, a ∈ s :=
+  Classical.byContradiction <span class="kw">fun</span> h =&gt; hF (F.mono hs <span class="kw">fun</span> a ha =&gt; h ⟨a, ha⟩)</code></pre>
+<p>像フィルター: <code>f</code> による逆像が <code>F</code> に属する集合の全体。</p>
+<pre class="lean"><code><span class="kw">def</span> map (f : α → β) (F : Filter α) : Filter β <span class="kw">where</span>
+  sets := {s | f ⁻¹&#x27; s ∈ F}
+  univ_mem := F.univ_mem
+  mono := <span class="kw">fun</span> hs h =&gt; F.mono hs <span class="kw">fun</span> a ha =&gt; h (f a) ha
+  inter_mem := <span class="kw">fun</span> hs ht =&gt; F.inter_mem hs ht</code></pre>
+<p>問題19: 超フィルターの像は超フィルターであることを示せ。</p>
+<p>ヒント: <code>f ⁻¹&#x27; ∅</code> と <code>∅</code>、<code>f ⁻¹&#x27; sᶜ</code> と <code>(f ⁻¹&#x27; s)ᶜ</code> は定義上等しい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsUltra.map {F : Filter α} (hF : F.IsUltra) (f : α → β) : (F.map f).IsUltra :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題20: 有限個（リスト <code>L</code> で添字づけた）の元の共通部分もフィルターに属することを示せ。リストについての再帰で示す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> mem_list_inter (F : Filter α) {I : <span class="sort">Type</span>} (s : I → Set α) :
+    ∀ L : List I, (∀ i ∈ L, s i ∈ F) → {a | ∀ i ∈ L, a ∈ s i} ∈ F :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Filter</code></pre>
+<h3>Zorn の補題（包含順序の集合族版）</h3>
+<p>示したいのは次の形である（<code>β</code> は任意の型、<code>𝔉</code> はその部分集合の族）:</p>
+<p>&gt; <code>𝔉</code> の空でない鎖の合併がつねに <code>𝔉</code> に属するなら、<code>𝔉</code> のどの元 <code>A</code> についても、&gt; <code>A</code> を含む <code>𝔉</code> の極大元 <code>M</code> がある。</p>
+<p>証明は Bourbaki–Witt の不動点定理の方法による。選択公理で「真に大きい元があればそれを1つ選ぶ」写像 <code>next</code> を作り、<code>A</code> から <code>next</code> と鎖の合併で到達できる集合の全体（<strong>塔</strong>）を帰納的に定義する。塔が鎖であることを示せば、塔全体の合併 <code>M</code> が <code>next M = M</code> を満たし、それが極大であることを意味する。</p>
+<pre class="lean"><code><span class="kw">namespace</span> Zorn
+
+<span class="kw">variable</span> {β : <span class="sort">Type</span>}</code></pre>
+<p>鎖: どの2つも包含で比較できる集合族。</p>
+<pre class="lean"><code><span class="kw">def</span> IsChain (c : Set (Set β)) : <span class="sort">Prop</span> := ∀ s ∈ c, ∀ t ∈ c, s ⊆ t ∨ t ⊆ s
+
+<span class="kw">open</span> Classical in</code></pre>
+<p><code>S</code> より真に大きい <code>𝔉</code> の元があればそれを1つ選び、なければ <code>S</code> 自身を返す。</p>
+<pre class="lean"><code><span class="kw">noncomputable</span> <span class="kw">def</span> next (𝔉 : Set (Set β)) (S : Set β) : Set β :=
+  if h : ∃ T, T ∈ 𝔉 ∧ S ⊆ T ∧ T ≠ S then Classical.choose h else S</code></pre>
+<p>塔: <code>A</code> から出発して、<code>next</code> と「空でない鎖の合併」で到達できる集合。塔に属することを帰納的な述語として定義する（<code>Tower 𝔉 A</code> の構成子が塔の閉包規則）。</p>
+<pre class="lean"><code><span class="kw">inductive</span> Tower (𝔉 : Set (Set β)) (A : Set β) : Set β → <span class="sort">Prop</span>
+  | base : Tower 𝔉 A A
+  | next {S : Set β} : Tower 𝔉 A S → Tower 𝔉 A (next 𝔉 S)
+  | sup (c : Set (Set β)) : (∀ S ∈ c, Tower 𝔉 A S) → IsChain c → (∃ S, S ∈ c) →
+      Tower 𝔉 A (⋃₀ c)
+
+<span class="kw">variable</span> {𝔉 : Set (Set β)} {A : Set β}</code></pre>
+<p><code>next</code> は大きくする（与える）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> subset_next (S : Set β) : S ⊆ next 𝔉 S := <span class="kw">by</span>
+  unfold next
+  split
+  · next h =&gt; <span class="kw">exact</span> (Classical.choose_spec h).2.1
+  · <span class="kw">exact</span> Set.subset_refl S</code></pre>
+<p><code>next</code> は <code>𝔉</code> から出ない（与える）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> next_mem {S : Set β} (hS : S ∈ 𝔉) : next 𝔉 S ∈ 𝔉 := <span class="kw">by</span>
+  unfold next
+  split
+  · next h =&gt; <span class="kw">exact</span> (Classical.choose_spec h).1
+  · <span class="kw">exact</span> hS</code></pre>
+<p>問題21: 塔の元は <code>𝔉</code> に属し、<code>A</code> を含むことを示せ。塔についての帰納法（<code>induction hS with</code>）で、構成子 <code>base</code>・<code>next</code>・<code>sup</code> ごとに示す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Tower.mem (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {S : Set β} (hS : Tower 𝔉 A S) : S ∈ 𝔉 ∧ A ⊆ S :=
+  <span class="sorry">sorry</span></code></pre>
+<p>極点: 自分より真に小さい塔の元 <code>T</code> について、<code>next T</code> も自分に収まる。</p>
+<pre class="lean"><code><span class="kw">def</span> Extreme (𝔉 : Set (Set β)) (A C : Set β) : <span class="sort">Prop</span> :=
+  ∀ T, Tower 𝔉 A T → T ⊆ C → T ≠ C → next 𝔉 T ⊆ C</code></pre>
+<p>問題22: 塔の元 <code>C</code> が極点なら、どの塔の元 <code>T</code> も <code>T ⊆ C</code> か <code>next C ⊆ T</code> であることを示せ。</p>
+<p>ヒント: <code>T</code> についての帰納法。</p>
+<ul>
+<li><code>base</code>: 問題21で <code>A ⊆ C</code></li>
+<li><code>next T</code>: 帰納法の仮定で場合分けし、<code>T ⊆ C</code> の場合はさらに <code>T = C</code> かどうかで分ける（<code>T ≠ C</code> なら極点の定義が使える）</li>
+<li><code>sup c</code>: 「<code>c</code> のすべてが <code>C</code> に含まれる」かどうかで分ける</li>
+</ul>
+<pre class="lean"><code><span class="kw">theorem</span> Extreme.dichotomy (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {C : Set β} (hCT : Tower 𝔉 A C) (hC : Extreme 𝔉 A C) {T : Set β}
+    (hT : Tower 𝔉 A T) : T ⊆ C ∨ next 𝔉 C ⊆ T :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題23: 塔の元はすべて極点であることを示せ。</p>
+<p>ヒント: <code>C</code> についての帰納法。</p>
+<ul>
+<li><code>base</code>: <code>A</code> より真に小さい塔の元はない</li>
+<li><code>next C</code>: 問題22を <code>C</code> に使う</li>
+<li><code>sup c</code>: <code>T ≠ ⋃₀ c</code> から、<code>T</code> に含まれない <code>S ∈ c</code> が取れる。問題22を <code>S</code> に使うと <code>T ⊆ S</code>（かつ <code>T ≠ S</code>）となり、<code>S</code> の極点性が使える</li>
+</ul>
+<pre class="lean"><code><span class="kw">theorem</span> Tower.extreme (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {C : Set β} (hC : Tower 𝔉 A C) : Extreme 𝔉 A C :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題24: 塔は鎖であることを示せ（問題22・23から直ちに出る）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Tower.isChain (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) : IsChain {S | Tower 𝔉 A S} :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題25（Zorn の補題）: 極大元の存在を示せ。</p>
+<p>方針: 塔全体の合併 <code>M</code> は（問題24により）それ自身塔の元なので、<code>next M</code> も塔の元で <code>next M ⊆ M</code>。<code>M</code> より真に大きい <code>N ∈ 𝔉</code> があったとすると、<code>next</code> の定義により <code>next M</code> は <code>M</code> より真に大きい元になり、矛盾する（<code>dif_pos</code> で <code>next</code> の <code>if</code> を開く）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_maximal (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) : ∃ M, M ∈ 𝔉 ∧ A ⊆ M ∧ ∀ N, N ∈ 𝔉 → M ⊆ N → N = M :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Zorn
+
+<span class="kw">namespace</span> Filter
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p>問題26（超フィルター補題）: 空集合を含まないフィルターは超フィルターに延長できることを示せ。</p>
+<p>方針: 「空集合を含まないフィルターの <code>sets</code>」の全体 <code>P : Set (Set (Set α))</code> に Zorn の補題を使う（鎖の合併もフィルターの3条件を満たし、空集合を含まない）。極大元 <code>M</code> が超フィルターでないとして、 <code>s ∉ M</code>・<code>sᶜ ∉ M</code> となる <code>s</code> を取ると、<code>{t | ∃ m ∈ M, m ∩ s ⊆ t}</code> が <code>M</code> より真に大きい <code>P</code> の元になり、極大性に反する。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_ultra (F : Filter α) (hF : (∅ : Set α) ∉ F) :
+    ∃ G : Filter α, G.IsUltra ∧ F.sets ⊆ G.sets :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Filter</code></pre>
+<h2>Part H: 主定理のコンパクト版</h2>
+<p>フィルター <code>F</code> が点 <code>a</code> に<strong>収束する</strong>とは、<code>a</code> のどの開近傍も <code>F</code> に属すること。コンパクト性は超フィルターの収束で特徴づけられる（問題27・28）。一様空間では、全有界な集合を含む超フィルターは<strong>コーシー</strong>になる（問題31）。あとは、コーシーで各点収束するフィルターが一様収束すること（問題32）を示せば、主定理（全有界版）からコンパクト版が出る。</p>
+<pre class="lean"><code><span class="kw">section</span> Compact</code></pre>
+<p>フィルターの収束。</p>
+<pre class="lean"><code><span class="kw">def</span> Filter.ConvergesTo {X : <span class="sort">Type</span>} [TopologicalSpace X] (F : Filter X) (a : X) : <span class="sort">Prop</span> :=
+  ∀ U, IsOpen U → a ∈ U → U ∈ F
+
+<span class="kw">variable</span> {X : <span class="sort">Type</span>} [TopologicalSpace X]</code></pre>
+<p>問題27: <code>K</code> を含む超フィルターがすべて <code>K</code> の点に収束するなら、<code>K</code> はコンパクトであることを示せ。</p>
+<p>方針: 開被覆 <code>U</code> が有限部分被覆を持たないと仮定する。 <code>{s | ∃ L : List I, {a | a ∈ K ∧ ∀ i ∈ L, a ∉ U i} ⊆ s}</code> は空集合を含まないフィルターになる（空集合を含むなら <code>L</code> が有限部分被覆を与える。<code>Set.finite_of_list</code> を使う）。これを超フィルターに延長して極限 <code>a ∈ K</code> を取ると、<code>a ∈ U i</code> なる <code>i</code> について <code>U i</code> とその補集合の両方が属してしまう。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isCompact_of_ultra {K : Set X}
+    (h : ∀ F : Filter X, F.IsUltra → K ∈ F → ∃ a, a ∈ K ∧ F.ConvergesTo a) : IsCompact K :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題28: コンパクト集合を含む超フィルターは、その集合の点に収束することを示せ。</p>
+<p>方針: 収束先がないと仮定すると、<code>K</code> の各点 <code>a</code> に <code>F</code> に属さない開近傍が取れる（添字型は部分型 <code>{a // a ∈ K}</code>）。有限部分被覆を取ると、各片の補集合は <code>F</code> に属し（超フィルター）、問題20でその共通部分と <code>K</code> の共通部分も属するが、それは空である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsCompact.ultra_converges {K : Set X} (hK : IsCompact K) {F : Filter X}
+    (hF : F.IsUltra) (hKF : K ∈ F) : ∃ a, a ∈ K ∧ F.ConvergesTo a :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題29: 超フィルターに属する集合が有限個の集合で覆われるなら、そのどれかが属することを示せ。</p>
+<p>ヒント: リストについての再帰。先頭 <code>A</code> が属さなければ <code>Aᶜ</code> が属するので、 <code>s ∩ Aᶜ</code> を残りのリストで覆う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Filter.IsUltra.mem_of_cover {α : <span class="sort">Type</span>} {F : Filter α} (hF : F.IsUltra) :
+    ∀ (L : List (Set α)) (s : Set α), s ∈ F → (∀ a ∈ s, ∃ A ∈ L, a ∈ A) → ∃ A ∈ L, A ∈ F :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>} [UniformSpace α]</code></pre>
+<p>問題30: 一様空間のコンパクト集合は全有界であることを示せ。</p>
+<p>ヒント: 対称な半分 <code>W</code>（問題1）を取り、各点 <code>a</code> の周りに <code>W</code>-球に収まる開集合（問題4）を選んで <code>K</code> を覆う。有限部分被覆の各片は <code>V</code>-小さい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsCompact.totallyBounded {K : Set α} (hK : IsCompact K) : TotallyBounded K :=
+  <span class="sorry">sorry</span></code></pre>
+<p>コーシーフィルター: どの近縁 <code>V</code> についても、<code>V</code>-小さい集合が属する。</p>
+<pre class="lean"><code><span class="kw">def</span> Filter.Cauchy (F : Filter α) : <span class="sort">Prop</span> := ∀ V ∈ 𝓤 α, ∃ A, A ∈ F ∧ Small V A</code></pre>
+<p>問題31: 全有界な集合を含む超フィルターはコーシーであることを示せ（問題29を使う）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Filter.IsUltra.cauchy {F : Filter α} (hF : F.IsUltra) {s : Set α}
+    (hs : TotallyBounded s) (hsF : s ∈ F) : F.Cauchy :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Compact
+
+<span class="kw">section</span> AscoliCompact
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>問題32: コーシーフィルターが各点で <code>φ</code> に収束するなら、一様収束の位相で <code>φ</code> に収束することを示せ。</p>
+<p>方針: 開集合 <code>𝒪 ∋ φ</code> は <code>unifRel V</code>-球を含む。<code>V</code> の半分 <code>W</code> を取り、 <code>unifRel W</code>-小さい <code>A ∈ F</code> を取れば <code>A ⊆ 𝒪</code> となる。実際 <code>f ∈ A</code> と点 <code>x</code> について、 <code>φ x</code> の近くに値をとる <code>g ∈ A</code> が（<code>F</code> が空集合を含まないので）取れ、 <code>(φ x, g x) ∈ W</code> と <code>(g x, f x) ∈ W</code> をつなげばよい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Filter.Cauchy.convergesTo_of_pointwise {F : Filter (X → Y)} (hF : F.Cauchy)
+    (hne : (∅ : Set (X → Y)) ∉ F) (φ : X → Y)
+    (hφ : ∀ x, (F.map <span class="kw">fun</span> f =&gt; f x).ConvergesTo (φ x)) : F.ConvergesTo φ :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p>問題33（主定理・Ascoli の定理、コンパクト版）:コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像の族 <code>H</code> が等連続で、各点での値の集合がコンパクト集合に含まれ（相対コンパクト）、<code>H</code> が一様収束の位相で閉なら、 <code>H</code> は一様収束の位相でコンパクトであることを示せ。</p>
+<p>方針: 問題27に持ち込む。<code>H</code> を含む超フィルター <code>F</code> は、主定理（問題11）と問題30・31によりコーシー。各点 <code>x</code> での像フィルターは超フィルター（問題19）で、コンパクト集合を含むので収束する（問題28）。その極限を並べた <code>φ</code> に <code>F</code> は一様収束し（問題32）、 <code>H</code> が閉なので <code>φ ∈ H</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> ascoli_compact [CompactSpace X] {H : Set (X → Y)} (hH : Equicontinuous H)
+    (hpt : ∀ x, ∃ K : Set Y, IsCompact K ∧ (<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H ⊆ K) (hcl : IsClosed H) :
+    IsCompact H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> AscoliCompact
+
+<span class="cm">-- できたら確認: 主定理（全有界版・コンパクト版）が使う公理</span>
+<span class="cm">-- #print axioms ascoli</span>
+<span class="cm">-- #print axioms ascoli_compact</span></code></pre>
+</main>
+<nav><span><a href="extra.html">← Extra</a></span><a href="index.html">目次</a><span></span></nav>
+</body>
+</html>

@@ -72,9 +72,10 @@ def analyze(src: Path, chapters: list[str], sol_files: dict[str, str], parse) ->
     result = Result()
     owners = {name: name for name in chapters}
     owners.update({sol: name for name, sol in sol_files.items()})
-    # ExtraSol is compiled but is not embedded in the HTML.
-    if "Extra" in owners and (src / "ExtraSol.lean").exists():
-        owners["ExtraSol"] = "Extra"
+    # ExtraSol / AscoliSol are compiled but are not embedded in the HTML.
+    for name in ("Extra", "Ascoli"):
+        if name in owners and (src / f"{name}Sol.lean").exists():
+            owners[f"{name}Sol"] = name
     segments = {}
     edits: dict[Path, list[tuple[int, int, str]]] = {}
     offsets = {}

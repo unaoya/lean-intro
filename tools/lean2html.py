@@ -29,11 +29,11 @@ SRC = ROOT / "src"
 OUT = ROOT / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
-CHAPTERS = ["Intro1a", "CH1", "Intro1b", "CH2", "Intro2", "Top", "Extra"]
+CHAPTERS = ["Intro1a", "CH1", "Intro1b", "CH2", "Intro2", "Top", "Extra", "Ascoli"]
 
 # ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
 # 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
-SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name != "Extra"}
+SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("Extra", "Ascoli")}
 
 SITE_TITLE = "はじめての Lean"
 SITE_CONCEPT = (
@@ -93,7 +93,7 @@ SITE_GOALS = (
     "</ul>"
     "<h2>構成と読む順</h2>"
     "<p>読む順は <strong>Intro1a → CH1 → Intro1b → CH2 → Intro2 → Top"
-    "（→ 演習 Extra）</strong>。</p>"
+    "（→ 演習 Extra・Ascoli）</strong>。</p>"
     "<p>型と項の道具を学んだところで、その道具を使う証明を読む。"
     "この往復を2回行い、目標1の「項の型を読む」ことと、"
     "目標2の「証明が検査される仕組みを納得する」ことを段階的につなぐ。</p>"
@@ -599,6 +599,7 @@ ROLES = {
     "Intro2": "位相空間を読むための道具（class・集合の正体・記法の自作）",
     "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
     "Extra": "演習（sorry を自分で埋める）",
+    "Ascoli": "演習（sorry を自分で埋める）",
 }
 
 

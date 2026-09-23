@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>発展演習: Ascoli の定理（ブルバキ流） · 講義用</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #fcfcfa;
+  --ink: #252c33;
+  --muted: #646e76;
+  --line: #dce1e2;
+  --accent: #235965;
+  --code: #f0f2f1;
+  --output: #edf3f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font-family: "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button {
+  color: inherit; border: 1px solid var(--line); border-radius: 5px;
+  background: transparent; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #edf0ee; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 3px solid #49858e; outline-offset: 4px;
+}
+button:disabled { cursor: default; opacity: .4; }
+button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+.toolbar, .navigation {
+  display: none;
+  align-items: center; justify-content: space-between;
+  font-size: 14px; line-height: 1.5; background: var(--paper); z-index: 2;
+}
+.toolbar { border-bottom: 1px solid var(--line); padding: 14px 30px; gap: 20px; }
+.identity { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.identity > span:first-child { font-weight: 600; }
+.identity a { font-weight: 600; text-decoration: none; color: inherit; }
+#chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
+.chapter { color: var(--muted); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 13px; }
+.tools button { border-color: transparent; padding-inline: 8px; }
+.optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
+.slide, .print-content {
+  font-size: clamp(22px, 2.1vw, 27px); line-height: 1.8;
+  overflow-wrap: anywhere; margin-bottom: 60px;
+}
+.slide h1 { font-size: 1.5em; line-height: 1.5; font-weight: 650; margin: 0 0 36px; }
+.slide h2 { font-size: 1.28em; line-height: 1.5; font-weight: 650; margin: 0 0 28px; }
+.slide h3 { font-size: 1.08em; line-height: 1.65; font-weight: 600; margin: 0 0 24px; }
+.slide p { margin: 0 0 1em; }
+.slide strong { font-weight: 650; }
+.slide a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.slide ul, .slide ol { margin: 0 0 1em; padding-left: 1.6em; }
+.slide li { padding-left: .15em; margin-bottom: .8em; }
+.slide code {
+  font-family: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
+  font-size: .87em; background: var(--code); border-radius: 3px; padding: .08em .12em;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.slide pre {
+  margin: 0 0 22px; padding: 18px 24px; line-height: 1.55;
+  border-left: 3px solid #c5cecd; background: var(--code);
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.1em;
+}
+.slide pre code { padding: 0; font-size: .92em; background: transparent; }
+.slide pre.quote { background: var(--output); border-color: #80a5b0; }
+.kw { color: #793683; font-weight: 600; }
+.sort { color: #075c8b; }
+.doc { color: #34794f; }
+.cm { color: #68736e; }
+.sorry { color: #a33938; }
+.slide[data-kind="optional"], .slide[data-kind="preview"] {
+  border-left: 3px solid #b3ada0; padding-left: 28px;
+}
+.solution { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: .83em; }
+.solution summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.solution[open] summary { margin-bottom: 18px; }
+.solution pre { margin-top: 18px; }
+.slide details.sol { border-top: 1px solid var(--line); padding: 10px 0; margin-top: 14px; font-size: .8em; }
+.slide details.sol summary { color: var(--accent); cursor: pointer; }
+.slide details.sol[open] summary { margin-bottom: 18px; }
+.slide table { border-collapse: collapse; font-size: .8em; width: 100%; table-layout: fixed; margin-bottom: 20px; }
+.slide th, .slide td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+.slide th { background: var(--code); }
+.enhanced body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+.enhanced .toolbar, .enhanced .navigation { display: flex; }
+.enhanced .viewport { overflow: auto; min-height: 0; scrollbar-gutter: stable; }
+.enhanced .slide { margin-bottom: 0; }
+.enhanced .slide[hidden] { display: none; }
+.enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
+.navigation { position: relative; padding: 13px 30px 17px; border-top: 1px solid var(--line); gap: 20px; }
+.position { display: flex; gap: 18px; align-items: baseline; font-variant-numeric: tabular-nums; }
+#counter { font-weight: 600; min-width: 58px; }
+#step-count { color: var(--muted); font-size: 12px; min-width: 56px; }
+.hint { font-size: 12px; color: var(--muted); }
+.navigation-buttons { display: flex; gap: 12px; }
+#next { background: var(--accent); color: white; border-color: var(--accent); min-width: 134px; }
+#next:hover { background: #1e4c56; }
+.progress { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; background: #e6e9e7; }
+#progress-fill { height: 100%; background: var(--accent); }
+dialog { width: min(620px, calc(100% - 36px)); max-height: 82dvh; border: 1px solid var(--line); border-radius: 8px; padding: 25px 30px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: rgb(24 35 39 / .35); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { font-size: 23px; margin: 0; }
+.dialog-caption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+#toc-list { padding: 0; list-style: none; }
+#toc-list button { border: 0; width: 100%; text-align: left; padding: 10px 12px; white-space: normal; font-size: 15px; }
+#toc-list button[aria-current="page"] { background: #e7eeed; color: var(--accent); font-weight: 600; }
+#toc-list .toc-number { display: inline-block; width: 32px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.reading .slide { display: block; border-bottom: 1px solid var(--line); padding-bottom: 45px; margin-bottom: 45px; }
+.reading .step[data-unrevealed] { visibility: visible; pointer-events: auto; }
+.reading .slide[hidden] { display: none; }
+.reading .hint { display: none; }
+@media (max-width: 860px) {
+  .toolbar { padding: 12px 20px; flex-wrap: wrap; gap: 9px; }
+  .identity { gap: 12px; }
+  .tools { gap: 8px; }
+  main { padding: 30px 30px 40px; }
+  .slide { font-size: 23px; line-height: 1.8; }
+  .navigation { padding-inline: 20px; gap: 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 520px) {
+  .toolbar { padding: 9px 16px; gap: 6px; font-size: 12px; }
+  .identity { width: 100%; justify-content: space-between; }
+  .chapter { font-size: 11px; }
+  .tools { width: 100%; justify-content: space-between; gap: 2px; }
+  .tools button { min-height: 40px; padding: 7px; }
+  .optional-control { min-height: 40px; gap: 2px; }
+  main { padding: 26px 22px 32px; }
+  .slide { font-size: 20px; line-height: 1.85; }
+  .slide h1 { font-size: 1.35em; }
+  .slide pre { padding: 14px 16px; }
+  .navigation { padding: 10px 16px 14px; font-size: 12px; }
+  .position { flex-direction: column; gap: 0; }
+  .navigation-buttons { gap: 7px; }
+  .navigation-buttons button { min-height: 44px; padding: 8px 10px; }
+  #next { min-width: 120px; }
+  .slide[data-kind="optional"], .slide[data-kind="preview"] { padding-left: 16px; }
+}
+@media print {
+  .enhanced body { display: block; height: auto; overflow: visible; }
+  .enhanced .toolbar, .enhanced .navigation, dialog, .sr-only { display: none; }
+  .enhanced .viewport { overflow: visible; }
+  main { width: 100%; padding: 0; }
+  .enhanced .slide { display: block !important; break-after: page; font-size: 16pt; margin-bottom: 0; }
+  .enhanced .step[data-unrevealed] { visibility: visible; }
+  .enhanced:not(.include-optional) .slide[data-kind="optional"],
+  .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
+}
+
+/* 推論規則（前提 / 横線 / 結論）。通読版の .rule と同じ組み方 */
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85em; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--ink); padding: .15em .5em 0; }
+</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean</a><select id="chapter-select" aria-label="章"><option value="intro1a.html">Intro1a</option><option value="ch1.html">CH1</option><option value="intro1b.html">Intro1b</option><option value="ch2.html">CH2</option><option value="intro2.html">Intro2</option><option value="top.html">Top</option><option value="extra.html">Extra</option><option value="ascoli.html" selected>Ascoli</option></select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control"><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      <article class="slide" id="ascoli-b2ca5ebbe371" data-kind="main" data-label="Ascoli" data-section="Ascoli.intro"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">import</span> Top</code></pre></div></article>
+<article class="slide" id="ascoli-815d9b6bf54d" data-kind="main" data-label="発展演習: Ascoli の定理（ブルバキ流）" data-section="Ascoli.intro"><div class="step" data-step="0"><h1>発展演習: Ascoli の定理（ブルバキ流）</h1>
+<p><code>Top.lean</code> まで読み終えた人のための、もう1つの演習問題集（<code>Extra.lean</code> とは独立に読める）。題材は関数空間のコンパクト性の定理 <strong>Ascoli の定理</strong>である。</p></div></article>
+<article class="slide" id="ascoli-b2c20ff49074" data-kind="main" data-label="古典版とブルバキ版" data-section="Ascoli.heading-f0b72d5ed5ec"><div class="step" data-step="0"><h2>古典版とブルバキ版</h2>
+<p>古典的な Arzelà–Ascoli の定理は「<code>C([a, b])</code> の部分集合が相対コンパクトであるための必要十分条件は、一様有界かつ同程度連続（等連続）であること」と述べられ、証明には点列と対角線論法を使う。</p>
+<p>ブルバキ（『位相』第X章 §2）はこれを次の2段に分解した。</p></div></article>
+<article class="slide" id="ascoli-80e328b6639c" data-kind="main" data-label="古典版とブルバキ版" data-section="Ascoli.heading-f0b72d5ed5ec"><div class="step" data-step="0"><ol>
+<li><strong>Théorème 1</strong>: 等連続な関数族の上では、各点収束と一様収束が（コンパクト集合上で）一致する</li>
+<li><strong>Théorème 2 (Ascoli)</strong>: 等連続で、各点での値の集合が全有界（précompact）な族は、一様収束について全有界である。コンパクト性はその系として出る</li>
+</ol></div></article>
+<article class="slide" id="ascoli-fc9078cb762e" data-kind="main" data-label="古典版とブルバキ版" data-section="Ascoli.heading-f0b72d5ed5ec"><div class="step" data-step="0"><p>点列も対角線論法も使わない。本質は 1——「等連続なら、有限個の点での値を見れば全体が一様に制御できる」——であり、2 はそこから有限被覆を掛け合わせるだけで出る。この演習ではこの分解に沿って進む。</p></div></article>
+<article class="slide" id="ascoli-6a5b0b32177b" data-kind="main" data-label="この演習での取捨" data-section="Ascoli.heading-36443b922815"><div class="step" data-step="0"><h2>この演習での取捨</h2>
+<p>ブルバキは一様構造をフィルターで定義し、<code>𝔖</code>-収束（部分集合族 <code>𝔖</code> 上での一様収束）の一般論の中で定理を述べる。mathlib の <code>Mathlib.Topology.UniformSpace.Ascoli</code> もほぼそのまま形式化している。この演習では次のように絞る。</p>
+<ul><li>一様構造は<strong>近縁（entourage）の集合族</strong>として直接公理化する（標準形の5公理）</li></ul></div></article>
+<article class="slide" id="ascoli-38c07fc48de4-d5dc6935c3d1" data-kind="main" data-label="この演習での取捨（続き）" data-section="Ascoli.heading-36443b922815"><div class="step" data-step="0"><ul><li>関数空間は「コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像全体」に <strong>全体での一様収束</strong>の一様構造を入れたものだけを扱う</li></ul></div></article>
+<article class="slide" id="ascoli-38c07fc48de4-5327bd0d6012" data-kind="main" data-label="この演習での取捨（続き）" data-section="Ascoli.heading-36443b922815"><div class="step" data-step="0"><ul><li>Théorème 1 は「一様構造の一致」という抽象的な形ではなく、 <strong>有限点制御補題</strong>（Part C）という具体的な形で証明する</li></ul></div></article>
+<article class="slide" id="ascoli-38c07fc48de4-11f0f2d20f53" data-kind="main" data-label="この演習での取捨（続き）" data-section="Ascoli.heading-36443b922815"><div class="step" data-step="0"><ul><li>有限性は <code>List</code> で扱う（<code>Top.lean</code> の <code>Set.Finite</code> との橋渡しは与える）</li></ul></div></article>
+<article class="slide" id="ascoli-2163c5589d57" data-kind="main" data-label="構成" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><h2>構成</h2>
+<ul><li>Part A: 一様構造と、そこから定まる位相</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-0c5fa45744c9" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part B: 一様収束の一様構造と等連続性</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-764548b46c31" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part C: 核心補題（Théorème 1 の有限版）</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-8d8352db02c8" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part D: 全有界性と主定理（全有界版）</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-03417597448f" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part E: 反例——等連続性の仮定は外せない</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-0e9456405e58" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part F: 逆向き——全有界なら等連続</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-e42d35b63a5a" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part G: フィルターと Zorn の補題（コンパクト版の準備）</li></ul></div></article>
+<article class="slide" id="ascoli-16cfd9819a9e-69f378d11e5f" data-kind="main" data-label="構成（続き）" data-section="Ascoli.heading-530b9f2fd16c"><div class="step" data-step="0"><ul><li>Part H: 主定理のコンパクト版</li></ul>
+<p>Part A〜D が本体で、ここまでに選択公理による「選択」は有限点制御補題の近傍の選択（<code>Classical.choose</code>）しか使わない。Part G・H は重い。一般の一様空間で「全有界 ⇒（完備なら）コンパクト」を示すには <strong>超フィルター補題</strong>が要り、これは選択公理より真に弱いが、選択公理なしの集合論（ZF）では証明できない。core Lean には Zorn の補題がないので、Part G で自作する。</p></div></article>
+<article class="slide" id="ascoli-7939c0c6e6df" data-kind="main" data-label="進め方" data-section="Ascoli.heading-e76056f0b039"><div class="step" data-step="0"><h2>進め方</h2>
+<p><code>Extra.lean</code> と同じく、<code>sorry</code> を自分の証明で置き換える。解答は <code>AscoliSol.lean</code> にある。与えてある宣言（<code>sorry</code> のないもの）も、問題を解くときに使ってよい。</p></div></article>
+<article class="slide" id="ascoli-42061827924b" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><h2>Part A: 一様構造</h2>
+<p>まず集合の道具を少し足す。<code>compRel V W</code> は関係の合成（<code>a</code> から <code>V</code> で <code>z</code> へ、<code>z</code> から <code>W</code> で <code>b</code> へ行ける）、<code>swapRel V</code> は逆関係である。リストと有限性の橋渡し2つも与える。</p></div></article>
+<article class="slide" id="ascoli-379ac05be510" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">namespace</span> Set
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p>2つの集合が互いに含み合えば等しい。</p></div></article>
+<article class="slide" id="ascoli-37d195637b40" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> subset_antisymm {s t : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ s) : s = t :=
+  ext <span class="kw">fun</span> a =&gt; ⟨h₁ a, h₂ a⟩</code></pre>
+<p>関係の合成 <code>V ○ W</code>。</p></div></article>
+<article class="slide" id="ascoli-b023c20bd1ec" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> compRel (V W : Set (α × α)) : Set (α × α) := {p | ∃ z, (p.1, z) ∈ V ∧ (z, p.2) ∈ W}</code></pre>
+<p>逆関係 <code>V⁻¹</code>。</p></div></article>
+<article class="slide" id="ascoli-9ecf87b4374d" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> swapRel (V : Set (α × α)) : Set (α × α) := {p | (p.2, p.1) ∈ V}</code></pre>
+<p>リストに載っている元の全体は有限集合。</p></div></article>
+<article class="slide" id="ascoli-d6fce0c7eb19" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> finite_of_list (L : List α) : Set.Finite {a | a ∈ L} :=
+  ⟨L.length, L.get, <span class="kw">fun</span> _ ha =&gt; List.get_of_mem ha⟩</code></pre>
+<p>有限集合の元はすべて、あるリストに載せられる。</p></div></article>
+<article class="slide" id="ascoli-b74cd0ef0045" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Finite.exists_list {s : Set α} (hs : s.Finite) : ∃ L : List α, ∀ a ∈ s, a ∈ L :=
+  <span class="kw">have</span> ⟨_, f, hf⟩ := hs
+  ⟨List.ofFn f, <span class="kw">fun</span> a ha =&gt; List.mem_ofFn.mpr (hf a ha)⟩
+
+<span class="kw">end</span> Set</code></pre></div></article>
+<article class="slide" id="ascoli-adff587298d5" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>一様構造は「2点が <code>V</code>-近い」という関係 <code>V ⊆ α × α</code> たち（<strong>近縁</strong>）を指定する。距離空間なら <code>V_ε = {(a, b) | d(a, b) &lt; ε}</code> を含む関係が近縁である。 5つの公理はそれぞれ、距離の性質の抽象化になっている。</p></div></article>
+<article class="slide" id="ascoli-00b017f8046c" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><ul>
+<li><code>univ_mem</code>・<code>mono</code>・<code>inter_mem</code>: 近縁の全体はフィルターをなす（<code>ε</code> の取り方の自由度）</li>
+<li><code>refl</code>: 近縁は対角線を含む（<code>d(a, a) = 0</code>）</li>
+<li><code>symm</code>: 近縁の逆も近縁（<code>d(a, b) = d(b, a)</code>）</li>
+<li><code>comp</code>: どの近縁 <code>V</code> にも、<code>W ○ W ⊆ V</code> となる近縁 <code>W</code> がある（三角不等式、<code>ε/2</code>）</li>
+</ul></div></article>
+<article class="slide" id="ascoli-def10b851576" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>一様構造（標準形）。</p></div></article>
+<article class="slide" id="ascoli-be1e6ada9d89-7d172dccb8c0" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">class</span> UniformSpace (α : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 近縁の全体。 -/</span>
+  Entourage : Set (Set (α × α))
+<span class="doc">  /-- 全体の関係は近縁。 -/</span>
+  univ_mem : Set.univ ∈ Entourage
+<span class="doc">  /-- 近縁より大きい関係は近縁。 -/</span>
+  mono : ∀ {V W : Set (α × α)}, V ∈ Entourage → V ⊆ W → W ∈ Entourage
+</code></pre></div></article>
+<article class="slide" id="ascoli-be1e6ada9d89-80461b8d72f1" data-kind="main" data-label="Part A: 一様構造（続き）" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="doc">  /-- 2つの近縁の共通部分は近縁。 -/</span>
+  inter_mem : ∀ {V W : Set (α × α)}, V ∈ Entourage → W ∈ Entourage → V ∩ W ∈ Entourage
+<span class="doc">  /-- 近縁は対角線を含む。 -/</span>
+  refl : ∀ {V : Set (α × α)}, V ∈ Entourage → ∀ a, (a, a) ∈ V
+<span class="doc">  /-- 近縁の逆関係は近縁。 -/</span>
+</code></pre></div></article>
+<article class="slide" id="ascoli-be1e6ada9d89-8aac8dd311d8" data-kind="main" data-label="Part A: 一様構造（続き）" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code>  symm : ∀ {V : Set (α × α)}, V ∈ Entourage → Set.swapRel V ∈ Entourage
+<span class="doc">  /-- 「半分」の近縁がある。 -/</span>
+  comp : ∀ {V : Set (α × α)}, V ∈ Entourage → ∃ W, W ∈ Entourage ∧ Set.compRel W W ⊆ V</code></pre>
+<p><code>𝓤 α</code> で <code>α</code> の近縁の全体を表す（mathlib と同じ記号）。</p></div></article>
+<article class="slide" id="ascoli-60c2ccd2b81a" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code>notation &quot;𝓤 &quot; α:max =&gt; @UniformSpace.Entourage α _
+
+<span class="kw">namespace</span> UniformSpace
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>} [UniformSpace α]</code></pre>
+<p>問題1: 対称な「半分」の近縁を作れ。古典的な議論の「<code>ε/2</code> を取る」に当たる。</p></div></article>
+<article class="slide" id="ascoli-b0948eec095f" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>ヒント: <code>comp</code> で <code>W ○ W ⊆ V</code> となる <code>W</code> を取り、<code>W ∩ swapRel W</code> を使う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_half {V : Set (α × α)} (hV : V ∈ 𝓤 α) :
+    ∃ W ∈ 𝓤 α, (∀ a b, (a, b) ∈ W → (b, a) ∈ W) ∧
+      ∀ a b c, (a, b) ∈ W → (b, c) ∈ W → (a, c) ∈ V :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題2: 対称な「3分の1」の近縁を作れ。これが Part C・F の「<code>ε/3</code> 論法」の道具になる。</p></div></article>
+<article class="slide" id="ascoli-af8d4445e004" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>ヒント: 問題1を2回使う（<code>V</code> の半分 <code>W₁</code>、<code>W₁</code> の半分 <code>W₂</code>）。 <code>(c, d) ∈ W₂</code> から <code>(c, d) ∈ W₁</code> を出すには、<code>(d, d) ∈ W₂</code>（<code>refl</code>）をつなげばよい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_third {V : Set (α × α)} (hV : V ∈ 𝓤 α) :
+    ∃ W ∈ 𝓤 α, (∀ a b, (a, b) ∈ W → (b, a) ∈ W) ∧
+      ∀ a b c d, (a, b) ∈ W → (b, c) ∈ W → (c, d) ∈ W → (a, d) ∈ V :=
+  <span class="sorry">sorry</span></code></pre></div></article>
+<article class="slide" id="ascoli-ce3fa35fa6fe" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>問題3: 一様構造から位相が定まることを示せ。 <code>s</code> が開 ⟺ <code>s</code> のどの点 <code>a</code> にも、<code>a</code> の「<code>V</code>-球」<code>{b | (a, b) ∈ V}</code> が <code>s</code> に収まる近縁 <code>V</code> がある。</p>
+<p>距離空間で「どの点にも、その点を中心とする <code>ε</code>-球が収まる」とするのと同じ定義である。 <code>instance</code> にしたので、以後一様空間には自動でこの位相が載る。</p></div></article>
+<article class="slide" id="ascoli-c9410dde68b0" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">instance</span> toTopologicalSpace : TopologicalSpace α <span class="kw">where</span>
+  IsOpen s := ∀ a ∈ s, ∃ V ∈ 𝓤 α, ∀ b, (a, b) ∈ V → b ∈ s
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題4: <code>V</code>-球そのものは開とは限らないが、中心を含む開集合を内側に含むことを示せ。</p></div></article>
+<article class="slide" id="ascoli-50863914d412" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><p>ヒント: <code>O = {y | ∃ W ∈ 𝓤 α, ∀ z, (y, z) ∈ W → (a, z) ∈ V}</code>（<code>y</code> の周りに <code>V</code>-球に収まる近縁がある点の全体）が求めるもの。開であることは、 <code>W</code> の半分 <code>W&#x27;</code>（<code>comp</code>）を <code>y</code> の近くの点の証人に使えば示せる。</p></div></article>
+<article class="slide" id="ascoli-b48f73819703" data-kind="main" data-label="Part A: 一様構造" data-section="Ascoli.heading-01140edc656b"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> exists_open_ball {V : Set (α × α)} (hV : V ∈ 𝓤 α) (a : α) :
+    ∃ O : Set α, IsOpen O ∧ a ∈ O ∧ ∀ b ∈ O, (a, b) ∈ V :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> UniformSpace
+
+<span class="kw">open</span> UniformSpace</code></pre></div></article>
+<article class="slide" id="ascoli-5465a36471aa" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><h2>Part B: 一様収束の一様構造と等連続性</h2>
+<p>写像 <code>f, g : X → Y</code> が「一様に <code>V</code>-近い」とは、すべての <code>x</code> で <code>(f x, g x) ∈ V</code> となること。この関係 <code>unifRel V</code> を含む関係を近縁とするのが、<strong>一様収束の一様構造</strong>である。 Part A の位相と組み合わせると、<code>X → Y</code> には一様収束の位相が自動で載る。</p></div></article>
+<article class="slide" id="ascoli-1e6d6e092923" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">section</span> FunctionSpace
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>近縁 <code>V</code> から作る「一様に <code>V</code>-近い」写像の組の全体。</p></div></article>
+<article class="slide" id="ascoli-f7c91c462c5f" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> unifRel (V : Set (Y × Y)) : Set ((X → Y) × (X → Y)) := {p | ∀ x, (p.1 x, p.2 x) ∈ V}</code></pre>
+<p>問題5: 一様収束の一様構造が公理を満たすことを示せ。</p>
+<p><code>Entourage</code> を展開すると <code>∃ V ∈ 𝓤 Y, unifRel V ⊆ 𝒱</code> なので、各公理は <code>Y</code> 側の同じ公理から出る。<code>comp</code> では <code>Y</code> 側の半分 <code>W</code> に対する <code>unifRel W</code> を使う。</p></div></article>
+<article class="slide" id="ascoli-6ca76d226767-3b9c1dfea86e" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">instance</span> uniformFun : UniformSpace (X → Y) <span class="kw">where</span>
+  Entourage := {𝒱 | ∃ V ∈ 𝓤 Y, unifRel V ⊆ 𝒱}
+  univ_mem := <span class="sorry">sorry</span>
+  mono := <span class="sorry">sorry</span>
+  inter_mem := <span class="sorry">sorry</span>
+  refl := <span class="sorry">sorry</span>
+  symm := <span class="sorry">sorry</span>
+  comp := <span class="sorry">sorry</span>
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-6ca76d226767-6eac5bc57f02" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性（続き）" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p><strong>等連続性</strong>は、族 <code>H</code> のすべての写像について、連続性の <code>U</code> が <code>f</code> によらず共通に取れることをいう。定義域 <code>X</code> は位相空間でよい（一様構造は要らない）。</p>
+<p>点 <code>x</code> での等連続性: どの近縁 <code>V</code> にも <code>x</code> の開近傍 <code>U</code> があって、 <code>H</code> のどの <code>f</code> についても <code>U</code> の点での値が <code>f x</code> と <code>V</code>-近い。</p></div></article>
+<article class="slide" id="ascoli-a5656ecd5f7a" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> EquicontinuousAt (H : Set (X → Y)) (x : X) : <span class="sort">Prop</span> :=
+  ∀ V ∈ 𝓤 Y, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ f ∈ H, ∀ x&#x27; ∈ U, (f x, f x&#x27;) ∈ V</code></pre>
+<p>等連続性: すべての点で等連続。</p></div></article>
+<article class="slide" id="ascoli-df69bf6d9df8" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> Equicontinuous (H : Set (X → Y)) : <span class="sort">Prop</span> := ∀ x, EquicontinuousAt H x</code></pre>
+<p>問題6: 等連続な族の部分族は等連続であることを示せ。</p></div></article>
+<article class="slide" id="ascoli-bdaf2f76afde" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Equicontinuous.mono {H H&#x27; : Set (X → Y)} (hH : Equicontinuous H) (h : H&#x27; ⊆ H) :
+    Equicontinuous H&#x27; :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題7: 連続写像1つだけからなる族は等連続であることを示せ。等連続性が連続性の「族版」であることの確認である。</p></div></article>
+<article class="slide" id="ascoli-21bcc039c252" data-kind="main" data-label="Part B: 一様収束の一様構造と等連続性" data-section="Ascoli.heading-0c5fa45744c9"><div class="step" data-step="0"><p>ヒント: 問題4で <code>f x</code> の周りの開集合 <code>O</code> を取り、その逆像 <code>f ⁻¹&#x27; O</code> を <code>U</code> にする。</p>
+<pre class="lean"><code><span class="kw">theorem</span> equicontinuous_singleton {f : X → Y} (hf : Continuous f) :
+    Equicontinuous {g | g = f} :=
+  <span class="sorry">sorry</span></code></pre></div></article>
+<article class="slide" id="ascoli-0f4f9e848cbf" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><h2>Part C: 核心補題（Théorème 1 の有限版）</h2>
+<p>ブルバキの Théorème 1 は「等連続集合の上では、各点収束の一様構造とコンパクト収束の一様構造が一致する」と述べる。<code>X</code> がコンパクトなときにこれを具体的に言い直したのが次の補題である:</p>
+<p>&gt; 等連続族 <code>H</code> と近縁 <code>V</code> に対して、有限個の点 <code>P</code> と近縁 <code>W</code> があって、&gt; <code>H</code> の2つの写像が <code>P</code> の各点で <code>W</code>-近いなら、<strong>すべての点で</strong> <code>V</code>-近い。</p></div></article>
+<article class="slide" id="ascoli-27f92339633a" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><p>「一様に近い」かどうかが、有限個の点での値だけで判定できる。これが Ascoli の定理の心臓部で、証明は古典的な <code>ε/3</code> 論法そのものである。</p>
+<p>問題8: 有限点制御補題を示せ。</p>
+<p>方針:</p>
+<ol start="1"><li>問題2で <code>V</code> の対称な3分の1 <code>W</code> を取る</li></ol></div></article>
+<article class="slide" id="ascoli-47854c3d3e70-559a99b4538e" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）（続き）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><ol start="2"><li>各点 <code>x</code> で等連続性を <code>W</code> に使い、開近傍 <code>U x</code> を <code>Classical.choose</code> で選ぶ</li></ol></div></article>
+<article class="slide" id="ascoli-47854c3d3e70-58c978c8f919" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）（続き）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><ol start="3"><li><code>U</code> は <code>X</code> を覆うので、コンパクト性（<code>CompactSpace.isCompact_univ</code>）で有限個の添字の集合 <code>J</code> に間引き、<code>Set.Finite.exists_list</code> でリスト <code>P</code> にする</li></ol></div></article>
+<article class="slide" id="ascoli-47854c3d3e70-ddc996b3b670" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）（続き）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><ol start="4"><li>任意の <code>x</code> は、ある <code>y ∈ J</code> について <code>x ∈ U y</code>。すると <code>(f x, f y)</code>・<code>(f y, g y)</code>・<code>(g y, g x)</code> がどれも <code>W</code> に入り、3つつなげて <code>(f x, g x) ∈ V</code></li></ol></div></article>
+<article class="slide" id="ascoli-adbd90a65096-3ff875e4f808" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Equicontinuous.finite_control [CompactSpace X] {H : Set (X → Y)}
+    (hH : Equicontinuous H) {V : Set (Y × Y)} (hV : V ∈ 𝓤 Y) :
+    ∃ W ∈ 𝓤 Y, ∃ P : List X, ∀ f ∈ H, ∀ g ∈ H,
+      (∀ p ∈ P, (f p, g p) ∈ W) → ∀ x, (f x, g x) ∈ V :=
+  <span class="sorry">sorry</span>
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-adbd90a65096-93e8c2b9d0cb" data-kind="main" data-label="Part C: 核心補題（Théorème 1 の有限版）（続き）" data-section="Ascoli.heading-764548b46c31"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">end</span> FunctionSpace</code></pre></div></article>
+<article class="slide" id="ascoli-076f8d52d54c" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><h2>Part D: 全有界性と主定理</h2>
+<p>集合 <code>A</code> が <strong><code>V</code>-小さい</strong>とは、<code>A</code> のどの2点も <code>V</code>-近いこと。集合 <code>s</code> が<strong>全有界</strong>（ブルバキの précompact）とは、どの近縁 <code>V</code> についても有限個の <code>V</code>-小さい集合で覆えること。距離空間なら「どの <code>ε</code> についても直径 <code>ε</code> 以下の有限個の集合で覆える」である。</p></div></article>
+<article class="slide" id="ascoli-b77f9a00fce5" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">section</span> TotallyBounded
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p><code>A</code> は <code>V</code>-小さい。</p></div></article>
+<article class="slide" id="ascoli-acbb0faa8b45" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> Small (V : Set (α × α)) (A : Set α) : <span class="sort">Prop</span> := ∀ a ∈ A, ∀ b ∈ A, (a, b) ∈ V</code></pre>
+<p>全有界: どの近縁 <code>V</code> についても、<code>V</code>-小さい集合の有限リストで覆える。</p></div></article>
+<article class="slide" id="ascoli-d6094cd603b8" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> TotallyBounded [UniformSpace α] (s : Set α) : <span class="sort">Prop</span> :=
+  ∀ V ∈ 𝓤 α, ∃ L : List (Set α), (∀ A ∈ L, Small V A) ∧ ∀ a ∈ s, ∃ A ∈ L, a ∈ A</code></pre>
+<p>2つの有限被覆 <code>L</code>・<code>M</code> の<strong>共通細分</strong>——<code>A ∩ B</code>（<code>A ∈ L</code>、<code>B ∈ M</code>）の全体——も有限被覆である。個数で言えば <code>|L| × |M|</code> 個だが、<code>Fin</code> の積の番号づけを避けて <code>List.flatMap</code> で作る。この組合せ論の部分は与える。</p>
+<p>2つの有限被覆の共通細分。</p></div></article>
+<article class="slide" id="ascoli-3033590ad22c" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> List.interCover (L M : List (Set α)) : List (Set α) :=
+  L.flatMap <span class="kw">fun</span> A =&gt; M.map <span class="kw">fun</span> B =&gt; A ∩ B</code></pre>
+<p>共通細分の各片は <code>A ∩ B</code> の形。</p></div></article>
+<article class="slide" id="ascoli-4f9390039543" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> List.mem_interCover {L M : List (Set α)} {C : Set α} (h : C ∈ List.interCover L M) :
+    ∃ A ∈ L, ∃ B ∈ M, C = A ∩ B := <span class="kw">by</span>
+  <span class="kw">have</span> ⟨A, hA, hC⟩ := List.mem_flatMap.mp h
+  <span class="kw">have</span> ⟨B, hB, hAB⟩ := List.mem_map.mp hC
+  <span class="kw">exact</span> ⟨A, hA, B, hB, hAB.symm⟩</code></pre>
+<p><code>L</code> と <code>M</code> がともに <code>s</code> を覆うなら、共通細分も <code>s</code> を覆う。</p></div></article>
+<article class="slide" id="ascoli-78b6c628f699-7efb97b0a3d6" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> List.interCover_covers {s : Set α} {L M : List (Set α)}
+    (hL : ∀ a ∈ s, ∃ A ∈ L, a ∈ A) (hM : ∀ a ∈ s, ∃ B ∈ M, a ∈ B) :
+    ∀ a ∈ s, ∃ C ∈ List.interCover L M, a ∈ C := <span class="kw">by</span>
+  <span class="kw">intro</span> a ha
+  <span class="kw">have</span> ⟨A, hA, haA⟩ := hL a ha
+  <span class="kw">have</span> ⟨B, hB, haB⟩ := hM a ha
+</code></pre></div></article>
+<article class="slide" id="ascoli-78b6c628f699-314de6bded63" data-kind="main" data-label="Part D: 全有界性と主定理（続き）" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code>  <span class="kw">exact</span> ⟨A ∩ B, List.mem_flatMap.mpr ⟨A, hA, List.mem_map_of_mem hB⟩, haA, haB⟩</code></pre>
+<p>問題9: 全有界な集合の部分集合は全有界であることを示せ。</p></div></article>
+<article class="slide" id="ascoli-02793cdd67f3" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.subset [UniformSpace α] {s t : Set α} (hs : TotallyBounded s)
+    (h : t ⊆ s) : TotallyBounded t :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre></div></article>
+<article class="slide" id="ascoli-a3e823b375ea" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><p>問題10: 各点で値の集合が全有界なら、有限個の点 <code>P</code> を固定するごとに、 <code>H</code> を「<code>P</code> の各点で <code>W</code>-近い」写像の集まり有限個で覆えることを示せ。</p>
+<p><code>P</code> についての帰納法（再帰）で示す。</p></div></article>
+<article class="slide" id="ascoli-7daa3aa68d8f" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><ul>
+<li><code>P = []</code>: 条件は空なので、<code>[Set.univ]</code> 1つで覆える</li>
+<li><code>P = x :: P&#x27;</code>: <code>P&#x27;</code> についての被覆 <code>C</code> と、<code>x</code> での値の <code>W</code>-小さい被覆 <code>L</code> を取り、 <code>L</code> の各片の逆像 <code>(fun f =&gt; f x) ⁻¹&#x27; A</code> のリストと <code>C</code> の共通細分を取る</li>
+</ul>
+<p>ブルバキの証明では、ここが「有限個の全有界集合の積は全有界」に当たる。</p></div></article>
+<article class="slide" id="ascoli-d41d631c877f-efe9b882c6d3" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> finite_points_cover {H : Set (X → Y)}
+    (hpt : ∀ x, TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H)) {W : Set (Y × Y)} (hW : W ∈ 𝓤 Y) :
+    ∀ P : List X, ∃ C : List (Set (X → Y)),
+      (∀ S ∈ C, ∀ f ∈ S, ∀ g ∈ S, ∀ p ∈ P, (f p, g p) ∈ W) ∧ ∀ f ∈ H, ∃ S ∈ C, f ∈ S :=
+  <span class="sorry">sorry</span>
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-d41d631c877f-6eac5bc57f02" data-kind="main" data-label="Part D: 全有界性と主定理（続き）" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">variable</span> [TopologicalSpace X]</code></pre>
+<p>問題11（主定理・Ascoli の定理、全有界版）:コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像の族 <code>H</code> が等連続で、各点での値の集合が全有界なら、<code>H</code> は一様収束について全有界であることを示せ。</p></div></article>
+<article class="slide" id="ascoli-3c9a0262531e" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><p>方針: 近縁 <code>𝒱 ⊇ unifRel V</code> を取る。問題8で <code>V</code> に対する <code>W</code> と有限個の点 <code>P</code> を取り、問題10で <code>P</code> についての被覆 <code>C</code> を作る。各片を <code>S ∩ H</code> に取り替えれば、問題8により <code>𝒱</code>-小さくなる（問題8は <code>H</code> の写像にしか使えないので <code>∩ H</code> が要る）。</p></div></article>
+<article class="slide" id="ascoli-8d10a14b6531" data-kind="main" data-label="Part D: 全有界性と主定理" data-section="Ascoli.heading-fa89898c3a65"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> ascoli [CompactSpace X] {H : Set (X → Y)} (hH : Equicontinuous H)
+    (hpt : ∀ x, TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H)) : TotallyBounded H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> TotallyBounded</code></pre></div></article>
+<article class="slide" id="ascoli-eec4337daa23" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><h2>Part E: 反例——等連続性の仮定は外せない</h2>
+<p><code>X</code> を「自然数に無限遠点を1つ付け加えた空間」（1点コンパクト化）、<code>Y</code> を <code>Bool</code> とし、 <code>H</code> を「点 <code>n</code> だけで <code>true</code> になる関数 <code>δ n</code>」の全体とする。値は <code>Bool</code> にしかならないので各点での全有界性はただで成り立つが、 <code>H</code> は無限遠点で等連続でなく、実際に一様収束について全有界でない。</p>
+<p><code>Option Nat</code> の <code>none</code> を無限遠点とする。<code>none</code> を含む開集合は、ある番号から先の自然数をすべて含むもの（補集合が有限であることに相当する）とする。</p></div></article>
+<article class="slide" id="ascoli-2368ac5600ba" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">namespace</span> Counterexample</code></pre>
+<p>1点コンパクト化 <code>Option Nat</code> の位相（与える）。</p></div></article>
+<article class="slide" id="ascoli-83098048b0e1-646309055adb" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">instance</span> : TopologicalSpace (Option Nat) <span class="kw">where</span>
+  IsOpen s := none ∈ s → ∃ N, ∀ n, N ≤ n → some n ∈ s
+  isOpen_univ := <span class="kw">fun</span> _ =&gt; ⟨0, <span class="kw">fun</span> _ _ =&gt; trivial⟩
+  isOpen_inter := <span class="kw">by</span>
+    <span class="kw">intro</span> s t hs ht ⟨h₁, h₂⟩
+    <span class="kw">have</span> ⟨N₁, hN₁⟩ := hs h₁
+    <span class="kw">have</span> ⟨N₂, hN₂⟩ := ht h₂
+    <span class="kw">exact</span> ⟨N₁ + N₂, <span class="kw">fun</span> n hn =&gt;
+</code></pre></div></article>
+<article class="slide" id="ascoli-83098048b0e1-8fc373490faf" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない（続き）" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code>      ⟨hN₁ n (Nat.le_trans (Nat.le_add_right N₁ N₂) hn),
+       hN₂ n (Nat.le_trans (Nat.le_add_left N₂ N₁) hn)⟩⟩
+  isOpen_sUnion := <span class="kw">by</span>
+    <span class="kw">intro</span> S hS ⟨s, hsS, hs⟩
+    <span class="kw">have</span> ⟨N, hN⟩ := hS s hsS hs
+    <span class="kw">exact</span> ⟨N, <span class="kw">fun</span> n hn =&gt; ⟨s, hsS, hN n hn⟩⟩</code></pre>
+<p>問題12: <code>Option Nat</code> はコンパクトであることを示せ。</p></div></article>
+<article class="slide" id="ascoli-bdf8b6a9fd18" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><p>ヒント: <code>none</code> を覆う <code>U i₀</code> は、ある <code>N</code> 以上の <code>some n</code> をすべて含む。残りの <code>some 0, …, some (N-1)</code> を覆う添字を1つずつ <code>Classical.choose</code> で選び、 <code>i₀</code> と合わせて <code>Fin (N + 1) → I</code> で番号づける（<code>match</code> で <code>0</code> と <code>k + 1</code> に分ける）。</p>
+<pre class="lean"><code><span class="kw">instance</span> : CompactSpace (Option Nat) <span class="kw">where</span>
+  isCompact_univ := <span class="sorry">sorry</span></code></pre>
+<p>対角線。</p></div></article>
+<article class="slide" id="ascoli-c21457693275" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> diagonal (α : <span class="sort">Type</span>) : Set (α × α) := {p | p.1 = p.2}</code></pre>
+<p>離散一様構造: 対角線を含む関係がすべて近縁（与える）。</p></div></article>
+<article class="slide" id="ascoli-fb5195729655-192323a5d837" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code>@[reducible] <span class="kw">def</span> discreteUniformity (α : <span class="sort">Type</span>) : UniformSpace α <span class="kw">where</span>
+  Entourage := {V | ∀ a, (a, a) ∈ V}
+  univ_mem := <span class="kw">fun</span> _ =&gt; trivial
+  mono := <span class="kw">fun</span> hV h a =&gt; h _ (hV a)
+  inter_mem := <span class="kw">fun</span> hV hW a =&gt; ⟨hV a, hW a⟩
+  refl := <span class="kw">fun</span> hV =&gt; hV
+  symm := <span class="kw">fun</span> hV a =&gt; hV a
+</code></pre></div></article>
+<article class="slide" id="ascoli-fb5195729655-014e096c9db6" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない（続き）" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code>  comp := <span class="kw">fun</span> hV =&gt;
+    ⟨diagonal α, <span class="kw">fun</span> _ =&gt; rfl, <span class="kw">fun</span> ⟨a, b⟩ ⟨z, (h₁ : a = z), (h₂ : z = b)⟩ =&gt; <span class="kw">by</span>
+      <span class="kw">rw</span> [← h₂, ← h₁]
+      <span class="kw">exact</span> hV a⟩
+
+<span class="kw">instance</span> : UniformSpace Bool := discreteUniformity Bool</code></pre></div></article>
+<article class="slide" id="ascoli-98d95344e899" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><p>点 <code>n</code> だけで <code>true</code> になる関数。無限遠点では <code>false</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> δ (n : Nat) : Option Nat → Bool
+  | none =&gt; false
+  | some m =&gt; decide (m = n)</code></pre>
+<p>反例の族。</p></div></article>
+<article class="slide" id="ascoli-874424bb7ffe" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> H : Set (Option Nat → Bool) := {f | ∃ n, f = δ n}</code></pre>
+<p>問題13: <code>Bool</code> の部分集合はすべて全有界であることを示せ。</p>
+<p>ヒント: <code>[{b | b = true}, {b | b = false}]</code> で覆う。各片は1点なので、どの近縁についても小さい。</p></div></article>
+<article class="slide" id="ascoli-c491d1ea9131" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> totallyBounded_bool (s : Set Bool) : TotallyBounded s :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題14: <code>H</code> は無限遠点で等連続でないことを示せ。</p>
+<p>ヒント: 近縁として対角線 <code>diagonal Bool</code> を使う。<code>none</code> の開近傍は十分大きい <code>some N</code> を含むが、 <code>δ N none = false</code> と <code>δ N (some N) = true</code> は近くない。</p></div></article>
+<article class="slide" id="ascoli-1747d34b5445" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> not_equicontinuousAt : ¬ EquicontinuousAt H none :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題15: <code>unifRel (diagonal Bool)</code> について小さい集合は <code>δ</code> を高々1つしか含まない。そこで、そのような集合の有限リストに対し、どこまで先に行ってもどの片にも入らない <code>δ n</code> があることを示せ（鳩の巣原理の代わり）。</p></div></article>
+<article class="slide" id="ascoli-2d22ff3ed93b" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><p>ヒント: リストについての帰納法。<code>A :: L</code> では、<code>L</code> を避ける <code>δ n</code>（<code>N ≤ n</code>）と、さらに <code>L</code> を避ける <code>δ m</code>（<code>n + 1 ≤ m</code>）を取る。<code>A</code> が両方を含むことはない（点 <code>some n</code> での値が <code>true</code> と <code>false</code> で異なる）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_avoid (L : List (Set (Option Nat → Bool)))
+    (hL : ∀ A ∈ L, Small (unifRel (diagonal Bool)) A) :
+    ∀ N, ∃ n, N ≤ n ∧ ∀ A ∈ L, δ n ∉ A :=
+  <span class="sorry">sorry</span></code></pre></div></article>
+<article class="slide" id="ascoli-cf9164400e55" data-kind="main" data-label="Part E: 反例——等連続性の仮定は外せない" data-section="Ascoli.heading-03417597448f"><div class="step" data-step="0"><p>問題16: <code>H</code> は一様収束について全有界でないことを示せ。問題12〜14と合わせると、主定理の「等連続」を外すと結論が成り立たないことがわかる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> not_totallyBounded : ¬ TotallyBounded H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Counterexample</code></pre></div></article>
+<article class="slide" id="ascoli-1b3bb4924122" data-kind="main" data-label="Part F: 逆向き——全有界なら等連続" data-section="Ascoli.heading-0e9456405e58"><div class="step" data-step="0"><h2>Part F: 逆向き——全有界なら等連続</h2>
+<p>ブルバキの Théorème 2 は必要十分条件である。逆向き（Arzelà が示した向き）は <code>X</code> のコンパクト性も要らない。ただし <code>H</code> の各写像が連続であることは仮定する。</p></div></article>
+<article class="slide" id="ascoli-475d151bef9a" data-kind="main" data-label="Part F: 逆向き——全有界なら等連続" data-section="Ascoli.heading-0e9456405e58"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">section</span> Converse
+
+<span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>問題17: 一様収束について全有界な族は、各点での値の集合も全有界であることを示せ。</p>
+<p>ヒント: <code>unifRel V</code> についての被覆の各片の、<code>x</code> での値の像を並べる。</p></div></article>
+<article class="slide" id="ascoli-914deb29f9fa" data-kind="main" data-label="Part F: 逆向き——全有界なら等連続" data-section="Ascoli.heading-0e9456405e58"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.eval {H : Set (X → Y)} (hH : TotallyBounded H) (x : X) :
+    TotallyBounded ((<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre></div></article>
+<article class="slide" id="ascoli-aade68566b75" data-kind="main" data-label="Part F: 逆向き——全有界なら等連続" data-section="Ascoli.heading-0e9456405e58"><div class="step" data-step="0"><p>問題18: 連続写像からなる、一様収束について全有界な族は等連続であることを示せ。</p>
+<p>方針: 3分の1の近縁 <code>W</code> を取り、<code>unifRel W</code> について <code>H</code> を有限個の小さい片で覆う。被覆のリストについての帰納法で、「どの片 <code>S</code> についても、<code>S ∩ H</code> の写像がすべて <code>U</code> 上で <code>V</code>-振れに収まる」開近傍 <code>U</code> を作る。片 <code>S</code> が <code>H</code> の元 <code>g</code> を含むなら、 <code>g</code> の連続性で近傍を縮め、<code>(f x, g x)</code>・<code>(g x, g x&#x27;)</code>・<code>(g x&#x27;, f x&#x27;)</code> の3つをつなぐ（含まないなら縮めなくてよい）。</p></div></article>
+<article class="slide" id="ascoli-296b97887721" data-kind="main" data-label="Part F: 逆向き——全有界なら等連続" data-section="Ascoli.heading-0e9456405e58"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.equicontinuous {H : Set (X → Y)} (hc : ∀ f ∈ H, Continuous f)
+    (hH : TotallyBounded H) : Equicontinuous H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Converse</code></pre></div></article>
+<article class="slide" id="ascoli-e1a7b77b9be1" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><h2>Part G: フィルターと Zorn の補題</h2>
+<p>コンパクト版の証明には、コンパクト性をフィルターで言い換える必要がある。 <strong>フィルター</strong>は「十分大きい集合」の集まりで、一様構造の近縁の全体（Part A の <code>univ_mem</code>・<code>mono</code>・<code>inter_mem</code>）がまさにその例になっている。</p>
+<p>フィルター。</p></div></article>
+<article class="slide" id="ascoli-d03555632b6a-d382f5d89c11" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">structure</span> Filter (α : <span class="sort">Type</span>) <span class="kw">where</span>
+<span class="doc">  /-- 属する集合の全体。 -/</span>
+  sets : Set (Set α)
+<span class="doc">  /-- 全体集合は属する。 -/</span>
+  univ_mem : Set.univ ∈ sets
+<span class="doc">  /-- 属する集合より大きい集合は属する。 -/</span>
+  mono : ∀ {s t : Set α}, s ∈ sets → s ⊆ t → t ∈ sets
+<span class="doc">  /-- 2つの共通部分も属する。 -/</span>
+</code></pre></div></article>
+<article class="slide" id="ascoli-d03555632b6a-1b55f42e882e" data-kind="main" data-label="Part G: フィルターと Zorn の補題（続き）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code>  inter_mem : ∀ {s t : Set α}, s ∈ sets → t ∈ sets → s ∩ t ∈ sets
+
+<span class="kw">namespace</span> Filter
+
+<span class="kw">variable</span> {α β : <span class="sort">Type</span>}</code></pre>
+<p><code>s ∈ F</code> で <code>s ∈ F.sets</code> を表す。</p></div></article>
+<article class="slide" id="ascoli-c7fab00f2885" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">instance</span> : Membership (Set α) (Filter α) := ⟨<span class="kw">fun</span> F s =&gt; s ∈ F.sets⟩</code></pre>
+<p>超フィルター: 空集合を含まず、どの集合もそれ自身か補集合のどちらかが属する。</p></div></article>
+<article class="slide" id="ascoli-be41e6f8ab5b" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">structure</span> IsUltra (F : Filter α) : <span class="sort">Prop</span> <span class="kw">where</span>
+<span class="doc">  /-- 空集合は属さない。 -/</span>
+  empty_not_mem : (∅ : Set α) ∉ F
+<span class="doc">  /-- どの集合も、それ自身か補集合が属する。 -/</span>
+  mem_or_compl_mem : ∀ s : Set α, s ∈ F ∨ sᶜ ∈ F</code></pre>
+<p>超フィルターに属さない集合の補集合は属する。</p></div></article>
+<article class="slide" id="ascoli-5a525bed848e" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> IsUltra.compl_mem {F : Filter α} (hF : F.IsUltra) {s : Set α} (hs : s ∉ F) : sᶜ ∈ F :=
+  (hF.mem_or_compl_mem s).resolve_left hs</code></pre>
+<p>空集合を含まないフィルターの元は空でない。</p></div></article>
+<article class="slide" id="ascoli-5cb40e099f54" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> nonempty_of_mem {F : Filter α} (hF : (∅ : Set α) ∉ F) {s : Set α} (hs : s ∈ F) :
+    ∃ a, a ∈ s :=
+  Classical.byContradiction <span class="kw">fun</span> h =&gt; hF (F.mono hs <span class="kw">fun</span> a ha =&gt; h ⟨a, ha⟩)</code></pre>
+<p>像フィルター: <code>f</code> による逆像が <code>F</code> に属する集合の全体。</p></div></article>
+<article class="slide" id="ascoli-379bd121a86c" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> map (f : α → β) (F : Filter α) : Filter β <span class="kw">where</span>
+  sets := {s | f ⁻¹&#x27; s ∈ F}
+  univ_mem := F.univ_mem
+  mono := <span class="kw">fun</span> hs h =&gt; F.mono hs <span class="kw">fun</span> a ha =&gt; h (f a) ha
+  inter_mem := <span class="kw">fun</span> hs ht =&gt; F.inter_mem hs ht</code></pre>
+<p>問題19: 超フィルターの像は超フィルターであることを示せ。</p>
+<p>ヒント: <code>f ⁻¹&#x27; ∅</code> と <code>∅</code>、<code>f ⁻¹&#x27; sᶜ</code> と <code>(f ⁻¹&#x27; s)ᶜ</code> は定義上等しい。</p></div></article>
+<article class="slide" id="ascoli-affb63159f05" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> IsUltra.map {F : Filter α} (hF : F.IsUltra) (f : α → β) : (F.map f).IsUltra :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題20: 有限個（リスト <code>L</code> で添字づけた）の元の共通部分もフィルターに属することを示せ。リストについての再帰で示す。</p></div></article>
+<article class="slide" id="ascoli-cc17784135a7" data-kind="main" data-label="Part G: フィルターと Zorn の補題" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> mem_list_inter (F : Filter α) {I : <span class="sort">Type</span>} (s : I → Set α) :
+    ∀ L : List I, (∀ i ∈ L, s i ∈ F) → {a | ∀ i ∈ L, a ∈ s i} ∈ F :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Filter</code></pre></div></article>
+<article class="slide" id="ascoli-8ed63727fc28" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><h3>Zorn の補題（包含順序の集合族版）</h3>
+<p>示したいのは次の形である（<code>β</code> は任意の型、<code>𝔉</code> はその部分集合の族）:</p>
+<p>&gt; <code>𝔉</code> の空でない鎖の合併がつねに <code>𝔉</code> に属するなら、<code>𝔉</code> のどの元 <code>A</code> についても、&gt; <code>A</code> を含む <code>𝔉</code> の極大元 <code>M</code> がある。</p></div></article>
+<article class="slide" id="ascoli-7fc895adf615" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>証明は Bourbaki–Witt の不動点定理の方法による。選択公理で「真に大きい元があればそれを1つ選ぶ」写像 <code>next</code> を作り、<code>A</code> から <code>next</code> と鎖の合併で到達できる集合の全体（<strong>塔</strong>）を帰納的に定義する。塔が鎖であることを示せば、塔全体の合併 <code>M</code> が <code>next M = M</code> を満たし、それが極大であることを意味する。</p>
+<pre class="lean"><code><span class="kw">namespace</span> Zorn
+
+<span class="kw">variable</span> {β : <span class="sort">Type</span>}</code></pre></div></article>
+<article class="slide" id="ascoli-99941a962b17" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>鎖: どの2つも包含で比較できる集合族。</p>
+<pre class="lean"><code><span class="kw">def</span> IsChain (c : Set (Set β)) : <span class="sort">Prop</span> := ∀ s ∈ c, ∀ t ∈ c, s ⊆ t ∨ t ⊆ s
+
+<span class="kw">open</span> Classical in</code></pre>
+<p><code>S</code> より真に大きい <code>𝔉</code> の元があればそれを1つ選び、なければ <code>S</code> 自身を返す。</p></div></article>
+<article class="slide" id="ascoli-abdaaff67cd7" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">noncomputable</span> <span class="kw">def</span> next (𝔉 : Set (Set β)) (S : Set β) : Set β :=
+  if h : ∃ T, T ∈ 𝔉 ∧ S ⊆ T ∧ T ≠ S then Classical.choose h else S</code></pre>
+<p>塔: <code>A</code> から出発して、<code>next</code> と「空でない鎖の合併」で到達できる集合。塔に属することを帰納的な述語として定義する（<code>Tower 𝔉 A</code> の構成子が塔の閉包規則）。</p></div></article>
+<article class="slide" id="ascoli-a4c103db0347" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">inductive</span> Tower (𝔉 : Set (Set β)) (A : Set β) : Set β → <span class="sort">Prop</span>
+  | base : Tower 𝔉 A A
+  | next {S : Set β} : Tower 𝔉 A S → Tower 𝔉 A (next 𝔉 S)
+  | sup (c : Set (Set β)) : (∀ S ∈ c, Tower 𝔉 A S) → IsChain c → (∃ S, S ∈ c) →
+      Tower 𝔉 A (⋃₀ c)
+
+<span class="kw">variable</span> {𝔉 : Set (Set β)} {A : Set β}</code></pre></div></article>
+<article class="slide" id="ascoli-59711e62dcbf" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p><code>next</code> は大きくする（与える）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> subset_next (S : Set β) : S ⊆ next 𝔉 S := <span class="kw">by</span>
+  unfold next
+  split
+  · next h =&gt; <span class="kw">exact</span> (Classical.choose_spec h).2.1
+  · <span class="kw">exact</span> Set.subset_refl S</code></pre>
+<p><code>next</code> は <code>𝔉</code> から出ない（与える）。</p></div></article>
+<article class="slide" id="ascoli-4cf163af3f5f" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> next_mem {S : Set β} (hS : S ∈ 𝔉) : next 𝔉 S ∈ 𝔉 := <span class="kw">by</span>
+  unfold next
+  split
+  · next h =&gt; <span class="kw">exact</span> (Classical.choose_spec h).1
+  · <span class="kw">exact</span> hS</code></pre></div></article>
+<article class="slide" id="ascoli-f88515fa4481" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>問題21: 塔の元は <code>𝔉</code> に属し、<code>A</code> を含むことを示せ。塔についての帰納法（<code>induction hS with</code>）で、構成子 <code>base</code>・<code>next</code>・<code>sup</code> ごとに示す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> Tower.mem (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {S : Set β} (hS : Tower 𝔉 A S) : S ∈ 𝔉 ∧ A ⊆ S :=
+  <span class="sorry">sorry</span></code></pre></div></article>
+<article class="slide" id="ascoli-3b57562028ad" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>極点: 自分より真に小さい塔の元 <code>T</code> について、<code>next T</code> も自分に収まる。</p>
+<pre class="lean"><code><span class="kw">def</span> Extreme (𝔉 : Set (Set β)) (A C : Set β) : <span class="sort">Prop</span> :=
+  ∀ T, Tower 𝔉 A T → T ⊆ C → T ≠ C → next 𝔉 T ⊆ C</code></pre>
+<p>問題22: 塔の元 <code>C</code> が極点なら、どの塔の元 <code>T</code> も <code>T ⊆ C</code> か <code>next C ⊆ T</code> であることを示せ。</p>
+<p>ヒント: <code>T</code> についての帰納法。</p></div></article>
+<article class="slide" id="ascoli-805c2c3a34db" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><ul>
+<li><code>base</code>: 問題21で <code>A ⊆ C</code></li>
+<li><code>next T</code>: 帰納法の仮定で場合分けし、<code>T ⊆ C</code> の場合はさらに <code>T = C</code> かどうかで分ける（<code>T ≠ C</code> なら極点の定義が使える）</li>
+<li><code>sup c</code>: 「<code>c</code> のすべてが <code>C</code> に含まれる」かどうかで分ける</li>
+</ul></div></article>
+<article class="slide" id="ascoli-80892472c4a8" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Extreme.dichotomy (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {C : Set β} (hCT : Tower 𝔉 A C) (hC : Extreme 𝔉 A C) {T : Set β}
+    (hT : Tower 𝔉 A T) : T ⊆ C ∨ next 𝔉 C ⊆ T :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題23: 塔の元はすべて極点であることを示せ。</p></div></article>
+<article class="slide" id="ascoli-ad4d6e8ab4ed" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>ヒント: <code>C</code> についての帰納法。</p>
+<ul>
+<li><code>base</code>: <code>A</code> より真に小さい塔の元はない</li>
+<li><code>next C</code>: 問題22を <code>C</code> に使う</li>
+<li><code>sup c</code>: <code>T ≠ ⋃₀ c</code> から、<code>T</code> に含まれない <code>S ∈ c</code> が取れる。問題22を <code>S</code> に使うと <code>T ⊆ S</code>（かつ <code>T ≠ S</code>）となり、<code>S</code> の極点性が使える</li>
+</ul></div></article>
+<article class="slide" id="ascoli-b6fb895c5e23" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Tower.extreme (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) {C : Set β} (hC : Tower 𝔉 A C) : Extreme 𝔉 A C :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題24: 塔は鎖であることを示せ（問題22・23から直ちに出る）。</p></div></article>
+<article class="slide" id="ascoli-fc48738572ad" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Tower.isChain (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) : IsChain {S | Tower 𝔉 A S} :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題25（Zorn の補題）: 極大元の存在を示せ。</p></div></article>
+<article class="slide" id="ascoli-f5c4b61d738a" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>方針: 塔全体の合併 <code>M</code> は（問題24により）それ自身塔の元なので、<code>next M</code> も塔の元で <code>next M ⊆ M</code>。<code>M</code> より真に大きい <code>N ∈ 𝔉</code> があったとすると、<code>next</code> の定義により <code>next M</code> は <code>M</code> より真に大きい元になり、矛盾する（<code>dif_pos</code> で <code>next</code> の <code>if</code> を開く）。</p></div></article>
+<article class="slide" id="ascoli-cbd2f98acc5d-e99208f0296b" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> exists_maximal (hchain : ∀ c, c ⊆ 𝔉 → IsChain c → (∃ S, S ∈ c) → ⋃₀ c ∈ 𝔉)
+    (hA : A ∈ 𝔉) : ∃ M, M ∈ 𝔉 ∧ A ⊆ M ∧ ∀ N, N ∈ 𝔉 → M ⊆ N → N = M :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Zorn
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-cbd2f98acc5d-e3bed44f4b56" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）（続き）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">namespace</span> Filter
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
+<p>問題26（超フィルター補題）: 空集合を含まないフィルターは超フィルターに延長できることを示せ。</p></div></article>
+<article class="slide" id="ascoli-800e057cb682" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><p>方針: 「空集合を含まないフィルターの <code>sets</code>」の全体 <code>P : Set (Set (Set α))</code> に Zorn の補題を使う（鎖の合併もフィルターの3条件を満たし、空集合を含まない）。極大元 <code>M</code> が超フィルターでないとして、 <code>s ∉ M</code>・<code>sᶜ ∉ M</code> となる <code>s</code> を取ると、<code>{t | ∃ m ∈ M, m ∩ s ⊆ t}</code> が <code>M</code> より真に大きい <code>P</code> の元になり、極大性に反する。</p></div></article>
+<article class="slide" id="ascoli-471f8293d0fb" data-kind="main" data-label="Zorn の補題（包含順序の集合族版）" data-section="Ascoli.heading-86dbcdc42411"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> exists_ultra (F : Filter α) (hF : (∅ : Set α) ∉ F) :
+    ∃ G : Filter α, G.IsUltra ∧ F.sets ⊆ G.sets :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Filter</code></pre></div></article>
+<article class="slide" id="ascoli-b55912d44ce8" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><h2>Part H: 主定理のコンパクト版</h2>
+<p>フィルター <code>F</code> が点 <code>a</code> に<strong>収束する</strong>とは、<code>a</code> のどの開近傍も <code>F</code> に属すること。コンパクト性は超フィルターの収束で特徴づけられる（問題27・28）。一様空間では、全有界な集合を含む超フィルターは<strong>コーシー</strong>になる（問題31）。あとは、コーシーで各点収束するフィルターが一様収束すること（問題32）を示せば、主定理（全有界版）からコンパクト版が出る。</p></div></article>
+<article class="slide" id="ascoli-d8223f76d37e" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">section</span> Compact</code></pre>
+<p>フィルターの収束。</p></div></article>
+<article class="slide" id="ascoli-a80d4ada2f45" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> Filter.ConvergesTo {X : <span class="sort">Type</span>} [TopologicalSpace X] (F : Filter X) (a : X) : <span class="sort">Prop</span> :=
+  ∀ U, IsOpen U → a ∈ U → U ∈ F
+
+<span class="kw">variable</span> {X : <span class="sort">Type</span>} [TopologicalSpace X]</code></pre>
+<p>問題27: <code>K</code> を含む超フィルターがすべて <code>K</code> の点に収束するなら、<code>K</code> はコンパクトであることを示せ。</p></div></article>
+<article class="slide" id="ascoli-57b43ffb5563" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>方針: 開被覆 <code>U</code> が有限部分被覆を持たないと仮定する。 <code>{s | ∃ L : List I, {a | a ∈ K ∧ ∀ i ∈ L, a ∉ U i} ⊆ s}</code> は空集合を含まないフィルターになる（空集合を含むなら <code>L</code> が有限部分被覆を与える。<code>Set.finite_of_list</code> を使う）。これを超フィルターに延長して極限 <code>a ∈ K</code> を取ると、<code>a ∈ U i</code> なる <code>i</code> について <code>U i</code> とその補集合の両方が属してしまう。</p></div></article>
+<article class="slide" id="ascoli-07d669c47e59" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> isCompact_of_ultra {K : Set X}
+    (h : ∀ F : Filter X, F.IsUltra → K ∈ F → ∃ a, a ∈ K ∧ F.ConvergesTo a) : IsCompact K :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題28: コンパクト集合を含む超フィルターは、その集合の点に収束することを示せ。</p></div></article>
+<article class="slide" id="ascoli-cfba816391a4" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>方針: 収束先がないと仮定すると、<code>K</code> の各点 <code>a</code> に <code>F</code> に属さない開近傍が取れる（添字型は部分型 <code>{a // a ∈ K}</code>）。有限部分被覆を取ると、各片の補集合は <code>F</code> に属し（超フィルター）、問題20でその共通部分と <code>K</code> の共通部分も属するが、それは空である。</p></div></article>
+<article class="slide" id="ascoli-4ebfa71656ae" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> IsCompact.ultra_converges {K : Set X} (hK : IsCompact K) {F : Filter X}
+    (hF : F.IsUltra) (hKF : K ∈ F) : ∃ a, a ∈ K ∧ F.ConvergesTo a :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題29: 超フィルターに属する集合が有限個の集合で覆われるなら、そのどれかが属することを示せ。</p></div></article>
+<article class="slide" id="ascoli-c1b2c85117b5" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>ヒント: リストについての再帰。先頭 <code>A</code> が属さなければ <code>Aᶜ</code> が属するので、 <code>s ∩ Aᶜ</code> を残りのリストで覆う。</p></div></article>
+<article class="slide" id="ascoli-44ab54b38b03" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Filter.IsUltra.mem_of_cover {α : <span class="sort">Type</span>} {F : Filter α} (hF : F.IsUltra) :
+    ∀ (L : List (Set α)) (s : Set α), s ∈ F → (∀ a ∈ s, ∃ A ∈ L, a ∈ A) → ∃ A ∈ L, A ∈ F :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> {α : <span class="sort">Type</span>} [UniformSpace α]</code></pre></div></article>
+<article class="slide" id="ascoli-d74f34589c28" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>問題30: 一様空間のコンパクト集合は全有界であることを示せ。</p>
+<p>ヒント: 対称な半分 <code>W</code>（問題1）を取り、各点 <code>a</code> の周りに <code>W</code>-球に収まる開集合（問題4）を選んで <code>K</code> を覆う。有限部分被覆の各片は <code>V</code>-小さい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsCompact.totallyBounded {K : Set α} (hK : IsCompact K) : TotallyBounded K :=
+  <span class="sorry">sorry</span></code></pre></div></article>
+<article class="slide" id="ascoli-26ccf2e68592" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>コーシーフィルター: どの近縁 <code>V</code> についても、<code>V</code>-小さい集合が属する。</p>
+<pre class="lean"><code><span class="kw">def</span> Filter.Cauchy (F : Filter α) : <span class="sort">Prop</span> := ∀ V ∈ 𝓤 α, ∃ A, A ∈ F ∧ Small V A</code></pre>
+<p>問題31: 全有界な集合を含む超フィルターはコーシーであることを示せ（問題29を使う）。</p></div></article>
+<article class="slide" id="ascoli-f700510ba896-99d1a02e8aee" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Filter.IsUltra.cauchy {F : Filter α} (hF : F.IsUltra) {s : Set α}
+    (hs : TotallyBounded s) (hsF : s ∈ F) : F.Cauchy :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Compact
+
+<span class="kw">section</span> AscoliCompact
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-f700510ba896-45faa5152816" data-kind="main" data-label="Part H: 主定理のコンパクト版（続き）" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">variable</span> {X Y : <span class="sort">Type</span>} [UniformSpace Y]</code></pre>
+<p>問題32: コーシーフィルターが各点で <code>φ</code> に収束するなら、一様収束の位相で <code>φ</code> に収束することを示せ。</p></div></article>
+<article class="slide" id="ascoli-e6b69a34a083" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>方針: 開集合 <code>𝒪 ∋ φ</code> は <code>unifRel V</code>-球を含む。<code>V</code> の半分 <code>W</code> を取り、 <code>unifRel W</code>-小さい <code>A ∈ F</code> を取れば <code>A ⊆ 𝒪</code> となる。実際 <code>f ∈ A</code> と点 <code>x</code> について、 <code>φ x</code> の近くに値をとる <code>g ∈ A</code> が（<code>F</code> が空集合を含まないので）取れ、 <code>(φ x, g x) ∈ W</code> と <code>(g x, f x) ∈ W</code> をつなげばよい。</p></div></article>
+<article class="slide" id="ascoli-c63386b248b9" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> Filter.Cauchy.convergesTo_of_pointwise {F : Filter (X → Y)} (hF : F.Cauchy)
+    (hne : (∅ : Set (X → Y)) ∉ F) (φ : X → Y)
+    (hφ : ∀ x, (F.map <span class="kw">fun</span> f =&gt; f x).ConvergesTo (φ x)) : F.ConvergesTo φ :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> [TopologicalSpace X]</code></pre></div></article>
+<article class="slide" id="ascoli-1b433995d331" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><p>問題33（主定理・Ascoli の定理、コンパクト版）:コンパクト空間 <code>X</code> から一様空間 <code>Y</code> への写像の族 <code>H</code> が等連続で、各点での値の集合がコンパクト集合に含まれ（相対コンパクト）、<code>H</code> が一様収束の位相で閉なら、 <code>H</code> は一様収束の位相でコンパクトであることを示せ。</p>
+<p>方針: 問題27に持ち込む。<code>H</code> を含む超フィルター <code>F</code> は、主定理（問題11）と問題30・31によりコーシー。各点 <code>x</code> での像フィルターは超フィルター（問題19）で、コンパクト集合を含むので収束する（問題28）。その極限を並べた <code>φ</code> に <code>F</code> は一様収束し（問題32）、 <code>H</code> が閉なので <code>φ ∈ H</code>。</p></div></article>
+<article class="slide" id="ascoli-0ec290e35552-9df2fd8745d3" data-kind="main" data-label="Part H: 主定理のコンパクト版" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> ascoli_compact [CompactSpace X] {H : Set (X → Y)} (hH : Equicontinuous H)
+    (hpt : ∀ x, ∃ K : Set Y, IsCompact K ∧ (<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H ⊆ K) (hcl : IsClosed H) :
+    IsCompact H :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> AscoliCompact
+
+</code></pre></div></article>
+<article class="slide" id="ascoli-0ec290e35552-66e56d6ca567" data-kind="main" data-label="Part H: 主定理のコンパクト版（続き）" data-section="Ascoli.heading-69f378d11e5f"><div class="step" data-step="0"><pre class="lean"><code><span class="cm">-- できたら確認: 主定理（全有界版・コンパクト版）が使う公理</span>
+<span class="cm">-- #print axioms ascoli</span>
+<span class="cm">-- #print axioms ascoli_compact</span></code></pre></div></article>
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">Ascoli</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">発展演習: Ascoli の定理（ブルバキ流）</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const viewport = $('viewport');
+  const optional = $('optional');
+  let active = slides[0];
+  let step = 0;
+  let reading = false;
+
+  function included() {
+    return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
+  }
+  function steps(slide = active) { return Array.from(slide.querySelectorAll(':scope > .step')); }
+  function updateHash() {
+    const hash = `#${active.id}/${step + 1}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+  function readHash() {
+    const match = location.hash.match(/^#([a-z0-9-]+)(?:\/(\d+))?$/);
+    if (!match) return;
+    const target = slides.find(slide => slide.id === match[1]);
+    if (!target) return;
+    active = target;
+    step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
+    if (active.dataset.kind !== 'main') optional.checked = true;
+  }
+  function render({scroll = false, announce = true} = {}) {
+    const visible = included();
+    const index = visible.indexOf(active);
+    root.classList.toggle('include-optional', optional.checked);
+    for (const slide of slides) {
+      slide.hidden = reading ? !visible.includes(slide) : slide !== active;
+      steps(slide).forEach((fragment, i) => {
+        const hidden = !reading && i > (slide === active ? step : 0);
+        fragment.toggleAttribute('data-unrevealed', hidden);
+        fragment.inert = hidden;
+        fragment.setAttribute('aria-hidden', String(hidden));
+      });
+    }
+    $('counter').textContent = `${index + 1} / ${visible.length}`;
+    $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
+    $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
+    $('previous').disabled = reading || (index === 0 && step === 0);
+    $('next').disabled = reading || (index === visible.length - 1 && step === steps().length - 1);
+    $('progress-fill').style.width = `${((index + (step + 1) / steps().length) / visible.length) * 100}%`;
+    $('reading-mode').setAttribute('aria-pressed', String(reading));
+    $('reading-mode').textContent = reading ? '講義に戻る' : '通読';
+    if (announce) $('announcement').textContent = `${index + 1} / ${visible.length}、${active.dataset.label}、表示 ${step + 1} / ${steps().length}`;
+    updateHash();
+    if (scroll) viewport.scrollTop = 0;
+  }
+  function navigate(direction) {
+    if (reading) return;
+    const visible = included();
+    const index = visible.indexOf(active);
+    let changedSlide = false;
+    if (direction > 0) {
+      if (step < steps().length - 1) step++;
+      else if (index < visible.length - 1) {
+        active = visible[index + 1]; step = 0; changedSlide = true;
+      }
+    } else {
+      if (step > 0) step--;
+      else if (index > 0) {
+        active = visible[index - 1]; step = steps().length - 1; changedSlide = true;
+      }
+    }
+    render({scroll: changedSlide});
+    if (!changedSlide && direction > 0) {
+      const fragment = steps()[step];
+      const frame = viewport.getBoundingClientRect();
+      const rect = fragment.getBoundingClientRect();
+      if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
+    }
+  }
+  function jump(target) {
+    active = target;
+    step = 0;
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  function showContents() {
+    const list = $('toc-list');
+    list.replaceChildren();
+    included().forEach((slide, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const number = document.createElement('span');
+      number.className = 'toc-number';
+      number.textContent = `${i + 1}`;
+      button.append(number, document.createTextNode(slide.dataset.label));
+      if (slide === active) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => { $('toc').close(); jump(slide); });
+      li.append(button); list.append(li);
+    });
+    $('toc').showModal();
+  }
+  function toggleReading() {
+    if (reading) {
+      const frame = viewport.getBoundingClientRect();
+      active = included().find(slide => slide.getBoundingClientRect().bottom > frame.top + 40) || active;
+      step = 0;
+    }
+    reading = !reading;
+    root.classList.toggle('reading', reading);
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  optional.addEventListener('change', () => {
+    if (!optional.checked && active.dataset.kind !== 'main') {
+      const index = slides.indexOf(active);
+      active = slides.slice(index + 1).find(slide => slide.dataset.kind === 'main') || slides[0];
+      step = 0;
+    }
+    render({scroll: !reading});
+  });
+  $('previous').addEventListener('click', () => navigate(-1));
+  $('next').addEventListener('click', () => navigate(1));
+  $('contents').addEventListener('click', showContents);
+  $('close-toc').addEventListener('click', () => $('toc').close());
+  $('reading-mode').addEventListener('click', toggleReading);
+  $('chapter-select').addEventListener('change', event => { location.href = event.target.value; });
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await root.requestFullscreen();
+    } catch {
+      $('hint').textContent = 'ブラウザの全画面表示をご利用ください';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '全画面解除' : '全画面';
+  });
+  document.addEventListener('keydown', event => {
+    if ($('toc').open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
+    if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
+    if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+      if (reading) return;
+      event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      if (reading) return;
+      event.preventDefault(); navigate(-1);
+    } else if (event.key === 'Home' && !reading) {
+      event.preventDefault(); jump(included()[0]);
+    } else if (event.key === 'End' && !reading) {
+      event.preventDefault(); active = included().at(-1); step = steps().length - 1; render({scroll:true});
+    } else if (event.key.toLowerCase() === 'm') showContents();
+  });
+  window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  // Published section links can be opened directly in the slide edition too.
+  const sectionTarget = location.hash.startsWith('#sec-') &&
+    slides.find(slide => slide.dataset.section === location.hash.slice(5));
+  if (sectionTarget) active = sectionTarget;
+  readHash();
+  root.classList.add('enhanced');
+  render({announce: false});
+})();
+</script>
+</body>
+</html>
