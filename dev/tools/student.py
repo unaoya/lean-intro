@@ -256,7 +256,7 @@ SOLUTION_HEADER = (
     "-- 解答（解説は Web 版のテキストで読む）。dev/tools/student.py が自動生成する。\n\n")
 
 
-def main(docs: "Path | None" = None, titles: "dict | None" = None):
+def main():
     sys.path.insert(0, str(ROOT / "tools"))
     import lean2html
     import refs
@@ -289,40 +289,6 @@ def main(docs: "Path | None" = None, titles: "dict | None" = None):
         text = (ASSETS / template).read_text(encoding="utf-8").replace("@@CHAPTERS@@", " ".join(chapters))
         (LESSONS / target_name if target_name == "Status.lean" else REPO / target_name).write_text(
             text, encoding="utf-8")
-    if docs is not None:
-        publish(docs, chapters, solutions, titles or {})
-
-
-def publish(docs: Path, chapters, solutions, titles):
-    """公開ページ用に、受講者用ファイルと解答のコピーと、ダウンロード用の目次を docs/student/ に置く。"""
-    import html
-    docs.mkdir(parents=True, exist_ok=True)
-    for stale in docs.glob("**/*.lean"):
-        stale.unlink()
-    (docs / "solutions").mkdir(exist_ok=True)
-    items = []
-    for name in chapters:
-        (docs / f"{name}.lean").write_text((ORIGINAL / f"{name}.lean").read_text(encoding="utf-8"),
-                                           encoding="utf-8")
-        link = f'<a href="{name}.lean" download>{name}.lean</a>'
-        if name in solutions:
-            (docs / "solutions" / f"{name}.lean").write_text(
-                (SOLUTIONS / f"{name}.lean").read_text(encoding="utf-8"), encoding="utf-8")
-            link += f'（<a href="solutions/{name}.lean" download>解答</a>）'
-        items.append(f'<li>{link} — {html.escape(titles.get(name, name))}</li>')
-    (docs / "index.html").write_text(
-        '<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        '<title>受講者用の Lean ファイル</title>'
-        '<style>body{font-family:sans-serif;max-width:50rem;margin:3rem auto;padding:0 1.2rem;line-height:1.9}'
-        'li{margin:.5rem 0}</style></head><body>'
-        '<h1>受講者用の Lean ファイル</h1>'
-        '<p>ふだんは、<a href="https://github.com/unaoya/lean-intro">リポジトリ</a>を VS Code で clone して使う'
-        '（手順はリポジトリの README）。ここでは、同じファイルを1つずつダウンロードできる。</p>'
-        '<p>本文の <code>.lean</code> から解説を省き、コードと練習の問題文だけを残した版である。'
-        '説明は<a href="../index.html">Web 版のテキスト</a>で読む。</p>'
-        '<ol>' + "".join(items) + '</ol></body></html>', encoding="utf-8")
-    print(f"  docs/student/ に {len(chapters)} 章を公開")
 
 
 if __name__ == "__main__":

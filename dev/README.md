@@ -76,9 +76,8 @@ lakefile が変わり、受講者の手元で新しい章が追加される。�
 `docs/` と受講者用プロジェクト（直下の `LeanIntro/`・`Start.lean`・`lakefile.lean`）は生成物だが、
 公開・配布するので Git に含める。`pdf/` と `.lake/` は再生成できるため Git 管理しない。
 
-2往復構成より前の旧版と、構成案などの過去の資料は削除した。必要なら
-タグ `before-restructure` から取り出せる。古い公開 URL（`intro1.html`・`ch.html`、改名前の
-`intro1a.html`・`ch1.html` など）は、新しい章への転送ページとして生成する（`LEGACY_CHAPTERS`）。
+古い公開 URL（`intro1.html`・`ch.html`、改名前の `intro1a.html`・`ch1.html` など）は、
+新しい章への転送ページとして生成する（`LEGACY_CHAPTERS`）。
 スライドの旧URLはページ位置と表示段階を引き継ぐ。本文の固定節ラベルは改名後も変えない。
 
 ## ビルドと生成

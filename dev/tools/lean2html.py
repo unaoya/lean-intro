@@ -40,7 +40,7 @@ LEGACY_CHAPTERS = {
     "Intro1b": "03_InductiveTypes", "CH2": "04_Exists",
     "Intro2": "05_MathematicalTools", "Top": "06_Topology",
     "Extra": "07_Exercises", "Ascoli": "08_Ascoli",
-    # 2往復構成より前の旧版（1往復構成）の URL
+    # さらに前の章名の URL
     "Intro1": "01_TypesAndTerms", "CH": "02_Forall",
 }
 
@@ -114,9 +114,8 @@ SITE_GOALS = (
 )
 SITE_NOTE = (
     "各 ✏ 練習には折りたたみの解答が付いている（解答もすべて Lean の検査済み）。"
-    "2往復構成に改める前の旧版は <a href=\"original/index.html\">こちら</a>。"
-    "ソースは <a href=\"https://github.com/unaoya/lean-intro\">GitHub</a> の "
-    "<code>src/*.lean</code>（このページはそこから自動生成）。"
+    "手元で動かす Lean のファイルは <a href=\"https://github.com/unaoya/lean-intro\">GitHub の"
+    "リポジトリ</a>にある（使い方はリポジトリの README）。"
 )
 
 # ---------------------------------------------------------------- inline md
@@ -848,15 +847,13 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
     links = []
     if with_slides:
         links.append('<a href="slides/index.html">講義用スライド</a>')
-    if with_student:
-        links.append('<a href="student/index.html">受講者用の Lean ファイル</a>')
     (OUT / "index.html").write_text(
         page(SITE_TITLE, (f'<p>{"・".join(links)}</p>' if links else '') +
              toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
     print("  index.html 生成")
     if with_student:
         import student
-        student.main(docs=OUT / "student", titles=titles)
+        student.main()
 
     if with_slides:
         import slides
