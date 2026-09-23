@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>@@TITLE@@ · 講義用</title>
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean</a><select id="chapter-select" aria-label="章">@@CHAPTER_OPTIONS@@</select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control"><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      @@SLIDES@@
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">@@CHAPTER@@</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">@@TITLE@@</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>@@SCRIPT@@</script>
+</body>
+</html>

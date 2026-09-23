@@ -38,34 +38,65 @@ src/
                 本文の ✏ 練習の解答（`/-! SOL 固定ラベル:問題番号 -/` 区切り。HTML に折りたたみで埋め込まれる）
   ExtraSol.lean Extra の解答（sorry を埋めた版）
 
-tools/lean2html.py  src/*.lean → docs/*.html の生成スクリプト（依存なし・標準ライブラリのみ）
+tools/lean2html.py  src/*.lean → 通読版・講義版の HTML/PDF（Python 標準ライブラリのみ）
+tools/slides.py     共通の本文を、文字を落とさず講義用の画面・表示段階に分割
+tools/slides/       講義用の HTML/CSS/JavaScript テンプレート
+slides/            章ごとの区切り設定。本文のコピーや段落の連番は持たない
 tools/check_refs.py 固定ラベルの検査・節番号と参照番号の自動更新
 docs/               生成された HTML（GitHub Pages の公開ディレクトリ。手で編集しない）
 editions/original/  2往復構成に改める前の旧版（Intro1 → CH → …）。比較・参照用
                     （`python3 editions/original/build.py` で docs/original/ に生成）
+archive/plans/      採用・実施済み／不採用の構成案。現在の作業計画ではない
 ```
 
 本文中のすべての Lean コードと Infoview 風の出力表示は、実際のコンパイラ出力で裏を取ってある。
 解答ファイルも `lakefile.lean` の `roots` に入っているので、`lake build` で常に検査される。
 
+## ファイルの管理
+
+普段編集するのは `src/`（本文・解答）、`slides/`（区切り設定）、`tools/`（生成器・表示・検査）。
+`docs/` は公開用の生成物なので Git に含め、`pdf/` と `.lake/` は再生成できるため Git 管理しない。
+スライドの試作用コピーと `prototypes/` は廃止済み。
+
+旧教材は [editions/original/](editions/original/README.md)、過去の計画は
+[archive/](archive/README.md) に分けて保存する。どちらも通常の `lake build` の入力には含まれない。
+`docs/intro1.html` と `docs/ch.html` は古い公開URLを保つ転送ページであり、重複した教材ではない。
+この2ファイルは通常の生成対象外なので、生成物を整理するときも残す。
+
 ## ビルドと生成
 
 ```bash
-lake build                          # 教材の全ファイル（本文＋解答）を検査
-python3 tools/lean2html.py          # src/*.lean → docs/*.html と pdf/all.pdf を再生成
-python3 tools/lean2html.py --no-pdf # PDF を省いて HTML だけ再生成
+lake build                        # 本文＋解答を Lean で検査し、2種類の HTML と2種類の PDF を生成
+lake build LeanIntro              # Lean の検査だけ
+python3 tools/lean2html.py         # 両形式を強制再生成（Lean の検査は別途）
+python3 tools/lean2html.py --no-pdf # PDF を省いて両形式の HTML を生成
 ```
 
 `lake build` は `Extra.lean` の演習部分について `sorry` の警告を出す（演習なので意図どおり）。
 それ以外の警告やエラーが出たら退行を疑うこと。
 
-教材を書き換えたら `lake build` と `python3 tools/lean2html.py` を両方走らせ、
+教材を書き換えたら `lake build` を走らせ、
 `docs/` の差分ごとコミットする（Pages の source は `main` ブランチの `/docs`）。
+入力と生成物の内容が前回と一致する場合、HTML/PDF の再生成は省く。
+生成物を削除・編集した場合や、本文・解答・区切り設定・生成スクリプトを編集した場合は作り直す。
 
-PDF（`pdf/all.pdf`・`.gitignore` 済み・未追跡）は HTML 生成と同時に作られる。
-目次と全章を1つの印刷用ページにまとめ、headless Chrome に刷らせている
-（練習の解答はすべて開いた状態、章の頭で改ページ、コードは折り返し）。
-Chrome が見つからないときは PDF を飛ばして HTML 生成だけ成功する。
+| 形式 | HTML | 全章をまとめた PDF |
+| --- | --- | --- |
+| 通読版 | `docs/index.html` と各章 | `pdf/all.pdf` |
+| 講義スライド版 | `docs/slides/index.html` と各章 | `pdf/slides.pdf` |
+
+本文・補足・解答の原本は `src/*.lean` だけ。両形式は同じ解析・参照解決・コード着色を共有する。
+講義版は左右キー・Space で進み、コードの出力は次の操作で表示する。
+補足・先取りの表示は切り替えられ、解答は折りたたんである。
+Intro1a の区切りは内容に合わせて設定済み。他の章も見出し・コード・表示量から自動で分割する。
+設定方法は [slides/README.md](slides/README.md) を参照。
+
+PDF（`pdf/` は `.gitignore` 済み）は headless Chrome で生成する。
+通読版は解答を開いた状態でまとめ、章の頭で改ページする。
+講義版は 16:9 で、出力を見せる前・後をそれぞれ1ページにする。
+補足・先取りも含め、解答は問題の後の別ページに展開するため、ページ数は HTML の画面数より多い。
+Chrome が見つからない・PDF 出力に失敗した場合はビルドを失敗させる。
+HTML だけでよい場合は明示的に `--no-pdf` を使う。
 別の場所の Chrome/Chromium を使うなら環境変数 `CHROME` で指定する。
 
 ## 節の追加・移動と参照

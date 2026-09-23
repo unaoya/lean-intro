@@ -1,0 +1,33 @@
+@page { size: 1280px 720px; margin: 0; }
+html { font-size: 16px; }
+body.print-deck { margin: 0; background: #fcfcfa; }
+.print-slide {
+  position: relative; width: 1280px; height: 720px;
+  break-after: page; break-inside: avoid; overflow: visible;
+  color: #252c33; background: #fcfcfa;
+}
+.print-slide:last-child { break-after: auto; }
+.print-head, .print-foot {
+  position: absolute; left: 40px; right: 40px; font-size: 14px; line-height: 24px;
+  display: flex; justify-content: space-between; gap: 30px; color: #646e76;
+}
+.print-head { top: 18px; padding-bottom: 12px; border-bottom: 1px solid #dce1e2; }
+.print-head span { max-width: 1040px; text-align: right; }
+.print-foot { bottom: 16px; padding-top: 12px; border-top: 1px solid #dce1e2; }
+.print-content { position: absolute; top: 100px; left: 112px; right: 112px; font-size: 26px; line-height: 1.8; }
+.print-content h1 { font-size: 39px; line-height: 1.5; margin: 0 0 28px; }
+.print-content h2 { font-size: 33px; line-height: 1.5; margin: 0 0 24px; }
+.print-content h3, .print-content h4 { font-size: 28px; line-height: 1.6; margin: 0 0 22px; }
+.print-content p { margin: 0 0 22px; }
+.print-content strong { font-weight: 650; }
+.print-content code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: .87em; background: #f0f2f1; padding: .08em .12em; }
+.print-content pre { font-size: 26px; line-height: 1.5; margin: 0 0 22px; padding: 18px 24px; border-left: 3px solid #c5cecd; background: #f0f2f1; white-space: pre-wrap; overflow-wrap: anywhere; }
+.print-content pre code { font-size: .92em; background: transparent; padding: 0; }
+.print-content pre.quote { background: #edf3f5; border-color: #80a5b0; }
+.print-content ul, .print-content ol { margin: 0 0 20px; padding-left: 1.6em; }
+.print-content li { margin-bottom: 14px; }
+.print-content a { color: #235965; }
+.print-content table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 20px; line-height: 1.6; }
+.print-content th, .print-content td { border: 1px solid #dce1e2; padding: 8px 10px; vertical-align: top; overflow-wrap: anywhere; }
+.print-content th { background: #f0f2f1; }
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

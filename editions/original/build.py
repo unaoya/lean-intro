@@ -48,7 +48,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--no-pdf", action="store_true", help="HTML だけを生成する")
     configure()
-    renderer.main(with_pdf=not ap.parse_args().no_pdf)
+    renderer.main(with_pdf=not ap.parse_args().no_pdf, with_slides=False)
 
 
 if __name__ == "__main__":

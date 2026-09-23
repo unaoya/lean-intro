@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>型と項 I — 関数と依存関数 · 講義用</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #fcfcfa;
+  --ink: #252c33;
+  --muted: #646e76;
+  --line: #dce1e2;
+  --accent: #235965;
+  --code: #f0f2f1;
+  --output: #edf3f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font-family: "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button {
+  color: inherit; border: 1px solid var(--line); border-radius: 5px;
+  background: transparent; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #edf0ee; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 3px solid #49858e; outline-offset: 4px;
+}
+button:disabled { cursor: default; opacity: .4; }
+button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+.toolbar, .navigation {
+  display: none;
+  align-items: center; justify-content: space-between;
+  font-size: 14px; line-height: 1.5; background: var(--paper); z-index: 2;
+}
+.toolbar { border-bottom: 1px solid var(--line); padding: 14px 30px; gap: 20px; }
+.identity { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.identity > span:first-child { font-weight: 600; }
+.identity a { font-weight: 600; text-decoration: none; color: inherit; }
+#chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
+.chapter { color: var(--muted); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 13px; }
+.tools button { border-color: transparent; padding-inline: 8px; }
+.optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
+.slide, .print-content {
+  font-size: clamp(22px, 2.1vw, 27px); line-height: 1.8;
+  overflow-wrap: anywhere; margin-bottom: 60px;
+}
+.slide h1 { font-size: 1.5em; line-height: 1.5; font-weight: 650; margin: 0 0 36px; }
+.slide h2 { font-size: 1.28em; line-height: 1.5; font-weight: 650; margin: 0 0 28px; }
+.slide h3 { font-size: 1.08em; line-height: 1.65; font-weight: 600; margin: 0 0 24px; }
+.slide p { margin: 0 0 1em; }
+.slide strong { font-weight: 650; }
+.slide a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.slide ul, .slide ol { margin: 0 0 1em; padding-left: 1.6em; }
+.slide li { padding-left: .15em; margin-bottom: .8em; }
+.slide code {
+  font-family: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
+  font-size: .87em; background: var(--code); border-radius: 3px; padding: .08em .12em;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.slide pre {
+  margin: 0 0 22px; padding: 18px 24px; line-height: 1.55;
+  border-left: 3px solid #c5cecd; background: var(--code);
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.1em;
+}
+.slide pre code { padding: 0; font-size: .92em; background: transparent; }
+.slide pre.quote { background: var(--output); border-color: #80a5b0; }
+.kw { color: #793683; font-weight: 600; }
+.sort { color: #075c8b; }
+.doc { color: #34794f; }
+.cm { color: #68736e; }
+.sorry { color: #a33938; }
+.slide[data-kind="optional"], .slide[data-kind="preview"] {
+  border-left: 3px solid #b3ada0; padding-left: 28px;
+}
+.solution { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: .83em; }
+.solution summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.solution[open] summary { margin-bottom: 18px; }
+.solution pre { margin-top: 18px; }
+.slide details.sol { border-top: 1px solid var(--line); padding: 10px 0; margin-top: 14px; font-size: .8em; }
+.slide details.sol summary { color: var(--accent); cursor: pointer; }
+.slide details.sol[open] summary { margin-bottom: 18px; }
+.slide table { border-collapse: collapse; font-size: .8em; width: 100%; table-layout: fixed; margin-bottom: 20px; }
+.slide th, .slide td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+.slide th { background: var(--code); }
+.enhanced body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+.enhanced .toolbar, .enhanced .navigation { display: flex; }
+.enhanced .viewport { overflow: auto; min-height: 0; scrollbar-gutter: stable; }
+.enhanced .slide { margin-bottom: 0; }
+.enhanced .slide[hidden] { display: none; }
+.enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
+.navigation { position: relative; padding: 13px 30px 17px; border-top: 1px solid var(--line); gap: 20px; }
+.position { display: flex; gap: 18px; align-items: baseline; font-variant-numeric: tabular-nums; }
+#counter { font-weight: 600; min-width: 58px; }
+#step-count { color: var(--muted); font-size: 12px; min-width: 56px; }
+.hint { font-size: 12px; color: var(--muted); }
+.navigation-buttons { display: flex; gap: 12px; }
+#next { background: var(--accent); color: white; border-color: var(--accent); min-width: 134px; }
+#next:hover { background: #1e4c56; }
+.progress { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; background: #e6e9e7; }
+#progress-fill { height: 100%; background: var(--accent); }
+dialog { width: min(620px, calc(100% - 36px)); max-height: 82dvh; border: 1px solid var(--line); border-radius: 8px; padding: 25px 30px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: rgb(24 35 39 / .35); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { font-size: 23px; margin: 0; }
+.dialog-caption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+#toc-list { padding: 0; list-style: none; }
+#toc-list button { border: 0; width: 100%; text-align: left; padding: 10px 12px; white-space: normal; font-size: 15px; }
+#toc-list button[aria-current="page"] { background: #e7eeed; color: var(--accent); font-weight: 600; }
+#toc-list .toc-number { display: inline-block; width: 32px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.reading .slide { display: block; border-bottom: 1px solid var(--line); padding-bottom: 45px; margin-bottom: 45px; }
+.reading .step[data-unrevealed] { visibility: visible; pointer-events: auto; }
+.reading .slide[hidden] { display: none; }
+.reading .hint { display: none; }
+@media (max-width: 860px) {
+  .toolbar { padding: 12px 20px; flex-wrap: wrap; gap: 9px; }
+  .identity { gap: 12px; }
+  .tools { gap: 8px; }
+  main { padding: 30px 30px 40px; }
+  .slide { font-size: 23px; line-height: 1.8; }
+  .navigation { padding-inline: 20px; gap: 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 520px) {
+  .toolbar { padding: 9px 16px; gap: 6px; font-size: 12px; }
+  .identity { width: 100%; justify-content: space-between; }
+  .chapter { font-size: 11px; }
+  .tools { width: 100%; justify-content: space-between; gap: 2px; }
+  .tools button { min-height: 40px; padding: 7px; }
+  .optional-control { min-height: 40px; gap: 2px; }
+  main { padding: 26px 22px 32px; }
+  .slide { font-size: 20px; line-height: 1.85; }
+  .slide h1 { font-size: 1.35em; }
+  .slide pre { padding: 14px 16px; }
+  .navigation { padding: 10px 16px 14px; font-size: 12px; }
+  .position { flex-direction: column; gap: 0; }
+  .navigation-buttons { gap: 7px; }
+  .navigation-buttons button { min-height: 44px; padding: 8px 10px; }
+  #next { min-width: 120px; }
+  .slide[data-kind="optional"], .slide[data-kind="preview"] { padding-left: 16px; }
+}
+@media print {
+  .enhanced body { display: block; height: auto; overflow: visible; }
+  .enhanced .toolbar, .enhanced .navigation, dialog, .sr-only { display: none; }
+  .enhanced .viewport { overflow: visible; }
+  main { width: 100%; padding: 0; }
+  .enhanced .slide { display: block !important; break-after: page; font-size: 16pt; margin-bottom: 0; }
+  .enhanced .step[data-unrevealed] { visibility: visible; }
+  .enhanced:not(.include-optional) .slide[data-kind="optional"],
+  .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
+}
+</style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean</a><select id="chapter-select" aria-label="章"><option value="intro1a.html" selected>Intro1a</option><option value="ch1.html">CH1</option><option value="intro1b.html">Intro1b</option><option value="ch2.html">CH2</option><option value="intro2.html">Intro2</option><option value="top.html">Top</option><option value="extra.html">Extra</option></select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control"><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      <article class="slide" id="intro1a-2d6b4f833fdb" data-kind="main" data-label="型と項 I — 関数と依存関数" data-section="Intro1a.intro"><div class="step" data-step="0"><h1>型と項 I — 関数と依存関数</h1>
+<p>この章では、書かれた Lean の項について「どんな型を持つか」を順に追う。項と型、定義、関数、そして入力によって結果の型が変わる依存関数までを学ぶ。次の <code>CH1.lean</code> では、同じ読み方で含意・全称の証明を読み、単射の合成まで進む。</p></div></article>
+<article class="slide" id="intro1a-reading" data-kind="main" data-label="この教材の読み方" data-section="Intro1a.intro"><div class="step" data-step="0"><h3>この教材の読み方</h3>
+<p>中心は、書かれたコードを解読することである。項を見るたびに型を予想し、 <code>#check</code> の出力で確かめよう。各節の練習には、予想を言葉にする問題と、小さな項を書いて確かめる問題がある。型を追う手順をつかむことが目的である。型検査がそのまま証明の検査になることを、次の章で経験する。</p></div></article>
+<article class="slide" id="intro1a-0edd3ed8bd57" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><h2 id="sec-Intro1.terms-types">1. 項と型</h2>
+<p>Lean に書くものの基本の単位を<strong>項</strong>（term）と呼ぶ。項とは何かの正確な定義はここでは与えないが、さしあたり <strong><code>#check</code> の右側に書いてエラーが出ないものは項だと考えてよい</strong>。</p></div>
+<div class="step" data-step="1"><p>型（type）は、ひとまず<strong>集合のようなもの</strong>、その型の項は<strong>要素のようなもの</strong>と考えてよい。ただし、集合を公理に従って扱うのと同様に、型や項にも、それらを作り、扱うための規則がある。以後、その規則を少しずつ見ていく。</p></div></article>
+<article class="slide" id="intro1a-check-command" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p><code>#check e</code> は、項 <code>e</code> の<strong>型</strong>を調べて表示するコマンドである。ここで、調べる対象の <code>e</code> は項だが、<code>#check e</code> 全体は項ではなく、Lean に対する指示である。後で使う <code>def</code> も、新しい定義を導入するコマンドであり、項とは区別する。エディタ右側のパネル（Infoview）に表示される結果を、本文では独立した枠で示す。</p></div></article>
+<article class="slide" id="intro1a-check-nat" data-kind="main" data-label="#check 3" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>3 : Nat</code></pre>
+<p>これは「項 <code>3</code> は型 <code>Nat</code>（自然数の型）を持つ」と読む。</p></div></article>
+<article class="slide" id="intro1a-check-bool" data-kind="main" data-label="#check true" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> true</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Bool.true : Bool</code></pre></div></article>
+<article class="slide" id="intro1a-d22bb2aa6e92" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p>「項 <code>true</code> は型 <code>Bool</code>（真偽値の型）を持つ」。表示が <code>Bool.true</code> となっているのは、これが正式な名前だからである。ここで <code>.</code> は名前の区切りで、接頭辞 <code>Bool</code> と名前 <code>true</code> をつないでいる。Lean はこの区切りを使って名前を扱う。標準ライブラリでは <code>true</code> という短い名前も用意されているので、どちらでも書ける（名前の詳しい仕組みは<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.inductive-types"><code>Intro1b.lean</code> 1節</a>で見る）。</p></div></article>
+<article class="slide" id="intro1a-one-type" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p>すべての項はちょうど1つの型を持つ（厳密には、定義から計算して一致する型を同一視する、などの但し書きが要るが、この教材の範囲では「ちょうど1つ」と考えて差し支えない）。ただし、数字の <code>2</code> のような<strong>記法</strong>は、書いた文字列の段階ではまだどの型の項か決まっておらず、置かれた場所で期待される型に応じて <code>Nat</code> の <code>2</code> とも <code>Int</code> の <code>2</code> とも読まれる。読み方が決まった項には、型がちょうど1つ付く（この「読み方の決まり方」は<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.functions">3節</a>で扱う）。ここで大事な観察が1つある。 <strong>型を表す表記それ自体もまた項である</strong>。実際、<code>Nat</code> を <code>#check</code> の右に書くと:</p></div></article>
+<article class="slide" id="intro1a-nat-type" data-kind="main" data-label="#check Nat" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> Nat</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Nat : Type</code></pre>
+<p><code>Nat</code> という表記は、<code>Type</code> という型を持つ項なのである（以下ではこのことを、少し縮めて「型も項である」と言う）。では <code>Type</code> は？</p></div></article>
+<article class="slide" id="intro1a-type-type" data-kind="main" data-label="#check Type" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> <span class="sort">Type</span></code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Type : Type 1</code></pre>
+<p><code>Type</code> もまた項であり、その型は <code>Type 1</code>。この階段は上へ続いていく:</p></div></article>
+<article class="slide" id="intro1a-9a2607a08da0" data-kind="optional" data-label="補足（初読は飛ばしてよい）: 宇宙の階段" data-section="Intro1.terms-types"><div class="step" data-step="0"><h3>補足（初読は飛ばしてよい）: 宇宙の階段</h3>
+<pre class="lean"><code><span class="kw">#check</span> <span class="sort">Type</span> 1</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Type 1 : Type 2</code></pre>
+<p><code>Type</code>, <code>Type 1</code>, <code>Type 2</code>, … の階層を宇宙（universe）と呼ぶ。この教材では宇宙には<strong>深入りしない</strong>。</p></div></article>
+<article class="slide" id="intro1a-types-as-terms" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p>型が項と同じ資格を持つ、というこの一様性が Lean の設計の核で、これがあるから「型を受け取る関数」「型を返す関数」が書ける（<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.functions">3節</a>の <code>Map</code> と<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.dependent-functions">4節</a>）。</p></div>
+<div class="step" data-step="1"><p>数の演算や、等式・不等式も項として書ける。それぞれにどんな型が付くかを見てみよう。</p></div></article>
+<article class="slide" id="intro1a-addition" data-kind="main" data-label="#check 3 + 4" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> 3 + 4</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>3 + 4 : Nat</code></pre>
+<p>「<code>3 + 4</code> という項は <code>Nat</code> 型を持つ」——数から作った式は、また数の項になる。</p></div></article>
+<article class="slide" id="intro1a-equality" data-kind="main" data-label="#check 1 + 1 = 2" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> 1 + 1 = 2</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>1 + 1 = 2 : Prop</code></pre>
+<p>今度は、出力の型が <code>Nat</code> ではなく <code>Prop</code> になった。別の例も見てみよう。</p></div></article>
+<article class="slide" id="intro1a-false-proposition" data-kind="main" data-label="#check 2 &lt; 1" data-section="Intro1.terms-types"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> 2 &lt; 1</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>2 &lt; 1 : Prop</code></pre>
+<p>こちらも型は <code>Prop</code> である。ここで現れた <code>Prop</code> は、<strong>命題</strong>たちの型である。等式 <code>1 + 1 = 2</code> も不等式 <code>2 &lt; 1</code> も命題なので、<code>Prop</code> 型の項になる。 <code>2 &lt; 1</code> のような<strong>偽の命題も</strong>、命題としては立派な項であることに注意しよう。 <code>#check</code> は命題の真偽を判定しているわけではない（証明の話は <code>CH1.lean</code> で扱う）。</p></div></article>
+<article class="slide" id="intro1a-prop-type" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p><code>Prop</code> 自身の型も調べてみよう:</p>
+<pre class="lean"><code><span class="kw">#check</span> <span class="sort">Prop</span></code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Prop : Type</code></pre>
+<p><code>Prop</code> 自身もまた項であり、その型は <code>Type</code> である。</p></div></article>
+<article class="slide" id="intro1a-256d14ccb0ef" data-kind="preview" data-label="先取り（3節・CH1）: 演算と命題の記号の定義" data-section="Intro1.terms-types"><div class="step" data-step="0"><h3>先取り（<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.functions">3節</a>・CH1）: 演算と命題の記号の定義</h3>
+<p><code>+</code>・<code>=</code>・<code>&lt;</code> が正確には何を表し、どのように定義されているかは後で説明する。 <code>+</code> は<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.functions">3節</a>で関数として読み、型に応じて演算を選ぶ仕組みは <a target="_blank" rel="noopener" href="../intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で扱う。<code>=</code> と <code>&lt;</code> は <a target="_blank" rel="noopener" href="../ch1.html#sec-CH.propositions"><code>CH1.lean</code> 1節</a>で説明する。今は、それぞれの項にどんな型が付くかを追えばよい。</p></div></article>
+<article class="slide" id="intro1a-recap" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p>ここまでで確かめたことは2つである: <strong>項の型はいつでも <code>#check</code> で調べられる</strong>こと、そして<strong>型も項である</strong>こと。</p></div></article>
+<article class="slide" id="intro1a-checking-proofs" data-kind="main" data-label="1. 項と型" data-section="Intro1.terms-types"><div class="step" data-step="0"><p><code>#check</code> という機能があることから分かるように、Lean には<strong>項を与えると、その型を機械的に計算する仕組み</strong>がある。この仕組みを証明の検証に使うのが、冒頭で述べたこの教材の行き先である。命題 <code>P : Prop</code> に対して、その命題を型とする項 <code>h : P</code> を作ることが、<code>P</code> の証明を与えることになる。だから、その項が型 <code>P</code> を持つかを検査すれば、証明の検査になる。この対応を納得するのが <code>CH1.lean</code> の目標である。まずこの章で関数の型を追い、次の <code>CH1.lean</code> で証明の例を読む。</p></div></article>
+<article class="slide" id="intro1a-08bec2276301" data-kind="optional" data-label="補足（初読は飛ばしてよい）: Nat や Bool はどこから来たか——Prelude" data-section="Intro1.terms-types"><div class="step" data-step="0"><h3>補足（初読は飛ばしてよい）: <code>Nat</code> や <code>Bool</code> はどこから来たか——Prelude</h3></div></article>
+<article class="slide" id="intro1a-fc1ffa368491" data-kind="optional" data-label="補足（初読は飛ばしてよい）: Nat や Bool はどこから来たか——Prelude" data-section="Intro1.terms-types"><div class="step" data-step="0"><p><code>import</code> を1行も書いていないのに <code>Nat</code>・<code>Bool</code>・<code>+</code> が使えるのは、Lean が起動時に <strong>Prelude</strong>——標準ライブラリの核——を自動で読み込んでいるからである。この教材で「標準ライブラリ」と呼ぶものの実体はただの Lean のソースファイルで、 <code>Nat</code> も <code>Bool</code> も、<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.inductive-types"><code>Intro1b.lean</code> 1節</a>・<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.structures"><code>Intro1b.lean</code> 2節</a>で自作する型とまったく同じ仕組みで定義されている。特別なのは「最初から読み込まれている」ことだけである。</p></div></article>
+<article class="slide" id="intro1a-58e656db4762" data-kind="main" data-label="✏ 練習" data-section="Intro1.terms-types"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol>
+<li><code>#check Bool</code> と <code>#check Type 2</code> の表示を予想してから確かめよ。</li>
+<li><code>#check 3 &lt; 5</code> と <code>#check 5 &lt; 3</code> の表示をそれぞれ予想してから確かめよ。命題の真偽が異なっても、同じ型が付くことを説明せよ。</li>
+</ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#check</span> Bool</code></pre>
+<pre class="quote"><code>Bool : Type</code></pre>
+<p><code>Bool</code> は型なので、その型は宇宙 <code>Type</code>。</p>
+<pre class="lean"><code><span class="kw">#check</span> <span class="sort">Type</span> 2</code></pre>
+<pre class="quote"><code>Type 2 : Type 3</code></pre>
+<p>宇宙の階段は1段のぼる: <code>Type n : Type (n + 1)</code>。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">#check</span> 3 &lt; 5</code></pre>
+<pre class="quote"><code>3 &lt; 5 : Prop</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> 5 &lt; 3</code></pre>
+<pre class="quote"><code>5 &lt; 3 : Prop</code></pre>
+<p><code>3 &lt; 5</code> は真で <code>5 &lt; 3</code> は偽だが、どちらも型は <code>Prop</code>。 <code>#check</code> は命題の真偽を調べていない——命題を表す項が型 <code>Prop</code> を持つことを確認している。</p>
+</details></article>
+<article class="slide" id="intro1a-3cdc50571df9" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><h2 id="sec-Intro1.definitions">2. def — 新しい項を定義する</h2>
+<pre class="quote"><code>def 名前 : 型 := 項</code></pre>
+<p>と書くと、<strong>項に新しい名前を付けて定義</strong>できる。<code>:=</code> の右辺には、すでに使える項や、それらを組み合わせた項を書く。左辺の「名前」は、これから導入する新しい項の名前である。定義した後は、その名前自体を項として使える。<code>def</code> 全体は、その定義を導入するコマンドである。</p></div></article>
+<article class="slide" id="intro1a-definition-x" data-kind="main" data-label="def x" data-section="Intro1.definitions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> x : Nat := 2
+
+<span class="kw">#check</span> x</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>x : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-ee580d36db27" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><p>「<code>x</code> という <code>Nat</code> 型の項を、<code>2</code> として定義した」——宣言に <code>: Nat</code> と書いたのだから型は <code>Nat</code> のはずで、表示もそのとおりである。名前 <code>x</code> 自体が値を決めるのではなく、右辺の <code>2</code> が定義の中身を決めている。定義した項は、それ自体また項として使える:</p></div></article>
+<article class="slide" id="intro1a-definition-y" data-kind="main" data-label="def y" data-section="Intro1.definitions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> y : Nat := x
+
+<span class="kw">#check</span> y</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>y : Nat</code></pre>
+<p>項を扱うコマンドをあと2つ紹介する。<code>#eval</code> は項を<strong>計算</strong>して値を表示する:</p></div></article>
+<article class="slide" id="intro1a-5257cb788108" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> x</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>2</code></pre>
+<p><code>#print</code> は、名前に付けられた<strong>定義そのもの</strong>を表示する:</p></div></article>
+<article class="slide" id="intro1a-52198d630b91" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#print</span> x</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>def x : Nat :=
+2</code></pre></div></article>
+<article class="slide" id="intro1a-type-checking" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><p>さて、ここからが<strong>この教材の最重要のテーマ</strong>である。 <code>def</code> の宣言を受理する前に、Lean は<strong>型検査</strong>を行っている: <code>#check</code> と同じ、項の型を調べる仕組みを使って、<code>:=</code> の右に書いた項がコロンの右に指定した型を持つかを確かめる。指定した型も手がかりとして使われる。右辺の項の型が指定と合わなければ、宣言は受理されない。</p></div></article>
+<article class="slide" id="intro1a-a7d91e74c4df" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><p>この教材では言葉を次のように使い分ける。項 <code>M</code> と型 <code>A</code> が与えられて、 <code>M : A</code> が成り立つかを確かめることを<strong>型検査</strong>という。項だけが与えられて、その型を求めることを<strong>型の計算</strong>という（<code>#check</code> がしているのはこちら）。読者が「この項の型はこうなるはず」と考えるのは、型の計算を自分の手でなぞる<strong>推測</strong>である。<code>def 名前 : 型 := 項</code> は、Lean に <code>項 : 型</code> の型検査を依頼する形になっている。</p></div></article>
+<article class="slide" id="intro1a-expected-nat" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><p>読む側の目線で言えば、<code>def bad : Nat :=</code> まで読んだ時点で、「この先には <code>Nat</code> 型の項が来るはずだ」という<strong>期待</strong>が立つ。例えば</p>
+<pre class="quote"><code>def bad : Nat := true</code></pre>
+<p>と書くと、<code>true</code> はその期待に合わないので、Infoview には次のエラーが表示される:</p></div></article>
+<article class="slide" id="intro1a-2b0665d0ca1b" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><pre class="quote"><code>error: Type mismatch
+  true
+has type
+  Bool
+but is expected to have type
+  Nat</code></pre></div></article>
+<article class="slide" id="intro1a-f62b57142d90" data-kind="main" data-label="2. def — 新しい項を定義する" data-section="Intro1.definitions"><div class="step" data-step="0"><p><code>#check true</code> で調べたときと同じく、右辺の <code>true</code> の型は <code>Bool</code> と分かる。「その型が、要求されている型 <code>Nat</code> と一致しない」という報告である。</p></div></article>
+<article class="slide" id="intro1a-cc320ab89435" data-kind="main" data-label="コメントと docstring" data-section="Intro1.definitions"><div class="step" data-step="0"><h3>コメントと docstring</h3>
+<p>ソースには、Lean が読み飛ばす<strong>コメント</strong>を書き込める。</p>
+<pre class="quote"><code>def x : Nat := 2   -- `--` から行末まではコメント
+
+/- 複数行にわたる
+   コメントはこう書く -/</code></pre></div></article>
+<article class="slide" id="intro1a-8f3dfdb35488" data-kind="main" data-label="コメントと docstring" data-section="Intro1.definitions"><div class="step" data-step="0"><p>この教材の地の文が入っている <code>/-! … -/</code> も、コメントの一種である。</p>
+<p>もう1つ、宣言の直前に <code>/-- … -/</code> と書くと、<strong>docstring</strong>（その宣言の説明書き）になる:</p>
+<pre class="quote"><code>/-- 最初に定義した数。 -/
+def x : Nat := 2</code></pre></div></article>
+<article class="slide" id="intro1a-d91d9ed1364f" data-kind="main" data-label="コメントと docstring" data-section="Intro1.definitions"><div class="step" data-step="0"><p>docstring は直後の宣言に結び付けられ、エディタで名前にカーソルを乗せると、型と一緒にこの説明がポップアップで表示される。以後のコードにも、 <code>--</code> のコメントや docstring で説明を添えていく。</p></div></article>
+<article class="slide" id="intro1a-c215bbe7e078" data-kind="main" data-label="✏ 練習" data-section="Intro1.definitions"><div class="step" data-step="0"><h3>✏ 練習</h3></div></article>
+<article class="slide" id="intro1a-7d18a250ad3d" data-kind="main" data-label="✏ 練習" data-section="Intro1.definitions"><div class="step" data-step="0"><ol>
+<li><code>def z : Nat := 5</code> を自分で宣言し、<code>#check z</code>・<code>#eval z</code>・<code>#print z</code> の表示をそれぞれ予想してから確かめよ。</li>
+<li>本文の <code>def x : Nat := 2</code> が使える状態で、<code>def oops : Bool := x</code> は受理されるか。予想してから試し、エラーメッセージを本文の例と見比べよ。別のファイルで試す場合は、先に <code>def x : Nat := 2</code> を書くこと。</li>
+</ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> z : Nat := 5
+
+<span class="kw">#check</span> z</code></pre>
+<pre class="quote"><code>z : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> z</code></pre>
+<pre class="quote"><code>5</code></pre>
+<pre class="lean"><code><span class="kw">#print</span> z</code></pre>
+<pre class="quote"><code>def z : Nat :=
+5</code></pre>
+<p><code>#check</code> は型、<code>#eval</code> は計算した値、<code>#print</code> は宣言そのものを表示する。</p>
+</details></article>
+<article class="slide" id="intro1a-answers-b6b52c157d61" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.definitions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 2</summary>
+<p>本文の <code>def x : Nat := 2</code> が使えることが前提である。この解答ファイルでは <code>import Intro1</code> によって読み込まれている。別のファイルで単独で試すなら、先にその定義を書く。</p>
+<p>受理されない。<code>x</code> の型は <code>Nat</code> で、コロンの右の <code>Bool</code> と一致しないから型検査が失敗する:</p>
+<pre class="quote"><code>def oops : Bool := x</code></pre>
+<p>実行すると、次のエラーになる:</p>
+<pre class="quote"><code>error: Type mismatch
+  x
+has type
+  Nat
+but is expected to have type
+  Bool</code></pre>
+<p>本文の <code>def bad : Nat :=</code> の例と同じく、「<code>:=</code> の右の項の型を計算し、宣言された型と照合する」という手順の破れがそのまま報告されている。</p>
+</details></article>
+<article class="slide" id="intro1a-b2d3ef8d5147" data-kind="main" data-label="3. 関数" data-section="Intro1.functions"><div class="step" data-step="0"><h2 id="sec-Intro1.functions">3. 関数</h2>
+<p>集合 A・B に対して写像全体の集合 Map(A, B) が定まるのと同様に、型 <code>A</code>・<code>B</code> に対して「<code>A</code> から <code>B</code> への関数の型」<code>A → B</code> が定まる。つまり矢印 <code>→</code> は、<strong>2つの型から新しい型を1つ作る操作</strong>を表す記号であって、それ自体が具体的な関数を定めるのではない。ただし集合の場合と違い、<code>A → B</code> は写像概念から<strong>定義されたものではない</strong>——関数型は、これ以上さかのぼれない原始的な部品である。</p></div></article>
+<article class="slide" id="intro1a-18cd5d0402f0" data-kind="main" data-label="記号の入力のしかた" data-section="Intro1.functions"><div class="step" data-step="0"><h3>記号の入力のしかた</h3>
+<p>矢印 <code>→</code> を入力するには、VS Code の Lean 4 拡張で <code>\to</code> と打ち、続けて空白を打つか Tab を押す。このように、<strong>バックスラッシュ <code>\</code> で始まる略記</strong>で記号を入力できる。以後も記号の初出時に打ち方を添え、まとめの表を <code>Intro1b.lean</code> の付録に置く。<strong>エディタ上の記号にマウスを乗せると打ち方がポップアップに表示される</strong> ので、出会った記号はホバーで確かめてもよい。</p></div></article>
+<article class="slide" id="intro1a-f7fe84600151" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><h3>fun 記法 — 関数を項として書く</h3>
+<p>関数そのもの（<code>A → B</code> 型の項）を書くには、<code>fun</code> という記法を使える。 <code>fun x =&gt; e</code> は「<code>x</code> を受け取って <code>e</code> を返す関数」であり、 <strong><code>=&gt;</code> の右側の項 <code>e</code> を、関数の本体（body）と呼ぶ</strong>。この教材の表示設定では、出力中の <code>=&gt;</code> が <code>↦</code> と表示される。同じ関数の書き方である。</p></div></article>
+<article class="slide" id="intro1a-b9142bdf526e" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><p>この項の型は、次のように読む。引数に型を注釈して <code>fun (x : A) =&gt; e</code> と書けば、 <code>x</code> の型はその注釈から <code>A</code> と分かる。注釈を省略した場合も、関数全体に期待されている型から分かることがある。次に、<strong><code>x : A</code> を前提として本体 <code>e</code> の型を調べる</strong>。そのもとで <code>e : B</code> ならば、<code>fun x =&gt; e</code> は関数型 <code>A → B</code> の項になる。</p>
+<p>名前を付けて定義してみる:</p></div></article>
+<article class="slide" id="intro1a-double" data-kind="main" data-label="関数 double" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> double : Nat → Nat := <span class="kw">fun</span> n =&gt; n + n
+
+<span class="kw">#check</span> double</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>double : Nat → Nat</code></pre></div></article>
+<article class="slide" id="intro1a-02b3431dccff" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><p>表示された型は、注釈した <code>Nat → Nat</code> と一致している。 <code>fun n =&gt; n + n</code> の <code>n</code> には型を書いていないが、注釈 <code>Nat → Nat</code> の定義域から <code>n : Nat</code> と決まっている——注釈した型が、<strong>外側から</strong> <code>fun</code> の引数へ伝わっているのである（<code>fun (n : Nat) =&gt; n + n</code> と書いたのと同じ）。さらに、<strong><code>n : Nat</code> を前提として使うことで、本体 <code>n + n</code> も <code>Nat</code> 型だと分かる</strong>。この2段階から、関数全体の型が <code>Nat → Nat</code> になる。</p></div></article>
+<article class="slide" id="intro1a-b55502d7d15b" data-kind="preview" data-label="先取り（詳しくは Intro2）: + の仕組み" data-section="Intro1.functions"><div class="step" data-step="0"><h3>先取り（詳しくは Intro2）: <code>+</code> の仕組み</h3>
+<p>本体の <code>+</code> は <strong>notation（記法）</strong>の仕組みで用意された記号で、ここでは自然数の足し算を表す。この節の後半で、読み先の関数とその型を確認する。型に応じて演算を選ぶ仕組みは、<a target="_blank" rel="noopener" href="../intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で説明する。</p></div></article>
+<article class="slide" id="intro1a-function-checking" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><p>この <code>def</code> を受理する前の型検査では、<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.definitions">2節</a>と同じ照合が走っている。コロンの右に注釈した型 <code>Nat → Nat</code> から「引数は <code>n : Nat</code>」と仮に置き、そのもとで本体 <code>n + n</code> の型が行き先の <code>Nat</code> になるかを調べる。つまり <strong><code>fun</code> 記法で書かれた項の型が、注釈した関数型と一致するか</strong>が検査されている。</p>
+<p>一致しなければ、もちろん受理されない。<code>fun n =&gt; e</code> の<strong>本体 <code>e</code></strong>を、 <code>Nat</code> 型ではない <code>true</code> にしてみると:</p></div></article>
+<article class="slide" id="intro1a-c94e65e03062" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>def bad2 : Nat → Nat := fun n =&gt; true</code></pre>
+<p>これはエラーになり、Infoview には次のように表示される:</p></div></article>
+<article class="slide" id="intro1a-9b9b1f5a74b2" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>error: Type mismatch
+  true
+has type
+  Bool
+but is expected to have type
+  Nat</code></pre></div></article>
+<article class="slide" id="intro1a-747d8ad3f1d5" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><p>「本体 <code>true</code> の型 <code>Bool</code> が、注釈から要求される行き先の型 <code>Nat</code> と一致しない」という報告である。</p></div></article>
+<article class="slide" id="intro1a-b69723cc9fea" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><h3>適用の書き方</h3>
+<p>数学ではふつう <code>f(x)</code> と書く関数適用を、Lean では <strong><code>f x</code> と、関数と引数を半角スペースで区切って</strong>書く。項を書く場所で、関数を表す項のあとに引数の項をこのように並べると、関数適用として読まれる。例えば <code>double 21</code> である。数学で「f(x)」と書くとき、私たちは f が関数で x がその定義域の元であることを前提している。Lean の <code>f x</code> も同じ約束の記法で、 <strong><code>f</code> が関数型を持ち、<code>x</code> がその定義域の型を持つこと</strong>を要求する。</p></div></article>
+<article class="slide" id="intro1a-dc36cfec98aa" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><p>実際 <code>double 21</code> と書くと、Lean は2つのことを確かめる:</p>
+<ol>
+<li><code>double</code> の型は <code>Nat → Nat</code>（関数型である）——定義域は <code>Nat</code></li>
+<li><code>21</code> の型は <code>Nat</code>——定義域と一致する</li>
+</ol></div></article>
+<article class="slide" id="intro1a-17924fbdd244" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><p>この2点が通るから <code>double 21</code> は<strong>合法な書き方</strong>であり、項 <code>double 21</code> の型は矢印の右側の <code>Nat</code> になる。この確認こそが、型検査という機能の中身である。一方、<code>double true</code> は <code>true : Bool</code> が定義域 <code>Nat</code> と合わないので、型エラーになる。</p></div></article>
+<article class="slide" id="intro1a-double-21" data-kind="main" data-label="#check double 21" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> double 21</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>double 21 : Nat</code></pre>
+<p>型が分かったところで、値も予想してから計算してみよう。<code>21 + 21</code> なので <code>42</code> のはずだ:</p></div></article>
+<article class="slide" id="intro1a-9b60aef234b5" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> double 21</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>42</code></pre></div></article>
+<article class="slide" id="intro1a-0ec08a0e2665" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div></article>
+<article class="slide" id="intro1a-1bc8b9278190" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
+<li>関数 inc : ℕ → ℕ を inc(n) = n + 1 で定める。これを <code>fun</code> を用いて Lean で定義せよ。 <code>#check inc</code> の型と <code>#eval inc 4</code> の値を予想してから確かめよ。</li>
+<li>関数 f : ℕ → ℕ を f(n) = 2n + 3 で定める。これを <code>fun</code> を用いて Lean で定義せよ（掛け算は <code>*</code> と書く）。<code>#check f</code> の型と <code>#eval f 4</code> の値を予想してから確かめよ。</li>
+</ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> inc : Nat → Nat := <span class="kw">fun</span> n =&gt; n + 1
+
+<span class="kw">#check</span> inc</code></pre>
+<pre class="quote"><code>inc : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> inc 4</code></pre>
+<pre class="quote"><code>5</code></pre>
+</details></article>
+<article class="slide" id="intro1a-answers-d8b54ea3fa0d" data-kind="main" data-label="✏ 練習（書く）・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">def</span> f : Nat → Nat := <span class="kw">fun</span> n =&gt; 2 * n + 3
+
+<span class="kw">#check</span> f</code></pre>
+<pre class="quote"><code>f : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> f 4</code></pre>
+<pre class="quote"><code>11</code></pre>
+<p><code>2 * 4 + 3 = 11</code>。数学の <code>2n</code> も、Lean では掛け算を明示して <code>2 * n</code> と書く。</p>
+</details></article>
+<article class="slide" id="intro1a-d9867e15a619" data-kind="main" data-label="表示の読み方: binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><h3>表示の読み方: binder 形式</h3>
+<p>宣言には、引数を左に書く糖衣構文もある。次は上の <code>double</code> と同じものである:</p></div></article>
+<article class="slide" id="intro1a-binder-double" data-kind="main" data-label="binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> double&#x27; (n : Nat) : Nat := n + n
+
+<span class="kw">#check</span> double&#x27;</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>double&#x27; (n : Nat) : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-25df4c5a20ff" data-kind="main" data-label="表示の読み方: binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><p>表示が <code>double&#x27; (n : Nat) : Nat</code> となったことに注意。これは「引数の列をコロンの左に並べ、最後に結果の型を書く」<strong>binder 形式</strong>の表示で、<code>#check</code> が関数を表示するときの標準の形である。</p>
+<pre class="quote"><code>double  : Nat → Nat            （矢印形式）
+double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></article>
+<article class="slide" id="intro1a-90fd83b1c3e2" data-kind="main" data-label="表示の読み方: binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><p>この2つは<strong>同じ型の2通りの表示</strong>である。宣言の書き方も同様に2通りあって（<code>def double : Nat → Nat := fun n =&gt; …</code> と <code>def double&#x27; (n : Nat) : Nat := …</code>）、どちらで書いても同じものが定義される。以後どちらの表示も出てくるので、読み替えられるようにしておくこと。</p></div></article>
+<article class="slide" id="intro1a-c260770bd125" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol start="1"><li>関数 triple : ℕ → ℕ、triple(n) = n + n + n を binder 形式で定義せよ。 <code>#check triple</code> の表示を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-200e68a26381-a8e8d3fd7115" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval double (double 5)</code> の値を予想してから実行せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-200e68a26381-18a44b6e5ed2" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>先ほどの inc(n) = n + 1 を、今度は binder 形式で <code>inc&#x27;</code> という名前で定義せよ。 <code>#check inc&#x27;</code> の表示と <code>#eval inc&#x27; 4</code> の値を予想して確かめ、<code>inc</code> と比較せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-200e68a26381-47bfb67e3881" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>同様に f(n) = 2n + 3 を、binder 形式で <code>f&#x27;</code> という名前で定義せよ。 <code>#check f&#x27;</code> の表示と <code>#eval f&#x27; 4</code> の値を予想して確かめ、<code>f</code> と比較せよ。</li></ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> triple (n : Nat) : Nat := n + n + n
+
+<span class="kw">#check</span> triple</code></pre>
+<pre class="quote"><code>triple (n : Nat) : Nat</code></pre>
+<p>binder 形式のまま表示される。<code>triple : Nat → Nat</code> と読み替えられること。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">#eval</span> double (double 5)</code></pre>
+<pre class="quote"><code>20</code></pre>
+<p>内側から: <code>double 5 = 10</code>、<code>double 10 = 20</code>。</p>
+</details>
+<details class="sol"><summary>解答 3</summary>
+<pre class="lean"><code><span class="kw">def</span> inc&#x27; (n : Nat) : Nat := n + 1
+
+<span class="kw">#check</span> inc&#x27;</code></pre>
+<pre class="quote"><code>inc&#x27; (n : Nat) : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> inc&#x27; 4</code></pre>
+<pre class="quote"><code>5</code></pre>
+<p>表示は binder 形式になったが、型は <code>inc</code> と同じ <code>Nat → Nat</code>。値も同じである。</p>
+</details>
+<details class="sol"><summary>解答 4</summary>
+<pre class="lean"><code><span class="kw">def</span> f&#x27; (n : Nat) : Nat := 2 * n + 3
+
+<span class="kw">#check</span> f&#x27;</code></pre>
+<pre class="quote"><code>f&#x27; (n : Nat) : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> f&#x27; 4</code></pre>
+<pre class="quote"><code>11</code></pre>
+<p><code>f&#x27;</code> も <code>Nat → Nat</code> 型の関数であり、<code>f</code> と同じ計算をしている。</p>
+</details></article>
+<article class="slide" id="intro1a-9474ba3a626d" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><h3>多変数関数はカリー化で表す</h3>
+<p>まず、ふつうの数学の話から始めよう。集合 X・Y・Z に対して、写像全体の集合には次の自然な1対1対応がある:</p>
+<pre class="quote"><code>Map(X × Y, Z) ≅ Map(X, Map(Y, Z))</code></pre></div></article>
+<article class="slide" id="intro1a-afe7aac08925" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><p>左辺の写像 f に、x を固定して得られる写像「y ↦ f(x, y)」を対応させる。つまり x ↦ (y ↦ f(x, y)) という右辺の写像にする。この操作を<strong>カリー化（currying）</strong>、逆に右辺の写像 g から (x, y) ↦ g(x)(y) を作る操作を<strong>アンカリー化（uncurrying）</strong>と呼ぶ。</p>
+<p>Lean では、この対応を使い、多変数関数も基本的に1引数関数を重ねた形で表す。 2引数なら、「1つ目の引数を受け取ると、<strong>残り1引数の関数を返す</strong>」形になる。例えば、数学でいう写像 ℕ × ℕ → ℕ、(a, b) ↦ a + b をカリー化したものを、 <code>plus : Nat → Nat → Nat</code> として定義してみよう:</p></div></article>
+<article class="slide" id="intro1a-plus" data-kind="main" data-label="カリー化された plus" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> plus : Nat → Nat → Nat := <span class="kw">fun</span> a =&gt; <span class="kw">fun</span> b =&gt; a + b</code></pre>
+<p>読み方の約束を先に押さえる。<code>→</code> は<strong>右結合</strong>である:</p>
+<pre class="quote"><code>Nat → Nat → Nat　は　Nat → (Nat → Nat)　のこと</code></pre>
+<p>（「<code>Nat</code> を受け取って、関数 <code>Nat → Nat</code> を返す」）。逆に、適用は<strong>左結合</strong>:</p></div></article>
+<article class="slide" id="intro1a-34ff3edcb4c2" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>plus 3 4　は　(plus 3) 4　のこと</code></pre>
+<p>（まず <code>plus 3</code> で関数を作り、それに <code>4</code> を渡す）。この2つの約束がかみ合っているおかげで、カリー化された関数を括弧なしで自然に読み書きできる。</p>
+<p>括弧を左側に付けた <code>(Nat → Nat) → Nat</code> は<strong>まったく別の型</strong> （関数を受け取る関数）になることに注意。</p>
+<p><code>plus</code> 自体の型は注釈のとおり:</p></div></article>
+<article class="slide" id="intro1a-834039640289" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> plus</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>plus : Nat → Nat → Nat</code></pre>
+<p>では、<strong><code>plus 3</code> の型は何か</strong>。表示を見る前に推測しよう。 <code>plus</code> の型を右結合で読めば <code>Nat → (Nat → Nat)</code>——定義域は <code>Nat</code>、行き先は <code>Nat → Nat</code>。そこに <code>3 : Nat</code> を渡すのだから、適用の2点確認より <code>plus 3 : Nat → Nat</code> のはずである:</p></div></article>
+<article class="slide" id="intro1a-plus-partial" data-kind="main" data-label="#check plus 3" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> plus 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>plus 3 : Nat → Nat</code></pre>
+<p>推測どおり。「1つ渡すと、残り1引数の関数が返る」ことが型にそのまま現れている。もう1つ渡せば <code>Nat</code> になるはずで:</p></div></article>
+<article class="slide" id="intro1a-plus-applied" data-kind="main" data-label="#check plus 3 4" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> plus 3 4</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>plus 3 4 : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-a337bbeb1aa9" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> plus 3 4</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>7</code></pre></div></article>
+<article class="slide" id="intro1a-4cef0d2ab264" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div></article>
+<article class="slide" id="intro1a-0eeaf0fd9e24" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
+<li>関数 addThree : ℕ → ℕ、addThree(n) = 3 + n を、<code>plus 3 : Nat → Nat</code> を使って Lean で定義せよ。<code>#check addThree</code> と <code>#eval addThree 4</code> の表示を予想してから確かめよ。</li>
+<li>関数 g : ℕ × ℕ → ℕ、g(a, b) = 2a + 3b を、カリー化して Lean で定義せよ。型は <code>Nat → Nat → Nat</code> とし、<code>fun a =&gt; fun b =&gt; …</code> を使うこと。 <code>#check g</code>・<code>#check g 2</code> の型と <code>#eval g 2 4</code> の値を予想してから確かめよ。</li>
+</ol></div></article>
+<article class="slide" id="intro1a-answers-ea6411a89c5a" data-kind="main" data-label="✏ 練習（書く）・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> addThree : Nat → Nat := plus 3
+
+<span class="kw">#check</span> addThree</code></pre>
+<pre class="quote"><code>addThree : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> addThree 4</code></pre>
+<pre class="quote"><code>7</code></pre>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">def</span> g : Nat → Nat → Nat := <span class="kw">fun</span> a =&gt; <span class="kw">fun</span> b =&gt; 2 * a + 3 * b
+
+<span class="kw">#check</span> g</code></pre>
+<pre class="quote"><code>g : Nat → Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> g 2</code></pre>
+<pre class="quote"><code>g 2 : Nat → Nat</code></pre>
+<p>1つ目の引数を渡したので、残りの引数を受け取る関数が返る。</p>
+<pre class="lean"><code><span class="kw">#eval</span> g 2 4</code></pre>
+<pre class="quote"><code>16</code></pre>
+</details></article>
+<article class="slide" id="intro1a-4b07308403a4" data-kind="main" data-label="多変数関数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><h3>多変数関数の binder 形式</h3>
+<p>1変数のときと同じく、引数を宣言の左側に並べられる。例えば <code>plus</code> は次のようにも定義できる（同じ名前を重ねて定義せず、いずれか1つを使う）:</p>
+<pre class="quote"><code>def plus (a : Nat) (b : Nat) : Nat := a + b</code></pre>
+<p><strong>同じ型の引数は、まとめて</strong> <code>(a b : Nat)</code> と書いてもよい:</p></div></article>
+<article class="slide" id="intro1a-c45a2bbbf976" data-kind="main" data-label="多変数関数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>def plus (a b : Nat) : Nat := a + b</code></pre>
+<p><code>fun</code> の引数もまとめられる。次も、もとの定義と同じ関数を表す:</p>
+<pre class="quote"><code>def plus : Nat → Nat → Nat := fun a b =&gt; a + b</code></pre>
+<p>また <code>fun</code> の引数には、<code>fun n : Nat =&gt; e</code> のように括弧なしで型を注釈してもよい。</p></div></article>
+<article class="slide" id="intro1a-c0c18114e8eb" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3>
+<ol>
+<li>先ほどの g(a, b) = 2a + 3b を、binder 形式で2通りに書け。 <code>g&#x27;</code> は <code>(a : Nat) (b : Nat)</code> と分け、<code>g&#x27;&#x27;</code> は <code>(a b : Nat)</code> とまとめること。 <code>#check g&#x27;</code>・<code>#check g&#x27;&#x27;</code> の表示と、<code>#eval g&#x27; 2 4</code>・<code>#eval g&#x27;&#x27; 2 4</code> の値を予想してから確かめよ。</li>
+</ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> g&#x27; (a : Nat) (b : Nat) : Nat := 2 * a + 3 * b
+
+<span class="kw">def</span> g&#x27;&#x27; (a b : Nat) : Nat := 2 * a + 3 * b
+
+<span class="kw">#check</span> g&#x27;</code></pre>
+<pre class="quote"><code>g&#x27; (a b : Nat) : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> g&#x27;&#x27;</code></pre>
+<pre class="quote"><code>g&#x27;&#x27; (a b : Nat) : Nat</code></pre>
+<p>宣言で型を別々に書いても、<code>#check</code> の表示では同じ型の引数がまとめられる。いずれも <code>Nat → Nat → Nat</code> 型である。</p>
+<pre class="lean"><code><span class="kw">#eval</span> g&#x27; 2 4</code></pre>
+<pre class="quote"><code>16</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> g&#x27;&#x27; 2 4</code></pre>
+<pre class="quote"><code>16</code></pre>
+</details></article>
+<article class="slide" id="intro1a-ea643d1584fd" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><p>3引数以上も同じことの繰り返し。 <code>Nat → Nat → Nat → Nat</code> は <code>Nat → (Nat → (Nat → Nat))</code> と読む。</p>
+<pre class="lean"><code><span class="kw">def</span> addMul (a b c : Nat) : Nat := a + b * c
+
+<span class="kw">#check</span> addMul</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>addMul (a b c : Nat) : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-434d6d5e7934" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><p>これは <code>Nat</code> 型の引数を3つ受け取って <code>Nat</code> 型の項を返す、という binder 形式の表示である。矢印形式では <code>addMul : Nat → Nat → Nat → Nat</code> と読める。</p></div></article>
+<article class="slide" id="intro1a-696137289842" data-kind="main" data-label="関数を引数として受け取る" data-section="Intro1.functions"><div class="step" data-step="0"><h3>関数を引数として受け取る</h3>
+<p>数学でいう写像 Map(ℕ, ℕ) → ℕ、F ↦ F(21) を Lean で定義してみよう。引数 <code>F</code> の型は、数の型 <code>Nat</code> ではなく関数型 <code>Nat → Nat</code> になる:</p></div></article>
+<article class="slide" id="intro1a-apply-to-21" data-kind="main" data-label="関数を引数として受け取る" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> applyTo21 (F : Nat → Nat) : Nat := F 21
+
+<span class="kw">#check</span> applyTo21</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>applyTo21 (F : Nat → Nat) : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-16b68bb769ff" data-kind="main" data-label="関数を引数として受け取る" data-section="Intro1.functions"><div class="step" data-step="0"><p><code>applyTo21 double</code> という項を読んでみよう。定義域は <code>Nat → Nat</code> で、 <code>double : Nat → Nat</code> がちょうど一致する——<strong>関数そのものを引数として渡す</strong> 適用であり、型は <code>Nat</code>。値は <code>double 21</code>、つまり <code>42</code> のはずである:</p>
+<pre class="lean"><code><span class="kw">#eval</span> applyTo21 double</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>42</code></pre></div></article>
+<article class="slide" id="intro1a-c604bece89f6" data-kind="main" data-label="型の異なる引数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><h3>型の異なる引数の binder 形式</h3>
+<p>引数の型が異なる場合は、型ごとに括弧を分けて書く。例えば、F と n を受け取って F(n) を返す関数では、<code>F : Nat → Nat</code> と <code>n : Nat</code> を別々に注釈する:</p></div></article>
+<article class="slide" id="intro1a-apply-at" data-kind="main" data-label="型の異なる引数" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
+
+<span class="kw">#check</span> applyAt</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>applyAt (F : Nat → Nat) (n : Nat) : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-67f4a65087a5" data-kind="main" data-label="型の異なる引数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><p>矢印形式では <code>(Nat → Nat) → Nat → Nat</code> である。<code>F</code> を1つ渡すと、残りの引数 <code>n : Nat</code> を受け取る関数が返る。<code>(F n : Nat)</code> とまとめてしまうと両方が <code>Nat</code> 型という指定になるので、ここでは使えない。</p></div></article>
+<article class="slide" id="intro1a-3c501767eddd" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3>
+<ol start="1"><li>写像 twice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(n))) で定める。つまり、F を同じ入力に2回使うのではなく、1回目の結果にもう一度 F を適用する。これを Lean で <code>def twice (F : Nat → Nat) : Nat → Nat := …</code> と定義せよ。 <code>#check twice</code>・<code>#check twice double</code> の表示と <code>#eval twice double 3</code> の値を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-5217dd1e2891-29eb971b616c" data-kind="main" data-label="✏ 練習（書く）（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li>写像 thrice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(F(n)))) で定める。これを Lean で定義し、<code>#check thrice</code>・<code>#check thrice double</code> の表示と <code>#eval thrice double 3</code> の値を予想してから確かめよ。</li></ol></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">def</span> twice (F : Nat → Nat) : Nat → Nat := <span class="kw">fun</span> n =&gt; F (F n)
+
+<span class="kw">#check</span> twice</code></pre>
+<pre class="quote"><code>twice (F : Nat → Nat) : Nat → Nat</code></pre>
+<p>矢印形式では <code>(Nat → Nat) → (Nat → Nat)</code>。数学でいう Map(ℕ, ℕ) → Map(ℕ, ℕ) に対応している。</p>
+<pre class="lean"><code><span class="kw">#check</span> twice double</code></pre>
+<pre class="quote"><code>twice double : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> twice double 3</code></pre>
+<pre class="quote"><code>12</code></pre>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">def</span> thrice (F : Nat → Nat) : Nat → Nat := <span class="kw">fun</span> n =&gt; F (F (F n))
+
+<span class="kw">#check</span> thrice</code></pre>
+<pre class="quote"><code>thrice (F : Nat → Nat) : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> thrice double</code></pre>
+<pre class="quote"><code>thrice double : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> thrice double 3</code></pre>
+<pre class="quote"><code>24</code></pre>
+<p><code>double</code> を3回適用するので、<code>3</code> → <code>6</code> → <code>12</code> → <code>24</code>。</p>
+</details></article>
+<article class="slide" id="intro1a-4e8a433e9a72" data-kind="main" data-label="定義域や行き先が型でもよい" data-section="Intro1.functions"><div class="step" data-step="0"><h3>定義域や行き先が型でもよい</h3>
+<p><a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.terms-types">1節</a>で「型も項である」と述べた。だから、<strong>定義域や行き先が <code>Type</code> であるような関数</strong>も、まったく同じ書き方で作れる。例えば <code>Nat → Type</code> は、自然数を受け取って型を返す関数の型である。返すものが数ではなく型でも、関数であることに変わりはない。まずは、「2つの型 <code>A</code>・<code>B</code> を受け取り、関数型 <code>A → B</code> を返す」関数:</p></div></article>
+<article class="slide" id="intro1a-map" data-kind="main" data-label="型を受け取り、型を返す" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> Map : <span class="sort">Type</span> → <span class="sort">Type</span> → <span class="sort">Type</span> := <span class="kw">fun</span> A B =&gt; A → B
+
+<span class="kw">#check</span> Map</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Map : Type → Type → Type</code></pre></div></article>
+<article class="slide" id="intro1a-a179850e7318" data-kind="main" data-label="定義域や行き先が型でもよい" data-section="Intro1.functions"><div class="step" data-step="0"><p>節の冒頭で「<code>A → B</code> は写像全体の集合 Map(A, B) と同じ役割を持つ」と述べたが、その Map を、いま Lean の項として定義したことになる。<code>Map Nat Nat</code> は計算すると <code>Nat → Nat</code> になるから、<code>double</code> は <code>Map Nat Nat</code> の項でもある（直後の練習で確かめよう）。「型を受け取る関数」「型を返す関数」は、 <a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.dependent-functions">4節</a>（依存関数型）でさらに主役になる。</p></div></article>
+<article class="slide" id="intro1a-8b8cb573ef21" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3></div></article>
+<article class="slide" id="intro1a-4a17a5159191" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
+<li><code>#check Map Nat Bool</code> の表示を予想してから確かめよ。また、数学でいう関数 double : ℕ → ℕ、double(n) = n + n を、<code>Map Nat Nat</code> 型の項としても使えるか考えよ。 <code>def double2 : Map Nat Nat := double</code> が受理されるか予想してから試せ。受理されたら、<code>#check double2</code> の表示も予想してから確かめよ。</li>
+<li><code>#check Map Nat</code> の表示を予想してから確かめよ（<code>Map</code> に1つだけ渡すと、何が返るか。<code>plus 3</code> の型を読んだのと同じ手順で考える）。</li>
+</ol></div></article>
+<article class="slide" id="intro1a-answers-b58b87306d39" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#check</span> Map Nat Bool</code></pre>
+<pre class="quote"><code>Map Nat Bool : Type</code></pre>
+<p><code>Map Nat Bool</code> は計算すると <code>Nat → Bool</code> になるが、<code>#check</code> が表示するのはまず「型である」ということ（<code>: Type</code>）。</p>
+<pre class="lean"><code><span class="kw">def</span> double2 : Map Nat Nat := double
+
+<span class="kw">#check</span> double2</code></pre>
+<pre class="quote"><code>double2 : Map Nat Nat</code></pre>
+<p>受理される。<code>Map Nat Nat</code> を計算すると <code>Nat → Nat</code> で、<code>double</code> の型と一致する。表示には定義で指定した <code>Map Nat Nat</code> が残るが、同じ型として扱われている。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">#check</span> Map Nat</code></pre>
+<pre class="quote"><code>Map Nat : Type → Type</code></pre>
+<p>2引数のうち1つだけ渡したので、「残り1つの型を受け取って型を返す」部分適用。 <code>plus 3 : Nat → Nat</code> と同じ形である。</p>
+</details></article>
+<article class="slide" id="intro1a-11dd6ec4cdfc" data-kind="main" data-label="+ をあらためて" data-section="Intro1.functions"><div class="step" data-step="0"><h3><code>+</code> をあらためて</h3>
+<p>カリー化を知ったいま、自然数の足し算を表す関数の型は <code>Nat → Nat → Nat</code> と読める。 <code>3 + 4</code> も、2引数の関数適用を中置の記法で書いたものと考えればよい。ここまで使ってきた自然数の掛け算も同様に、<code>Nat → Nat → Nat</code> 型の関数である。</p></div></article>
+<article class="slide" id="intro1a-e3aca9bfce5c" data-kind="preview" data-label="先取り（詳しくは Intro2）: Nat.add と HAdd.hAdd" data-section="Intro1.functions"><div class="step" data-step="0"><h3>先取り（詳しくは Intro2）: <code>Nat.add</code> と <code>HAdd.hAdd</code></h3>
+<p>自然数の足し算そのものは <code>Nat.add</code> という名前で定義されている。自然数を2つ受け取って自然数を返すので、型は <code>Nat → Nat → Nat</code> のはずである:</p>
+<pre class="lean"><code><span class="kw">#check</span> Nat.add</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Nat.add : Nat → Nat → Nat</code></pre></div></article>
+<article class="slide" id="intro1a-7c290e671e30" data-kind="preview" data-label="先取り（詳しくは Intro2）: Nat.add と HAdd.hAdd" data-section="Intro1.functions"><div class="step" data-step="0"><p>一方、記法 <code>a + b</code> の読み先は <code>HAdd.hAdd a b</code> である。 <code>HAdd</code> は型に応じた足し算を指定するための <strong>class（クラス）</strong>、 <code>HAdd.hAdd</code> はそこで指定された足し算を使う関数である。これを自然数2つから自然数を返す関数として使ってみよう。次の括弧内の <code>: Nat → Nat → Nat</code> は、その型を指定する注釈である:</p>
+<pre class="lean"><code><span class="kw">#check</span> (HAdd.hAdd : Nat → Nat → Nat)</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>HAdd.hAdd : Nat → Nat → Nat</code></pre></div></article>
+<article class="slide" id="intro1a-d44fb3271cbd" data-kind="preview" data-label="先取り（詳しくは Intro2）: Nat.add と HAdd.hAdd" data-section="Intro1.functions"><div class="step" data-step="0"><p>Lean は指定された型に合う <strong>instance（インスタンス）</strong>を自動的に補う。標準環境では、同じ型どうしの足し算を指定する <code>Add</code> というクラスを経由して、 <code>Nat.add</code> が使われる。このつながりは標準ライブラリの定義によるものであり、上の2つの型が同じだから、という理由ではない。同じ型の関数でも中身は異なり得る。</p></div></article>
+<article class="slide" id="intro1a-24660a23f7e6" data-kind="preview" data-label="先取り（詳しくは Intro2）: Nat.add と HAdd.hAdd" data-section="Intro1.functions"><div class="step" data-step="0"><p>ここでは「<code>+</code> は記法で、型に応じて演算が選ばれ、自然数では <code>Nat.add</code> が使われる」と押さえておけばよい。ここでは <code>HAdd.hAdd</code> の一般的な型には立ち入らない。クラスやインスタンスの定義・選択の仕組みは、<a target="_blank" rel="noopener" href="../intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で扱う。数字も型に応じて解釈される記法であり、その仕組みは <code>OfNat</code> というクラスが担う（<a target="_blank" rel="noopener" href="../intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>の補足で見る）。今は、ほかの型の指定がなければ <code>3</code> などを <code>Nat</code> の項として読めばよい。</p></div></article>
+<article class="slide" id="intro1a-97e97aaaf003" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><h3>型はどう決まるか——下から計算し、上から期待を伝える</h3>
+<p><a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.definitions">2節</a>で「型検査が走る」と述べ、この節の冒頭で <code>double 21</code> の2点確認を見た。一般の形をまとめておく。適用についての規則はただ1つである:</p>
+<pre class="quote"><code>f : A → B　かつ　a : A　ならば　f a : B</code></pre></div></article>
+<article class="slide" id="intro1a-6c16944d00c8" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>この規則は、型の計算式であると同時に、<strong>適用が合法かどうかの検査</strong>でもある。 <code>f a</code> と書いてよいのは、<code>f</code> の型が矢印型 <code>A → B</code> であり、<strong>かつ</strong>引数 <code>a</code> の型がその定義域 <code>A</code> と一致するときだけ。この2点を照合して初めて、適用が合法だと分かり、結果の型 <code>B</code> が読み取れる。</p>
+<p>ここで <code>A</code>・<code>B</code> は、<code>Nat</code> のような型に限らない。<code>A = C → D</code> のように、関数型を当てはめても同じ規則が使える。例えば <code>applyTo21 double</code> なら、 <code>A = Nat → Nat</code>、<code>B = Nat</code> と読めばよい。引数 <code>double</code> の型が <code>A</code> と一致するので、結果は <code>B</code>、つまり <code>Nat</code> 型になる。<code>B</code> が関数型でも同じで、<code>plus 3</code> がその例である。</p></div></article>
+<article class="slide" id="intro1a-2bf1fa512ec8" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>例えば <code>double (plus 3 4)</code> なら:</p>
+<ol start="1"><li><code>3 : Nat</code>、<code>4 : Nat</code></li></ol></div></article>
+<article class="slide" id="intro1a-17aaf96eaae8-6d2bcf891ce7" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>plus : Nat → Nat → Nat</code>（宣言でそう決めた）</li></ol></div></article>
+<article class="slide" id="intro1a-17aaf96eaae8-505c10494381" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li><code>plus 3</code> — 照合: <code>plus</code> の型は関数型 <code>Nat → (Nat → Nat)</code> で、定義域は <code>Nat</code>。引数は <code>3 : Nat</code> だから一致する。よってこの適用は<strong>合法</strong>で、型は矢印の右側 <code>Nat → Nat</code></li></ol></div></article>
+<article class="slide" id="intro1a-17aaf96eaae8-66d01d682227" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li><code>(plus 3) 4</code> — 照合: <code>plus 3 : Nat → Nat</code> の定義域 <code>Nat</code> に <code>4 : Nat</code> が一致。合法で、型は <code>Nat</code></li></ol></div></article>
+<article class="slide" id="intro1a-17aaf96eaae8-a5b454907c30" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="5"><li><code>double (plus 3 4)</code> — 照合: <code>double : Nat → Nat</code> の定義域 <code>Nat</code> に、部分項の型 <code>plus 3 4 : Nat</code> が一致。合法で、型は <code>Nat</code></li></ol>
+<p>どの段階でも、見ているのは<strong>直下の部分項の型と規則1つだけ</strong>であり、段階ごとに「一致するか」の照合が1回ずつ入っている。すべての照合が通ったときにだけ、項の全体に型が付く——つまり「型が付く」ことと「その項が意味を成す書き方である」ことは同じである。この局所的な検査を項全体に再帰的に行うのが型検査で、項がどれだけ大きくなっても手順は変わらない。</p></div></article>
+<article class="slide" id="intro1a-2f152257434a" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>ここまでは、部分項の型から全体の型を求める<strong>下から</strong>の計算だった。 Lean は逆向きの情報も使う。項を置く場所で型が期待されていれば、その型を部分項へ<strong>上から</strong>伝えて、読み方や省略された部分を決める。すでに2つ見ている:</p></div></article>
+<article class="slide" id="intro1a-81432f5d4f27" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><ul>
+<li><code>def double : Nat → Nat := fun n =&gt; n + n</code> では、注釈 <code>Nat → Nat</code> が <code>fun</code> の引数へ伝わって <code>n : Nat</code> が決まった。</li>
+<li><a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.terms-types">1節</a>で触れた数字も同じ仕組みで読まれる。何も期待されていなければ <code>2</code> は <code>Nat</code> の項として読まれるが、型注釈で <code>Int</code>（整数の型）を期待すると、<code>Int</code> の項として読まれる:</li>
+</ul></div></article>
+<article class="slide" id="intro1a-literal-nat" data-kind="main" data-label="数値の型" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> 2</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>2 : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-literal-int" data-kind="main" data-label="型の期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> (2 : Int)</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>2 : Int</code></pre>
+<p>期待される型は部分項の奥まで伝わる。<code>(2 + 3 : Int)</code> なら、<code>2</code> と <code>3</code> も <code>Int</code> の項として読まれ、全体の型は <code>Int</code> になる:</p></div></article>
+<article class="slide" id="intro1a-4aa102234973" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> (2 + 3 : Int)</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>2 + 3 : Int</code></pre>
+<p>このあとの節でも、期待される型から構成子の名前を補う <code>.red</code> （<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.inductive-types"><code>Intro1b.lean</code> 1節</a>）や <code>⟨1, 2⟩</code>（<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.structures"><code>Intro1b.lean</code> 2節</a>）、暗黙引数の補完（<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.dependent-functions">4節</a>）が出てくる。どれもこの「上から伝える」仕組みの例である。</p></div></article>
+<article class="slide" id="intro1a-two-directions" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>Lean は、この2つの向きを組み合わせて、書かれた文字列を1つの項として読み、型検査を行う。<code>M : A</code> の型検査は、期待される型 <code>A</code> を上から伝えつつ部分項の型を下から計算し、両者が出会うところで一致を確かめる作業である。</p>
+<p>そして、どちらの向きの手順にもひらめきも解釈も要らない——<strong>完全に機械的</strong>である。だからコンピュータに実行させることができ、実際にそれをやっているのが Lean の型検査器である。読者がこの教材で行う「型の推測」は、機械のこの手順を暗算でなぞることに他ならない。</p></div></article>
+<article class="slide" id="intro1a-db4b96bca54b" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>この後の節で新しい項の作り方（<code>match</code>・依存関数など）を導入するたびに、型の付け方の規則も1つずつ増える。それでも事情は同じで、以後の <code>#check</code> の表示は「宣言された型」と「そこまでに出た小さな規則集」だけで、同じように自分の手で検算できる。</p>
+<p>なお読むときの目印として、<strong>項のあとにスペースを挟んで項が続いたら、それは関数適用</strong>である。<code>double (plus 3 4)</code> を見た瞬間に「<code>double</code> を <code>plus 3 4</code> に適用している」と分解できる。</p></div></article>
+<article class="slide" id="intro1a-16867b57590b" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> double (plus 3 4)</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>double (plus 3 4) : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-application-error" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>照合が失敗すれば、破れた場所がそのままエラーになる。 <code>double</code> に（数ではなく）関数 <code>plus</code> を渡してみると:</p></div></article>
+<article class="slide" id="intro1a-3f8213d90715-6e2b5ae64028" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>#check double plus
+
+error: Application type mismatch: The argument
+  plus
+has type
+  Nat → Nat → Nat
+but is expected to have type
+  Nat
+</code></pre></div></article>
+<article class="slide" id="intro1a-3f8213d90715-f06c5e8039ee" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="quote"><code>in the application
+  double plus</code></pre></div></article>
+<article class="slide" id="intro1a-b26fad22a15e" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>「引数の型 <code>Nat → Nat → Nat</code> が、要求される型 <code>Nat</code> と合わない」と、規則が破れた部分項を名指しで教えてくれる。エラーの下にはさらに <code>double sorry : Nat</code> という表示も出る。ここで初めて出てきた <strong><code>sorry</code></strong> は、「この部分は未完成」という印の項で、どんな型の項の代わりにも置ける。 <code>#check</code> は、エラーになった引数を <code>sorry</code> で置き換えて、残りの部分の型の計算を続けてくれたのである。自分で書くこともできる。例えば</p>
+<pre class="quote"><code>def later : Nat := sorry</code></pre></div></article>
+<article class="slide" id="intro1a-9b515cdf647e" data-kind="main" data-label="型はどう決まるか——下から計算し、上から期待を伝える" data-section="Intro1.functions"><div class="step" data-step="0"><p>は受理されるが、<code>warning: declaration uses `sorry`</code> という警告が出る。未完成の部分を残したまま先へ進めるが、完成していないことを Lean は見逃さない。</p>
+<p>では <code>double plus 3 4</code> と括弧なしで書いたらどうなるか。適用は左結合なのでこれは <code>((double plus) 3) 4</code> と読まれ、最初の <code>double plus</code> の時点で上と同じエラーになる。<code>double (plus 3 4)</code> の括弧は省略できない。</p></div></article>
+<article class="slide" id="intro1a-dc3f75875697" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol start="1"><li><code>#check</code> する<strong>前に</strong>型を計算せよ: <code>(3 + 4) * 2</code>、<code>plus (double 3)</code>、 <code>applyTo21 (plus 3)</code>、<code>fun n : Nat =&gt; plus n n</code>。それから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-7366ba2908d3-7f19ed87d439" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval applyTo21 (plus 100)</code> の値を予想してから実行せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-7366ba2908d3-064741f4950e" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>次の2つの写像を Lean で定義し、<code>#check</code> の表示を予想してから確かめよ:<ul>
+<li>evalAt : Map(ℕ, ℕ) × ℕ → ℕ、evalAt(F, n) = F(n)。カリー化して定義すること。 <code>#eval evalAt double 5</code> の値も予想してから実行せよ。</li>
+<li>shift : Map(ℕ, ℕ) → Map(ℕ, ℕ)、F ↦ (n ↦ F(n + 1))。関数を受け取って<strong>関数を返す</strong>関数である。 <code>#eval shift double 3</code> の値も予想してから実行せよ。</li>
+</ul></li></ol></div></article>
+<article class="slide" id="intro1a-7366ba2908d3-cfcc6ac37a6a" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>「型から項を書く」練習: Map(ℕ, ℕ) → ℕ という写像を、<strong>中身の違うもので2つ</strong>考えよ（例えば F ↦ F(21) と F ↦ 0）。それらを Lean で <code>useF1</code>・<code>useF2</code> と名付けて定義し、型を予想してから <code>#check</code> で確かめよ。どちらも <code>(Nat → Nat) → Nat</code> 型になるはずである。同じ型に項は何通りもある——型は仕様であって、中身までは決めない。</li></ol></div></article>
+<article class="slide" id="intro1a-7366ba2908d3-fd2334d81737" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="5"><li>（発展）写像 G : B → C と F : A → B に合成 G ∘ F : A → C を対応させる写像を考える。型 A・B・C も引数に取り、これを Lean で <code>compose (A B C : Type) (G : B → C) (F : A → B) : A → C</code> と定義せよ。 <code>#check compose</code> の表示と、 <code>#eval compose Nat Nat Nat double (fun n =&gt; n + 1) 3</code> の値を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-7366ba2908d3-cc5f2da8e5d8" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="6"><li>（発展）練習 3 を一般化し、任意の A・B に対する写像 Map(A, B) × A → B、(F, a) ↦ F(a) と、写像 g : A → A に対する変換 Map(A, A) → Map(A, A)、F ↦ (a ↦ F(g(a))) を考える。型や g も引数として受け取るように、Lean で <code>evalAt&#x27; (A B : Type) (F : A → B) (a : A) : B</code> と <code>shift&#x27; (A : Type) (g : A → A) (F : A → A) : A → A</code> を定義せよ。両者の <code>#check</code> の表示と、 <code>#eval evalAt&#x27; Nat Nat double 5</code> と <code>#eval shift&#x27; Nat (fun x =&gt; x + 1) double 3</code> の値を予想してから確かめ、元の版と比較せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-answers-671532ed0f6d" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 1</summary>
+<p>型の計算: <code>(3 + 4) * 2</code> は <code>Nat</code>。<code>plus (double 3)</code> は <code>plus : Nat → Nat → Nat</code> に第1引数だけ渡したので <code>Nat → Nat</code>（部分適用）。<code>applyTo21 (plus 3)</code> は <code>applyTo21 : (Nat → Nat) → Nat</code> に関数を渡し切ったので <code>Nat</code>。 <code>fun n : Nat =&gt; plus n n</code> は <code>Nat</code> を受け取って <code>plus n n : Nat</code> を返すので <code>Nat → Nat</code>。</p>
+<pre class="lean"><code><span class="kw">#check</span> (3 + 4) * 2</code></pre>
+<pre class="quote"><code>(3 + 4) * 2 : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> plus (double 3)</code></pre>
+<pre class="quote"><code>plus (double 3) : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> applyTo21 (plus 3)</code></pre>
+<pre class="quote"><code>applyTo21 (plus 3) : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> <span class="kw">fun</span> n : Nat =&gt; plus n n</code></pre>
+<pre class="quote"><code>fun n ↦ plus n n : Nat → Nat</code></pre>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">#eval</span> applyTo21 (plus 100)</code></pre>
+<pre class="quote"><code>121</code></pre>
+<p><code>applyTo21 F</code> は <code>F 21</code> だから、<code>plus 100 21 = 121</code>。</p>
+</details>
+<details class="sol"><summary>解答 3</summary>
+<pre class="lean"><code><span class="kw">def</span> evalAt (F : Nat → Nat) (n : Nat) : Nat := F n
+
+<span class="kw">#check</span> evalAt</code></pre>
+<pre class="quote"><code>evalAt (F : Nat → Nat) (n : Nat) : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> evalAt double 5</code></pre>
+<pre class="quote"><code>10</code></pre>
+<pre class="lean"><code><span class="kw">def</span> shift (F : Nat → Nat) : Nat → Nat := <span class="kw">fun</span> n =&gt; F (n + 1)
+
+<span class="kw">#check</span> shift</code></pre>
+<pre class="quote"><code>shift (F : Nat → Nat) : Nat → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> shift double 3</code></pre>
+<pre class="quote"><code>8</code></pre>
+<p><code>shift double</code> は「<code>n</code> に対して <code>double (n + 1)</code> を返す関数」。 <code>n = 3</code> なら <code>double 4 = 8</code>。</p>
+</details>
+<details class="sol"><summary>解答 4</summary>
+<pre class="lean"><code><span class="kw">def</span> useF1 : (Nat → Nat) → Nat := <span class="kw">fun</span> F =&gt; F 21
+
+<span class="kw">def</span> useF2 : (Nat → Nat) → Nat := <span class="kw">fun</span> _ =&gt; 0
+
+<span class="kw">#check</span> useF1</code></pre>
+<pre class="quote"><code>useF1 : (Nat → Nat) → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> useF2</code></pre>
+<pre class="quote"><code>useF2 : (Nat → Nat) → Nat</code></pre>
+<p>どちらも同じ型を持つ。型は「関数を受け取って <code>Nat</code> を返す」という仕様だけを決めており、返し方（中身）は何通りもある。</p>
+</details>
+<details class="sol"><summary>解答 5</summary>
+<pre class="lean"><code><span class="kw">def</span> compose (A B C : <span class="sort">Type</span>) (G : B → C) (F : A → B) : A → C := <span class="kw">fun</span> a =&gt; G (F a)
+
+<span class="kw">#check</span> compose</code></pre>
+<pre class="quote"><code>compose (A B C : Type) (G : B → C) (F : A → B) : A → C</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> compose Nat Nat Nat double (<span class="kw">fun</span> n =&gt; n + 1) 3</code></pre>
+<pre class="quote"><code>8</code></pre>
+<p>内側から: <code>F = fun n =&gt; n + 1</code> で <code>3</code> が <code>4</code> に、<code>G = double</code> で <code>8</code> になる。</p>
+</details>
+<details class="sol"><summary>解答 6</summary>
+<pre class="lean"><code><span class="kw">def</span> evalAt&#x27; (A B : <span class="sort">Type</span>) (F : A → B) (a : A) : B := F a
+
+<span class="kw">def</span> shift&#x27; (A : <span class="sort">Type</span>) (g : A → A) (F : A → A) : A → A := <span class="kw">fun</span> a =&gt; F (g a)
+
+<span class="kw">#check</span> evalAt&#x27;</code></pre>
+<pre class="quote"><code>evalAt&#x27; (A B : Type) (F : A → B) (a : A) : B</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> shift&#x27;</code></pre>
+<pre class="quote"><code>shift&#x27; (A : Type) (g F : A → A) : A → A</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> evalAt&#x27; Nat Nat double 5</code></pre>
+<pre class="quote"><code>10</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> shift&#x27; Nat (<span class="kw">fun</span> x =&gt; x + 1) double 3</code></pre>
+<pre class="quote"><code>8</code></pre>
+<p>どちらも元の版と同じ値。型を引数にすると、同じ中身が任意の型で使い回せる。</p>
+</details></article>
+<article class="slide" id="intro1a-9b236f0d3132" data-kind="main" data-label="4. 依存関数型 — 入力によって結果の型が変わる" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h2 id="sec-Intro1.dependent-functions">4. 依存関数型 — 入力によって結果の型が変わる</h2>
+<p><code>Map</code> は、型を受け取って型を返す関数だった。今度は、渡された型に応じてその型の項を受け取り、同じ型の項を返す関数を作ろう。集合 A ごとに恒等写像 id_A を用意する、という数学でおなじみの操作である。</p>
+<p>次の <code>idAt</code> は、どんな型の上でも使える恒等写像である。第1引数として <strong>型そのもの</strong>を受け取り、第2引数と結果の型が、その第1引数で決まる:</p></div></article>
+<article class="slide" id="intro1a-id-at" data-kind="main" data-label="依存関数 idAt" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> idAt (α : <span class="sort">Type</span>) (a : α) : α := a
+
+<span class="kw">#check</span> idAt</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idAt (α : Type) (a : α) : α</code></pre>
+<p>では、<strong><code>idAt Nat</code> の型は何か</strong>。第1引数として <code>α := Nat</code> を渡したのだから、残りは「<code>Nat</code> を受け取って <code>Nat</code> を返す」——<code>Nat → Nat</code> のはずである:</p></div></article>
+<article class="slide" id="intro1a-id-at-nat" data-kind="main" data-label="#check idAt Nat" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> idAt Nat</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idAt Nat : Nat → Nat</code></pre>
+<p>推測どおり。同じ理屈で、<code>idAt Bool</code> なら <code>Bool → Bool</code> になるはず:</p></div></article>
+<article class="slide" id="intro1a-id-at-bool" data-kind="main" data-label="#check idAt Bool" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> idAt Bool</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idAt Bool : Bool → Bool</code></pre></div></article>
+<article class="slide" id="intro1a-29abde9c1f6b" data-kind="main" data-label="4. 依存関数型 — 入力によって結果の型が変わる" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> idAt Nat 42</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>42</code></pre>
+<p>（この行にも型検査が走っている: <code>idAt Nat : Nat → Nat</code> に <code>42 : Nat</code> を渡すのは合法、というおなじみの2点確認である。）</p></div></article>
+<article class="slide" id="intro1a-dependent-result" data-kind="main" data-label="4. 依存関数型 — 入力によって結果の型が変わる" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p><code>idAt Nat</code> と <code>idAt Bool</code> は<strong>型が違う</strong>。つまり <code>idAt</code> に1つ引数を渡すと、「残りの型」がその引数の値で決まる。こうなるともう <code>A → B</code> の形では書けない。この形の関数の型を<strong>依存関数型</strong>といい、</p>
+<pre class="quote"><code>idAt : (α : Type) → α → α</code></pre></div></article>
+<article class="slide" id="intro1a-3a4a7702be4d" data-kind="main" data-label="4. 依存関数型 — 入力によって結果の型が変わる" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>と書く（束縛した名前 <code>α</code> が矢印の右側に現れるのが目印）。これが Lean の関数型の一般形で、<code>A → B</code> は「行き先が入力に依存しない特別な場合」の略記である。</p></div></article>
+<article class="slide" id="intro1a-e0bd1ead2251" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>数を添字にする型の族</h3>
+<p>依存する入力は、型そのものでなくてもよい。自然数 n ごとに「自然数の n 個組の型」を考えよう。数学では ℕⁿ を、n 点集合から ℕ への写像全体として表せる。</p>
+<p>標準環境の <code>Fin n</code> は、0 以上 n 未満の番号の型である。ここでは <code>Nat</code> や <code>Bool</code> と同様、意味と型を知って使う。値とその範囲の証明を組にした中身は、<a target="_blank" rel="noopener" href="../ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> の6節</a>で見る。</p></div></article>
+<article class="slide" id="intro1a-a9dd2a4867de" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> Fin</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Fin (n : Nat) : Type</code></pre>
+<p>binder 形式を読み替えると <code>Fin : Nat → Type</code>。数を渡すと型が決まる。</p></div></article>
+<article class="slide" id="intro1a-tuple" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> Tuple : Nat → <span class="sort">Type</span> := <span class="kw">fun</span> n =&gt; Fin n → Nat
+
+<span class="kw">#check</span> Tuple</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Tuple : Nat → Type</code></pre></div></article>
+<article class="slide" id="intro1a-4fdc323ab662" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> Tuple 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Tuple 3 : Type</code></pre>
+<p><code>Tuple 3</code> は、定義を展開すると <code>Fin 3 → Nat</code> である。三つの番号にそれぞれ自然数を割り当てる関数を、自然数の3個組と読む。 <code>Tuple</code> 自身は、自然数を受け取って型を返す<strong>普通の関数</strong>である。</p></div></article>
+<article class="slide" id="intro1a-4adb8aaf5261" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>では、各 n について、すべての成分が7である n 個組を作ってみよう。</p></div></article>
+<article class="slide" id="intro1a-const-tuple" data-kind="main" data-label="型の族の各点で項を返す" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> constTuple : (n : Nat) → Tuple n :=
+  <span class="kw">fun</span> n =&gt; <span class="kw">fun</span> (_i : Fin n) =&gt; 7
+
+<span class="kw">#check</span> constTuple</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>constTuple (n : Nat) : Tuple n</code></pre></div></article>
+<article class="slide" id="intro1a-d9ad8dc1e67f" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>外側の <code>fun</code> は個数 <code>n : Nat</code> を受け取る。すると作るべき型は <code>Tuple n</code>、つまり <code>Fin n → Nat</code> に決まる。内側の <code>fun</code> は番号 <code>_i : Fin n</code> を受け取り、7を返す。番号そのものを計算に使わなくても、受け取れる番号の<strong>型</strong>は n によって変わる。 <code>_i</code> のように名前を <code>_</code> で始めるのは、値を使わない引数であることを示す書き方である。</p></div></article>
+<article class="slide" id="intro1a-tuple-three" data-kind="main" data-label="#check constTuple 3" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> constTuple 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>constTuple 3 : Tuple 3</code></pre></div></article>
+<article class="slide" id="intro1a-tuple-four" data-kind="main" data-label="#check constTuple 4" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> constTuple 4</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>constTuple 4 : Tuple 4</code></pre>
+<p><code>Tuple</code> は型を返し、<code>constTuple</code> は<strong>その型の項を返す</strong>。この違いを区別しよう。 <code>constTuple 3</code> は3個組、<code>constTuple 4</code> は4個組であり、結果の型が違う。</p></div></article>
+<article class="slide" id="intro1a-0e0f64a16316" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>一般の族と、依存する適用</h3>
+<p>一般に <code>B : A → Type</code> は、各 <code>a : A</code> に型 <code>B a</code> を割り当てる<strong>型の族</strong>である。その各点で項を返す関数の型が <code>(a : A) → B a</code> である。 <code>Tuple</code> の例では <code>A = Nat</code>、<code>B = Tuple</code> とすればよい。</p>
+<p>適用の規則も、それに合わせて一般化される:</p></div></article>
+<article class="slide" id="intro1a-980b820adbf4" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="quote"><code>f : (a : A) → B a    x : A
+-------------------------
+         f x : B x</code></pre>
+<p>入力の型が合うかを確かめたうえで、結果の型の中の <code>a</code> にも実引数 <code>x</code> を入れる。 <code>constTuple 3</code> の型が <code>Tuple 3</code> になったのは、この代入である。結果の型が入力によらない場合が、これまでの <code>A → C</code> である。</p></div></article>
+<article class="slide" id="intro1a-962e62f65780" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>集合族の言葉では、各 a に B(a) の要素を一つずつ指定するので、族の直積 ∏_{a∈A} B(a)の要素に相当する。<code>idAt</code> も、各型 α に恒等写像という <code>α → α</code> の項を指定する例だった。</p></div></article>
+<article class="slide" id="intro1a-14188dd58144" data-kind="main" data-label="✏ 練習" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol>
+<li><code>#check idAt (Nat → Nat)</code> の表示と、<code>#eval idAt (Nat → Nat) double 21</code> の値を予想せよ。</li>
+<li>集合 A の要素 a に対して、集合 B 上の定数写像を対応させる <code>constAt (A B : Type) (a : A) : B → A</code> を書け。 <code>#check constAt Nat Bool 5</code> と <code>#eval constAt Nat Bool 5 true</code> を確かめよ。</li>
+</ol></div></article>
+<article class="slide" id="intro1a-answers-aabd05b022a4" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.dependent-functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#check</span> idAt (Nat → Nat)</code></pre>
+<pre class="quote"><code>idAt (Nat → Nat) : (Nat → Nat) → Nat → Nat</code></pre>
+<p><code>A = Nat → Nat</code> を代入した <code>A → A</code>、つまり <code>(Nat → Nat) → Nat → Nat</code>。右結合の約束で外側の括弧は表示されない。</p>
+<pre class="lean"><code><span class="kw">#eval</span> idAt (Nat → Nat) double 21</code></pre>
+<pre class="quote"><code>42</code></pre>
+<p><code>idAt (Nat → Nat) double</code> は <code>double</code> そのもの。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">def</span> constAt (A B : <span class="sort">Type</span>) (a : A) : B → A := <span class="kw">fun</span> _ =&gt; a
+
+<span class="kw">#check</span> constAt Nat Bool 5</code></pre>
+<pre class="quote"><code>constAt Nat Bool 5 : Bool → Nat</code></pre>
+<pre class="lean"><code><span class="kw">#eval</span> constAt Nat Bool 5 true</code></pre>
+<pre class="quote"><code>5</code></pre>
+<p><code>idAt A</code> が恒等関数を返すのに対し、<code>constAt A B a</code> は定数関数を返す。</p>
+</details></article>
+<article class="slide" id="intro1a-15c25dd8ad63" data-kind="main" data-label="✏ 練習" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol>
+<li><code>Tuple 2</code> を定義で展開すると、どんな型になるか。 <code>constTuple 2</code> の内側の引数と結果の型を答えよ。</li>
+<li>n と自然数 a を受け取り、すべての成分が a である n 個組を返す <code>repeatTuple (n : Nat) (a : Nat) : Tuple n</code> を書け。</li>
+</ol></div>
+<details class="sol"><summary>解答 1</summary>
+<p><code>Tuple 2</code> は <code>Fin 2 → Nat</code>。内側では番号 <code>i : Fin 2</code> を受け取り、自然数7を返す。族 <code>Tuple</code> の行き先は <code>Type</code> だが、その型の項 <code>constTuple 2</code> の行き先は <code>Nat</code> である。</p>
+</details></article>
+<article class="slide" id="intro1a-answers-e33cbaff8f43" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.dependent-functions"><div class="step" data-step="0"></div>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">def</span> repeatTuple (n : Nat) (a : Nat) : Tuple n := <span class="kw">fun</span> _ =&gt; a
+
+<span class="kw">#check</span> repeatTuple 2 9</code></pre>
+<pre class="quote"><code>repeatTuple 2 9 : Tuple 2</code></pre>
+<p>番号を一つ受け取り、どの番号にも a を返す。n は返す関数の定義域 <code>Fin n</code> を決めている。</p>
+</details></article>
+<article class="slide" id="intro1a-d5b4bf3ef873" data-kind="main" data-label="型引数を補ってもらう — 明示引数と暗黙引数" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>型引数を補ってもらう — 明示引数と暗黙引数</h3>
+<p><code>idAt Nat 3</code> では型 <code>Nat</code> を明示した。しかし、渡す項3の型からも <code>Nat</code> が分かる。型引数を <code>{ }</code> で宣言すると、Lean にその引数を補ってもらえる。</p></div></article>
+<article class="slide" id="intro1a-implicit" data-kind="main" data-label="暗黙引数" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> idImplicit {α : <span class="sort">Type</span>} (a : α) : α := a
+
+<span class="kw">#check</span> idImplicit</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idImplicit {α : Type} (a : α) : α</code></pre></div></article>
+<article class="slide" id="intro1a-01e50e5b96d7" data-kind="main" data-label="型引数を補ってもらう — 明示引数と暗黙引数" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p><code>(a : α)</code> は<strong>明示引数</strong>で、呼び出す側が渡す。<code>{α : Type}</code> は<strong>暗黙引数</strong>で、ほかの引数の型や、結果に期待される型を手がかりに Lean が補う。依存関数そのものの仕組みは変わらず、型引数を誰が指定するかが変わったのである。</p></div></article>
+<article class="slide" id="intro1a-implicit-nat" data-kind="main" data-label="#check idImplicit 3" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> idImplicit 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idImplicit 3 : Nat</code></pre></div></article>
+<article class="slide" id="intro1a-implicit-bool" data-kind="main" data-label="#check idImplicit true" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> idImplicit true</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>idImplicit true : Bool</code></pre>
+<p>省略を補う前処理は<strong>エラボレーション</strong>と呼ぶ。暗黙引数は、その後の型の照合ではほかの引数と同じように扱われる。手がかりが足りなければ補えない場合もある。結果の型を注釈して補う例は、<a target="_blank" rel="noopener" href="../intro1b.html#sec-Intro1.inductive-types"><code>Intro1b.lean</code> の1節</a>で見る。括弧 <code>[ ]</code> は <code>Intro2.lean</code> の class とともに説明する。</p></div></article>
+<article class="slide" id="intro1a-710b452c4bfc" data-kind="main" data-label="型引数を補ってもらう — 明示引数と暗黙引数" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>省略した引数など未確定の部分は、出力では <code>_</code> や <code>?m.…</code> と表示されることがある。項を書く位置に自分で <code>_</code> を置くと、Lean にその部分の補完を求められる。 <code>fun _ =&gt; …</code> の <code>_</code> は別の用法で、受け取る引数に名前を付けないという意味である。</p></div></article>
+<article class="slide" id="intro1a-423dd746b1df" data-kind="optional" data-label="補足（初読は飛ばしてよい）: ライブラリにもある型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>補足（初読は飛ばしてよい）: ライブラリにもある型の族</h3>
+<p>標準環境の <code>Vector Nat n</code> は、長さが n と決まった自然数の列の型である。 <code>Vector Nat : Nat → Type</code> は、<code>Tuple</code> と同じ形の族である。</p>
+<pre class="lean"><code><span class="kw">#check</span> Vector Nat 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>Vector Nat 3 : Type</code></pre></div></article>
+<article class="slide" id="intro1a-dd9e28b38053" data-kind="optional" data-label="補足（初読は飛ばしてよい）: ライブラリにもある型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>同じ値を指定回数並べる関数が <code>Vector.replicate</code> である。自然数の列を作る場合、その型は次の形として読める:</p>
+<pre class="quote"><code>(n : Nat) → Nat → Vector Nat n</code></pre>
+<p>一般には要素の型 α を暗黙引数に持ち、並べる値0の型 <code>Nat</code> から α が決まる。</p></div></article>
+<article class="slide" id="intro1a-0255f37fc048" data-kind="optional" data-label="補足（初読は飛ばしてよい）: ライブラリにもある型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> zeros : (n : Nat) → Vector Nat n := <span class="kw">fun</span> n =&gt; Vector.replicate n 0
+
+<span class="kw">#check</span> zeros 3</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>zeros 3 : Vector Nat 3</code></pre></div></article>
+<article class="slide" id="intro1a-4ab723c833e6" data-kind="optional" data-label="補足（初読は飛ばしてよい）: ライブラリにもある型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> zeros 4</code></pre></div>
+<div class="step" data-step="1"><pre class="quote"><code>zeros 4 : Vector Nat 4</code></pre>
+<p>ここでは型の変化を確かめればよい。列の内部の構造や表示方法は必要ない。</p></div></article>
+<article class="slide" id="intro1a-6f86c872cabb" data-kind="main" data-label="型引数を補ってもらう — 明示引数と暗黙引数" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>このあと命題の族 <code>Q : A → Prop</code> に移ると、「各 a について <code>Q a</code> の証明を返す」依存関数が全称命題の証明になる。次の <code>CH1.lean</code> では、この対応を実際の証明で読む。</p></div></article>
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">Intro1a</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">型と項 I — 関数と依存関数</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const viewport = $('viewport');
+  const optional = $('optional');
+  let active = slides[0];
+  let step = 0;
+  let reading = false;
+
+  function included() {
+    return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
+  }
+  function steps(slide = active) { return Array.from(slide.querySelectorAll(':scope > .step')); }
+  function updateHash() {
+    const hash = `#${active.id}/${step + 1}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+  function readHash() {
+    const match = location.hash.match(/^#([a-z0-9-]+)(?:\/(\d+))?$/);
+    if (!match) return;
+    const target = slides.find(slide => slide.id === match[1]);
+    if (!target) return;
+    active = target;
+    step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
+    if (active.dataset.kind !== 'main') optional.checked = true;
+  }
+  function render({scroll = false, announce = true} = {}) {
+    const visible = included();
+    const index = visible.indexOf(active);
+    root.classList.toggle('include-optional', optional.checked);
+    for (const slide of slides) {
+      slide.hidden = reading ? !visible.includes(slide) : slide !== active;
+      steps(slide).forEach((fragment, i) => {
+        const hidden = !reading && i > (slide === active ? step : 0);
+        fragment.toggleAttribute('data-unrevealed', hidden);
+        fragment.inert = hidden;
+        fragment.setAttribute('aria-hidden', String(hidden));
+      });
+    }
+    $('counter').textContent = `${index + 1} / ${visible.length}`;
+    $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
+    $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
+    $('previous').disabled = reading || (index === 0 && step === 0);
+    $('next').disabled = reading || (index === visible.length - 1 && step === steps().length - 1);
+    $('progress-fill').style.width = `${((index + (step + 1) / steps().length) / visible.length) * 100}%`;
+    $('reading-mode').setAttribute('aria-pressed', String(reading));
+    $('reading-mode').textContent = reading ? '講義に戻る' : '通読';
+    if (announce) $('announcement').textContent = `${index + 1} / ${visible.length}、${active.dataset.label}、表示 ${step + 1} / ${steps().length}`;
+    updateHash();
+    if (scroll) viewport.scrollTop = 0;
+  }
+  function navigate(direction) {
+    if (reading) return;
+    const visible = included();
+    const index = visible.indexOf(active);
+    let changedSlide = false;
+    if (direction > 0) {
+      if (step < steps().length - 1) step++;
+      else if (index < visible.length - 1) {
+        active = visible[index + 1]; step = 0; changedSlide = true;
+      }
+    } else {
+      if (step > 0) step--;
+      else if (index > 0) {
+        active = visible[index - 1]; step = steps().length - 1; changedSlide = true;
+      }
+    }
+    render({scroll: changedSlide});
+    if (!changedSlide && direction > 0) {
+      const fragment = steps()[step];
+      const frame = viewport.getBoundingClientRect();
+      const rect = fragment.getBoundingClientRect();
+      if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
+    }
+  }
+  function jump(target) {
+    active = target;
+    step = 0;
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  function showContents() {
+    const list = $('toc-list');
+    list.replaceChildren();
+    included().forEach((slide, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const number = document.createElement('span');
+      number.className = 'toc-number';
+      number.textContent = `${i + 1}`;
+      button.append(number, document.createTextNode(slide.dataset.label));
+      if (slide === active) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => { $('toc').close(); jump(slide); });
+      li.append(button); list.append(li);
+    });
+    $('toc').showModal();
+  }
+  function toggleReading() {
+    if (reading) {
+      const frame = viewport.getBoundingClientRect();
+      active = included().find(slide => slide.getBoundingClientRect().bottom > frame.top + 40) || active;
+      step = 0;
+    }
+    reading = !reading;
+    root.classList.toggle('reading', reading);
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  optional.addEventListener('change', () => {
+    if (!optional.checked && active.dataset.kind !== 'main') {
+      const index = slides.indexOf(active);
+      active = slides.slice(index + 1).find(slide => slide.dataset.kind === 'main') || slides[0];
+      step = 0;
+    }
+    render({scroll: !reading});
+  });
+  $('previous').addEventListener('click', () => navigate(-1));
+  $('next').addEventListener('click', () => navigate(1));
+  $('contents').addEventListener('click', showContents);
+  $('close-toc').addEventListener('click', () => $('toc').close());
+  $('reading-mode').addEventListener('click', toggleReading);
+  $('chapter-select').addEventListener('change', event => { location.href = event.target.value; });
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await root.requestFullscreen();
+    } catch {
+      $('hint').textContent = 'ブラウザの全画面表示をご利用ください';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '全画面解除' : '全画面';
+  });
+  document.addEventListener('keydown', event => {
+    if ($('toc').open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
+    if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
+    if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+      if (reading) return;
+      event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      if (reading) return;
+      event.preventDefault(); navigate(-1);
+    } else if (event.key === 'Home' && !reading) {
+      event.preventDefault(); jump(included()[0]);
+    } else if (event.key === 'End' && !reading) {
+      event.preventDefault(); active = included().at(-1); step = steps().length - 1; render({scroll:true});
+    } else if (event.key.toLowerCase() === 'm') showContents();
+  });
+  window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  // Published section links can be opened directly in the slide edition too.
+  const sectionTarget = location.hash.startsWith('#sec-') &&
+    slides.find(slide => slide.dataset.section === location.hash.slice(5));
+  if (sectionTarget) active = sectionTarget;
+  readHash();
+  root.classList.add('enhanced');
+  render({announce: false});
+})();
+</script>
+</body>
+</html>

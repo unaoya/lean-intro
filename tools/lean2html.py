@@ -623,29 +623,94 @@ def pdf_html(titles: dict, bodies: dict) -> str:
     return page(SITE_TITLE, "\n".join(parts), css=PDF_CSS)
 
 
-def build_pdf(titles: dict, bodies: dict) -> None:
-    """印刷用 HTML を headless Chrome に刷らせて pdf/all.pdf を作る。"""
+def write_pdf(document: str, destination: Path) -> None:
+    """印刷用 HTML を独立した Chrome プロファイルで刷り、成功時だけ置換する。"""
     import subprocess
     import tempfile
+    import os
+    import signal
+    import time
     chrome = find_chrome()
     if chrome is None:
-        print("  PDF: Chrome が見つからないので省略（環境変数 CHROME で指定できる）")
-        return
-    PDF_OUT.parent.mkdir(exist_ok=True)
+        raise RuntimeError("PDF: Chrome が必要です（CHROME で実行ファイルを指定、HTML のみなら --no-pdf）")
+    destination.parent.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(tmp) / "all.html"
-        src.write_text(pdf_html(titles, bodies), encoding="utf-8")
-        cmd = [chrome, "--headless=new", "--disable-gpu", "--no-sandbox",
-               f"--print-to-pdf={PDF_OUT}", "--no-pdf-header-footer", src.as_uri()]
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-    if r.returncode != 0 or not PDF_OUT.exists():
-        print(f"  PDF: 生成に失敗（exit {r.returncode}）\n{r.stderr.strip()}")
-        return
-    print(f"  pdf/all.pdf 生成（{PDF_OUT.stat().st_size / 1e6:.1f} MB）")
+        output = Path(tmp) / "result.pdf"
+        src.write_text(document, encoding="utf-8")
+        cmd = [chrome, "--headless=new", "--disable-gpu", "--no-first-run", "--disable-extensions",
+               "--disable-background-networking", f"--user-data-dir={Path(tmp) / 'profile'}",
+               f"--print-to-pdf={output}", "--no-pdf-header-footer", src.as_uri()]
+        log_path = Path(tmp) / "chrome.log"
+        complete = False
+        # Chrome helpers may retain stdout pipes after printing on macOS. Use a
+        # file log, and close only our isolated process group after the complete
+        # PDF trailer has been written. Never attach to the user's browser.
+        with log_path.open("wb") as log:
+            process = subprocess.Popen(cmd, stdout=log, stderr=log, start_new_session=True)
+            try:
+                deadline = time.monotonic() + 600
+                while time.monotonic() < deadline:
+                    if output.exists() and output.stat().st_size > 64:
+                        with output.open("rb") as pdf:
+                            header = pdf.read(5)
+                            pdf.seek(-64, 2)
+                            complete = header == b"%PDF-" and pdf.read().rstrip().endswith(b"%%EOF")
+                    if complete or process.poll() is not None:
+                        break
+                    time.sleep(.2)
+            finally:
+                if process.poll() is None:
+                    os.killpg(process.pid, signal.SIGTERM)
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait()
+        if not complete:
+            raise RuntimeError(f"PDF: 生成に失敗（exit {process.returncode}）\n{log_path.read_text(errors='replace')}")
+        # 同じファイルシステム内で原子的に置換し、失敗を古い PDF で隠さない。
+        staged = destination.with_suffix(".pdf.tmp")
+        staged.write_bytes(output.read_bytes())
+        staged.replace(destination)
+    print(f"  {destination.relative_to(ROOT)} 生成（{destination.stat().st_size / 1e6:.1f} MB）")
+
+
+def build_pdf(titles: dict, bodies: dict) -> None:
+    write_pdf(pdf_html(titles, bodies), PDF_OUT)
 
 # ---------------------------------------------------------------- main
 
-def main(with_pdf: bool = True):
+def build_inputs():
+    paths = [*SRC.glob("*.lean"), *Path(__file__).parent.glob("*.py"),
+             *(ROOT / "tools/slides").glob("*"), *(ROOT / "slides").glob("*.json"), ROOT / "lean-toolchain"]
+    return sorted(path for path in paths if path.is_file())
+
+
+def file_digest(path):
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def build_signature(with_pdf):
+    import hashlib
+    return hashlib.sha256((str(with_pdf) + "\n" + "\n".join(
+        str(path.relative_to(ROOT)) + ":" + file_digest(path) for path in build_inputs())).encode()).hexdigest()
+
+
+def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = False):
+    import json
+    cache = ROOT / ".lake/textbook-build.json"
+    if if_needed and with_slides and cache.exists():
+        try:
+            previous = json.loads(cache.read_text())
+            if previous["signature"] == build_signature(with_pdf) and previous["outputs"] and all(
+                    (ROOT / name).is_file() and file_digest(ROOT / name) == value
+                    for name, value in previous["outputs"].items()):
+                print("  通読版・講義版の HTML/PDF は最新です。")
+                return
+        except (OSError, ValueError, KeyError):
+            pass
     references = refs.analyze(SRC, CHAPTERS, SOL_FILES, parse)
     if references.errors:
         raise SystemExit("\n".join(references.errors))
@@ -654,6 +719,9 @@ def main(with_pdf: bool = True):
             print(f"  {path.name}: 節番号・参照を更新")
     except (OSError, ValueError) as exc:
         raise SystemExit(str(exc)) from exc
+    # Snapshot after reference synchronization, before rendering. An edit made
+    # during a long PDF export must invalidate the next build, not be cached.
+    source_signature = build_signature(with_pdf) if with_slides and if_needed else None
     titles, bodies = {}, {}
     for name in CHAPTERS:
         segments = parse(SRC / f"{name}.lean")
@@ -663,19 +731,37 @@ def main(with_pdf: bool = True):
     (OUT / ".nojekyll").write_text("")
     for idx, name in enumerate(CHAPTERS):
         out_path = OUT / f"{name.lower()}.html"
-        out_path.write_text(page(titles[name], bodies[name], nav_html(idx)), encoding="utf-8")
+        slide_link = f'<p class="lecture-link"><a href="slides/{name.lower()}.html">講義用スライド</a></p>' if with_slides else ""
+        out_path.write_text(page(titles[name], slide_link + bodies[name], nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
     (OUT / "index.html").write_text(
-        page(SITE_TITLE, toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
+        page(SITE_TITLE, ('<p><a href="slides/index.html">講義用スライド</a></p>' if with_slides else '') +
+             toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
     print("  index.html 生成")
 
+    if with_slides:
+        import slides
+        slide_document, _ = slides.build(titles, bodies, CHAPTERS, OUT)
     if with_pdf:
         build_pdf(titles, bodies)
+        if with_slides:
+            write_pdf(slide_document, PDF_OUT.with_name("slides.pdf"))
+    if with_slides and if_needed:
+        outputs = [OUT / "index.html", OUT / "slides/index.html"]
+        outputs += [OUT / f"{name.lower()}.html" for name in CHAPTERS]
+        outputs += [OUT / f"slides/{name.lower()}.html" for name in CHAPTERS]
+        if with_pdf:
+            outputs += [PDF_OUT, PDF_OUT.with_name("slides.pdf")]
+        cache.parent.mkdir(exist_ok=True)
+        cache.write_text(json.dumps({"signature": source_signature, "outputs": {
+            str(path.relative_to(ROOT)): file_digest(path) for path in outputs}}, indent=2) + "\n")
 
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="src/*.lean → docs/*.html（＋ pdf/all.pdf）")
-    ap.add_argument("--no-pdf", action="store_true", help="PDF を作らず HTML だけ生成する")
-    main(with_pdf=not ap.parse_args().no_pdf)
+    ap = argparse.ArgumentParser(description="src/*.lean → 通読版・講義版の HTML と PDF")
+    ap.add_argument("--no-pdf", action="store_true", help="2種類の PDF を省略し、2種類の HTML だけ生成する")
+    ap.add_argument("--if-needed", action="store_true", help="入力と生成物が一致していれば再生成を省略する")
+    args = ap.parse_args()
+    main(with_pdf=not args.no_pdf, if_needed=args.if_needed)
