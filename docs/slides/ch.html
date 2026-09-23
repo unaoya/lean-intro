@@ -3,7 +3,7 @@
 <title>ページは移動しました</title>
 <script>
 let fragment = location.hash;
-
+if (fragment.startsWith("#ch-")) fragment = "#02_forall-" + fragment.slice(4);
 location.replace("02_forall.html" + location.search + fragment);
 </script>
 <meta http-equiv="refresh" content="0; url=02_forall.html">

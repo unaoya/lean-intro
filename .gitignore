@@ -1,4 +1,8 @@
-/.lake
-.DS_Store
+# Lean のビルド結果（直下の受講者用プロジェクトと dev/ の両方）
+.lake/
+# 受講者の書き込み用（lakefile.lean が LeanIntro/Original/ から自動で作る）
+/LeanIntro/MyWork/
+# 生成物・一時ファイル
 pdf/
 __pycache__/
+.DS_Store
