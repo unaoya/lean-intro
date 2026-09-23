@@ -34,6 +34,7 @@ Lean を網羅的に紹介することは目的ではなく、
 | `06_Topology.lean` | 位相空間 |
 | `07_Exercises.lean` | 発展演習 |
 | `08_Ascoli.lean` | 発展演習 — Ascoli の定理 |
+| `09_Covering.lean` | 発展演習 — グラフの被覆と基本群 |
 
 解答は同じ名前に `Sol` を付けたファイルに置く。
 第1〜6章の ✏ 練習の解答は `/-! SOL 固定ラベル:問題番号 -/` で区切り、HTML に埋め込む。
@@ -96,7 +97,7 @@ python3 tools/lean2html.py --no-pdf # PDF を省いて両形式の HTML を生�
 スライド版は 01_TypesAndTerms・02_Forall・03_InductiveTypes・04_Exists・05_MathematicalTools の5章を対象とする。
 冒頭の目的・目標・構成も通読版と共有し、`docs/slides/index.html` とスライドPDFの冒頭に含める。
 その区切りは `slides/Index.json` で設定する。「講義の各章」のリンクから各章のスライドへ進める。
-06_Topology・07_Exercises・08_Ascoli は通読版にのみ含める。
+06_Topology・07_Exercises・08_Ascoli・09_Covering は通読版にのみ含める。
 対象外の章は `tools/lean2html.py` の `SLIDE_EXCLUDED_CHAPTERS` で管理する。
 講義版は左右キー・Space で進み、コードの出力は次の操作で表示する。
 スライドの HTML・PDF は、標準では補足・先取りを省略する。解答は各問題の直後に追加表示する。
