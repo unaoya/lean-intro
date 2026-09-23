@@ -684,6 +684,8 @@ def Map : Type → Type → Type := fun A B => A → B
    関数 double : ℕ → ℕ、double(n) = n + n を、`Map Nat Nat` 型の項としても使えるか考えよ。
    `def double2 : Map Nat Nat := double` が受理されるか予想してから試せ。
    受理されたら、`#check double2` の表示も予想してから確かめよ。
+2. `#check Map Nat` の表示を予想してから確かめよ
+   （`Map` に1つだけ渡すと、何が返るか。`plus 3` の型を読んだのと同じ手順で考える）。
 -/
 
 /-!
@@ -1679,7 +1681,6 @@ structure Point : Type where
 この場合は `Point.mk 1 2` と解釈される。
 `+` のように記法宣言で関数名に結び付けるものとは異なり、型に応じて構成子を選ぶ仕組みである。
 structure 専用ではなく、構成子が1つの帰納型でも使える。
-（`⟨ ⟩` は `\<` `\>` で打てる。）
 
 期待される型が `Point` と分かる位置では、`Point.mk` を `.mk` とも書ける。
 [4節](#sec-Intro1.inductive-types)の `.red` と同じく、期待される型から名前の
@@ -1763,6 +1764,9 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 
 /-!
     Point.swap (p : Point) : Point
+
+本体の `⟨p.y, p.x⟩` は、上で見た匿名構成子記法である。期待される型が `Point` なので、
+`Point.mk p.y p.x` と読まれる（`⟨ ⟩` は `\<` `\>` で打てる）。
 
 `Point.swap : Point → Point` なので、`p : Point` に対して `p.swap : Point`。
 さらに `p.swap.x : Nat` と続けられる。内側から読むと、`p.swap.x` は
@@ -2201,12 +2205,6 @@ def idAt (α : Type) (a : α) : α := a
 作り、「すべての `n` について…」の証明そのものを依存関数として書く——それが
 [`CH.lean` の6節](#sec-CH.dependent-products)の主題である。`Top.lean` に出てくる「集合の族」 `U : I → Set X` や
 「型の族」 `P : α → Type` も、この「型（や集合、命題）を返す関数」の仲間である。
--/
-
-/-! ### ✏ 練習
-
-1. `#check Map Nat` の表示を予想してから確かめよ
-   （`Map` に1つだけ渡すと、何が返るか）。
 -/
 
 /-! ## 7. まとめ練習 — 小さな型つき言語で書く {#sec-Intro1.exercises}

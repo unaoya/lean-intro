@@ -18,7 +18,7 @@ theorem swapOrTac {p q : Prop} : p ∨ q → q ∨ p := by
     theorem swapOrTac : ∀ {p q : Prop}, p ∨ q → q ∨ p :=
     fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)
 
-`CH2.lean` の `swapOr`（`match` で書いた項）と字面は一致しない——`cases` は
+`CH.lean` の `swapOr`（`match` で書いた項）と字面は一致しない——`cases` は
 `Or.casesOn` を直接置くからである。それでも型は同じ `p ∨ q → q ∨ p` であり、
 検査されるのはその型だけである。
 -/
@@ -45,7 +45,7 @@ example : (2 : Nat) ∈ ({n | n < 5} : Set Nat) :=
 
 /-!
 `∈` と `setOf` を展開するとゴールは `2 < 5`、すなわち `2 + 1 ≤ 5`。
-`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（[`CH2.lean` 8節](#sec-CH.nat-proofs)）。
+`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（[`CH.lean` 9節](#sec-CH.nat-proofs)）。
 -/
 
 /-! SOL Top.sets:2 -/

@@ -327,6 +327,17 @@ def double2 : Map Nat Nat := double
 表示には定義で指定した `Map Nat Nat` が残るが、同じ型として扱われている。
 -/
 
+/-! SOL Intro1.functions:2 -/
+
+#check Map Nat
+
+/-!
+    Map Nat : Type → Type
+
+2引数のうち1つだけ渡したので、「残り1つの型を受け取って型を返す」部分適用。
+`plus 3 : Nat → Nat` と同じ形である。
+-/
+
 /-! SOL Intro1.functions:1 -/
 
 /-!
@@ -1278,16 +1289,6 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 `idAt A` が恒等関数を返すのに対し、`constAt A B a` は定数関数を返す。
 -/
 
-
-/-! SOL Intro1.dependent-functions:1 -/
-
-#check Map Nat
-
-/-!
-    Map Nat : Type → Type
-
-2引数のうち1つだけ渡したので、「残り1つの型を受け取って型を返す」部分適用。
--/
 
 /-! SOL Intro1.exercises:1 -/
 

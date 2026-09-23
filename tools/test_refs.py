@@ -22,6 +22,10 @@ class RefTests(unittest.TestCase):
         self.src = self.root / 'src'
         self.src.mkdir()
         self.chapters = ['Intro1', 'CH']
+        # このテストの章 CH は0始まり（教材本体の設定には依存しない）
+        starts = patch.object(refs, 'SECTION_STARTS', {'CH': 0})
+        starts.start()
+        self.addCleanup(starts.stop)
         self.sol_files = {}
         self.put('Intro1', '/-! ## 1. 最初 {#sec-first}\n-/\n/-! ## 2. 次 {#sec-second}\n-/\n')
         self.put('CH', '/-! ## 0. 証明 {#sec-proof}\n-/\n')
@@ -223,29 +227,30 @@ class RefTests(unittest.TestCase):
     def test_cli_check_is_read_only_fix_is_idempotent(self):
         dest = self.root/'tools'
         dest.mkdir()
-        for name in ['lean2html.py', 'refs.py', 'check_refs.py']:
+        for name in ['lean2html.py', 'refs.py', 'check_refs.py', 'render_support.py']:
             shutil.copy(Path(__file__).parent/name, dest/name)
-        for name in ['Intro2', 'Top', 'Extra', 'Intro1Sol', 'CHSol', 'Intro2Sol', 'TopSol']:
+        for name in ['CH1', 'Intro1b', 'CH2', 'Intro2', 'Top', 'Extra',
+                     'Intro1aSol', 'CH1Sol', 'Intro1bSol', 'CH2Sol', 'Intro2Sol', 'TopSol']:
             self.put(name, '')
-        self.put('Intro1', '/-! ## 最初 {#sec-first}\n[節](#sec-first)\n-/\n')
-        original = self.read('Intro1')
+        self.put('Intro1a', '/-! ## 最初 {#sec-first}\n[節](#sec-first)\n-/\n')
+        original = self.read('Intro1a')
         command = [sys.executable, '-B', str(dest/'check_refs.py')]
         run = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(run.returncode, 1)
-        self.assertIn('Intro1.lean:1:', run.stderr)
-        self.assertEqual(self.read('Intro1'), original)
+        self.assertIn('Intro1a.lean:1:', run.stderr)
+        self.assertEqual(self.read('Intro1a'), original)
         run = subprocess.run(command+['--fix'], capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stderr)
         run = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stderr)
-        self.put('Intro1', self.read('Intro1').replace('](#sec-first)', '](#sec-missing)'))
-        broken = self.read('Intro1')
+        self.put('Intro1a', self.read('Intro1a').replace('](#sec-first)', '](#sec-missing)'))
+        broken = self.read('Intro1a')
         run = subprocess.run(command+['--fix'], capture_output=True, text=True)
         self.assertEqual(run.returncode, 1)
-        self.assertEqual(self.read('Intro1'), broken)
+        self.assertEqual(self.read('Intro1a'), broken)
         run = subprocess.run([sys.executable, '-B', str(dest/'lean2html.py'), '--no-pdf'], capture_output=True, text=True)
         self.assertNotEqual(run.returncode, 0)
-        self.assertIn('Intro1.lean:2:', run.stderr)
+        self.assertIn('Intro1a.lean:2:', run.stderr)
         self.assertFalse((self.root/'docs').exists())
 
     def test_combined_document_links_are_local_and_unique(self):

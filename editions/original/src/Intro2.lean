@@ -1,14 +1,14 @@
-import Intro1b
-import CH2
+import Intro1
+import CH
 
 /-!
 # Lean 最小限の導入 II — Top のための道具
 
-型の入門と証明編を2往復し、`CH2.lean` を読み終えた人のためのファイルで、
+`Intro1.lean` と `CH.lean` を読み終えた人のためのファイルで、
 `Top.lean`（位相空間）を読むのに必要な残りの道具を揃える:
 class と instance、型の族としての `Fin`、記法の自作、集合 `Set` の構築、名前空間。
 
-二つの証明編を経由したので、ここからは**命題と証明も自由に使う**。
+`CH.lean` を経由したので、ここからは**命題と証明も自由に使う**。
 読み方は今までどおり——項を見たら型を推測し、表示の枠で答え合わせをする。
 -/
 
@@ -17,7 +17,7 @@ class と instance、型の族としての `Fin`、記法の自作、集合 `Set
 `class` は structure の変種で、「この型の項は `instance` として登録しておき、
 必要になったら Lean が登録簿から探して使う」という使い方を宣言したもの。
 
-[`Intro1b.lean` 2節](#sec-Intro1.structures)の点付き集合 `PointedType` を
+[`Intro1.lean` 5節](#sec-Intro1.structures)の点付き集合 `PointedType` を
 思い出そう。あれは「型 `carrier` と、その要素 `point`」を**1つの項に束ねて**
 持ち歩く structure だった。同じ内容は、`class` では視点を変えてこう書ける:
 -/
@@ -57,7 +57,7 @@ instance : Pointed Nat where
 型を見ると、インスタンス引数 `[i : α]` を受け取ってそのまま返すだけの関数で、
 「探す」仕事は括弧 `[ ]` の仕組みがやっていることが分かる。
 
-これで括弧が3種類そろった。[`Intro1a.lean` 4節](#sec-Intro1.dependent-functions)の `( )`（明示）・`{ }`（暗黙）に
+これで括弧が3種類そろった。[`Intro1.lean` 6節](#sec-Intro1.dependent-functions)の `( )`（明示）・`{ }`（暗黙）に
 加えて、`[inst : C α]` が**インスタンス引数**である——他の引数との単一化だけでは
 決まらず、エラボレータが `instance` として登録された項の中から探索して埋める。
 -/
@@ -69,7 +69,7 @@ instance : Pointed Nat where
 
 頭の `@` は「暗黙引数も省略せずに表示・指定する」
 という印で、`@inferInstance` は `inferInstance` の省略なし版である。
-`Sort u` は、[`CH1.lean` 1節](#sec-CH.propositions)で見た、`Prop` や `Type`、`Type 1` などを
+`Sort u` は、[`CH.lean` 1節](#sec-CH.propositions)で見た、`Prop` や `Type`、`Type 1` などを
 まとめて扱う宇宙の表記である。つまりこの関数は、命題も通常の型も対象にできる。
 -/
 
@@ -117,7 +117,7 @@ def pointPair (α : Type) [Pointed α] : Pair α α := ⟨Pointed.point, Pointed
 /-! ### 自作型にもインスタンスを与える
 
 クラスの効き目は、**あとから自分の型を仲間に入れられる**ことにある。
-[`Intro1b.lean` 2節](#sec-Intro1.structures)で作った `Point` に基点（原点）を登録してみる。
+[`Intro1.lean` 5節](#sec-Intro1.structures)で作った `Point` に基点（原点）を登録してみる。
 -/
 
 instance : Pointed Point where
@@ -184,7 +184,7 @@ instance が形に合う → その前提 `Pointed Nat`・`Pointed Point` をさ
 
 /-! ### 記法もクラスで動いている
 
-[`Intro1a.lean` 3節](#sec-Intro1.functions)の先取りで、`+` は `HAdd.hAdd` を使う記法であり、
+[`Intro1.lean` 3節](#sec-Intro1.functions)の先取りで、`+` は `HAdd.hAdd` を使う記法であり、
 型に応じて演算が選ばれると述べた。同じ型どうしの足し算を指定するために、
 標準ライブラリにはクラス `Add` が用意されている:
 
@@ -256,10 +256,9 @@ instance : Add Point where
 
 /-! ## 2. 型の族と Fin {#sec-Intro2.families-fin}
 
-[`Intro1a.lean` 4節](#sec-Intro1.dependent-functions)では、型の族と依存関数を組み合わせて使った。
-この節では、既習の `Fin` を使う例を通して、数の表記や型の間の変換を詳しく見る。
-`Fin` は「`n` 未満の番号の型」を返す関数だった
-（値と証明の組という中身は [`CH2.lean` の6節](#sec-CH.dependent-sums)で見た）。
+[`Intro1.lean` 6節](#sec-Intro1.dependent-functions)の依存関数型が本領を発揮するのは、**型を返す関数**（型の族）と
+組み合わせたときである。標準ライブラリの `Fin` は「`n` 未満の番号の型」を
+返す関数である（この型の中身——値と証明の組——は [`CH.lean` の7節](#sec-CH.dependent-sums)で見た）。
 -/
 
 #check Fin
@@ -278,7 +277,7 @@ binder 形式を読み替えれば `Fin : Nat → Type`——1つ渡すと型が
 
 /-!
 族に沿って「番号 `n` を受け取り、型 `Fin (n + 1)` の項を返す」関数が書ける。
-`Tuple` や `Vector` と同じく、一般形 `(a : α) → P a` の行き先が入力によって変わる例である。
+一般形 `(a : α) → P a` の `P` が定数でない、本格的な依存の例である。
 `first 2` と `first 9` は**型が違う**ことに注意。
 -/
 
@@ -309,7 +308,7 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 （`0` と書けるのは `Fin` 用のリテラルの読みが登録されているからで、
 すぐ下の補足で詳しく見る。）
 
-[`CH2.lean` 6節](#sec-CH.dependent-sums)の `last` と見比べてほしい。`first` の値は常に 0 番なので
+[`CH.lean` 7節](#sec-CH.dependent-sums)の `last` と見比べてほしい。`first` の値は常に 0 番なので
 証明なしで書けるが、`last` は値 `n` が型の上限すれすれに依存するぶん、
 `n < n + 1` の証明を添える必要があった。
 -/
@@ -322,16 +321,16 @@ def first : (n : Nat) → Fin (n + 1) := fun _ => 0
 因子が点ごとに変わってよい一般化になっている。
 対になる**族の直和** ∐ₐ P a——「どの a か」の札付きで各 P a の要素を集めたもの——に
 当たる**依存和** `(a : α) × P a` もあり、`Pair`（直積）と `MySum`（直和）の
-共通の一般化である（[`CH2.lean` の6節](#sec-CH.dependent-sums)で主役だったもの）。
+共通の一般化である（[`CH.lean` の7節](#sec-CH.dependent-sums)で主役だったもの）。
 -/
 
 /-!
 
 「`Fin 3` は 3 未満の番号の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、
 「自然数 `2` はそのまま `Fin 3` の項でもあるのか」と考えたくなる。そうではない。
-[`Intro1a.lean` 1節](#sec-Intro1.terms-types)で見たとおり**項はちょうど1つの型を持ち**、型どうしは集合のように重ならない
+[`Intro1.lean` 1節](#sec-Intro1.terms-types)で見たとおり**項はちょうど1つの型を持ち**、型どうしは集合のように重ならない
 ——集合のアナロジーの限界がここにある。`Fin 3` は `Nat` の部分集合ではなく、
-`Nat` とは**別に作られた型**である（作りは [`CH2.lean` の6節](#sec-CH.dependent-sums)で見た）。
+`Nat` とは**別に作られた型**である（作りは [`CH.lean` の7節](#sec-CH.dependent-sums)で見た）。
 -/
 
 /-! CALLOUT_START optional -/
@@ -433,7 +432,7 @@ Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
 * `syntax` — 「この書き方を受け付けよ」と構文を追加する
 * `macro_rules` — 「その書き方はこの項の略記である」と展開を与える
 
-試しに、[`Intro1b.lean` 2節](#sec-Intro1.structures)の `Pair` のための記法を作ってみる。
+試しに、[`Intro1.lean` 5節](#sec-Intro1.structures)の `Pair` のための記法を作ってみる。
 -/
 
 syntax "⟪" term ", " term "⟫" : term
@@ -466,7 +465,7 @@ macro_rules
 
 1. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
    `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
-2. `infixl:65 " ⊞ " => add` で、`Intro1b.lean` の `add`（`MyNat` の足し算）に
+2. `infixl:65 " ⊞ " => add` で、`Intro1.lean` の `add`（`MyNat` の足し算）に
    中置記法を与え、`#reduce MyNat.zero.succ ⊞ MyNat.zero.succ` の表示を
    予想してから確かめよ。
 -/
@@ -474,7 +473,7 @@ macro_rules
 /-! ## 4. 集合 — `Set` を自作する {#sec-Intro2.sets}
 
 `Top.lean` は、数学でいう「集合」の上に位相を組み立てる。その集合を
-ここで作ってしまおう。`CH1.lean`・`CH2.lean` で身につけた証明の書き方の、最初の実戦でもある。
+ここで作ってしまおう。`CH.lean` で身につけた証明の書き方の、最初の実戦でもある。
 
 `X` の部分集合を1つ指定することは、「各 `a : X` が入っているかどうか」を
 決めること——つまり **`X` 上の述語を1つ与えること**と同じである。そこで:
@@ -528,7 +527,7 @@ instance 登録すると使えるようになる——[1節](#sec-Intro2.classes
 /-! ### 補足（初読は飛ばしてよい）: `Membership` の宇宙変数と `outParam`
 
 表示は宇宙変数付きだが、この教材の範囲ではどれも `Type` と読んでよい
-（[`Intro1a.lean` 1節](#sec-Intro1.terms-types)）。`outParam` は instance 探索へのヒントで、
+（[`Intro1.lean` 1節](#sec-Intro1.terms-types)）。`outParam` は instance 探索へのヒントで、
 「`∈` の右の入れ物の型 `γ` が分かれば、左の要素の型 `α` はそこから自動で
 決まる」という指定である。
 -/
@@ -585,8 +584,8 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
     Set.subset_refl {X : Type} (s : Set X) : s ⊆ s
 
 `s ⊆ s` を展開すれば `∀ a, a ∈ s → a ∈ s`——各点で「`p → p`」を示すだけ
-（[`CH1.lean` 2節](#sec-CH.implication)の世界そのもの）である。名前を `Set.〜` にしたのは
-ドット記法（[`Intro1b.lean` 2節](#sec-Intro1.structures)で見た関数適用の略記）のためで、
+（[`CH.lean` 2節](#sec-CH.implication)の世界そのもの）である。名前を `Set.〜` にしたのは
+ドット記法（[`Intro1.lean` 5節](#sec-Intro1.structures)で見た関数適用の略記）のためで、
 この命名の仕組みは次節で説明する。
 
 `Top.lean` はこの `Set` を土台に、`∩`・`∪`・補集合・像・逆像・集合族……と
@@ -600,8 +599,8 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
        theorem Set.subset_trans {X : Type} {s t u : Set X}
            (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
 
-2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [`CH2.lean`
-   4節](#sec-CH2.existence)の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
+2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [`CH.lean`
+   0節](#sec-CH.reading-proofs)の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
 3. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
    `theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat` を書け
    （各点の証明は `True.intro`。束縛子 `_n` の `_` は「使わない」印である）。
@@ -611,7 +610,7 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
 
 /-! ## 5. namespace — 名前の接頭辞 {#sec-Intro2.namespaces}
 
-[`Intro1b.lean` 2節](#sec-Intro1.structures)のドット記法や、前節の `Set.subset_refl` という名前を
+[`Intro1.lean` 5節](#sec-Intro1.structures)のドット記法や、前節の `Set.subset_refl` という名前を
 支えている**名前空間**の仕組みを見ておく。
 `namespace N … end N` で囲うと、中の宣言の本名に `N.` が付く:
 -/

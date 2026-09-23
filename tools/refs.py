@@ -14,7 +14,7 @@ REF_RE = re.compile(r"\[(?P<text>[^\[\]\n]*(?:\n[^\[\]\n]*)?)\]\(#sec-(?P<label>
 DISPLAY_RE = re.compile(r"(?:(?P<file>`[A-Za-z0-9_]+\.lean`)(?P<gap>\s*の?\s*))?(?P<number>[0-9]*)(?P<space>[ \t]*)(?P<unit>節?)")
 SOL_RE = re.compile(r"^SOL (?P<label>" + LABEL + r"):(?P<item>[1-9][0-9]*)$")
 BARE_RE = re.compile(r"(?<![A-Za-z0-9_`.])(?:[0-9]+[ \t]*節|[0-9]+(?=[ \t]*[〜～–-][ \t]*[0-9]+[ \t]*節))")
-SECTION_STARTS = {"CH": 0}
+SECTION_STARTS = {"CH1": 0}
 
 
 @dataclass

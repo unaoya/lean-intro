@@ -1,7 +1,7 @@
-# lean-intro — Lean 4 で書く位相空間 · ミニ教材
+# はじめての Lean — Lean 4 で書く位相空間
 
-*Lean for the Working Mathematician in the Age of AI* — AI がコードを書く時代の、働く数学者のための
-Lean 入門。**Lean のコードを自分で書けるようになることは目標ではない**（それは AI に任せてよい）。
+この教材の目的は、Lean のコードを書けるようになることではなく、
+証明が検査される**仕組みを納得する**ことである（書く仕事は AI に任せてよい）。
 
 公開ページ: **https://unaoya.github.io/lean-intro/** （`src/*.lean` から自動生成）
 
@@ -15,29 +15,34 @@ mathlib を使わず、**Lean 4 の標準ライブラリだけ**で位相空間�
 - **目標2 — 検証の仕組みを納得する**。項の型を推測するこの仕組みが、**定理の証明の検証に
   そのまま使える**ことを納得する。「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。
 
-目標1が主に `Intro1` の、目標2が `CH` の担当。`Intro2` で `Top` のための道具を揃え、
+型の読み方（`Intro1a`・`Intro1b`）と証明の読み方（`CH1`・`CH2`）を2回往復して学ぶ。
+`Intro2` で `Top` のための道具を揃え、
 `Top` では現物の数学についてその両方を実感する。Lean を網羅的に紹介することは目的ではなく、
 必要な最低限の機能しか説明しない。
 
 ## 構成
 
-読む順は **Intro1 → CH → Intro2 → Top（→ 演習 Extra）**。
+読む順は **Intro1a → CH1 → Intro1b → CH2 → Intro2 → Top（→ 演習 Extra）**。
 
 ```
 src/
-  Intro1.lean   コードの読み方の基礎（項と型・関数・帰納型・structure）
-  CH.lean       証明が検査される仕組み（Curry–Howard 対応）
+  Intro1a.lean  項と型・関数・依存関数・暗黙引数
+  CH1.lean      ならば・全称・単射の合成・証明検査の核心
+  Intro1b.lean  帰納型・場合分け・再帰・structure
+  CH2.lean      組と場合分け・存在・偶数と全射・等式の仕組み・検査の詳説
   Intro2.lean   Top のための道具（class と instance・Fin・集合 Set・記法の自作・名前空間）
   Top.lean      位相空間（主定理: コンパクト → ハウスドルフの連続全単射は同相）
   Extra.lean    発展演習（位相空間の圏・自由忘却随伴・別定義との等価性・誘導位相）
 
-  Intro1Sol.lean / CHSol.lean / Intro2Sol.lean / TopSol.lean
+  Intro1aSol.lean / CH1Sol.lean / Intro1bSol.lean / CH2Sol.lean / Intro2Sol.lean / TopSol.lean
                 本文の ✏ 練習の解答（`/-! SOL 固定ラベル:問題番号 -/` 区切り。HTML に折りたたみで埋め込まれる）
   ExtraSol.lean Extra の解答（sorry を埋めた版）
 
 tools/lean2html.py  src/*.lean → docs/*.html の生成スクリプト（依存なし・標準ライブラリのみ）
 tools/check_refs.py 固定ラベルの検査・節番号と参照番号の自動更新
 docs/               生成された HTML（GitHub Pages の公開ディレクトリ。手で編集しない）
+editions/original/  2往復構成に改める前の旧版（Intro1 → CH → …）。比較・参照用
+                    （`python3 editions/original/build.py` で docs/original/ に生成）
 ```
 
 本文中のすべての Lean コードと Infoview 風の出力表示は、実際のコンパイラ出力で裏を取ってある。

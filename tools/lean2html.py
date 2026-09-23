@@ -27,11 +27,11 @@ SRC = ROOT / "src"
 OUT = ROOT / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
-CHAPTERS = ["Intro1", "CH", "Intro2", "Top", "Extra"]
+CHAPTERS = ["Intro1a", "CH1", "Intro1b", "CH2", "Intro2", "Top", "Extra"]
 
 # ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
 # 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
-SOL_FILES = {"Intro1": "Intro1Sol", "CH": "CHSol", "Intro2": "Intro2Sol", "Top": "TopSol"}
+SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name != "Extra"}
 
 SITE_TITLE = "はじめての Lean"
 SITE_CONCEPT = (
@@ -51,13 +51,13 @@ SITE_GOALS = (
     "<strong>定理の証明の検証にそのまま使える</strong>ことを納得する。"
     "「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li>"
     "</ul>"
-    "<p>この2つの目標に向けて、まず Intro1 で次の3段階を学ぶ。</p>"
+    "<p>この2つの目標に向けて、Intro1a・Intro1b で次の3段階を学ぶ。</p>"
     "<ul>"
     "<li><strong>型がどのように作られるか</strong>を知る。</li>"
     "<li>その型の<strong>項をどのように作り、使うか</strong>を知る。</li>"
     "<li>複雑な項についても、<strong>部分項から順に型を推測できる</strong>ようになる。</li>"
     "</ul>"
-    "<p>続く CH では、「<strong>命題は型であり、証明はその型の項である</strong>」"
+    "<p>CH1・CH2 では、「<strong>命題は型であり、証明はその型の項である</strong>」"
     "という対応を学ぶ。これによって、目標1の「項の型を推測する」仕組みが、"
     "目標2の「証明を検証する」仕組みへ接続する。</p>"
     "<h2>仕組みのスローガン</h2>"
@@ -90,8 +90,12 @@ SITE_GOALS = (
     "説明しない。</li>"
     "</ul>"
     "<h2>構成と読む順</h2>"
-    "<p>読む順は Intro1 → CH → Intro2 → Top（→ 演習 Extra）。"
-    "目標1が主に Intro1 の、目標2が CH の担当。Intro2 で Top のための道具"
+    "<p>読む順は Intro1a → CH1 → Intro1b → CH2 → Intro2 → Top（→ 演習 Extra）。"
+    "型の読み方と証明の読み方を、2回往復して学ぶ構成である。"
+    "1往復目（Intro1a・CH1）では、関数と依存関数を学び、ならば・全称の証明を読む。"
+    "単射どうしの合成が単射であることまで進み、型検査が証明の検査になることを確かめる。"
+    "2往復目（Intro1b・CH2）では、帰納型と structure を学び、かつ・または・存在の"
+    "証明を読む。Intro2 で Top のための道具"
     "（class・Fin・集合・記法）を揃え、Top では現物の数学"
     "（位相空間の主定理: コンパクト空間からハウスドルフ空間への連続全単射は同相）"
     "について両方を実感する。その先で、形式化を自分の研究に役立てる可能性を"
@@ -99,6 +103,7 @@ SITE_GOALS = (
 )
 SITE_NOTE = (
     "各 ✏ 練習には折りたたみの解答が付いている（解答もすべて Lean の検査済み）。"
+    "2往復構成に改める前の旧版は <a href=\"original/index.html\">こちら</a>。"
     "ソースは <a href=\"https://github.com/unaoya/lean-intro\">GitHub</a> の "
     "<code>src/*.lean</code>（このページはそこから自動生成）。"
 )
@@ -321,52 +326,9 @@ def render_code(lines: list[str]) -> str:
 
 # ---------------------------------------------------------------- file parsing
 
-def parse(path: Path, *, with_line_numbers: bool = False) -> list:
-    """ファイルを (kind, lines) のセグメント列に分ける。
-    kind は 'prose'（/-! ブロック）・'doc'（行頭の docstring）・'code' のいずれか。
-    インデントされた docstring（structure のフィールドなど）は宣言の一部なので
-    code に残す。with_line_numbers=True では (kind, 開始行番号, lines) を返す。"""
-    lines = path.read_text(encoding="utf-8").split("\n")
-    segments = []
-    cur_kind, cur = None, []
-    cur_start = 0
-
-    def flush():
-        nonlocal cur_kind, cur, cur_start
-        if cur_kind == "code":
-            while cur and cur[0].strip() == "":
-                cur.pop(0)
-                cur_start += 1
-            while cur and cur[-1].strip() == "":
-                cur.pop()
-        if cur_kind and cur:
-            segments.append((cur_kind, cur_start + 1, cur) if with_line_numbers else (cur_kind, cur))
-        cur_kind, cur = None, []
-
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        if line.startswith("/-!") or line.startswith("/--"):
-            kind = "prose" if line.startswith("/-!") else "doc"
-            flush()
-            cur_start = i
-            body = [line[3:].lstrip()]
-            while "-/" not in body[-1] and i + 1 < len(lines):
-                i += 1
-                body.append(lines[i])
-            # 閉じ `-/` を除去（行末どちらのスタイルにも対応）
-            body[-1] = body[-1][: body[-1].rfind("-/")].rstrip()
-            cur_kind, cur = kind, [b for b in body]
-            flush()
-        else:
-            if cur_kind != "code":
-                flush()
-                cur_kind = "code"
-                cur_start = i
-            cur.append(line)
-        i += 1
-    flush()
-    return segments
+# 地の文の中に入れ子のコメント（`/- … -/`）の例を書けるよう、入れ子を数えて
+# `/-! … -/` の終わりを決める版を使う。セグメントの形式は従来と同じ。
+from render_support import parse  # noqa: E402
 
 
 SOL_MARK_RE = refs.SOL_RE
@@ -588,9 +550,11 @@ def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
 """
 
 ROLES = {
-    "Intro1": "コードの読み方の基礎（項と型、関数、帰納型、structure）",
-    "CH": "証明が検査される仕組み",
-    "Intro2": "CH のあとに読む後編（class・Fin・集合の正体・記法の自作）",
+    "Intro1a": "項と型・関数・依存関数・暗黙引数",
+    "CH1": "ならば・全称・単射の合成・証明検査の核心",
+    "Intro1b": "帰納型・場合分け・再帰・structure",
+    "CH2": "組と場合分け・存在・偶数と全射・検査の詳説",
+    "Intro2": "位相空間を読むための道具（class・Fin・集合の正体・記法の自作）",
     "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
     "Extra": "演習（sorry を自分で埋める）",
 }

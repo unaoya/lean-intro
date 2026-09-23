@@ -129,7 +129,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="cm">-- 問題4（主張も自分で書く）:</span>
 <span class="cm">-- 「密着位相を入れた `Bool` はハウスドルフでない」を形式化し、証明せよ。</span>
-<span class="cm">-- ヒント: 否定 `¬p` は `p → False`（`CH2.lean` 3節）。</span>
+<span class="cm">-- ヒント: 否定 `¬p` は `p → False`（`CH.lean` 5節）。</span>
 <span class="cm">-- `true` と `false` を分離する開集合の組が取れたとして、矛盾を導く。</span>
 <span class="cm">-- （ここに theorem を書く）</span></code></pre>
 <h2>Part 2: 圏と関手</h2>
@@ -157,7 +157,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">#check</span> Category
 <span class="cm">-- 表示: `Cat.Category : Type 2`</span>
 <span class="cm">-- 読み: フィールド `Obj` が `Type 1` の項なので、`Category` 自身は `Type 2` の項。</span>
-<span class="cm">-- `Intro1a.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span></code></pre>
+<span class="cm">-- `Intro1.lean` 1節の宇宙の階段（`Type : Type 1 : Type 2`）が実際に必要になる場面である。</span></code></pre>
 <p>問題5: 型の圏を作れ。対象は型、射は関数。</p>
 <p>法則の証明はすべて <code>rfl</code> で済むはず。なぜ済むのかも考えてみること（関数の合成は定義上結合的である）。</p>
 <pre class="lean"><code>@[reducible] <span class="kw">def</span> TypeCat : Category :=
@@ -180,7 +180,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">attribute</span> [<span class="kw">instance</span>] TopSpace.str</code></pre>
 <p>問題6: 位相空間の圏を作れ。対象は <code>TopSpace</code>、射は「関数と、その連続性の証明の組」<code>{ f : A.carrier → B.carrier // Continuous f }</code>。</p>
-<p>これは <a href="ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> 6節</a>の依存和そのもの（<code>Subtype</code>）である。ヒント: 恒等射は <code>continuous_id</code>、合成は <code>Continuous.comp</code>。射の等しさは <code>Subtype.ext</code>（第一成分が等しければ等しい）で示す。</p>
+<p>これは <a href="ch.html#sec-CH.dependent-sums"><code>CH.lean</code> 7節</a>の依存和そのもの（<code>Subtype</code>）である。ヒント: 恒等射は <code>continuous_id</code>、合成は <code>Continuous.comp</code>。射の等しさは <code>Subtype.ext</code>（第一成分が等しければ等しい）で示す。</p>
 <pre class="lean"><code>@[reducible] <span class="kw">def</span> TopCat : Category :=
   <span class="sorry">sorry</span>
 
@@ -588,7 +588,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <pre class="lean"><code>@[reducible] <span class="kw">def</span> TopologicalSpace.induced {X Y : <span class="sort">Type</span>} (f : X → Y)
     (t : TopologicalSpace Y) : TopologicalSpace X :=
   initialTopology (Y := <span class="kw">fun</span> _ : Unit =&gt; Y) (<span class="kw">fun</span> _ =&gt; t) (<span class="kw">fun</span> _ =&gt; f)</code></pre>
-<p>部分空間位相: 包含写像 <code>Subtype.val</code> に沿った引き戻し。 <a href="ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> 6節</a>の部分型が、晴れて<strong>部分空間</strong>になる。</p>
+<p>部分空間位相: 包含写像 <code>Subtype.val</code> に沿った引き戻し。 <a href="ch.html#sec-CH.dependent-sums"><code>CH.lean</code> 7節</a>の部分型が、晴れて<strong>部分空間</strong>になる。</p>
 <pre class="lean"><code><span class="kw">instance</span> instTopSubtype {X : <span class="sort">Type</span>} [tX : TopologicalSpace X] (p : X → <span class="sort">Prop</span>) :
     TopologicalSpace (Subtype p) :=
   tX.induced Subtype.val</code></pre>
