@@ -194,11 +194,9 @@ h : P       — h は P の証明</code></pre></div></article>
 <p><strong>型を意識した版</strong>。<code>P</code> の証明を <code>hP</code>、「<code>P</code> ならば <code>Q</code>」の証明を <code>hPQ</code> と名付ける:</p></div></article>
 <article class="slide" id="ch1-f2b5bc9f90d7" data-kind="main" data-label="例1: P と「P ならば Q」から Q" data-section="CH.reading-proofs"><div class="step" data-step="0"><pre class="quote"><code>hP  : P
 hPQ : P → Q</code></pre>
-<p><code>hPQ : P → Q</code> は、<code>P</code> の証明を受け取ると <code>Q</code> の証明を返す関数として使える。したがって、<code>hPQ</code> に <code>hP</code> を渡した項 <code>hPQ hP</code> の型は <code>Q</code> である:</p></div></article>
-<article class="slide" id="ch1-ff636efea7a2" data-kind="main" data-label="例1: P と「P ならば Q」から Q" data-section="CH.reading-proofs"><div class="step" data-step="0"><pre class="quote"><code>hPQ : P → Q    hP : P
-----------------------
-       hPQ hP : Q</code></pre>
-<p>これは <code>f : α → β</code> と <code>a : α</code> から <code>f a : β</code> を得た、<code>Intro1a.lean</code> の関数適用とまったく同じ型の照合である。</p></div></article>
+<p><code>hPQ : P → Q</code> は、<code>P</code> の証明を受け取ると <code>Q</code> の証明を返す関数として使える。したがって、<code>hPQ</code> に <code>hP</code> を渡した項 <code>hPQ hP</code> の型は <code>Q</code> である:</p>
+<div class="rule"><div class="prem"><span>hPQ : P → Q</span><span>hP : P</span></div><div class="concl">hPQ hP : Q</div></div></div></article>
+<article class="slide" id="ch1-c590ec7c39d1" data-kind="main" data-label="例1: P と「P ならば Q」から Q" data-section="CH.reading-proofs"><div class="step" data-step="0"><p>これは <code>f : α → β</code> と <code>a : α</code> から <code>f a : β</code> を得た、<code>Intro1a.lean</code> の関数適用とまったく同じ型の照合である。</p></div></article>
 <article class="slide" id="ch1-98b8bd1be8cd" data-kind="main" data-label="例1: P と「P ならば Q」から Q" data-section="CH.reading-proofs"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">theorem</span> modus_ponens
     (P Q : <span class="sort">Prop</span>)
     (hP : P)
@@ -413,9 +411,9 @@ is not definitionally equal to the right-hand side
 <li>hf を同様に f x = f y に適用して、x = y。これが示すべきことだった。∎</li>
 </ol></div></article>
 <article class="slide" id="ch1-8f0fc868e83f" data-kind="main" data-label="例3: 単射どうしの合成は単射" data-section="CH1.forall-examples"><div class="step" data-step="0"><p>（教科書なら「g (f x) = g (f y) とすると、g の単射性より f x = f y、f の単射性より x = y。∎」と2行で済ませるところである。）</p>
-<p><strong>論理式</strong>。示すべき結論「合成 g∘f が単射」を、単射の定義まで開くと</p>
-<pre class="quote"><code>∀x ∀y (g(f(x)) = g(f(y)) → x = y)</code></pre>
-<p>である。仮定 hg・hf も同じ形の論理式（∀u ∀v (g(u) = g(v) → u = v) など）であることが、この例の主役になる。</p></div></article>
+<p><strong>論理式</strong>。示すべき結論「合成 $g \circ f$ が単射」を、単射の定義まで開くと</p>
+<p>$$\forall x\, \forall y\, \bigl(g(f(x)) = g(f(y)) \to x = y\bigr)$$</p>
+<p>である。仮定 <code>hg</code>・<code>hf</code> も同じ形の論理式（$\forall u\, \forall v\, \bigl(g(u) = g(v) \to u = v\bigr)$ など）であることが、この例の主役になる。</p></div></article>
 <article class="slide" id="ch1-a67635f7c8f4" data-kind="main" data-label="例3: 単射どうしの合成は単射" data-section="CH1.forall-examples"><div class="step" data-step="0"><p><strong>形式化を意識した版</strong>。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。だから頭の動きは「x, y を取り、さらに仮定 h を取る」。</p>
 <p>今度は、仮定 hg・hf の<strong>使い方</strong>が主役になる。hg 自身が全称+ならばの命題、つまり「<strong>当てはめて使う道具</strong>」である。<strong>全称文・ならば文の使い方は、対象を当てはめて適用すること</strong>——例1で <code>hPQ</code> に <code>hP</code> を渡したのと、実は同じ動きである。仮定も既知の定理も、文脈にある<strong>部品</strong>という資格は変わらない。</p></div></article>
 <article class="slide" id="ch1-b73740bbff7c" data-kind="main" data-label="例3: 単射どうしの合成は単射" data-section="CH1.forall-examples"><div class="step" data-step="0"><p><strong>項</strong>。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の形で書く）:</p>

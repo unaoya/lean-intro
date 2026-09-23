@@ -531,7 +531,7 @@ binder 形式を読み替えれば `MySum : Type → Type → Type`——[`Intro
 /-!
 `MySum α β` の項は、「`α` の項に `inl` の札を付けたもの」か
 「`β` の項に `inr` の札を付けたもの」のどちらか。集合のアナロジーでは
-**直和** α ⊔ β である——`NatOrBool` は `MySum Nat Bool` に相当する
+**直和** $\alpha \sqcup \beta$ である——`NatOrBool` は `MySum Nat Bool` に相当する
 （`CH2.lean` に出てくる `⊕` は、標準ライブラリにあるこれと同じ型）。
 
 使う側の `match` も、`NatOrBool` と同じように書ける。
@@ -638,9 +638,9 @@ inductive MyNat : Type where
 
 集合のアナロジーでは、`MyNat` は方程式
 
-    X ≅ 1 ⊔ X   （zero の分の1点 ⊔ succ の引数の分）
+$$X \cong 1 \sqcup X$$
 
-を満たす**最小**の集合と読める。右辺に自分自身が現れるのが再帰の印で、
+を満たす**最小**の集合と読める（右辺の $1$ は `zero` の分の1点、$X$ は `succ` の引数の分）。右辺に自分自身が現れるのが再帰の印で、
 最小性は「`zero` に `succ` を有限回重ねたものがすべてで、それ以外にない」
 ということの言い替えである。
 -/
@@ -738,7 +738,7 @@ def add : MyNat → MyNat → MyNat := fun m n =>
    集合としては同じ2点集合だが、型としては別物である。往復の関数
    `toBool : Two → Bool` と `ofBool : Bool → Two` を書き、
    `#eval toBool (ofBool true)` を確かめよ。
-3. `Two → Bool` の関数は、集合のアナロジーで数えると 2 × 2 = 4 通り
+3. `Two → Bool` の関数は、集合のアナロジーで数えると $2 \times 2 = 4$ 通り
    あるはずである。その4つすべてを `def g1 : Two → Bool := …` から `g4` まで
    書け（前問の `toBool` はその1つ）。有限型の間の関数を書くことは、
    **値の対応表を書くこと**にほかならない。
@@ -878,10 +878,10 @@ Lean は `p` の型から関数 `Point.x` を見つけ、そこに `p` を引数
 /-!
 ### 直積の普遍性を思い出す
 
-集合のアナロジーでは、`Point` は直積 Nat × Nat である。
-**直積の普遍性**を思い出そう。同じ集合 A からの2本の写像
-f, g : A → Nat を与えると、各 a を組 (f(a), g(a)) に送る写像
-h : A → Nat × Nat がただ1つ定まる。逆に h の各成分を取り出せば、f と g に戻る。
+集合のアナロジーでは、`Point` は直積 $\mathrm{Nat} \times \mathrm{Nat}$ である。
+**直積の普遍性**を思い出そう。同じ集合 $A$ からの2本の写像
+$f, g : A \to \mathrm{Nat}$ を与えると、各 $a$ を組 $(f(a), g(a))$ に送る写像
+$h : A \to \mathrm{Nat} \times \mathrm{Nat}$ がただ1つ定まる。逆に $h$ の各成分を取り出せば、$f$ と $g$ に戻る。
 
 Lean では `Point.mk` が組を作る側、`Point.x`・`Point.y` が成分を取り出す側に当たる。
 次の練習では、この対応をコードにし、具体的な入力で確認しよう。
@@ -892,9 +892,9 @@ Lean では `Point.mk` が組を作る側、`Point.x`・`Point.y` が成分を�
 ### ✏ 練習（書く）
 
 1. 型 `A` と2本の写像 `f g : A → Nat` が与えられたとする。
-   a を組 (f(a), g(a)) に送る写像 `pairAt A f g : A → Point` を定めたい。
+   $a$ を組 $(f(a), g(a))$ に送る写像 `pairAt A f g : A → Point` を定めたい。
    `pairAt (A : Type) (f g : A → Nat) : A → Point` を書き、`#check pairAt` で型を確認せよ。
-   A = Nat、f(n) = n + 1、g(n) = 2n として `3` を渡したときの
+   $A = \mathrm{Nat}$、$f(n) = n + 1$、$g(n) = 2n$ として `3` を渡したときの
    第1・第2成分を予想し、`Point.x`・`Point.y` と `#eval` で確かめよ。
 -/
 
@@ -1043,7 +1043,7 @@ structure Pair (α β : Type) : Type where
 -/
 
 /-!
-集合のアナロジーでは、`Point` は直積 Nat × Nat、`Pair α β` は直積 α × β である。
+集合のアナロジーでは、`Point` は直積 $\mathrm{Nat} \times \mathrm{Nat}$、`Pair α β` は直積 $\alpha \times \beta$ である。
 つまり structure は「**直積の各成分に名前を付けたもの**」と思ってよい。
 実際、標準ライブラリの `×` 自身が `fst`/`snd` という2フィールドの
 structure（名前は `Prod`）として定義されている。
@@ -1068,11 +1068,11 @@ structure（名前は `Prod`）として定義されている。
 前節の直和とここの直積をまとめると、ここまでの非再帰的で、
 構成子の引数の型が互いに依存しない例は、集合の言葉でこう読める:
 
-    (構成子1の引数たちの直積) ⊔ (構成子2の引数たちの直積) ⊔ …
+$$(\text{構成子1の引数たちの直積}) \sqcup (\text{構成子2の引数たちの直積}) \sqcup \cdots$$
 
 つまり**構成子の個数が直和の項数を、各構成子の引数が直積の因子を**与える。
-`Signal` は 1 ⊔ 1 ⊔ 1（3点集合）、`MySum α β` は α ⊔ β（直和だけ）、
-`Point` は Nat × Nat（直和が1項に退化して直積だけ）、
+`Signal` は $1 \sqcup 1 \sqcup 1$（3点集合）、`MySum α β` は $\alpha \sqcup \beta$（直和だけ）、
+`Point` は $\mathrm{Nat} \times \mathrm{Nat}$（直和が1項に退化して直積だけ）、
 構成子が0個なら空集合（`Empty`）。
 「structure は直積」と「帰納型は直和のようなもの」は矛盾しない——
 直和を**使って**直積を定義しているのではなく、構成子の**個数**と**引数**という
@@ -1087,14 +1087,14 @@ structure（名前は `Prod`）として定義されている。
 ### フィールドは前のフィールドに依存してよい
 
 今度は、「どの集合を選ぶかで、その上に載せる構造の集まりも変わる」という状況を考えよう。
-サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 X と、
-その上の群構造を1つ指定することである。集合 X ごとにその上の群構造全体を Grp(X) と書けば、
-群全体は**集合族の直和** ⊔_{X} Grp(X) として捉えられ、個々の群がその要素に当たる。
+サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 $X$ と、
+その上の群構造を1つ指定することである。集合 $X$ ごとにその上の群構造全体を $\mathrm{Grp}(X)$ と書けば、
+群全体は**集合族の直和** $\bigsqcup_{X} \mathrm{Grp}(X)$ として捉えられ、個々の群がその要素に当たる。
 ここで群構造には、演算・単位元・逆元と、それらが満たす公理を含めている。
-同様に、位相空間を1つ指定することも、集合 X とその上の位相を1つ指定することである。
+同様に、位相空間を1つ指定することも、集合 $X$ とその上の位相を1つ指定することである。
 
-一般に、族の直和 ⊔_{a ∈ A} B(a) の要素は、
-「a を1つ選び、それに応じた B(a) の要素を1つ添える」という組である。
+一般に、族の直和 $\bigsqcup_{a \in A} B(a)$ の要素は、
+「$a$ を1つ選び、それに応じた $B(a)$ の要素を1つ添える」という組である。
 structure でも、**後のフィールドの型を、前のフィールドに依存させる**ことで、
 この形のデータを表せる。証明をフィールドに持たせる実例は `CH2.lean` で読み、
 ここでは単純な**点付き集合**——集合と、その要素を1つ選んだ組——を例にしよう。
@@ -1143,7 +1143,7 @@ def pointedNat : PointedType := ⟨Nat, 0⟩
 この例では、族の直和の添字として型 `carrier` を選び、
 その型の項 `point` を1つ添えている。
 
-族 B(a) が a によらない定数 B のときは、⊔_{a ∈ A} B = A × B となる。
+族 $B(a)$ が $a$ によらない定数 $B$ のときは、$\bigsqcup_{a \in A} B = A \times B$ となる。
 つまり、これまでの依存しないフィールドによる直積も、族の直和の特別な場合である。
 -/
 
@@ -1191,7 +1191,7 @@ inductive MyPointedType : Type 1 where
    `#reduce (types := true) baseType pointedBool` の表示を予想して確かめよ。
    ここで `(types := true)` は、型そのものも計算して表示させる指定である。
    通常の `#reduce` は型の計算を省くので、今回はこの指定を付ける。
-3. 点付き集合 (A, a) と写像 f : A → A から、点付き集合 (A, f(a)) を作る関数
+3. 点付き集合 $(A, a)$ と写像 $f : A \to A$ から、点付き集合 $(A, f(a))$ を作る関数
    `mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType` を書け。
    型を `#check` し、`#reduce (mapPointed pointedNat Nat.succ).point` の値を予想して確かめよ。
 -/
@@ -1241,10 +1241,10 @@ CALLOUT_END
 /-!
 ### 族の直積と直和を並べる
 
-[`Intro1a.lean` の4節](#sec-Intro1.dependent-functions)では、各 a に B(a) の項を返す
-関数を、族の直積の要素として見た。いま見た族の直和の要素は、a を一つ選び、
-その B(a) の項を一つ添えた組である。
-直和から添字集合への射影に対する切断は、各 a にその上の組を選ぶことなので、
+[`Intro1a.lean` の4節](#sec-Intro1.dependent-functions)では、各 $a$ に $B(a)$ の項を返す
+関数を、族の直積の要素として見た。いま見た族の直和の要素は、$a$ を一つ選び、
+その $B(a)$ の項を一つ添えた組である。
+直和から添字集合への射影に対する切断は、各 $a$ にその上の組を選ぶことなので、
 再び依存関数という見方につながる。
 -/
 
@@ -1267,9 +1267,9 @@ CALLOUT_END
 型を引数に取る関数——だけで、Lean は小さな**型つきプログラミング言語**として
 使える。仕上げに、**集合と写像の言葉で述べた仕様を、Lean の型と項として書く**総合練習を置く。
 
-以下では、ℕ は 0 を含む自然数の集合、Map(X, Y) は X から Y への写像全体を表す。
+以下では、$\mathbb{N}$ は $0$ を含む自然数の集合、$\mathrm{Map}(X, Y)$ は $X$ から $Y$ への写像全体を表す。
 まず数学的な対応を読み、そのあと指定された名前と型で Lean のコードにしよう。
-ℕ × ℕ のような直積を定義域とする写像は、[`Intro1a.lean` 3節](#sec-Intro1.functions)で見たカリー化によって
+$\mathbb{N} \times \mathbb{N}$ のような直積を定義域とする写像は、[`Intro1a.lean` 3節](#sec-Intro1.functions)で見たカリー化によって
 `Nat → Nat → Nat` のように1引数ずつ受け取る形でも表せる。
 
 どの問題も、書いたら `#check` で型を、`#eval` で値を、機械に答え合わせ
@@ -1280,49 +1280,49 @@ CALLOUT_END
 /-!
 ### ✏ 練習
 
-1. 写像 F : ℕ × ℕ → ℕ に対して、G(a, b) = F(b, a) で定まる写像
-   G : ℕ × ℕ → ℕ を対応させる操作を考える。
-   この対応 F ↦ G を、カリー化を使って
+1. 写像 $F : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ に対して、$G(a, b) = F(b, a)$ で定まる写像
+   $G : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ を対応させる操作を考える。
+   この対応 $F \mapsto G$ を、カリー化を使って
    `flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat` として書け。
    `#eval flipNat (fun a b => a - b) 3 10` の値を予想してから確かめよ。
-2. 写像の集合の間の写像 T : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、
-   T(F) = F ∘ F ∘ F、すなわち T(F)(n) = F(F(F(n))) で定める。
-   T を `iterate3 (F : Nat → Nat) : Nat → Nat` として書け。
+2. 写像の集合の間の写像 $T : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、
+   $T(F) = F \circ F \circ F$、すなわち $T(F)(n) = F(F(F(n)))$ で定める。
+   $T$ を `iterate3 (F : Nat → Nat) : Nat → Nat` として書け。
    `#eval iterate3 double 1` の値を予想してから確かめよ。
-3. 2点集合 B = {true, false} と3点集合 S = {red, yellow, green} を考える。
-   写像 f : B → S を f(true) = green、f(false) = red で定め、
-   写像 g : S → B を g(green) = true、g(red) = g(yellow) = false で定める。
-   B を `Bool`、S を `Signal` で表し、f と g をそれぞれ
+3. 2点集合 $B = \{\mathrm{true}, \mathrm{false}\}$ と3点集合 $S = \{\mathrm{red}, \mathrm{yellow}, \mathrm{green}\}$ を考える。
+   写像 $f : B \to S$ を $f(\mathrm{true}) = \mathrm{green}$、$f(\mathrm{false}) = \mathrm{red}$ で定め、
+   写像 $g : S \to B$ を $g(\mathrm{green}) = \mathrm{true}$、$g(\mathrm{red}) = g(\mathrm{yellow}) = \mathrm{false}$ で定める。
+   $B$ を `Bool`、$S$ を `Signal` で表し、$f$ と $g$ をそれぞれ
    `boolToSignal : Bool → Signal`、`signalToBool : Signal → Bool` として書け。
-   合成 g ∘ f の true における値を予想し、
+   合成 $g \circ f$ の $\mathrm{true}$ における値を予想し、
    `#eval signalToBool (boolToSignal true)` で確かめよ。
-4. 写像 F : ℕ → ℕ に対して、写像 H : ℕ × ℕ → ℕ × ℕ を
-   H(x, y) = (F(x), F(y)) で定める。
-   直積 ℕ × ℕ を `Point` で表し、この対応 F ↦ H を
+4. 写像 $F : \mathbb{N} \to \mathbb{N}$ に対して、写像 $H : \mathbb{N} \times \mathbb{N} \to \mathbb{N} \times \mathbb{N}$ を
+   $H(x, y) = (F(x), F(y))$ で定める。
+   直積 $\mathbb{N} \times \mathbb{N}$ を `Point` で表し、この対応 $F \mapsto H$ を
    `mapPoint (F : Nat → Nat) (p : Point) : Point` として書け。
    `#eval (mapPoint double (Point.mk 2 3)).y` の値を予想してから確かめよ。
-5. 集合 A, B の直和の間の交換写像 s : A ⊔ B → B ⊔ A を考える。
-   A 側の要素 a は、行き先の A 側、すなわち右側の要素 a に送り、
-   B 側の要素 b は、行き先の B 側、すなわち左側の要素 b に送る。
+5. 集合 $A, B$ の直和の間の交換写像 $s : A \sqcup B \to B \sqcup A$ を考える。
+   $A$ 側の要素 $a$ は、行き先の $A$ 側、すなわち右側の要素 $a$ に送り、
+   $B$ 側の要素 $b$ は、行き先の $B$ 側、すなわち左側の要素 $b$ に送る。
    中身は変えず、左右の位置だけを入れ替える写像である。
-   直和を `MySum` で表し、A, B も引数として受け取る
+   直和を `MySum` で表し、$A, B$ も引数として受け取る
    `swapMySum (A B : Type) : MySum A B → MySum B A` を書け。
    `#eval fromSum (swapMySum Bool Nat (MySum.inl true))` の値を予想してから
    確かめよ（`fromSum : MySum Nat Bool → Nat` は[1節](#sec-Intro1.inductive-types)で定義した）。
-6. 各集合 A に対して、その要素 a を点付き集合 (A, a) に送る写像を考える。
-   点付き集合を `PointedType` で表し、A も引数として受け取る
+6. 各集合 $A$ に対して、その要素 $a$ を点付き集合 $(A, a)$ に送る写像を考える。
+   点付き集合を `PointedType` で表し、$A$ も引数として受け取る
    `pointedOf (A : Type) (a : A) : PointedType` を書け。
    [2節](#sec-Intro1.structures)の `pointedNat` や練習の `pointedBool` を、
    どの型とその項からも作れるように一般化したものである。
    `#check pointedOf Bool true` の表示を予想してから確かめよ。
-7. （発展）集合 A と写像 F : A → A に対して、その反復 Fⁿ : A → A を、
-   F⁰ = id_A、Fⁿ⁺¹ = F ∘ Fⁿ と定める。ここで id_A は A 上の恒等写像である。
-   自然数 n と要素 a を Fⁿ(a) に送る写像 ℕ × A → A を、A, F も引数に取り、
+7. （発展）集合 $A$ と写像 $F : A \to A$ に対して、その反復 $F^n : A \to A$ を、
+   $F^0 = \mathrm{id}_A$、$F^{n+1} = F \circ F^n$ と定める。ここで $\mathrm{id}_A$ は $A$ 上の恒等写像である。
+   自然数 $n$ と要素 $a$ を $F^n(a)$ に送る写像 $\mathbb{N} \times A \to A$ を、$A, F$ も引数に取り、
    `applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A` として書け。
    `n` の `match` は `| 0 => …`・`| k + 1 => …` の形（[1節](#sec-Intro1.inductive-types)の練習の
    `ofN` と同じ）。`#eval applyN Nat double 3 1` の値を予想してから確かめよ。
-8. （発展）集合 A の対角写像 Δ_A : A → A × A を、Δ_A(a) = (a, a) で定める。
-   直積を `Pair` で表し、どの型 A でも使える
+8. （発展）集合 $A$ の対角写像 $\Delta_A : A \to A \times A$ を、$\Delta_A(a) = (a, a)$ で定める。
+   直積を `Pair` で表し、どの型 $A$ でも使える
    `diag (A : Type) (a : A) : Pair A A` を書け。
    `#eval (diag Nat 3).fst` の値を予想してから確かめよ。
    A の項として与えられているのは a だけであることにも注目せよ。

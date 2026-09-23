@@ -311,7 +311,7 @@ but is expected to have type
 <p>本文の <code>def bad : Nat :=</code> の例と同じく、「<code>:=</code> の右の項の型を計算し、宣言された型と照合する」という手順の破れがそのまま報告されている。</p>
 </details></article>
 <article class="slide" id="intro1a-b2d3ef8d5147" data-kind="main" data-label="3. 関数" data-section="Intro1.functions"><div class="step" data-step="0"><h2 id="sec-Intro1.functions">3. 関数</h2>
-<p>集合 A・B に対して写像全体の集合 Map(A, B) が定まるのと同様に、型 <code>A</code>・<code>B</code> に対して「<code>A</code> から <code>B</code> への関数の型」<code>A → B</code> が定まる。つまり矢印 <code>→</code> は、<strong>2つの型から新しい型を1つ作る操作</strong>を表す記号であって、それ自体が具体的な関数を定めるのではない。ただし集合の場合と違い、<code>A → B</code> は写像概念から<strong>定義されたものではない</strong>——関数型は、これ以上さかのぼれない原始的な部品である。</p></div></article>
+<p>集合 $A$・$B$ に対して写像全体の集合 $\mathrm{Map}(A, B)$ が定まるのと同様に、型 <code>A</code>・<code>B</code> に対して「<code>A</code> から <code>B</code> への関数の型」<code>A → B</code> が定まる。つまり矢印 <code>→</code> は、<strong>2つの型から新しい型を1つ作る操作</strong>を表す記号であって、それ自体が具体的な関数を定めるのではない。ただし集合の場合と違い、<code>A → B</code> は写像概念から<strong>定義されたものではない</strong>——関数型は、これ以上さかのぼれない原始的な部品である。</p></div></article>
 <article class="slide" id="intro1a-18cd5d0402f0" data-kind="main" data-label="記号の入力のしかた" data-section="Intro1.functions"><div class="step" data-step="0"><h3>記号の入力のしかた</h3>
 <p>矢印 <code>→</code> を入力するには、VS Code の Lean 4 拡張で <code>\to</code> と打ち、続けて空白を打つか Tab を押す。このように、<strong>バックスラッシュ <code>\</code> で始まる略記</strong>で記号を入力できる。以後も記号の初出時に打ち方を添え、まとめの表を <code>Intro1b.lean</code> の付録に置く。<strong>エディタ上の記号にマウスを乗せると打ち方がポップアップに表示される</strong> ので、出会った記号はホバーで確かめてもよい。</p></div></article>
 <article class="slide" id="intro1a-f7fe84600151" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><h3>fun 記法 — 関数を項として書く</h3>
@@ -337,7 +337,7 @@ but is expected to have type
   Nat</code></pre></div></article>
 <article class="slide" id="intro1a-747d8ad3f1d5" data-kind="main" data-label="fun 記法 — 関数を項として書く" data-section="Intro1.functions"><div class="step" data-step="0"><p>「本体 <code>true</code> の型 <code>Bool</code> が、注釈から要求される行き先の型 <code>Nat</code> と一致しない」という報告である。</p></div></article>
 <article class="slide" id="intro1a-b69723cc9fea" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><h3>適用の書き方</h3>
-<p>数学ではふつう <code>f(x)</code> と書く関数適用を、Lean では <strong><code>f x</code> と、関数と引数を半角スペースで区切って</strong>書く。項を書く場所で、関数を表す項のあとに引数の項をこのように並べると、関数適用として読まれる。例えば <code>double 21</code> である。数学で「f(x)」と書くとき、私たちは f が関数で x がその定義域の元であることを前提している。Lean の <code>f x</code> も同じ約束の記法で、 <strong><code>f</code> が関数型を持ち、<code>x</code> がその定義域の型を持つこと</strong>を要求する。</p></div></article>
+<p>数学ではふつう <code>f(x)</code> と書く関数適用を、Lean では <strong><code>f x</code> と、関数と引数を半角スペースで区切って</strong>書く。項を書く場所で、関数を表す項のあとに引数の項をこのように並べると、関数適用として読まれる。例えば <code>double 21</code> である。数学で「$f(x)$」と書くとき、私たちは $f$ が関数で $x$ がその定義域の元であることを前提している。Lean の <code>f x</code> も同じ約束の記法で、 <strong><code>f</code> が関数型を持ち、<code>x</code> がその定義域の型を持つこと</strong>を要求する。</p></div></article>
 <article class="slide" id="intro1a-dc36cfec98aa" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><p>実際 <code>double 21</code> と書くと、Lean は2つのことを確かめる:</p>
 <ol>
 <li><code>double</code> の型は <code>Nat → Nat</code>（関数型である）——定義域は <code>Nat</code></li>
@@ -350,9 +350,9 @@ but is expected to have type
 <article class="slide" id="intro1a-9b60aef234b5" data-kind="main" data-label="適用の書き方" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> double 21</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>42</code></pre></div></article>
 <article class="slide" id="intro1a-0ec08a0e2665" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div></article>
-<article class="slide" id="intro1a-1bc8b9278190" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
-<li>関数 inc : ℕ → ℕ を inc(n) = n + 1 で定める。これを <code>fun</code> を用いて Lean で定義せよ。 <code>#check inc</code> の型と <code>#eval inc 4</code> の値を予想してから確かめよ。</li>
-<li>関数 f : ℕ → ℕ を f(n) = 2n + 3 で定める。これを <code>fun</code> を用いて Lean で定義せよ（掛け算は <code>*</code> と書く）。<code>#check f</code> の型と <code>#eval f 4</code> の値を予想してから確かめよ。</li>
+<article class="slide" id="intro1a-04ec7101a329" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
+<li>関数 $\mathrm{inc} : \mathbb{N} \to \mathbb{N}$ を $\mathrm{inc}(n) = n + 1$ で定める。これを <code>fun</code> を用いて Lean で定義せよ。 <code>#check inc</code> の型と <code>#eval inc 4</code> の値を予想してから確かめよ。</li>
+<li>関数 $f : \mathbb{N} \to \mathbb{N}$ を $f(n) = 2n + 3$ で定める。これを <code>fun</code> を用いて Lean で定義せよ（掛け算は <code>*</code> と書く）。<code>#check f</code> の型と <code>#eval f 4</code> の値を予想してから確かめよ。</li>
 </ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">def</span> inc : Nat → Nat := <span class="kw">fun</span> n =&gt; n + 1
@@ -383,10 +383,10 @@ but is expected to have type
 double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></article>
 <article class="slide" id="intro1a-90fd83b1c3e2" data-kind="main" data-label="表示の読み方: binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><p>この2つは<strong>同じ型の2通りの表示</strong>である。宣言の書き方も同様に2通りあって（<code>def double : Nat → Nat := fun n =&gt; …</code> と <code>def double&#x27; (n : Nat) : Nat := …</code>）、どちらで書いても同じものが定義される。以後どちらの表示も出てくるので、読み替えられるようにしておくこと。</p></div></article>
 <article class="slide" id="intro1a-c260770bd125" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
-<ol start="1"><li>関数 triple : ℕ → ℕ、triple(n) = n + n + n を binder 形式で定義せよ。 <code>#check triple</code> の表示を予想してから確かめよ。</li></ol></div></article>
-<article class="slide" id="intro1a-200e68a26381-a8e8d3fd7115" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval double (double 5)</code> の値を予想してから実行せよ。</li></ol></div></article>
-<article class="slide" id="intro1a-200e68a26381-18a44b6e5ed2" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>先ほどの inc(n) = n + 1 を、今度は binder 形式で <code>inc&#x27;</code> という名前で定義せよ。 <code>#check inc&#x27;</code> の表示と <code>#eval inc&#x27; 4</code> の値を予想して確かめ、<code>inc</code> と比較せよ。</li></ol></div></article>
-<article class="slide" id="intro1a-200e68a26381-47bfb67e3881" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>同様に f(n) = 2n + 3 を、binder 形式で <code>f&#x27;</code> という名前で定義せよ。 <code>#check f&#x27;</code> の表示と <code>#eval f&#x27; 4</code> の値を予想して確かめ、<code>f</code> と比較せよ。</li></ol></div>
+<ol start="1"><li>関数 $\mathrm{triple} : \mathbb{N} \to \mathbb{N}$、$\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。 <code>#check triple</code> の表示を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-6d3aae5bc707-a8e8d3fd7115" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval double (double 5)</code> の値を予想してから実行せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-6d3aae5bc707-3e7d601d9902" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>先ほどの $\mathrm{inc}(n) = n + 1$ を、今度は binder 形式で <code>inc&#x27;</code> という名前で定義せよ。 <code>#check inc&#x27;</code> の表示と <code>#eval inc&#x27; 4</code> の値を予想して確かめ、<code>inc</code> と比較せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-6d3aae5bc707-8def8b013cba" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>同様に $f(n) = 2n + 3$ を、binder 形式で <code>f&#x27;</code> という名前で定義せよ。 <code>#check f&#x27;</code> の表示と <code>#eval f&#x27; 4</code> の値を予想して確かめ、<code>f</code> と比較せよ。</li></ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">def</span> triple (n : Nat) : Nat := n + n + n
 
@@ -418,10 +418,10 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 <p><code>f&#x27;</code> も <code>Nat → Nat</code> 型の関数であり、<code>f</code> と同じ計算をしている。</p>
 </details></article>
 <article class="slide" id="intro1a-9474ba3a626d" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><h3>多変数関数はカリー化で表す</h3>
-<p>まず、ふつうの数学の話から始めよう。集合 X・Y・Z に対して、写像全体の集合には次の自然な1対1対応がある:</p>
-<pre class="quote"><code>Map(X × Y, Z) ≅ Map(X, Map(Y, Z))</code></pre></div></article>
-<article class="slide" id="intro1a-afe7aac08925" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><p>左辺の写像 f に、x を固定して得られる写像「y ↦ f(x, y)」を対応させる。つまり x ↦ (y ↦ f(x, y)) という右辺の写像にする。この操作を<strong>カリー化（currying）</strong>、逆に右辺の写像 g から (x, y) ↦ g(x)(y) を作る操作を<strong>アンカリー化（uncurrying）</strong>と呼ぶ。</p>
-<p>Lean では、この対応を使い、多変数関数も基本的に1引数関数を重ねた形で表す。 2引数なら、「1つ目の引数を受け取ると、<strong>残り1引数の関数を返す</strong>」形になる。例えば、数学でいう写像 ℕ × ℕ → ℕ、(a, b) ↦ a + b をカリー化したものを、 <code>plus : Nat → Nat → Nat</code> として定義してみよう:</p></div></article>
+<p>まず、ふつうの数学の話から始めよう。集合 $X$・$Y$・$Z$ に対して、写像全体の集合には次の自然な1対1対応がある:</p>
+<p>$$\mathrm{Map}(X \times Y, Z) \cong \mathrm{Map}(X, \mathrm{Map}(Y, Z))$$</p></div></article>
+<article class="slide" id="intro1a-c77a1ac781eb" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><p>左辺の写像 $f$ に、$x$ を固定して得られる写像「$y \mapsto f(x, y)$」を対応させる。つまり $x \mapsto (y \mapsto f(x, y))$ という右辺の写像にする。この操作を<strong>カリー化（currying）</strong>、逆に右辺の写像 $g$ から $(x, y) \mapsto g(x)(y)$ を作る操作を<strong>アンカリー化（uncurrying）</strong>と呼ぶ。</p></div></article>
+<article class="slide" id="intro1a-9e7266116001" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><p>Lean では、この対応を使い、多変数関数も基本的に1引数関数を重ねた形で表す。 2引数なら、「1つ目の引数を受け取ると、<strong>残り1引数の関数を返す</strong>」形になる。例えば、数学でいう写像 $\mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$(a, b) \mapsto a + b$ をカリー化したものを、 <code>plus : Nat → Nat → Nat</code> として定義してみよう:</p></div></article>
 <article class="slide" id="intro1a-plus" data-kind="main" data-label="カリー化された plus" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> plus : Nat → Nat → Nat := <span class="kw">fun</span> a =&gt; <span class="kw">fun</span> b =&gt; a + b</code></pre>
 <p>読み方の約束を先に押さえる。<code>→</code> は<strong>右結合</strong>である:</p>
 <pre class="quote"><code>Nat → Nat → Nat　は　Nat → (Nat → Nat)　のこと</code></pre>
@@ -440,12 +440,9 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 <div class="step" data-step="1"><pre class="quote"><code>plus 3 4 : Nat</code></pre></div></article>
 <article class="slide" id="intro1a-a337bbeb1aa9" data-kind="main" data-label="多変数関数はカリー化で表す" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#eval</span> plus 3 4</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>7</code></pre></div></article>
-<article class="slide" id="intro1a-4cef0d2ab264" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div></article>
-<article class="slide" id="intro1a-0eeaf0fd9e24" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
-<li>関数 addThree : ℕ → ℕ、addThree(n) = 3 + n を、<code>plus 3 : Nat → Nat</code> を使って Lean で定義せよ。<code>#check addThree</code> と <code>#eval addThree 4</code> の表示を予想してから確かめよ。</li>
-<li>関数 g : ℕ × ℕ → ℕ、g(a, b) = 2a + 3b を、カリー化して Lean で定義せよ。型は <code>Nat → Nat → Nat</code> とし、<code>fun a =&gt; fun b =&gt; …</code> を使うこと。 <code>#check g</code>・<code>#check g 2</code> の型と <code>#eval g 2 4</code> の値を予想してから確かめよ。</li>
-</ol></div></article>
-<article class="slide" id="intro1a-answers-ea6411a89c5a" data-kind="main" data-label="✏ 練習（書く）・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<article class="slide" id="intro1a-4cef0d2ab264" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3>
+<ol start="1"><li>関数 $\mathrm{addThree} : \mathbb{N} \to \mathbb{N}$、$\mathrm{addThree}(n) = 3 + n$ を、<code>plus 3 : Nat → Nat</code> を使って Lean で定義せよ。<code>#check addThree</code> と <code>#eval addThree 4</code> の表示を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-d42826e3857b-0b62e86a49f5" data-kind="main" data-label="✏ 練習（書く）（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li>関数 $g : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$g(a, b) = 2a + 3b$ を、カリー化して Lean で定義せよ。型は <code>Nat → Nat → Nat</code> とし、<code>fun a =&gt; fun b =&gt; …</code> を使うこと。 <code>#check g</code>・<code>#check g 2</code> の型と <code>#eval g 2 4</code> の値を予想してから確かめよ。</li></ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">def</span> addThree : Nat → Nat := plus 3
 
@@ -475,7 +472,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 <p>また <code>fun</code> の引数には、<code>fun n : Nat =&gt; e</code> のように括弧なしで型を注釈してもよい。</p></div></article>
 <article class="slide" id="intro1a-c0c18114e8eb" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3>
 <ol>
-<li>先ほどの g(a, b) = 2a + 3b を、binder 形式で2通りに書け。 <code>g&#x27;</code> は <code>(a : Nat) (b : Nat)</code> と分け、<code>g&#x27;&#x27;</code> は <code>(a b : Nat)</code> とまとめること。 <code>#check g&#x27;</code>・<code>#check g&#x27;&#x27;</code> の表示と、<code>#eval g&#x27; 2 4</code>・<code>#eval g&#x27;&#x27; 2 4</code> の値を予想してから確かめよ。</li>
+<li>先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 <code>g&#x27;</code> は <code>(a : Nat) (b : Nat)</code> と分け、<code>g&#x27;&#x27;</code> は <code>(a b : Nat)</code> とまとめること。 <code>#check g&#x27;</code>・<code>#check g&#x27;&#x27;</code> の表示と、<code>#eval g&#x27; 2 4</code>・<code>#eval g&#x27;&#x27; 2 4</code> の値を予想してから確かめよ。</li>
 </ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">def</span> g&#x27; (a : Nat) (b : Nat) : Nat := 2 * a + 3 * b
@@ -499,7 +496,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 <div class="step" data-step="1"><pre class="quote"><code>addMul (a b c : Nat) : Nat</code></pre></div></article>
 <article class="slide" id="intro1a-434d6d5e7934" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><p>これは <code>Nat</code> 型の引数を3つ受け取って <code>Nat</code> 型の項を返す、という binder 形式の表示である。矢印形式では <code>addMul : Nat → Nat → Nat → Nat</code> と読める。</p></div></article>
 <article class="slide" id="intro1a-696137289842" data-kind="main" data-label="関数を引数として受け取る" data-section="Intro1.functions"><div class="step" data-step="0"><h3>関数を引数として受け取る</h3>
-<p>数学でいう写像 Map(ℕ, ℕ) → ℕ、F ↦ F(21) を Lean で定義してみよう。引数 <code>F</code> の型は、数の型 <code>Nat</code> ではなく関数型 <code>Nat → Nat</code> になる:</p></div></article>
+<p>数学でいう写像 $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$、$F \mapsto F(21)$ を Lean で定義してみよう。引数 <code>F</code> の型は、数の型 <code>Nat</code> ではなく関数型 <code>Nat → Nat</code> になる:</p></div></article>
 <article class="slide" id="intro1a-apply-to-21" data-kind="main" data-label="関数を引数として受け取る" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> applyTo21 (F : Nat → Nat) : Nat := F 21
 
 <span class="kw">#check</span> applyTo21</code></pre></div>
@@ -508,15 +505,15 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 <pre class="lean"><code><span class="kw">#eval</span> applyTo21 double</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>42</code></pre></div></article>
 <article class="slide" id="intro1a-c604bece89f6" data-kind="main" data-label="型の異なる引数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><h3>型の異なる引数の binder 形式</h3>
-<p>引数の型が異なる場合は、型ごとに括弧を分けて書く。例えば、F と n を受け取って F(n) を返す関数では、<code>F : Nat → Nat</code> と <code>n : Nat</code> を別々に注釈する:</p></div></article>
+<p>引数の型が異なる場合は、型ごとに括弧を分けて書く。例えば、$F$ と $n$ を受け取って$F(n)$ を返す関数では、<code>F : Nat → Nat</code> と <code>n : Nat</code> を別々に注釈する:</p></div></article>
 <article class="slide" id="intro1a-apply-at" data-kind="main" data-label="型の異なる引数" data-section="Intro1.functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">def</span> applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
 
 <span class="kw">#check</span> applyAt</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>applyAt (F : Nat → Nat) (n : Nat) : Nat</code></pre></div></article>
 <article class="slide" id="intro1a-67f4a65087a5" data-kind="main" data-label="型の異なる引数の binder 形式" data-section="Intro1.functions"><div class="step" data-step="0"><p>矢印形式では <code>(Nat → Nat) → Nat → Nat</code> である。<code>F</code> を1つ渡すと、残りの引数 <code>n : Nat</code> を受け取る関数が返る。<code>(F n : Nat)</code> とまとめてしまうと両方が <code>Nat</code> 型という指定になるので、ここでは使えない。</p></div></article>
-<article class="slide" id="intro1a-3c501767eddd" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3>
-<ol start="1"><li>写像 twice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(n))) で定める。つまり、F を同じ入力に2回使うのではなく、1回目の結果にもう一度 F を適用する。これを Lean で <code>def twice (F : Nat → Nat) : Nat → Nat := …</code> と定義せよ。 <code>#check twice</code>・<code>#check twice double</code> の表示と <code>#eval twice double 3</code> の値を予想してから確かめよ。</li></ol></div></article>
-<article class="slide" id="intro1a-5217dd1e2891-29eb971b616c" data-kind="main" data-label="✏ 練習（書く）（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li>写像 thrice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(F(n)))) で定める。これを Lean で定義し、<code>#check thrice</code>・<code>#check thrice double</code> の表示と <code>#eval thrice double 3</code> の値を予想してから確かめよ。</li></ol></div>
+<article class="slide" id="intro1a-3c501767eddd" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div></article>
+<article class="slide" id="intro1a-ab81df836d15-c942c657afd0" data-kind="main" data-label="✏ 練習（書く）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="1"><li>写像 $\mathrm{twice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(n)))$ で定める。つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。これを Lean で <code>def twice (F : Nat → Nat) : Nat → Nat := …</code> と定義せよ。 <code>#check twice</code>・<code>#check twice double</code> の表示と <code>#eval twice double 3</code> の値を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-ab81df836d15-89864012655a" data-kind="main" data-label="✏ 練習（書く）（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li>写像 $\mathrm{thrice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(F(n))))$ で定める。これを Lean で定義し、<code>#check thrice</code>・<code>#check thrice double</code> の表示と <code>#eval thrice double 3</code> の値を予想してから確かめよ。</li></ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">def</span> twice (F : Nat → Nat) : Nat → Nat := <span class="kw">fun</span> n =&gt; F (F n)
 
@@ -545,13 +542,10 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre></div></arti
 
 <span class="kw">#check</span> Map</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>Map : Type → Type → Type</code></pre></div></article>
-<article class="slide" id="intro1a-a179850e7318" data-kind="main" data-label="定義域や行き先が型でもよい" data-section="Intro1.functions"><div class="step" data-step="0"><p>節の冒頭で「<code>A → B</code> は写像全体の集合 Map(A, B) と同じ役割を持つ」と述べたが、その Map を、いま Lean の項として定義したことになる。<code>Map Nat Nat</code> は計算すると <code>Nat → Nat</code> になるから、<code>double</code> は <code>Map Nat Nat</code> の項でもある（直後の練習で確かめよう）。「型を受け取る関数」「型を返す関数」は、 <a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.dependent-functions">4節</a>（依存関数型）でさらに主役になる。</p></div></article>
-<article class="slide" id="intro1a-8b8cb573ef21" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3></div></article>
-<article class="slide" id="intro1a-4a17a5159191" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><ol>
-<li><code>#check Map Nat Bool</code> の表示を予想してから確かめよ。また、数学でいう関数 double : ℕ → ℕ、double(n) = n + n を、<code>Map Nat Nat</code> 型の項としても使えるか考えよ。 <code>def double2 : Map Nat Nat := double</code> が受理されるか予想してから試せ。受理されたら、<code>#check double2</code> の表示も予想してから確かめよ。</li>
-<li><code>#check Map Nat</code> の表示を予想してから確かめよ（<code>Map</code> に1つだけ渡すと、何が返るか。<code>plus 3</code> の型を読んだのと同じ手順で考える）。</li>
-</ol></div></article>
-<article class="slide" id="intro1a-answers-b58b87306d39" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<article class="slide" id="intro1a-d76c76e0d53e" data-kind="main" data-label="定義域や行き先が型でもよい" data-section="Intro1.functions"><div class="step" data-step="0"><p>節の冒頭で「<code>A → B</code> は写像全体の集合 $\mathrm{Map}(A, B)$ と同じ役割を持つ」と述べたが、その $\mathrm{Map}$ を、いま Lean の項として定義したことになる。<code>Map Nat Nat</code> は計算すると <code>Nat → Nat</code> になるから、<code>double</code> は <code>Map Nat Nat</code> の項でもある（直後の練習で確かめよう）。「型を受け取る関数」「型を返す関数」は、 <a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.dependent-functions">4節</a>（依存関数型）でさらに主役になる。</p></div></article>
+<article class="slide" id="intro1a-3c7e0c408238" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
+<ol start="1"><li><code>#check Map Nat Bool</code> の表示を予想してから確かめよ。また、数学でいう関数 $\mathrm{double} : \mathbb{N} \to \mathbb{N}$、$\mathrm{double}(n) = n + n$ を、<code>Map Nat Nat</code> 型の項としても使えるか考えよ。 <code>def double2 : Map Nat Nat := double</code> が受理されるか予想してから試せ。受理されたら、<code>#check double2</code> の表示も予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-1698710221bd-8e71ed5461f1" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#check Map Nat</code> の表示を予想してから確かめよ（<code>Map</code> に1つだけ渡すと、何が返るか。<code>plus 3</code> の型を読んだのと同じ手順で考える）。</li></ol></div>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">#check</span> Map Nat Bool</code></pre>
 <pre class="quote"><code>Map Nat Bool : Type</code></pre>
@@ -627,15 +621,15 @@ but is expected to have type
 <p>では <code>double plus 3 4</code> と括弧なしで書いたらどうなるか。適用は左結合なのでこれは <code>((double plus) 3) 4</code> と読まれ、最初の <code>double plus</code> の時点で上と同じエラーになる。<code>double (plus 3 4)</code> の括弧は省略できない。</p></div></article>
 <article class="slide" id="intro1a-dc3f75875697" data-kind="main" data-label="✏ 練習" data-section="Intro1.functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
 <ol start="1"><li><code>#check</code> する<strong>前に</strong>型を計算せよ: <code>(3 + 4) * 2</code>、<code>plus (double 3)</code>、 <code>applyTo21 (plus 3)</code>、<code>fun n : Nat =&gt; plus n n</code>。それから確かめよ。</li></ol></div></article>
-<article class="slide" id="intro1a-7366ba2908d3-7f19ed87d439" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval applyTo21 (plus 100)</code> の値を予想してから実行せよ。</li></ol></div></article>
-<article class="slide" id="intro1a-7366ba2908d3-064741f4950e" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>次の2つの写像を Lean で定義し、<code>#check</code> の表示を予想してから確かめよ:<ul>
-<li>evalAt : Map(ℕ, ℕ) × ℕ → ℕ、evalAt(F, n) = F(n)。カリー化して定義すること。 <code>#eval evalAt double 5</code> の値も予想してから実行せよ。</li>
-<li>shift : Map(ℕ, ℕ) → Map(ℕ, ℕ)、F ↦ (n ↦ F(n + 1))。関数を受け取って<strong>関数を返す</strong>関数である。 <code>#eval shift double 3</code> の値も予想してから実行せよ。</li>
+<article class="slide" id="intro1a-78937f8c5d29-7f19ed87d439" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="2"><li><code>#eval applyTo21 (plus 100)</code> の値を予想してから実行せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-78937f8c5d29-30e90d5703fc" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="3"><li>次の2つの写像を Lean で定義し、<code>#check</code> の表示を予想してから確かめよ:<ul>
+<li>$\mathrm{evalAt} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \times \mathbb{N} \to \mathbb{N}$、$\mathrm{evalAt}(F, n) = F(n)$。カリー化して定義すること。 <code>#eval evalAt double 5</code> の値も予想してから実行せよ。</li>
+<li>$\mathrm{shift} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$、$F \mapsto (n \mapsto F(n + 1))$。関数を受け取って<strong>関数を返す</strong>関数である。 <code>#eval shift double 3</code> の値も予想してから実行せよ。</li>
 </ul></li></ol></div></article>
-<article class="slide" id="intro1a-7366ba2908d3-cfcc6ac37a6a" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>「型から項を書く」練習: Map(ℕ, ℕ) → ℕ という写像を、<strong>中身の違うもので2つ</strong>考えよ（例えば F ↦ F(21) と F ↦ 0）。それらを Lean で <code>useF1</code>・<code>useF2</code> と名付けて定義し、型を予想してから <code>#check</code> で確かめよ。どちらも <code>(Nat → Nat) → Nat</code> 型になるはずである。同じ型に項は何通りもある——型は仕様であって、中身までは決めない。</li></ol></div></article>
-<article class="slide" id="intro1a-7366ba2908d3-fd2334d81737" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="5"><li>（発展）写像 G : B → C と F : A → B に合成 G ∘ F : A → C を対応させる写像を考える。型 A・B・C も引数に取り、これを Lean で <code>compose (A B C : Type) (G : B → C) (F : A → B) : A → C</code> と定義せよ。 <code>#check compose</code> の表示と、 <code>#eval compose Nat Nat Nat double (fun n =&gt; n + 1) 3</code> の値を予想してから確かめよ。</li></ol></div></article>
-<article class="slide" id="intro1a-7366ba2908d3-cc5f2da8e5d8" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="6"><li>（発展）練習 3 を一般化し、任意の A・B に対する写像 Map(A, B) × A → B、(F, a) ↦ F(a) と、写像 g : A → A に対する変換 Map(A, A) → Map(A, A)、F ↦ (a ↦ F(g(a))) を考える。型や g も引数として受け取るように、Lean で <code>evalAt&#x27; (A B : Type) (F : A → B) (a : A) : B</code> と <code>shift&#x27; (A : Type) (g : A → A) (F : A → A) : A → A</code> を定義せよ。両者の <code>#check</code> の表示と、 <code>#eval evalAt&#x27; Nat Nat double 5</code> と <code>#eval shift&#x27; Nat (fun x =&gt; x + 1) double 3</code> の値を予想してから確かめ、元の版と比較せよ。</li></ol></div></article>
-<article class="slide" id="intro1a-answers-671532ed0f6d" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
+<article class="slide" id="intro1a-78937f8c5d29-3069df1c86a2" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="4"><li>「型から項を書く」練習: $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$ という写像を、<strong>中身の違うもので2つ</strong>考えよ（例えば $F \mapsto F(21)$ と $F \mapsto 0$）。それらを Lean で <code>useF1</code>・<code>useF2</code> と名付けて定義し、型を予想してから <code>#check</code> で確かめよ。どちらも <code>(Nat → Nat) → Nat</code> 型になるはずである。同じ型に項は何通りもある——型は仕様であって、中身までは決めない。</li></ol></div></article>
+<article class="slide" id="intro1a-78937f8c5d29-67b90d4ee9ec" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="5"><li>（発展）写像 $G : B \to C$ と $F : A \to B$ に合成 $G \circ F : A \to C$ を対応させる写像を考える。型 $A$・$B$・$C$ も引数に取り、これを Lean で <code>compose (A B C : Type) (G : B → C) (F : A → B) : A → C</code> と定義せよ。 <code>#check compose</code> の表示と、 <code>#eval compose Nat Nat Nat double (fun n =&gt; n + 1) 3</code> の値を予想してから確かめよ。</li></ol></div></article>
+<article class="slide" id="intro1a-78937f8c5d29-4e5ae45dfd9e" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="6"><li>（発展）練習 3 を一般化し、任意の $A$・$B$ に対する写像 $\mathrm{Map}(A, B) \times A \to B$、$(F, a) \mapsto F(a)$ と、写像 $g : A \to A$ に対する変換 $\mathrm{Map}(A, A) \to \mathrm{Map}(A, A)$、$F \mapsto (a \mapsto F(g(a)))$ を考える。型や $g$ も引数として受け取るように、Lean で <code>evalAt&#x27; (A B : Type) (F : A → B) (a : A) : B</code> と <code>shift&#x27; (A : Type) (g : A → A) (F : A → A) : A → A</code> を定義せよ。</li></ol></div></article>
+<article class="slide" id="intro1a-78937f8c5d29-4ce51e33a3d4" data-kind="main" data-label="✏ 練習（続き）" data-section="Intro1.functions"><div class="step" data-step="0"><ol start="6"><li>両者の <code>#check</code> の表示と、 <code>#eval evalAt&#x27; Nat Nat double 5</code> と <code>#eval shift&#x27; Nat (fun x =&gt; x + 1) double 3</code> の値を予想してから確かめ、元の版と比較せよ。</li></ol></div>
 <details class="sol"><summary>解答 1</summary>
 <p>型の計算: <code>(3 + 4) * 2</code> は <code>Nat</code>。<code>plus (double 3)</code> は <code>plus : Nat → Nat → Nat</code> に第1引数だけ渡したので <code>Nat → Nat</code>（部分適用）。<code>applyTo21 (plus 3)</code> は <code>applyTo21 : (Nat → Nat) → Nat</code> に関数を渡し切ったので <code>Nat</code>。 <code>fun n : Nat =&gt; plus n n</code> は <code>Nat</code> を受け取って <code>plus n n : Nat</code> を返すので <code>Nat → Nat</code>。</p>
 <pre class="lean"><code><span class="kw">#check</span> (3 + 4) * 2</code></pre>
@@ -686,7 +680,8 @@ but is expected to have type
 <pre class="lean"><code><span class="kw">#eval</span> compose Nat Nat Nat double (<span class="kw">fun</span> n =&gt; n + 1) 3</code></pre>
 <pre class="quote"><code>8</code></pre>
 <p>内側から: <code>F = fun n =&gt; n + 1</code> で <code>3</code> が <code>4</code> に、<code>G = double</code> で <code>8</code> になる。</p>
-</details>
+</details></article>
+<article class="slide" id="intro1a-answers-cf8ddff3c7eb" data-kind="main" data-label="✏ 練習・解答" data-section="Intro1.functions"><div class="step" data-step="0"></div>
 <details class="sol"><summary>解答 6</summary>
 <pre class="lean"><code><span class="kw">def</span> evalAt&#x27; (A B : <span class="sort">Type</span>) (F : A → B) (a : A) : B := F a
 
@@ -722,7 +717,7 @@ but is expected to have type
 <pre class="quote"><code>idAt : (α : Type) → α → α</code></pre></div></article>
 <article class="slide" id="intro1a-3a4a7702be4d" data-kind="main" data-label="4. 依存関数型 — 入力によって結果の型が変わる" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>と書く（束縛した名前 <code>α</code> が矢印の右側に現れるのが目印）。これが Lean の関数型の一般形で、<code>A → B</code> は「行き先が入力に依存しない特別な場合」の略記である。</p></div></article>
 <article class="slide" id="intro1a-e0bd1ead2251" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>数を添字にする型の族</h3>
-<p>依存する入力は、型そのものでなくてもよい。自然数 n ごとに「自然数の n 個組の型」を考えよう。数学では ℕⁿ を、n 点集合から ℕ への写像全体として表せる。</p>
+<p>依存する入力は、型そのものでなくてもよい。自然数 $n$ ごとに「自然数の $n$ 個組の型」を考えよう。数学では $\mathbb{N}^n$ を、$n$ 点集合から $\mathbb{N}$ への写像全体として表せる。</p>
 <p>標準環境の <code>Fin n</code> は、0 以上 n 未満の番号の型である。ここでは <code>Nat</code> や <code>Bool</code> と同様、意味と型を知って使う。値とその範囲の証明を組にした中身は、<a target="_blank" rel="noopener" href="../ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> の6節</a>で見る。</p></div></article>
 <article class="slide" id="intro1a-a9dd2a4867de" data-kind="main" data-label="数を添字にする型の族" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> Fin</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>Fin (n : Nat) : Type</code></pre>
@@ -748,12 +743,10 @@ but is expected to have type
 <p><code>Tuple</code> は型を返し、<code>constTuple</code> は<strong>その型の項を返す</strong>。この違いを区別しよう。 <code>constTuple 3</code> は3個組、<code>constTuple 4</code> は4個組であり、結果の型が違う。</p></div></article>
 <article class="slide" id="intro1a-0e0f64a16316" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>一般の族と、依存する適用</h3>
 <p>一般に <code>B : A → Type</code> は、各 <code>a : A</code> に型 <code>B a</code> を割り当てる<strong>型の族</strong>である。その各点で項を返す関数の型が <code>(a : A) → B a</code> である。 <code>Tuple</code> の例では <code>A = Nat</code>、<code>B = Tuple</code> とすればよい。</p>
-<p>適用の規則も、それに合わせて一般化される:</p></div></article>
-<article class="slide" id="intro1a-980b820adbf4" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><pre class="quote"><code>f : (a : A) → B a    x : A
--------------------------
-         f x : B x</code></pre>
-<p>入力の型が合うかを確かめたうえで、結果の型の中の <code>a</code> にも実引数 <code>x</code> を入れる。 <code>constTuple 3</code> の型が <code>Tuple 3</code> になったのは、この代入である。結果の型が入力によらない場合が、これまでの <code>A → C</code> である。</p></div></article>
-<article class="slide" id="intro1a-962e62f65780" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>集合族の言葉では、各 a に B(a) の要素を一つずつ指定するので、族の直積 ∏_{a∈A} B(a)の要素に相当する。<code>idAt</code> も、各型 α に恒等写像という <code>α → α</code> の項を指定する例だった。</p></div></article>
+<p>適用の規則も、それに合わせて一般化される:</p>
+<div class="rule"><div class="prem"><span>f : (a : A) → B a</span><span>x : A</span></div><div class="concl">f x : B x</div></div></div></article>
+<article class="slide" id="intro1a-b46f25033f59" data-kind="main" data-label="一般の族と、依存する適用" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><p>入力の型が合うかを確かめたうえで、結果の型の中の <code>a</code> にも実引数 <code>x</code> を入れる。 <code>constTuple 3</code> の型が <code>Tuple 3</code> になったのは、この代入である。結果の型が入力によらない場合が、これまでの <code>A → C</code> である。</p>
+<p>集合族の言葉では、各 $a$ に $B(a)$ の要素を一つずつ指定するので、族の直積 $\prod_{a \in A} B(a)$の要素に相当する。<code>idAt</code> も、各型 α に恒等写像という <code>α → α</code> の項を指定する例だった。</p></div></article>
 <article class="slide" id="intro1a-14188dd58144" data-kind="main" data-label="✏ 練習" data-section="Intro1.dependent-functions"><div class="step" data-step="0"><h3>✏ 練習</h3>
 <ol>
 <li><code>#check idAt (Nat → Nat)</code> の表示と、<code>#eval idAt (Nat → Nat) double 21</code> の値を予想せよ。</li>

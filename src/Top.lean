@@ -946,7 +946,7 @@ theorem IsCompact.image {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Conti
     IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {K : Set X} (hK : IsCompact K)
       {f : X → Y} (hf : Continuous f) : IsCompact (f '' K)
 
-数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、
+数学の主張「$K$ コンパクト、$f$ 連続 $\Rightarrow$ $f(K)$ コンパクト」が、
 そのまま「証明を2つ受け取って証明を返す関数」の型になっている。
 -/
 

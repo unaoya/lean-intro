@@ -522,8 +522,8 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre></div><
 <article class="slide" id="ch2-4e4d7d203f64" data-kind="main" data-label="例3: 全射どうしの合成は全射" data-section="CH2.existence"><div class="step" data-step="0"><h3>例3: 全射どうしの合成は全射</h3>
 <p>今度は、写像 f : A → B と g : B → C がともに全射であるとする。その全射性をそれぞれ hf・hg と名付け、合成 g∘f : A → C も全射であることを示そう。</p>
 <p><strong>ふつうの証明</strong>。「c を取る。g の全射性より g b = c となる b があり、 f の全射性より f a = b となる a がある。すると g (f a) = g b = c。∎」</p>
-<p><strong>論理式</strong>。示すべき結論「合成 g∘f が全射」は、定義まで開くと</p></div></article>
-<article class="slide" id="ch2-8cb30c5630b1" data-kind="main" data-label="例3: 全射どうしの合成は全射" data-section="CH2.existence"><div class="step" data-step="0"><pre class="quote"><code>∀c ∃a (g(f(a)) = c)</code></pre>
+<p><strong>論理式</strong>。示すべき結論「合成 $g \circ f$ が全射」は、定義まで開くと</p></div></article>
+<article class="slide" id="ch2-ea03096d7aa4" data-kind="main" data-label="例3: 全射どうしの合成は全射" data-section="CH2.existence"><div class="step" data-step="0"><p>$$\forall c\, \exists a\, \bigl(g(f(a)) = c\bigr)$$</p>
 <p>——例1と同じ「∀ の内側に ∃」の形が、関数の文脈で再登場する。</p></div></article>
 <article class="slide" id="ch2-dcacdc466867" data-kind="main" data-label="例3: 全射どうしの合成は全射" data-section="CH2.existence"><div class="step" data-step="0"><p><strong>形式化を意識した版</strong>（ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射の定義「どの点にも、そこへ送られてくる元がある」に戻ると、hg c は「g b = c となる b の存在」の証明——存在の使い方で b と hb を<strong>取り出す</strong>（上の <code>exists_map</code> と同じ）。hf b からも a と ha を取り出す。示すべきは「g (f a) = c となる a の存在」だから、候補 a と性質の証明を <code>⟨a, …⟩</code> で構成する（例1の前の存在の小例）。性質 g (f a) = c は等式の連鎖で: ha の<strong>両辺に g を施して</strong> g (f a) = g b、 hb と<strong>つなぐ</strong>（例2）。∎</p>
 <p><strong>項</strong>。まず論理式をそのまま型に（仮定も全射の定義を開いた形で書く）:</p></div></article>
@@ -672,7 +672,7 @@ but is expected to have type
 <div class="step" data-step="1"><pre class="quote"><code>first 9 : Fin (9 + 1)</code></pre></div></article>
 <article class="slide" id="ch2-90e5abd5fc91" data-kind="main" data-label="部分型 — 第二成分が証明の依存和" data-section="CH.dependent-sums"><div class="step" data-step="0"><p>値はどれも「0 番」だが、その <code>0</code> の住んでいる型が入力ごとに違う。 <code>0</code> と書けるのは、数字が期待される型に応じて読まれる記法だからである（<a target="_blank" rel="noopener" href="../intro1a.html#sec-Intro1.functions"><code>Intro1a.lean</code> 3節</a>）。 <code>last</code> と見比べてほしい。<code>first</code> の値は常に 0 番なので証明を書かずに済むが、 <code>last</code> は値 <code>n</code> が型の上限すれすれに依存するぶん、<code>n &lt; n + 1</code> の証明を添える必要があった。</p></div></article>
 <article class="slide" id="ch2-b7d20bc1f1ab" data-kind="optional" data-label="補足（初読は飛ばしてよい）: では 2 : Fin 3 なのか？" data-section="CH.dependent-sums"><div class="step" data-step="0"><h3>補足（初読は飛ばしてよい）: では <code>2 : Fin 3</code> なのか？</h3>
-<p>「<code>Fin 3</code> は 3 未満の番号の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 <code>Fin 3</code> の項は、上で見たとおり値と証明の組であり、<code>Nat</code> の項とは<strong>別の型の項</strong>である。集合のように、<code>Fin 3</code> が <code>Nat</code> の部分集合として含まれているわけではない。</p>
+<p>「<code>Fin 3</code> は 3 未満の番号の型」と聞くと、集合 $\{0, 1, 2\} \subset \mathbb{N}$ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 <code>Fin 3</code> の項は、上で見たとおり値と証明の組であり、<code>Nat</code> の項とは<strong>別の型の項</strong>である。集合のように、<code>Fin 3</code> が <code>Nat</code> の部分集合として含まれているわけではない。</p>
 <p>まぎらわしいことに、<code>(2 : Fin 3)</code> という書き方自体は通る:</p></div></article>
 <article class="slide" id="ch2-ed33c96bc347" data-kind="optional" data-label="補足（初読は飛ばしてよい）: では 2 : Fin 3 なのか？" data-section="CH.dependent-sums"><div class="step" data-step="0"><pre class="lean"><code><span class="kw">#check</span> (2 : Nat)</code></pre></div>
 <div class="step" data-step="1"><pre class="quote"><code>2 : Nat</code></pre></div></article>

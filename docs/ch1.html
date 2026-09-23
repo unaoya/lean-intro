@@ -36,6 +36,10 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
 aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
 aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
 aside.note p { margin: .4rem 0; }
@@ -65,6 +69,10 @@ details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-ra
 details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
 details.sol[open] > summary { margin-bottom: .4rem; }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
 <nav><span><a href="intro1a.html">← Intro1a</a></span><a href="index.html">目次</a><span><a href="intro1b.html">Intro1b →</a></span></nav>
@@ -93,9 +101,7 @@ h : P       — h は P の証明</code></pre>
 <pre class="quote"><code>hP  : P
 hPQ : P → Q</code></pre>
 <p><code>hPQ : P → Q</code> は、<code>P</code> の証明を受け取ると <code>Q</code> の証明を返す関数として使える。したがって、<code>hPQ</code> に <code>hP</code> を渡した項 <code>hPQ hP</code> の型は <code>Q</code> である:</p>
-<pre class="quote"><code>hPQ : P → Q    hP : P
-----------------------
-       hPQ hP : Q</code></pre>
+<div class="rule"><div class="prem"><span>hPQ : P → Q</span><span>hP : P</span></div><div class="concl">hPQ hP : Q</div></div>
 <p>これは <code>f : α → β</code> と <code>a : α</code> から <code>f a : β</code> を得た、<code>Intro1a.lean</code> の関数適用とまったく同じ型の照合である。</p>
 <pre class="lean"><code><span class="kw">theorem</span> modus_ponens
     (P Q : <span class="sort">Prop</span>)
@@ -310,9 +316,9 @@ is not definitionally equal to the right-hand side
 <li>hf を同様に f x = f y に適用して、x = y。これが示すべきことだった。∎</li>
 </ol>
 <p>（教科書なら「g (f x) = g (f y) とすると、g の単射性より f x = f y、f の単射性より x = y。∎」と2行で済ませるところである。）</p>
-<p><strong>論理式</strong>。示すべき結論「合成 g∘f が単射」を、単射の定義まで開くと</p>
-<pre class="quote"><code>∀x ∀y (g(f(x)) = g(f(y)) → x = y)</code></pre>
-<p>である。仮定 hg・hf も同じ形の論理式（∀u ∀v (g(u) = g(v) → u = v) など）であることが、この例の主役になる。</p>
+<p><strong>論理式</strong>。示すべき結論「合成 $g \circ f$ が単射」を、単射の定義まで開くと</p>
+<p>$$\forall x\, \forall y\, \bigl(g(f(x)) = g(f(y)) \to x = y\bigr)$$</p>
+<p>である。仮定 <code>hg</code>・<code>hf</code> も同じ形の論理式（$\forall u\, \forall v\, \bigl(g(u) = g(v) \to u = v\bigr)$ など）であることが、この例の主役になる。</p>
 <p><strong>形式化を意識した版</strong>。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。だから頭の動きは「x, y を取り、さらに仮定 h を取る」。</p>
 <p>今度は、仮定 hg・hf の<strong>使い方</strong>が主役になる。hg 自身が全称+ならばの命題、つまり「<strong>当てはめて使う道具</strong>」である。<strong>全称文・ならば文の使い方は、対象を当てはめて適用すること</strong>——例1で <code>hPQ</code> に <code>hP</code> を渡したのと、実は同じ動きである。仮定も既知の定理も、文脈にある<strong>部品</strong>という資格は変わらない。</p>
 <p><strong>項</strong>。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の形で書く）:</p>

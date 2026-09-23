@@ -11,6 +11,8 @@
     → コード・出力をまたぐ長い枠（開始・終了マーカー自体は表示しない）
   * 行頭の docstring `/-- ... -/` → 地の文（直後の宣言の説明として、コードの直前に置く）
   * それ以外（宣言・フィールドの docstring・コメント・#check）→ コードブロック（簡易ハイライト付き）
+  * 地の文の `$…$` / `$$…$$` → 数式（KaTeX を CDN から読み込み、閲覧時に描画）
+  * 字下げブロックが「前提行 / ---- / 結論行」の3行 → 推論規則（横線付き。前提は空白2つ以上で区切る）
 
 章構成を変えるときは CHAPTERS を書き換えるだけでよい。
 """
@@ -222,7 +224,11 @@ def render_prose(lines: list[str], chapter: str = "", sections=None, *, section_
                         break
                 else:
                     break
-            out.append('<pre class="quote"><code>' + html.escape(refs.stripped("\n".join(code))) + "</code></pre>")
+            rule = render_rule(code)
+            if rule is not None:
+                out.append(rule)
+            else:
+                out.append('<pre class="quote"><code>' + html.escape(refs.stripped("\n".join(code))) + "</code></pre>")
             continue
         # リスト（* / 1. 、2字下げで入れ子と継続行）
         if re.match(r"^ *(\*|\d+\.) ", line):
@@ -236,6 +242,17 @@ def render_prose(lines: list[str], chapter: str = "", sections=None, *, section_
             i += 1
         out.append(f"<p>{md(smart_join(para))}</p>")
     return "\n".join(out)
+
+
+def render_rule(code: list[str]) -> str | None:
+    """字下げブロックが「前提行 / ---- / 結論行」の3行なら推論規則として横線付きで組む。
+    前提は2つ以上の空白で区切る。該当しなければ None（通常のコード引用として扱う）。"""
+    rows = [l for l in code if l.strip()]
+    if len(rows) != 3 or not re.fullmatch(r"\s*-{4,}\s*", rows[1]):
+        return None
+    prems = "".join(f"<span>{html.escape(p)}</span>" for p in re.split(r"\s{2,}", rows[0].strip()))
+    return (f'<div class="rule"><div class="prem">{prems}</div>'
+            f'<div class="concl">{html.escape(rows[2].strip())}</div></div>')
 
 
 def render_list(lines: list[str], i: int, chapter: str = "", sections=None) -> tuple[int, str]:
@@ -480,6 +497,10 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
 aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
 aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
 aside.note p { margin: .4rem 0; }
@@ -543,6 +564,13 @@ def nav_html(idx: int) -> str:
     return f'<nav><span>{prev_a}</span><a href="index.html">目次</a><span>{next_a}</span></nav>'
 
 
+KATEX_VER = "0.18.7"
+KATEX_HEAD = f"""<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@{KATEX_VER}/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@{KATEX_VER}/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@{KATEX_VER}/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{{delimiters:[{{left:'$$',right:'$$',display:true}},{{left:'$',right:'$',display:false}}]}})"></script>"""
+
+
 def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -551,6 +579,7 @@ def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <style>{css}</style>
+{KATEX_HEAD}
 </head>
 <body>
 {nav}

@@ -36,6 +36,10 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
 aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
 aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
 aside.note p { margin: .4rem 0; }
@@ -65,6 +69,10 @@ details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-ra
 details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
 details.sol[open] > summary { margin-bottom: .4rem; }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
 <nav><span><a href="intro2.html">← Intro2</a></span><a href="index.html">目次</a><span><a href="extra.html">Extra →</a></span></nav>
@@ -612,7 +620,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> IsCompact.image</code></pre>
 <pre class="quote"><code>IsCompact.image {X : Type} [TopologicalSpace X] {Y : Type} [TopologicalSpace Y] {K : Set X} (hK : IsCompact K)
   {f : X → Y} (hf : Continuous f) : IsCompact (f &#x27;&#x27; K)</code></pre>
-<p>数学の主張「K コンパクト、f 連続 ⇒ f(K) コンパクト」が、そのまま「証明を2つ受け取って証明を返す関数」の型になっている。</p>
+<p>数学の主張「$K$ コンパクト、$f$ 連続 $\Rightarrow$ $f(K)$ コンパクト」が、そのまま「証明を2つ受け取って証明を返す関数」の型になっている。</p>
 <pre class="lean"><code><span class="cm">-- 項で。`intro` が `fun` に、`have` の分解が `match` に、`exact` が組の構成に対応する</span>
 <span class="kw">example</span> {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
     IsCompact (f &#x27;&#x27; K) :=
