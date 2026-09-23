@@ -1,1 +1,480 @@
-<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>はじめての Lean · 講義用</title><style>body{font-family:sans-serif;max-width:50rem;margin:4rem auto;padding:0 1.5rem;line-height:2}a{color:#235965}li{margin:1rem 0}</style><h1>はじめての Lean · 講義用</h1><p>左右キーで進行。コードの出力は次の操作で表示します。</p><ol><li><a href="intro1a.html">型と項 I — 関数と依存関数</a></li><li><a href="ch1.html">証明を読む I — ならばと全称</a></li><li><a href="intro1b.html">型と項 II — 帰納型と構造</a></li><li><a href="ch2.html">証明を読む II — 組と場合分け</a></li><li><a href="intro2.html">Lean 最小限の導入 II — Top のための道具</a></li><li><a href="top.html">位相空間</a></li><li><a href="extra.html">発展演習: 位相空間の圏と自由忘却随伴</a></li><li><a href="ascoli.html">発展演習: Ascoli の定理（ブルバキ流）</a></li></ol><p><a href="../index.html">通読版</a></p></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>はじめての Lean · 講義用</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #fcfcfa;
+  --ink: #252c33;
+  --muted: #646e76;
+  --line: #dce1e2;
+  --accent: #235965;
+  --code: #f0f2f1;
+  --output: #edf3f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font-family: "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button {
+  color: inherit; border: 1px solid var(--line); border-radius: 5px;
+  background: transparent; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #edf0ee; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 3px solid #49858e; outline-offset: 4px;
+}
+button:disabled { cursor: default; opacity: .4; }
+button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+.toolbar, .navigation {
+  display: none;
+  align-items: center; justify-content: space-between;
+  font-size: 14px; line-height: 1.5; background: var(--paper); z-index: 2;
+}
+.toolbar { border-bottom: 1px solid var(--line); padding: 14px 30px; gap: 20px; }
+.identity { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.identity > span:first-child { font-weight: 600; }
+.identity a { font-weight: 600; text-decoration: none; color: inherit; }
+#chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
+.chapter { color: var(--muted); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 13px; }
+.tools button { border-color: transparent; padding-inline: 8px; }
+.optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+.optional-control[hidden] { display: none; }
+input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
+.slide, .print-content {
+  font-size: clamp(22px, 2.1vw, 27px); line-height: 1.8;
+  overflow-wrap: anywhere; margin-bottom: 60px;
+}
+.slide h1 { font-size: 1.5em; line-height: 1.5; font-weight: 650; margin: 0 0 36px; }
+.slide h2 { font-size: 1.28em; line-height: 1.5; font-weight: 650; margin: 0 0 28px; }
+.slide h3 { font-size: 1.08em; line-height: 1.65; font-weight: 600; margin: 0 0 24px; }
+.slide p { margin: 0 0 1em; }
+.slide strong { font-weight: 650; }
+.slide a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.slide ul, .slide ol { margin: 0 0 1em; padding-left: 1.6em; }
+.slide li { padding-left: .15em; margin-bottom: .8em; }
+.slide .list-fragment, .print-slide .print-content .list-fragment { margin-bottom: 0; }
+.slide code {
+  font-family: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
+  font-size: .87em; background: var(--code); border-radius: 3px; padding: .08em .12em;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.slide pre {
+  margin: 0 0 22px; padding: 18px 24px; line-height: 1.55;
+  border-left: 3px solid #c5cecd; background: var(--code);
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.1em;
+}
+.slide pre code { padding: 0; font-size: .92em; background: transparent; }
+.slide pre.quote { background: var(--output); border-color: #80a5b0; }
+.slide[data-layout="compact"] p, .print-slide[data-layout="compact"] .print-content p { margin-bottom: 18px; }
+.slide[data-layout="compact"] pre, .print-slide[data-layout="compact"] .print-content pre {
+  margin-bottom: 12px; padding-block: 10px;
+}
+.slide p.answer-heading, .print-slide .print-content p.answer-heading {
+  color: var(--accent); font-size: .8em; line-height: 1.4; margin: 0 0 12px;
+}
+.slide[data-editorial] p, .print-slide[data-editorial] .print-content p { margin-bottom: 14px; line-height: 1.7; }
+.slide[data-editorial] pre, .print-slide[data-editorial] .print-content pre {
+  padding-block: 8px; margin-bottom: 8px;
+}
+.slide[data-editorial] li, .print-slide[data-editorial] .print-content li { margin-bottom: 10px; line-height: 1.7; }
+.slide[data-editorial] h1, .print-slide[data-editorial] .print-content h1 { margin-bottom: 24px; }
+.slide[data-editorial] h2, .print-slide[data-editorial] .print-content h2 { margin-bottom: 20px; }
+.slide[data-editorial] h3, .print-slide[data-editorial] .print-content h3 { margin-bottom: 16px; }
+.slide[data-editorial] p.answer-heading, .print-slide[data-editorial] .print-content p.answer-heading {
+  margin-bottom: 8px; line-height: 1.4;
+}
+.kw { color: #793683; font-weight: 600; }
+.sort { color: #075c8b; }
+.doc { color: #34794f; }
+.cm { color: #68736e; }
+.sorry { color: #a33938; }
+.slide[data-kind="optional"], .slide[data-kind="preview"] {
+  border-left: 3px solid #b3ada0; padding-left: 28px;
+}
+.solution { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: .83em; }
+.solution summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.solution[open] summary { margin-bottom: 18px; }
+.solution pre { margin-top: 18px; }
+.slide details.sol { border-top: 1px solid var(--line); padding: 10px 0; margin-top: 14px; font-size: .8em; }
+.slide details.sol summary { color: var(--accent); cursor: pointer; }
+.slide details.sol[open] summary { margin-bottom: 18px; }
+.slide table { border-collapse: collapse; font-size: .8em; width: 100%; table-layout: fixed; margin-bottom: 20px; }
+.slide th, .slide td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+.slide th { background: var(--code); }
+.enhanced body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+.enhanced .toolbar, .enhanced .navigation { display: flex; }
+.enhanced .viewport { overflow: auto; min-height: 0; scrollbar-gutter: stable; }
+.enhanced .slide { margin-bottom: 0; }
+.enhanced:not(.reading) main {
+  min-height: 100%; display: flex; flex-direction: column; justify-content: safe center;
+  padding-block: 24px;
+}
+.enhanced:not(.reading) .slide { flex: none; display: flow-root; }
+.slide-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; align-items: center; }
+.slide-column { display: flow-root; min-width: 0; }
+.slide .slide-column pre, .print-content .slide-column pre { font-size: 1em; line-height: 1.4; }
+.slide > :last-child, .slide-column > :last-child, .print-body > :last-child { margin-bottom: 0; }
+/* Keep the authored content and type size. Denser pages use less leading and
+   spacing, while short pages keep the normal spacing and center vertically. */
+.slide[data-density] p, .print-slide[data-density] .print-content p {
+  line-height: 1.55; margin-bottom: 10px;
+}
+.slide[data-density] pre, .print-slide[data-density] .print-content pre {
+  line-height: 1.32; padding-block: 6px; margin-bottom: 6px;
+}
+.slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
+.slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
+.slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.45; margin-bottom: 8px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.45; margin-bottom: 4px; }
+.enhanced .slide[hidden] { display: none; }
+.enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
+.enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
+  visibility: hidden;
+}
+.navigation { position: relative; padding: 13px 30px 17px; border-top: 1px solid var(--line); gap: 20px; }
+.position { display: flex; gap: 18px; align-items: baseline; font-variant-numeric: tabular-nums; }
+#counter { font-weight: 600; min-width: 58px; }
+#step-count { color: var(--muted); font-size: 12px; min-width: 56px; }
+.hint { font-size: 12px; color: var(--muted); }
+.navigation-buttons { display: flex; gap: 12px; }
+#next { background: var(--accent); color: white; border-color: var(--accent); min-width: 134px; }
+#next:hover { background: #1e4c56; }
+.progress { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; background: #e6e9e7; }
+#progress-fill { height: 100%; background: var(--accent); }
+dialog { width: min(620px, calc(100% - 36px)); max-height: 82dvh; border: 1px solid var(--line); border-radius: 8px; padding: 25px 30px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: rgb(24 35 39 / .35); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { font-size: 23px; margin: 0; }
+.dialog-caption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+#toc-list { padding: 0; list-style: none; }
+#toc-list button { border: 0; width: 100%; text-align: left; padding: 10px 12px; white-space: normal; font-size: 15px; }
+#toc-list button[aria-current="page"] { background: #e7eeed; color: var(--accent); font-weight: 600; }
+#toc-list .toc-number { display: inline-block; width: 32px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.reading .slide { display: block; border-bottom: 1px solid var(--line); padding-bottom: 45px; margin-bottom: 45px; }
+.reading .step[data-unrevealed] { visibility: visible; pointer-events: auto; }
+.reading .slide[hidden] { display: none; }
+.reading .hint { display: none; }
+@media (max-width: 860px) {
+  .slide-columns { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .toolbar { padding: 12px 20px; flex-wrap: wrap; gap: 9px; }
+  .identity { gap: 12px; }
+  .tools { gap: 8px; }
+  main { padding: 30px 30px 40px; }
+  .slide { font-size: 23px; line-height: 1.8; }
+  .navigation { padding-inline: 20px; gap: 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 520px) {
+  .toolbar { padding: 9px 16px; gap: 6px; font-size: 12px; }
+  .identity { width: 100%; justify-content: space-between; }
+  .chapter { font-size: 11px; }
+  .tools { width: 100%; justify-content: space-between; gap: 2px; }
+  .tools button { min-height: 40px; padding: 7px; }
+  .optional-control { min-height: 40px; gap: 2px; }
+  main { padding: 26px 22px 32px; }
+  .slide { font-size: 20px; line-height: 1.85; }
+  .slide h1 { font-size: 1.35em; }
+  .slide pre { padding: 14px 16px; }
+  .navigation { padding: 10px 16px 14px; font-size: 12px; }
+  .position { flex-direction: column; gap: 0; }
+  .navigation-buttons { gap: 7px; }
+  .navigation-buttons button { min-height: 44px; padding: 8px 10px; }
+  #next { min-width: 120px; }
+  .slide[data-kind="optional"], .slide[data-kind="preview"] { padding-left: 16px; }
+}
+@media print {
+  .enhanced:not(.reading) main { display: block; min-height: 0; }
+  .enhanced body { display: block; height: auto; overflow: visible; }
+  .enhanced .toolbar, .enhanced .navigation, dialog, .sr-only { display: none; }
+  .enhanced .viewport { overflow: visible; }
+  main { width: 100%; padding: 0; }
+  .enhanced .slide { display: block !important; break-after: page; font-size: 16pt; margin-bottom: 0; }
+  .enhanced .step[data-unrevealed] { visibility: visible; }
+  .enhanced:not(.include-optional) .slide[data-kind="optional"],
+  .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
+}
+
+/* 推論規則（前提 / 横線 / 結論）。通読版の .rule と同じ組み方 */
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85em; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--ink); padding: .15em .5em 0; }
+</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean</a><select id="chapter-select" aria-label="章"><option value="index.html" selected>はじめに</option><option value="01_typesandterms.html">第1章</option><option value="02_forall.html">第2章</option><option value="03_inductivetypes.html">第3章</option><option value="04_exists.html">第4章</option><option value="05_mathematicaltools.html">第5章</option></select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control" hidden><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      <article class="slide" id="index-welcome" data-kind="main" data-label="はじめての Lean — 教材の目的" data-section="Index.intro" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h1>はじめての Lean</h1></div>
+<p><span class="step" data-step="0">この教材の目的は、Lean のコードを<strong>書ける</strong>ようになることではなく、証明が検査される<strong>仕組みを納得する</strong>ことである。</span></p></article>
+<article class="slide" id="index-goals" data-kind="main" data-label="読む力と検証の仕組みをつなぐ" data-section="Index.heading-c92c0b98db4f" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2>目標</h2></div>
+<ul><li data-step="0" class="step"><strong>目標1 — Lean を読めるようになる</strong>。Lean のコードを読むとは、書かれた<strong>項の型を推測する</strong>ことである。そしてこの推測は<strong>機械的な手順</strong>で実行できる——だからコンピュータにも実行できる。実際に自分の手で型を推測できるようになること、少なくとも「これなら機械にもできそうだ」という感覚を持つことを目指す。</li><li data-step="1" class="step"><strong>目標2 — 検証の仕組みを納得する</strong>。項の型を推測するこの仕組みが、<strong>定理の証明の検証にそのまま使える</strong>ことを納得する。「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li></ul></article>
+<article class="slide" id="index-learning" data-kind="main" data-label="型と項を読むための3段階" data-section="Index.heading-c92c0b98db4f" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この2つの目標に向けて、第1章・第3章で次の3段階を学ぶ。</span></p>
+<ul><li data-step="1" class="step"><strong>型がどのように作られるか</strong>を知る。</li><li data-step="1" class="step">その型の<strong>項をどのように作り、使うか</strong>を知る。</li><li data-step="1" class="step">複雑な項についても、<strong>部分項から順に型を推測できる</strong>ようになる。</li></ul>
+<p><span class="step" data-step="2">第2章・第4章では、「<strong>命題は型であり、証明はその型の項である</strong>」という対応を学ぶ。これによって、目標1の「項の型を推測する」仕組みが、目標2の「証明を検証する」仕組みへ接続する。</span></p></article>
+<article class="slide" id="index-slogan" data-kind="main" data-label="項と型を機械的に判定する" data-section="Index.heading-c53deb88bf30" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2>仕組みのスローガン</h2></div>
+<p><span class="step" data-step="0">納得したいことは、突き詰めれば次の2つである。</span></p>
+<ol><li data-step="1" class="step">文字列が<strong>項</strong>であるかどうか、つまり文法規則に従っているかは、機械的に判定できる。</li><li data-step="2" class="step">項が与えられたら、<strong>型</strong>が付くかどうかを機械的に判定でき、付く場合はその型を計算できる。</li></ol></article>
+<article class="slide" id="index-design" data-kind="main" data-label="仕組みを確かめるための教材の方針" data-section="Index.heading-8728a9e5e714" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2>設計の方針</h2></div>
+<ul><li data-step="0" class="step"><strong>タクティクについて詳しくは説明しない</strong>。第6章では、タクティクを証明項を組み立てるための仕組みとして簡単に紹介し、タクティクによる証明と、それに対応する項スタイルの証明を比較する。</li><li data-step="0" class="step"><strong>mathlib は使わず、Lean 4 の標準環境（自動的に読み込まれる Prelude を含む）だけ</strong>を使う。集合も位相もすべて自作する。</li><li data-step="0" class="step">どちらも理由は同じ——<strong>仕組みを納得するために、ブラックボックスを減らしたい</strong>からである。実際にコードを書く場面では、タクティクも mathlib も遠慮なく使えばよい。</li><li data-step="0" class="step">Lean を網羅的に紹介することは目的ではなく、必要な最低限の機能しか説明しない。</li></ul></article>
+<article class="slide" id="index-two-rounds" data-kind="main" data-label="第1・2章 と 第3・4章" data-section="Index.heading-8728a9e5e714" data-layout="compact" data-editorial="true"><ol><li data-step="0" class="step"><strong>第1・2章 — 依存関数型から、ならば・全称の証明へ。</strong>第1章で項と型、定義、関数・依存関数、暗黙引数を学ぶ。続く第2章では、仮定や対象を受け取り、適用して進む証明を読む。「単射どうしの合成は単射」の証明まで進み、型検査が証明の検査になることを確かめる。</li><li data-step="1" class="step"><strong>第3・4章 — 帰納型から、かつ・または・存在の証明へ。</strong>第3章で帰納型、場合分け・再帰、structure を学び、項を作る・分解する道具を増やす。続く第4章では、その道具を使って「かつ」「または」「矛盾」「存在」の証明を読む。偶数の和や全射の合成を例に、関数・構成子・場合分けを組み合わせ、等式の仕組みと証明検査の全体像を整理する。</li></ol></article>
+<article class="slide" id="index-chapters" data-kind="main" data-label="講義の各章" data-section="Index.heading-52955468c3e1" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2>講義の各章</h2></div>
+<ol><li data-step="0" class="step"><a href="01_typesandterms.html">型と項 I — 関数と依存関数型</a></li><li data-step="0" class="step"><a href="02_forall.html">型と命題 I — ならばと全称量化</a></li><li data-step="0" class="step"><a href="03_inductivetypes.html">型と項 II — 帰納型と構造</a></li><li data-step="0" class="step"><a href="04_exists.html">型と命題 II — かつ・または・否定・存在量化</a></li><li data-step="0" class="step"><a href="05_mathematicaltools.html">数学を記述する道具</a></li><li data-step="0" class="step"><a target="_blank" rel="noopener" href="../06_topology.html">位相空間</a> — 定義から「コンパクト空間からハウスドルフ空間への連続全単射は同相写像である」の証明まで</li><li data-step="0" class="step"><a target="_blank" rel="noopener" href="../07_exercises.html">発展演習</a></li></ol></article>
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">はじめに</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">はじめての Lean</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>(() => {
+  'use strict';
+
+  // Measure the complete page, including unrevealed blocks. Font size and
+  // authored page boundaries stay fixed; only line spacing and margins tighten.
+  function fit(frame, content, available) {
+    frame.removeAttribute('data-density');
+    for (const density of ['tight', 'dense']) {
+      if (content.getBoundingClientRect().height <= available + 1) break;
+      frame.dataset.density = density;
+    }
+  }
+
+  function fitPrint() {
+    for (const slide of document.querySelectorAll('.print-slide[data-editorial]')) {
+      const frame = slide.querySelector('.print-content');
+      fit(slide, frame.querySelector('.print-body'), frame.clientHeight);
+    }
+  }
+
+  window.LectureLayout = {fit};
+  if (document.querySelector('.print-deck')) {
+    fitPrint();
+    window.addEventListener('load', fitPrint);
+    window.addEventListener('beforeprint', fitPrint);
+    document.fonts.ready.then(fitPrint);
+  }
+})();
+
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const viewport = $('viewport');
+  const optional = $('optional');
+  let active = slides[0];
+  let step = 0;
+  let reading = false;
+
+  function included() {
+    return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
+  }
+  function steps(slide = active) {
+    const groups = [];
+    for (const fragment of slide.querySelectorAll('.step[data-step]')) {
+      (groups[Number(fragment.dataset.step)] ||= []).push(fragment);
+    }
+    return groups;
+  }
+  function updateHash() {
+    const hash = `#${active.id}/${step + 1}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+  function readHash() {
+    const match = location.hash.match(/^#([a-z0-9_-]+)(?:\/(\d+))?$/);
+    if (!match) return;
+    const target = slides.find(slide => slide.id === match[1]);
+    if (!target) return;
+    active = target;
+    step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
+    if (active.dataset.kind !== 'main') optional.checked = true;
+  }
+  function fitActive() {
+    if (reading) {
+      slides.forEach(slide => slide.removeAttribute('data-density'));
+      return;
+    }
+    const main = $('slides');
+    const style = getComputedStyle(main);
+    const available = viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    window.LectureLayout.fit(active, active, available);
+  }
+  function render({scroll = false, announce = true} = {}) {
+    const visible = included();
+    const index = visible.indexOf(active);
+    root.classList.toggle('include-optional', optional.checked);
+    for (const slide of slides) {
+      slide.hidden = reading ? !visible.includes(slide) : slide !== active;
+      steps(slide).forEach((fragments, i) => {
+        const hidden = !reading && i > (slide === active ? step : 0);
+        for (const fragment of fragments) {
+          fragment.toggleAttribute('data-unrevealed', hidden);
+          fragment.inert = hidden;
+          fragment.setAttribute('aria-hidden', String(hidden));
+        }
+      });
+    }
+    fitActive();
+    $('counter').textContent = `${index + 1} / ${visible.length}`;
+    $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
+    $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
+    $('previous').disabled = reading || (index === 0 && step === 0);
+    $('next').disabled = reading || (index === visible.length - 1 && step === steps().length - 1);
+    $('progress-fill').style.width = `${((index + (step + 1) / steps().length) / visible.length) * 100}%`;
+    $('reading-mode').setAttribute('aria-pressed', String(reading));
+    $('reading-mode').textContent = reading ? '講義に戻る' : '通読';
+    if (announce) $('announcement').textContent = `${index + 1} / ${visible.length}、${active.dataset.label}、表示 ${step + 1} / ${steps().length}`;
+    updateHash();
+    if (scroll) viewport.scrollTop = 0;
+  }
+  function navigate(direction) {
+    if (reading) return;
+    const visible = included();
+    const index = visible.indexOf(active);
+    let changedSlide = false;
+    if (direction > 0) {
+      if (step < steps().length - 1) step++;
+      else if (index < visible.length - 1) {
+        active = visible[index + 1]; step = 0; changedSlide = true;
+      }
+    } else {
+      if (step > 0) step--;
+      else if (index > 0) {
+        active = visible[index - 1]; step = steps().length - 1; changedSlide = true;
+      }
+    }
+    render({scroll: changedSlide});
+    if (!changedSlide && direction > 0) {
+      const fragment = steps()[step][0];
+      const frame = viewport.getBoundingClientRect();
+      const rect = fragment.getBoundingClientRect();
+      if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
+    }
+  }
+  function jump(target) {
+    active = target;
+    step = 0;
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  function showContents() {
+    const list = $('toc-list');
+    list.replaceChildren();
+    included().forEach((slide, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const number = document.createElement('span');
+      number.className = 'toc-number';
+      number.textContent = `${i + 1}`;
+      button.append(number, document.createTextNode(slide.dataset.label));
+      if (slide === active) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => { $('toc').close(); jump(slide); });
+      li.append(button); list.append(li);
+    });
+    $('toc').showModal();
+  }
+  function toggleReading() {
+    if (reading) {
+      const frame = viewport.getBoundingClientRect();
+      active = included().find(slide => slide.getBoundingClientRect().bottom > frame.top + 40) || active;
+      step = 0;
+    }
+    reading = !reading;
+    root.classList.toggle('reading', reading);
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  optional.addEventListener('change', () => {
+    if (!optional.checked && active.dataset.kind !== 'main') {
+      const index = slides.indexOf(active);
+      active = slides.slice(index + 1).find(slide => slide.dataset.kind === 'main') || slides[0];
+      step = 0;
+    }
+    render({scroll: !reading});
+  });
+  $('previous').addEventListener('click', () => navigate(-1));
+  $('next').addEventListener('click', () => navigate(1));
+  $('contents').addEventListener('click', showContents);
+  $('close-toc').addEventListener('click', () => $('toc').close());
+  $('reading-mode').addEventListener('click', toggleReading);
+  $('chapter-select').addEventListener('change', event => { location.href = event.target.value; });
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await root.requestFullscreen();
+    } catch {
+      $('hint').textContent = 'ブラウザの全画面表示をご利用ください';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '全画面解除' : '全画面';
+  });
+  document.addEventListener('keydown', event => {
+    if ($('toc').open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
+    if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
+    if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+      if (reading) return;
+      event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      if (reading) return;
+      event.preventDefault(); navigate(-1);
+    } else if (event.key === 'Home' && !reading) {
+      event.preventDefault(); jump(included()[0]);
+    } else if (event.key === 'End' && !reading) {
+      event.preventDefault(); active = included().at(-1); step = steps().length - 1; render({scroll:true});
+    } else if (event.key.toLowerCase() === 'm') showContents();
+  });
+  window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  window.addEventListener('resize', fitActive);
+  window.addEventListener('load', fitActive);
+  document.fonts.ready.then(fitActive);
+  // Published section links can be opened directly in the slide edition too.
+  const sectionTarget = location.hash.startsWith('#sec-') &&
+    slides.find(slide => slide.dataset.section === location.hash.slice(5));
+  if (sectionTarget) active = sectionTarget;
+  readHash();
+  root.classList.add('enhanced');
+  render({announce: false});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1592 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "at": {
+        "section": "03_InductiveTypes.intro",
+        "tag": "pre",
+        "starts": "import «01_TypesAndTerms»"
+      },
+      "id": "introduction",
+      "label": "構成子で作り、場合分けで使う"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h2",
+        "starts": "1. 帰納型（inductive type）"
+      },
+      "id": "inductive-types",
+      "label": "def と inductive の役割"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "いちばん単純なのは、構成子がどれも引数を取らない列挙型である。集合の言葉では、要素を列挙し"
+      },
+      "id": "signal-definition",
+      "label": "Signal の3つの構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "では、構成子 Signal.red の型は何か。「Signal の項の作り方」なのだから、"
+      },
+      "id": "signal-constructor",
+      "label": "Signal.red の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "この宣言は、次の2つを保証する:"
+      },
+      "id": "signal-guarantees",
+      "label": "全部であり、互いに別々である"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "Bool の定義を見に行く"
+      },
+      "id": "bool-definition",
+      "label": "Bool の定義と export"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "開かれる Init/Prelude.lean では、コメントを除くと次のように定義されてい"
+      },
+      "id": "bool-prelude",
+      "label": "Prelude にある Bool の定義と export"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "項の作り方と使い方"
+      },
+      "id": "creation-and-use",
+      "label": "作り方に対応する使い方"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "02_Forall との接続: 仮定として使う・結論として示す"
+      },
+      "id": "proof-connection",
+      "label": "仮定と結論へのつながり"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "まず match だけを使ってみよう。match 対象 with のあとに、構成子ごとに "
+      },
+      "id": "match-signal",
+      "label": "match の枝を選んで計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "上の match の対象を Signal.yellow に変えた項と、Signal.green に変えた項を書き、それぞれの値を予想してから #eval で確かめよ。"
+      },
+      "id": "match-exercise",
+      "label": "練習：yellow と green で場合分け"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "上の match の対象を Signal.yellow に変えた項と、Signal.green に変えた項を書き、それぞれの値を予想してから #eva",
+        "starts": "#eval match Signal.green with | Signal.red =>"
+      },
+      "id": "match-green-answer",
+      "label": "Signal.green の場合分けと結果"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "関数記法 fun と match を組み合わせて、次の信号を返す関数を書こう。"
+      },
+      "id": "next-function",
+      "label": "match を関数の本体にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "定義した関数を試したい。まず next Signal.red という項を読む: 2点確認よ"
+      },
+      "id": "next-computation",
+      "label": "next の適用を予想して計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "ここで、型を手がかりに名前の接頭辞を補うドット記法を紹介する。期待される型が Signal"
+      },
+      "id": "constructor-shorthand",
+      "label": "期待される型と構成子の略記"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "Signal.red・Signal.yellow・Signal.green をそれぞれ 0・1・2 に送る signalCode : Signal → Nat を match で書け。それぞれの場合に"
+      },
+      "id": "signal-code-exercise",
+      "label": "練習：Signal を自然数に送る"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Signal.red・Signal.yellow・Signal.green をそれぞれ 0・1・2 に送る signalCode : Signal →",
+        "starts": "def signalCode : Signal → Nat := fun s => mat",
+        "part": "#eval signalCode Signal.yellow"
+      },
+      "id": "signal-code-computation",
+      "label": "signalCode の場合分けを計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "def isRed : Signal → Bool := fun s => match s"
+      },
+      "id": "isred-exercise",
+      "label": "練習：赤かどうかを判定する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.red) の表示を予想してから確かめよ（Signal"
+      },
+      "id": "prev-exercise",
+      "label": "練習：next の逆向き"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.r",
+        "starts": "def prev : Signal → Signal := fun s => match ",
+        "part": "#eval prev (next Signal.red)"
+      },
+      "id": "prev-computation",
+      "label": "next と prev を順に適用する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "isRed にならって isGreen : Signal → Bool を書き、 #eval isGreen Signal.red の値を予想してから",
+        "starts": "isRed にならって isGreen : Signal → Bool を書き、 #eva"
+      },
+      "id": "wildcard-exercise",
+      "label": "練習：残りの場合をまとめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "def stopSignal : Signal := .red を宣言し、#check stopSignal と #eval stopSignal の",
+        "starts": "def stopSignal : Signal := .red を宣言し、#check s"
+      },
+      "id": "stop-signal-exercise",
+      "label": "練習：期待される型から .red を読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "構成子の個数を減らしていくと、おなじみの集合が現れる。構成子が1つ・引数なしなら 一点集合"
+      },
+      "id": "unit-and-empty",
+      "label": "構成子が1つの型と0個の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "構成子は引数を取れる"
+      },
+      "id": "constructor-arguments",
+      "label": "引数を取る構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "構成子 nat の型を推測しよう。Nat の項を1つ受け取って NatOrBool の項を"
+      },
+      "id": "constructor-function",
+      "label": "構成子も関数型の項"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "矢印形式で書いても、まったく同じ型が定義される:"
+      },
+      "id": "sum-interpretation",
+      "label": "矢印の表示と直和の見方"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "帰納型の仕組みから、構成子の性質を証明できる。"
+      },
+      "id": "sum-guarantees",
+      "label": "構成子の単射性を表す補題"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "今度は NatOrBool の項を使う側である。ここで集合の直和の普遍性を思い出そう。直和"
+      },
+      "id": "sum-universal-property",
+      "label": "直和からの写像と場合分け"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "def valueOf : NatOrBool → Nat := fun x => mat"
+      },
+      "id": "valueof",
+      "label": "構成子の中身を取り出して使う"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "中身の値には触れず、.nat の札なら true、.bool の札なら false を返す tagOf : NatOrBool → Bool を書け。不要な中身には _ を使える。 #eval tag"
+      },
+      "id": "tag-exercise",
+      "label": "練習：構成子の札を調べる"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#eval valueOf (NatOrBool.bool true) の値を予想してから確かめよ（どちらの場合に当たるか）。"
+      },
+      "id": "value-exercise",
+      "label": "練習：Bool の側を計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "「bool の札なら中身を、nat の札なら false を返す」関数 flagOf : NatOrBool → Bool を書き、#eval fla",
+        "starts": "「bool の札なら中身を、nat の札なら false を返す」関数 flagOf : "
+      },
+      "id": "flag-exercise",
+      "label": "練習：Bool の中身を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "構成子の引数を複数にする"
+      },
+      "id": "multiple-arguments",
+      "label": "複数の引数を取る構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "自然数の組 (a, b) を表す型 NatPair : Type を inductive で定義せよ。構成子は mk の1つとし、自然数を2つ受け取るものとする。 #check NatPair.mk "
+      },
+      "id": "natpair-exercise",
+      "label": "練習：NatPair を宣言する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数の組 (a, b) を表す型 NatPair : Type を inductive で定義せよ。構成子は mk の1つとし、自然数を2つ受け取る",
+        "starts": "inductive NatPair : Type where | mk (a b : Na",
+        "part": "#check NatPair.mk"
+      },
+      "id": "natpair-constructor-check",
+      "label": "構成子の型と、引数を渡した項の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "第1成分を返す写像 firstNat : NatPair → Nat と、第2成分を返す写像 secondNat : NatPair → Nat を、",
+        "starts": "第1成分を返す写像 firstNat : NatPair → Nat と、第2成分を返す写"
+      },
+      "id": "projections-exercise",
+      "label": "練習：2つの自然数を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "第1成分を返す写像 firstNat : NatPair → Nat と、第2成分を返す写像 secondNat : NatPair → Nat を、",
+        "starts": "def firstNat : NatPair → Nat := fun p => matc",
+        "part": "#check firstNat"
+      },
+      "id": "projections-check",
+      "label": "2つの取り出し関数の型と値"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 #check FlaggedNat.mk と #c"
+      },
+      "id": "flaggednat-exercise",
+      "label": "練習：自然数と Bool を組にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 ",
+        "starts": "inductive FlaggedNat : Type where | mk (n : N",
+        "part": "#check FlaggedNat.mk"
+      },
+      "id": "flaggednat-constructor-check",
+      "label": "異なる型の引数を取る構成子の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "自然数の成分を返す numberOf : FlaggedNat → Nat と、真偽値の成分を返す flagOfPair : FlaggedNat →",
+        "starts": "自然数の成分を返す numberOf : FlaggedNat → Nat と、真偽値の成"
+      },
+      "id": "mixed-projections-exercise",
+      "label": "練習：型の違う成分を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数の成分を返す numberOf : FlaggedNat → Nat と、真偽値の成分を返す flagOfPair : FlaggedNat →",
+        "starts": "def numberOf : FlaggedNat → Nat := fun p => m",
+        "part": "#check numberOf"
+      },
+      "id": "mixed-projections-check",
+      "label": "各成分の型と値を確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "さらに、構成子を複数にして、それぞれに異なる個数・型の引数を持たせることもできる。"
+      },
+      "id": "mixed-constructors",
+      "label": "引数の個数も型も異なる構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "次の3種類のデータを表す型 MixedData : Type を inductive で定義せよ。構成子 pair は自然数を2つ、flagged は自然数と真偽値を受け取り、 empty は引数を受"
+      },
+      "id": "mixeddata-exercise",
+      "label": "練習：MixedData の3通りの作り方"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "次の3種類のデータを表す型 MixedData : Type を inductive で定義せよ。構成子 pair は自然数を2つ、flagged は",
+        "starts": "MixedData.pair (a b : Nat) : MixedData"
+      },
+      "id": "mixeddata-check",
+      "label": "構成子の引数と結果の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "写像 readNumber : MixedData → Nat を、pair a b は a + b に、 flagged n flag は n に、",
+        "starts": "写像 readNumber : MixedData → Nat を、pair a b は "
+      },
+      "id": "readnumber-exercise",
+      "label": "練習：MixedData から自然数を読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "写像 readNumber : MixedData → Nat を、pair a b は a + b に、 flagged n flag は n に、",
+        "starts": "readNumber : MixedData → Nat"
+      },
+      "id": "readnumber-check",
+      "label": "readNumber の型と3つの場合"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "型をパラメータにする"
+      },
+      "id": "type-parameters",
+      "label": "型をパラメータに取る MySum"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "構成子 inl の型はどうなるか。NatOrBool.nat からの類推では α → My"
+      },
+      "id": "parameterized-constructor",
+      "label": "MySum.inl の暗黙引数"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "例えば、MySum.inl 3 の結果に MySum Nat Bool という型を注釈しよ"
+      },
+      "id": "infer-left-type",
+      "label": "左の構成子の型を推測する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "右の構成子でも同じように、結果の型から α := Nat・β := Bool が決まり、渡"
+      },
+      "id": "infer-right-type",
+      "label": "右の構成子の型を推測する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "暗黙引数がいつでも決まるわけではない。 MySum.inl 3 では、中身 3 : Nat"
+      },
+      "id": "type-and-constructor",
+      "label": "型の引数と構成子の引数"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "MySum α β の項は、「α の項に inl の札を付けたもの」か「β の項に inr"
+      },
+      "id": "generic-sum",
+      "label": "直和の見方と fromSum の場合分け"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "使う側の match も、NatOrBool と同じように書ける。パラメータで中身の型を変"
+      },
+      "id": "fromsum-function",
+      "label": "MySum の場合分けと直和の普遍性"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "def fromSum : MySum Nat Bool → Nat := fun x =",
+        "part": "#check fromSum"
+      },
+      "id": "fromsum-type",
+      "label": "fromSum の型と直和からの写像"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "MySum Bool Bool の左右どちらの札からも、中身の Bool をそのまま返す mergeBool : MySum Bool Bool → Bool を書け。 #eval mergeBool"
+      },
+      "id": "merge-bool-exercise",
+      "label": "練習：左右の Bool を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "MySum Bool Bool の左右どちらの札からも、中身の Bool をそのまま返す mergeBool : MySum Bool Bool → ",
+        "starts": "def mergeBool : MySum Bool Bool → Bool := fun",
+        "part": "#eval mergeBool (MySum.inl true)"
+      },
+      "id": "merge-bool-computation",
+      "label": "左右どちらの Bool も取り出せる"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#eval getLeft 7 (MySum.inl 3 : MySum Nat Bool) の値を予想してから確かめよ。（MySum.inl 3 だけでは β が決まらないので、型注釈で教えている。"
+      },
+      "id": "getleft-exercise",
+      "label": "練習：左の中身と既定値"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "構成子は自分自身の型を引数に取れる（再帰）"
+      },
+      "id": "recursive-type",
+      "label": "MyNat：自分自身を引数に取る構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "inductive MyNat : Type where | zero : MyNat |",
+        "part": "#check MyNat"
+      },
+      "id": "mynat-guarantees",
+      "label": "MyNat の型と構成子の保証"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "使う側では、これまでと同じく match で構成子ごとに場合分けする。今度は .succ "
+      },
+      "id": "recursive-addition",
+      "label": "場合分けで足し算を定義する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "add の計算を、今度は #reduce——項を計算して構成子の形で表示するコマンド——で"
+      },
+      "id": "recursive-computation",
+      "label": "再帰した足し算を計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "MyNat.zero.succ.succ は MyNat.succ (MyNat.succ"
+      },
+      "id": "successor-dot",
+      "label": "succ をドット記法で書く"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "isZeroMyNat : MyNat → Bool を match で書き、.zero なら true、 .succ _ なら false を返せ。#eval isZeroMyNat MyNat.z"
+      },
+      "id": "iszero-exercise",
+      "label": "練習：ゼロかどうかを判定する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "isZeroMyNat : MyNat → Bool を match で書き、.zero なら true、 .succ _ なら false を返せ。",
+        "starts": "def isZeroMyNat : MyNat → Bool := fun n => ma",
+        "part": "#eval isZeroMyNat MyNat.zero"
+      },
+      "id": "iszero-computation",
+      "label": "ゼロと後者の判定結果"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "toN : MyNat → Nat を再帰で書け。.zero は 0、.succ k は toN k + 1 に送る。#eval toN (MyNat",
+        "starts": "toN : MyNat → Nat を再帰で書け。.zero は 0、.succ k は "
+      },
+      "id": "ton-exercise",
+      "label": "練習：MyNat を Nat に送る"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "starts": "標準ライブラリの型はほとんどすべて帰納型である。 Bool Unit Empty（上で引用"
+      },
+      "id": "standard-inductive-types",
+      "label": "標準の帰納型とのつながり"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "MyNat の項として 3 を def myThree : MyNat := …（succ 3回）と書き、 #reduce add myThree MyNat.zero の表示を予想してから確かめよ。"
+      },
+      "id": "three-exercise",
+      "label": "練習：succ を3回重ねる"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "2点の列挙型 inductive Two : Type where | a : Two | b : Two を定義せよ。Two と Bool は集合と",
+        "starts": "2点の列挙型 inductive Two : Type where | a : Two |"
+      },
+      "id": "two-exercise",
+      "label": "練習：2点の型と Bool の対応"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "2点の列挙型 inductive Two : Type where | a : Two | b : Two を定義せよ。Two と Bool は集合と",
+        "starts": "inductive Two : Type where | a : Two | b : Tw",
+        "part": "def ofBool"
+      },
+      "id": "two-from-bool",
+      "label": "Bool から Two に戻す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "Two → Bool の関数は、集合のアナロジーで数えると $2 \\times 2 = 4$ 通りあるはずである。その4つすべてを def g1 : ",
+        "starts": "Two → Bool の関数は、集合のアナロジーで数えると $2 \\times 2 = 4"
+      },
+      "id": "four-functions-exercise",
+      "label": "練習：2点の型からの4つの写像"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Two → Bool の関数は、集合のアナロジーで数えると $2 \\times 2 = 4$ 通りあるはずである。その4つすべてを def g1 : ",
+        "starts": "def g1 : Two → Bool := fun t => match t with ",
+        "part": "def g2"
+      },
+      "id": "four-functions-other-cases",
+      "label": "入力を保つ関数と反転する関数"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Two → Bool の関数は、集合のアナロジーで数えると $2 \\times 2 = 4$ 通りあるはずである。その4つすべてを def g1 : ",
+        "starts": "def g1 : Two → Bool := fun t => match t with ",
+        "part": "def g4"
+      },
+      "id": "four-functions-constant-false",
+      "label": "常に false を返す関数と4通りの数え方"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "（発展）掛け算 mul : MyNat → MyNat → MyNat を、本文の add の再帰にならって書け（m × 0 = 0、m × (k +",
+        "starts": "（発展）掛け算 mul : MyNat → MyNat → MyNat を、本文の add"
+      },
+      "id": "recursive-mul-exercise",
+      "label": "練習：足し算を使って掛け算を定義する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "（発展）掛け算 mul : MyNat → MyNat → MyNat を、本文の add の再帰にならって書け（m × 0 = 0、m × (k +",
+        "starts": "def mul : MyNat → MyNat → MyNat := fun m n =>",
+        "part": "#eval toN (mul myThree myThree)"
+      },
+      "id": "recursive-mul-computation",
+      "label": "再帰した掛け算の結果を確認する"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "ol",
+        "question": "（発展）上で書いた toN : MyNat → Nat の逆向きの関数 ofN : Nat → MyNat を書き、#eval toN (ofN 3)",
+        "starts": "（発展）上で書いた toN : MyNat → Nat の逆向きの関数 ofN : Nat"
+      },
+      "id": "ofn-exercise",
+      "label": "練習：Nat の場合分けで MyNat に戻す"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）上で書いた toN : MyNat → Nat の逆向きの関数 ofN : Nat → MyNat を書き、#eval toN (ofN 3)",
+        "class": "answer-heading"
+      },
+      "id": "ofn-answer",
+      "label": "解答：ゼロと後者に対応させる"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h2",
+        "starts": "2. structure"
+      },
+      "id": "structure-from-inductive",
+      "label": "構成子1つの帰納型から structure へ"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "構成子は MyPoint.mk の1つだけである。もちろん引数を変えれば異なる項が作られる"
+      },
+      "id": "manual-projection",
+      "label": "match で第1成分を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が structure"
+      },
+      "id": "structure-benefits",
+      "label": "structure が生成するもの"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "starts": "structure Point : Type where x : Nat y : Nat "
+      },
+      "id": "point-structure",
+      "label": "Point の宣言と構成子"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "自動定義された構成子。矢印形式に読み替えれば Nat → Nat → Point。期待され"
+      },
+      "id": "anonymous-constructor",
+      "label": "⟨ ⟩ と .mk の略記"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "期待される型が Point と分かる位置では、Point.mk を .mk とも書ける。 "
+      },
+      "id": "dot-constructor",
+      "label": "期待される型から .mk を補う"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "starts": "#check Point.x"
+      },
+      "id": "point-projection",
+      "label": "フィールドを取り出す関数とドット記法"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "例えば (Point.mk 1 2).x は Point.x (Point.mk 1 2)"
+      },
+      "id": "point-computation",
+      "label": "Point の第1成分を計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "直積の普遍性を思い出す"
+      },
+      "id": "product-universal-property",
+      "label": "直積への写像を成分で指定する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "型 A と2本の写像 f g : A → Nat が与えられたとする。$a$ を組 $(f(a), g(a))$ に送る写像 pairAt A f g : A → Point を定めたい。 pairA"
+      },
+      "id": "pairat-exercise",
+      "label": "練習：同じ値から2成分を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "answer": true,
+        "question": "型 A と2本の写像 f g : A → Nat が与えられたとする。$a$ を組 $(f(a), g(a))$ に送る写像 pairAt A f g",
+        "starts": "#eval Point.x (pairAt Nat (fun n => n + 1) (f"
+      },
+      "id": "pairat-results",
+      "label": "pairAt の型と各成分"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "Point の第1成分だけを1増やす moveRight : Point → Point を書け。成分の取り出しには Point.x・Point.y、作成には Point.mk を使う。 #eval "
+      },
+      "id": "move-right-exercise",
+      "label": "練習：第1座標だけを動かす"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "自分で定義した関数もドットで使える"
+      },
+      "id": "point-swap",
+      "label": "Point の成分を交換する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "Point.swap : Point → Point なので、p : Point に対して"
+      },
+      "id": "chained-dot",
+      "label": "ドット記法で適用をつなげる"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "Point.zeroX (p : Point) : Point を定義し、第1成分だけを 0 にせよ。本体では p.y と .mk の両方を使う。#eval (Point.mk 1 2).zeroX."
+      },
+      "id": "zero-x-exercise",
+      "label": "練習：第1座標をゼロにする"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "#eval (Point.mk 1 2).swap.swap.x の値を予想してから確かめよ（2回入れ替えると元に戻るはずである）。またこの式を、ドッ",
+        "starts": "#eval (Point.mk 1 2).swap.swap.x の値を予想してから確かめ"
+      },
+      "id": "swap-twice-exercise",
+      "label": "練習：2回の交換を読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "次の structure を定義し、#check で構成子と取り出し関数が自動定義されていることを確かめよ:"
+      },
+      "id": "circle-exercise",
+      "label": "練習：Point をフィールドに持つ Circle"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "answer": true,
+        "question": "次の structure を定義し、#check で構成子と取り出し関数が自動定義されていることを確かめよ:",
+        "class": "answer-heading"
+      },
+      "id": "circle-answer",
+      "label": "解答：構成子と射影の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "点 p と自然数 n から、中心が p、半径が n の円を作る写像を、 makeCircle : Point → Nat → Circle として書け",
+        "starts": "点 p と自然数 n から、中心が p、半径が n の円を作る写像を、 makeCircl"
+      },
+      "id": "make-circle-exercise",
+      "label": "練習：中心と半径から円を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "円からその中心の第1座標を取り出す写像 centerX : Circle → Nat を書け。型を #check し、#eval centerX (m",
+        "starts": "円からその中心の第1座標を取り出す写像 centerX : Circle → Nat を書"
+      },
+      "id": "center-x-exercise",
+      "label": "練習：円の中心の第1座標"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "answer": true,
+        "question": "円からその中心の第1座標を取り出す写像 centerX : Circle → Nat を書け。型を #check し、#eval centerX (m",
+        "starts": "#eval centerX (makeCircle (Point.mk 1 2) 3)"
+      },
+      "id": "center-x-computation",
+      "label": "円の中心の座標を順に取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#eval Point.y (Point.mk 1 2) の値を予想してから確かめよ。さらに (Point.mk 1 2).y とも書けることを試し、同じ値が返ることを確かめよ。"
+      },
+      "id": "point-y-exercise",
+      "label": "練習：射影の2通りの書き方"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "フィールドの型は、自作の structure でもよい。長方形",
+        "starts": "フィールドの型は、自作の structure でもよい。長方形"
+      },
+      "id": "rectangle-exercise",
+      "label": "練習：構造体を入れ子にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "answer": true,
+        "question": "フィールドの型は、自作の structure でもよい。長方形",
+        "class": "answer-heading"
+      },
+      "id": "rectangle-answer",
+      "label": "解答：入れ子の ⟨ ⟩ と射影"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "長方形から幅と高さの積を返す写像 rectArea : Rect → Nat を書け。型を #check し、前問の r に対する #eval rec",
+        "starts": "長方形から幅と高さの積を返す写像 rectArea : Rect → Nat を書け。型を"
+      },
+      "id": "area-exercise",
+      "label": "練習：長方形の面積"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "型をパラメータにする structure"
+      },
+      "id": "pair-parameters",
+      "label": "Pair：型をパラメータにする構造体"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "Pair.mk の型は? MySum.inl と同じく、パラメータの分の暗黙引数 {α β"
+      },
+      "id": "pair-constructor",
+      "label": "Pair の構成子と射影の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "フィールドを番号で指定する"
+      },
+      "id": "numbered-fields",
+      "label": "フィールドを番号で指定する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "次は Pair Nat Bool の第2フィールドなので、型は Bool、値は true "
+      },
+      "id": "second-field",
+      "label": "第2フィールドと直積としての解釈"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#check Pair.mk true 0 の表示を予想してから確かめよ（α・β は何に決まるか）。"
+      },
+      "id": "infer-pair-exercise",
+      "label": "練習：2つの型パラメータを推測する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "（発展）01_TypesAndTerms.lean 3節の「カリー化」の正体を自分で書く。組を受け取る関数を「1つずつ受け取る」形に直す curryP (F : Pai",
+        "starts": "（発展）01_TypesAndTerms.lean 3節の「カリー化」の正体を自分で書く。組を受け取る関数を"
+      },
+      "id": "currying-exercise",
+      "label": "練習：組を受け取る形とカリー化"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）01_TypesAndTerms.lean 3節の「カリー化」の正体を自分で書く。組を受け取る関数を「1つずつ受け取る」形に直す curryP (F : Pai",
+        "class": "answer-heading"
+      },
+      "id": "currying-answer",
+      "label": "解答：curryP と uncurryP"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "answer": true,
+        "question": "（発展）01_TypesAndTerms.lean 3節の「カリー化」の正体を自分で書く。組を受け取る関数を「1つずつ受け取る」形に直す curryP (F : Pai",
+        "starts": "#eval curryP (fun p => p.fst + p.snd) 3 4"
+      },
+      "id": "currying-computation",
+      "label": "カリー化した関数を計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "フィールドは前のフィールドに依存してよい"
+      },
+      "id": "dependent-fields",
+      "label": "群や位相空間をデータの組として見る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "一般に、族の直和 $\\bigsqcup_{a \\in A} B(a)$ の要素は、「$a$"
+      },
+      "id": "dependent-sum",
+      "label": "選んだ添字に応じたデータを添える"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "01_TypesAndTerms.lean 1節で見たとおり型も項だから、フィールドの値として型そのものを持"
+      },
+      "id": "pointed-type",
+      "label": "PointedType：型とその項を組にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "「型 carrier と、その要素 point」の組——数学でいう点付き集合である。 ca"
+      },
+      "id": "pointed-constructor",
+      "label": "PointedType.mk の依存する引数"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "例:「型 Nat と、その要素 0」の組。"
+      },
+      "id": "pointed-nat",
+      "label": "Nat と 0 の組を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "依存するフィールドも inductive で書ける"
+      },
+      "id": "dependent-inductive",
+      "label": "依存する引数を inductive で書く"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "p",
+        "starts": "構成子の引数を順に読むと、まず carrier : Type を受け取り、次にその car"
+      },
+      "id": "dependent-constructor-check",
+      "label": "2つの構成子の型を比較する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "def pointedBool : PointedType := ⟨Bool, true⟩ が受理されることを確かめよ。また #check PointedType.mk Nat の表示を予想してから確"
+      },
+      "id": "pointed-bool-exercise",
+      "label": "練習：依存する引数を部分適用する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習（書く）",
+        "next": "自然数 n を点付き集合 (Nat, n) に送る写像 attachNat : Nat → PointedType を書け。型を #check し、#reduce (attachNat 3).poin"
+      },
+      "id": "attach-nat-exercise",
+      "label": "練習：自然数を点付き集合にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "点付き集合 (A, a) から台となる型 A を取り出す写像 baseType : PointedType → Type を書け。型を #check ",
+        "starts": "点付き集合 (A, a) から台となる型 A を取り出す写像 baseType : Poi"
+      },
+      "id": "base-type-exercise",
+      "label": "練習：台となる型を取り出す"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "answer": true,
+        "question": "点付き集合 (A, a) から台となる型 A を取り出す写像 baseType : PointedType → Type を書け。型を #check ",
+        "starts": "#reduce (types := true) baseType pointedNat"
+      },
+      "id": "base-type-computation",
+      "label": "型そのものを計算して確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "点付き集合 $(A, a)$ と写像 $f : A \\to A$ から、点付き集合 $(A, f(a))$ を作る関数 mapPointed (p :",
+        "starts": "点付き集合 $(A, a)$ と写像 $f : A \\to A$ から、点付き集合 $(A"
+      },
+      "id": "map-pointed-exercise",
+      "label": "練習：台を変えずに基点を移す"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "pre",
+        "answer": true,
+        "question": "点付き集合 $(A, a)$ と写像 $f : A \\to A$ から、点付き集合 $(A, f(a))$ を作る関数 mapPointed (p :",
+        "starts": "#reduce (mapPointed pointedNat Nat.succ).poin"
+      },
+      "id": "map-pointed-computation",
+      "label": "移した基点の値を確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "族の直積と直和では、何を選ぶのか"
+      },
+      "id": "sum-and-product",
+      "label": "すべての添字について選ぶ直積・一つを選ぶ直和"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "型 α・β とその項 a・b から組を作る makePair (α β : Type) (a : α) (b : β) : Pair α β を書け。 #check makePair Nat Bool"
+      },
+      "id": "make-pair-exercise",
+      "label": "練習：型と項から組を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "同じ引数から成分を交換した組を作る swapAt (α β : Type) (a : α) (b : β) : Pair β α を書け。 #chec",
+        "starts": "同じ引数から成分を交換した組を作る swapAt (α β : Type) (a : α)"
+      },
+      "id": "swap-at-exercise",
+      "label": "練習：成分を交換した組を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "ol",
+        "question": "#check idAt Signal の表示を予想せよ。",
+        "starts": "#check idAt Signal の表示を予想せよ。"
+      },
+      "id": "idat-exercise",
+      "label": "練習：Signal 上の恒等写像"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "h2",
+        "starts": "3. まとめ練習 — 小さな型つき言語で書く"
+      },
+      "id": "integrated-exercises",
+      "label": "集合と写像の仕様を型と項にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "flip-exercise",
+      "label": "練習：2つの引数を交換する"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "写像の集合の間の写像 $T : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\math",
+        "starts": "写像の集合の間の写像 $T : \\mathrm{Map}(\\mathbb{N}, \\mat"
+      },
+      "id": "iterate-exercise",
+      "label": "練習：写像を3回繰り返す"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "2点集合 $B = \\{\\mathrm{true}, \\mathrm{false}\\}$ と3点集合 $S = \\{\\mathrm{red}, \\ma",
+        "starts": "2点集合 $B = \\{\\mathrm{true}, \\mathrm{false}\\}$ "
+      },
+      "id": "finite-maps-exercise",
+      "label": "練習：2点集合と3点集合の間の写像"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "answer": true,
+        "question": "2点集合 $B = \\{\\mathrm{true}, \\mathrm{false}\\}$ と3点集合 $S = \\{\\mathrm{red}, \\ma",
+        "class": "answer-heading"
+      },
+      "id": "finite-maps-answer",
+      "label": "解答：場合分けと往復の計算"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "pre",
+        "answer": true,
+        "question": "2点集合 $B = \\{\\mathrm{true}, \\mathrm{false}\\}$ と3点集合 $S = \\{\\mathrm{red}, \\ma",
+        "starts": "def boolToSignal : Bool → Signal := fun b => ",
+        "part": "#eval signalToBool (boolToSignal true)"
+      },
+      "id": "finite-maps-round-trip",
+      "label": "合成を計算し、往復で戻るかを調べる"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "写像 $F : \\mathbb{N} \\to \\mathbb{N}$ に対して、写像 $H : \\mathbb{N} \\times \\mathbb{N",
+        "starts": "写像 $F : \\mathbb{N} \\to \\mathbb{N}$ に対して、写像 $H"
+      },
+      "id": "map-point-exercise",
+      "label": "練習：両座標に同じ写像を施す"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "集合 $A, B$ の直和の間の交換写像 $s : A \\sqcup B \\to B \\sqcup A$ を考える。$A$ 側の要素 $a$ は、行き",
+        "starts": "集合 $A, B$ の直和の間の交換写像 $s : A \\sqcup B \\to B \\s"
+      },
+      "id": "swap-sum-exercise",
+      "label": "練習：直和の左右を交換する"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "answer": true,
+        "question": "集合 $A, B$ の直和の間の交換写像 $s : A \\sqcup B \\to B \\sqcup A$ を考える。$A$ 側の要素 $a$ は、行き",
+        "class": "answer-heading"
+      },
+      "id": "swap-sum-answer",
+      "label": "解答：中身を保って札を交換する"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "各集合 $A$ に対して、その要素 $a$ を点付き集合 $(A, a)$ に送る写像を考える。点付き集合を PointedType で表し、$A$ ",
+        "starts": "各集合 $A$ に対して、その要素 $a$ を点付き集合 $(A, a)$ に送る写像を考"
+      },
+      "id": "pointedof-exercise",
+      "label": "練習：点付き集合の一般形"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "（発展）集合 $A$ と写像 $F : A \\to A$ に対して、その反復 $F^n : A \\to A$ を、$F^0 = \\mathrm{id}",
+        "starts": "（発展）集合 $A$ と写像 $F : A \\to A$ に対して、その反復 $F^n :"
+      },
+      "id": "iterate-n-exercise",
+      "label": "練習：反復回数を引数にする"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）集合 $A$ と写像 $F : A \\to A$ に対して、その反復 $F^n : A \\to A$ を、$F^0 = \\mathrm{id}",
+        "class": "answer-heading"
+      },
+      "id": "iterate-n-answer",
+      "label": "解答：自然数についての再帰"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "ol",
+        "question": "（発展）集合 $A$ の対角写像 $\\Delta_A : A \\to A \\times A$ を、$\\Delta_A(a) = (a, a)$ で定め",
+        "starts": "（発展）集合 $A$ の対角写像 $\\Delta_A : A \\to A \\times A"
+      },
+      "id": "diagonal-exercise",
+      "label": "練習：対角写像と型が決める自由度"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）集合 $A$ の対角写像 $\\Delta_A : A \\to A \\times A$ を、$\\Delta_A(a) = (a, a)$ で定め",
+        "class": "answer-heading"
+      },
+      "id": "diagonal-answer",
+      "label": "解答：手持ちの項から組を作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "starts": "関数に加えて、構成子と場合分けで項を作り使う道具がそろった。次の 04_Exists.lean で、存"
+      },
+      "id": "next-chapter",
+      "label": "構成子と場合分けを証明に使う"
+    },
+    {
+      "at": {
+        "section": "03_InductiveTypes.heading-c604f7c3af23",
+        "tag": "h2",
+        "starts": "付録: 記号の打ち方まとめ"
+      },
+      "id": "symbols",
+      "label": "付録：記号の打ち方"
+    },
+    {
+      "at": {
+        "section": "03_InductiveTypes.heading-c604f7c3af23",
+        "tag": "table",
+        "starts": "記号打ち方 →\\to または \\r ×\\times または \\x ⟨ ⟩\\< と \\>（\\",
+        "part": "∧ ／ ∨ ／ ¬"
+      },
+      "id": "logic-and-set-symbols",
+      "label": "付録：論理記号と集合記号の打ち方"
+    }
+  ],
+  "splits": [
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Signal.red・Signal.yellow・Signal.green をそれぞれ 0・1・2 に送る signalCode : Signal →",
+        "starts": "def signalCode : Signal → Nat := fun s => mat"
+      },
+      "before": [
+        "#eval signalCode Signal.yellow"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.r",
+        "starts": "def prev : Signal → Signal := fun s => match "
+      },
+      "before": [
+        "#eval prev (next Signal.red)"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数の組 (a, b) を表す型 NatPair : Type を inductive で定義せよ。構成子は mk の1つとし、自然数を2つ受け取る",
+        "starts": "inductive NatPair : Type where | mk (a b : Na"
+      },
+      "before": [
+        "#check NatPair.mk"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "第1成分を返す写像 firstNat : NatPair → Nat と、第2成分を返す写像 secondNat : NatPair → Nat を、",
+        "starts": "def firstNat : NatPair → Nat := fun p => matc"
+      },
+      "before": [
+        "#check firstNat"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 ",
+        "starts": "inductive FlaggedNat : Type where | mk (n : N"
+      },
+      "before": [
+        "#check FlaggedNat.mk"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "自然数の成分を返す numberOf : FlaggedNat → Nat と、真偽値の成分を返す flagOfPair : FlaggedNat →",
+        "starts": "def numberOf : FlaggedNat → Nat := fun p => m"
+      },
+      "before": [
+        "#check numberOf"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "def fromSum : MySum Nat Bool → Nat := fun x ="
+      },
+      "before": [
+        "#check fromSum"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "MySum Bool Bool の左右どちらの札からも、中身の Bool をそのまま返す mergeBool : MySum Bool Bool → ",
+        "starts": "def mergeBool : MySum Bool Bool → Bool := fun"
+      },
+      "before": [
+        "#eval mergeBool (MySum.inl true)"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "inductive MyNat : Type where | zero : MyNat |"
+      },
+      "before": [
+        "#check MyNat"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "isZeroMyNat : MyNat → Bool を match で書き、.zero なら true、 .succ _ なら false を返せ。",
+        "starts": "def isZeroMyNat : MyNat → Bool := fun n => ma"
+      },
+      "before": [
+        "#eval isZeroMyNat MyNat.zero"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "2点の列挙型 inductive Two : Type where | a : Two | b : Two を定義せよ。Two と Bool は集合と",
+        "starts": "inductive Two : Type where | a : Two | b : Tw"
+      },
+      "before": [
+        "def ofBool"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "Two → Bool の関数は、集合のアナロジーで数えると $2 \\times 2 = 4$ 通りあるはずである。その4つすべてを def g1 : ",
+        "starts": "def g1 : Two → Bool := fun t => match t with "
+      },
+      "before": [
+        "def g2",
+        "def g4"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "answer": true,
+        "question": "（発展）掛け算 mul : MyNat → MyNat → MyNat を、本文の add の再帰にならって書け（m × 0 = 0、m × (k +",
+        "starts": "def mul : MyNat → MyNat → MyNat := fun m n =>"
+      },
+      "before": [
+        "#eval toN (mul myThree myThree)"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "pre",
+        "answer": true,
+        "question": "2点集合 $B = \\{\\mathrm{true}, \\mathrm{false}\\}$ と3点集合 $S = \\{\\mathrm{red}, \\ma",
+        "starts": "def boolToSignal : Bool → Signal := fun b => "
+      },
+      "before": [
+        "#eval signalToBool (boolToSignal true)"
+      ]
+    },
+    {
+      "at": {
+        "section": "03_InductiveTypes.heading-c604f7c3af23",
+        "tag": "table",
+        "starts": "記号打ち方 →\\to または \\r ×\\times または \\x ⟨ ⟩\\< と \\>（\\"
+      },
+      "before": [
+        "∧ ／ ∨ ／ ¬"
+      ]
+    }
+  ]
+}

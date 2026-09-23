@@ -71,6 +71,50 @@ class RefTests(unittest.TestCase):
         self.assertIn('[`CH.lean` 0](#sec-first)〜[1節](#sec-second)', self.read('Intro1'))
         self.assertIn('[`CH.lean` の0節](#sec-first)', self.read('CH'))
 
+    def test_subheading_keeps_identity_and_uses_parent_section_number(self):
+        self.put('Intro1', '/-! ## 8. 例と整理 {#sec-first}\n'
+                 '### 9. 整理 {#sec-recap}\n'
+                 '### 補足: 詳細\n-/\n'
+                 '/-! ## 10. 次 {#sec-second}\n-/\n')
+        self.put('CH', '/-! ## 0. 証明 {#sec-proof}\n'
+                 '[`Intro1.lean` 9節](#sec-recap)の補足を参照。\n-/\n')
+        result = self.analyze()
+        self.assertEqual(result.errors, [])
+        result.write()
+        self.assertEqual(result.sections['recap'].number, 1)
+        self.assertEqual(result.sections['recap'].level, 3)
+        self.assertEqual(result.sections['second'].number, 2)
+        self.assertIn('### 整理 {#sec-recap}', self.read('Intro1'))
+        self.assertIn('[`Intro1.lean` 1節](#sec-recap)', self.read('CH'))
+        self.assertEqual(self.analyze().changes, [])
+        rendered = html.render_prose(['### 整理 {#sec-recap}'], 'Intro1', result.sections)
+        self.assertEqual(rendered, '<h3 id="sec-recap">整理</h3>')
+
+    def test_subheading_cannot_exist_without_a_labelled_parent(self):
+        for text in ['### 整理 {#sec-recap}', '## 序文\n### 整理 {#sec-recap}']:
+            self.put('Intro1', '/-! ' + text + '\n-/\n')
+            with self.subTest(text=text):
+                self.assertTrue(any('親の節' in e for e in self.analyze().errors))
+
+    def test_solutions_and_slide_anchors_survive_section_demotion(self):
+        import slides
+        self.sol_files = {'Intro1': 'Intro1Sol'}
+        self.put('Intro1', '/-! ## 1. 例 {#sec-first}\n-/\n'
+                 '/-! ### ✏ 練習\n1. 最初の問題\n-/\n'
+                 '/-! ### 整理 {#sec-second}\n-/\n'
+                 '/-! ### ✏ 練習\n1. 整理の問題\n-/\n')
+        self.put('Intro1Sol', '/-! SOL first:1 -/\n/-- FIRST -/\n'
+                 '/-! SOL second:1 -/\n/-- RECAP -/\n')
+        result = self.analyze()
+        self.assertEqual(result.errors, [])
+        with patch.object(html, 'SRC', self.src), patch.object(html, 'SOL_FILES', self.sol_files):
+            body = html.render_chapter('Intro1', html.parse(self.src/'Intro1.lean'), result.sections)
+        self.assertLess(body.index('FIRST'), body.index('RECAP'))
+        blocks = slides.blocks_from_html(body, 'Intro1')
+        second = [b for b in blocks if b.section == 'second']
+        self.assertEqual(second[0].node.tag, 'h3')
+        self.assertIn('RECAP', ''.join(b.source_text for b in second))
+
     def test_unknown_and_duplicate_labels_prevent_all_writes(self):
         self.put('Intro1', '/-! ## 99. 最初 {#sec-first}\n[節](#sec-missing)\n-/\n')
         self.put('CH', '/-! ## 0. 重複 {#sec-first}\n-/\n')
@@ -229,28 +273,28 @@ class RefTests(unittest.TestCase):
         dest.mkdir()
         for name in ['lean2html.py', 'refs.py', 'check_refs.py', 'render_support.py']:
             shutil.copy(Path(__file__).parent/name, dest/name)
-        for name in ['CH1', 'Intro1b', 'CH2', 'Intro2', 'Top', 'Extra', 'Ascoli',
-                     'Intro1aSol', 'CH1Sol', 'Intro1bSol', 'CH2Sol', 'Intro2Sol', 'TopSol']:
+        for name in [*html.CHAPTERS, *html.SOL_FILES.values()]:
             self.put(name, '')
-        self.put('Intro1a', '/-! ## 最初 {#sec-first}\n[節](#sec-first)\n-/\n')
-        original = self.read('Intro1a')
+        first = html.CHAPTERS[0]
+        self.put(first, '/-! ## 最初 {#sec-first}\n[節](#sec-first)\n-/\n')
+        original = self.read(first)
         command = [sys.executable, '-B', str(dest/'check_refs.py')]
         run = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(run.returncode, 1)
-        self.assertIn('Intro1a.lean:1:', run.stderr)
-        self.assertEqual(self.read('Intro1a'), original)
+        self.assertIn(f'{first}.lean:1:', run.stderr)
+        self.assertEqual(self.read(first), original)
         run = subprocess.run(command+['--fix'], capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stderr)
         run = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stderr)
-        self.put('Intro1a', self.read('Intro1a').replace('](#sec-first)', '](#sec-missing)'))
-        broken = self.read('Intro1a')
+        self.put(first, self.read(first).replace('](#sec-first)', '](#sec-missing)'))
+        broken = self.read(first)
         run = subprocess.run(command+['--fix'], capture_output=True, text=True)
         self.assertEqual(run.returncode, 1)
-        self.assertEqual(self.read('Intro1a'), broken)
+        self.assertEqual(self.read(first), broken)
         run = subprocess.run([sys.executable, '-B', str(dest/'lean2html.py'), '--no-pdf'], capture_output=True, text=True)
         self.assertNotEqual(run.returncode, 0)
-        self.assertIn('Intro1a.lean:2:', run.stderr)
+        self.assertIn(f'{first}.lean:2:', run.stderr)
         self.assertFalse((self.root/'docs').exists())
 
     def test_combined_document_links_are_local_and_unique(self):

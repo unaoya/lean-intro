@@ -8,4 +8,4 @@ package «lean_intro_student» where
 @[default_target]
 lean_lib «LeanIntroStudent» where
   srcDir := "src"
-  roots := #[`Intro1a, `CH1, `Intro1b, `CH2, `Intro2, `Top, `Extra, `Ascoli]
+  roots := #[`«01_TypesAndTerms», `«02_Forall», `«03_InductiveTypes», `«04_Exists», `«05_MathematicalTools», `«06_Topology», `«07_Exercises», `«08_Ascoli», `«09_Covering»]

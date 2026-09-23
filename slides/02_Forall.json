@@ -1,0 +1,564 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "at": {
+        "section": "02_Forall.intro",
+        "tag": "pre",
+        "starts": "import «01_TypesAndTerms»"
+      },
+      "id": "introduction",
+      "label": "証明を読む目的"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h2",
+        "starts": "0. 命題の証明と「ならば」"
+      },
+      "id": "proofs-as-terms",
+      "label": "命題の型を持つ項が証明になる"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h3",
+        "starts": "命題と証明の書き方"
+      },
+      "id": "proposition-proof-notation",
+      "label": "命題・証明・theorem の書き方"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "p",
+        "starts": "名前を付けず型と証明の項だけを検査するときは、同じ配置の example : 命題 := "
+      },
+      "id": "proof-functions",
+      "label": "証明を返す依存関数"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h3",
+        "starts": "例1: P と「P ならば Q」から Q"
+      },
+      "id": "modus-ponens-math",
+      "label": "P と「P ならば Q」から Q"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "p",
+        "starts": "ここで、「P ならば Q」の証明を、"
+      },
+      "id": "modus-ponens-application",
+      "label": "含意の証明に仮定を適用する"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "pre",
+        "starts": "theorem modus_ponens (P Q : Prop) (hP : P) (h"
+      },
+      "id": "modus-ponens-code",
+      "label": "modus_ponens の宣言と型検査"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "次の #check の結果を予想してから確かめよ。出力の最後が Q になるまでを、 P → Q の入力型と出力型から説明せよ。"
+      },
+      "id": "predict-proof-type",
+      "label": "練習：関数の出力が Q になる理由"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "ol",
+        "question": "引数の順だけを入れ替えた theorem use_imp (P Q : Prop) (hPQ : P → Q) (hP : P) : Q の右辺を書け",
+        "starts": "引数の順だけを入れ替えた theorem use_imp (P Q : Prop) (hP"
+      },
+      "id": "reorder-assumptions",
+      "label": "練習：仮定の順と適用の順"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h3",
+        "starts": "例2: 含意の推移"
+      },
+      "id": "implication-transitivity-math",
+      "label": "含意の推移：証明の型を追う4段階"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "p",
+        "starts": "この4段を、そのまま fun と適用で書く:"
+      },
+      "id": "implication-transitivity-code",
+      "label": "4段階を fun と適用にする"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "pre",
+        "starts": "theorem imp_trans (P Q R : Prop) (hPQ : P → Q",
+        "part": "#check imp_trans"
+      },
+      "id": "implication-transitivity-check",
+      "label": "imp_trans の型と内側からの読み方"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "theorem imp_refl (P : Prop) : P → P を書け。"
+      },
+      "id": "identity-proof",
+      "label": "練習：P → P の証明"
+    },
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "ol",
+        "question": "P → Q、Q → R、R → S を順に使う theorem imp_trans3 (P Q R S : Prop) (hPQ : P → Q) (",
+        "starts": "P → Q、Q → R、R → S を順に使う theorem imp_trans3 (P"
+      },
+      "id": "three-implications",
+      "label": "練習：3つの含意を合成する"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "h3",
+        "starts": "整理 — 命題・theorem・rfl"
+      },
+      "id": "propositions-recap",
+      "label": "命題として書けることと証明できること"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "h3",
+        "starts": "theorem と def"
+      },
+      "id": "theorem-and-def",
+      "label": "theorem と def の共通点と違い"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "pre",
+        "starts": "theorem one_add_one : 1 + 1 = 2 := rfl"
+      },
+      "id": "rfl-example",
+      "label": "等式の証明 rfl と型検査"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "true-and-false-propositions",
+      "label": "練習：真偽が違っても Prop"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "ol",
+        "question": "theorem two_add_three : 2 + 3 = 5 := rfl を自分で宣言してみよ。",
+        "starts": "theorem two_add_three : 2 + 3 = 5 := rfl を自分で"
+      },
+      "id": "compute-equality",
+      "label": "練習：計算で一致する等式"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "ol",
+        "question": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してから試し、エラーメッセージがどの規則の破れを指しているか読み取",
+        "starts": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してか"
+      },
+      "id": "failed-rfl",
+      "label": "練習：rfl が受理されない理由"
+    },
+    {
+      "at": {
+        "section": "CH.propositions",
+        "tag": "pre",
+        "answer": true,
+        "question": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してから試し、エラーメッセージがどの規則の破れを指しているか読み取",
+        "starts": "theorem oops : 2 + 2 = 5 := rfl error: Not a "
+      },
+      "id": "failed-rfl-message",
+      "label": "定義的等しさのエラーを読む"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "h3",
+        "starts": "整理 — 関数型と「ならば」"
+      },
+      "id": "implication-introduction",
+      "label": "関数を作ることと含意を示すこと"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "starts": "使うとき。まず数学の言葉では、p → q と p から q を導ける。これを証明項の言葉で"
+      },
+      "id": "implication-elimination",
+      "label": "関数を使うことと含意を使うこと"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "starts": "作るとき（型側）: β の項が1つあれば、α から β への関数が作れる。"
+      },
+      "id": "constant-function",
+      "label": "型側：定数関数を作る"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "starts": "示すとき（命題側）: q の証明が1つあれば、p → q が示せる。字面はまったく同じ。"
+      },
+      "id": "constant-implication",
+      "label": "命題側：同じ形で含意を示す"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "starts": "使うとき（型側）: 適用。"
+      },
+      "id": "function-application",
+      "label": "型側：関数を適用する"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "starts": "使うとき（命題側）: 適用。これも字面が同じ。"
+      },
+      "id": "proof-application",
+      "label": "命題側：証明を適用する"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "twice-exercise",
+      "label": "練習：2回の適用と binder 形式"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "answer": true,
+        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
+        "class": "answer-heading"
+      },
+      "id": "twice-answer",
+      "label": "解答：同じ項で2回適用する"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "p",
+        "answer": true,
+        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
+        "starts": "次に、fun で受け取っていた引数をコロンの左に移し、binder 形式で書く:"
+      },
+      "id": "twice-binders",
+      "label": "解答：引数を宣言の左側へ移す"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "pre",
+        "answer": true,
+        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
+        "starts": "def apply2Binder {α : Type} (f : α → α) (a : ",
+        "part": "#check apply2Binder"
+      },
+      "id": "twice-binders-check",
+      "label": "binder 形式の型を矢印形式に読み替える"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "ol",
+        "question": "仮定を受け取る順を入れ替える theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r を項",
+        "starts": "仮定を受け取る順を入れ替える theorem imp_swap {p q r : Prop"
+      },
+      "id": "swap-exercise",
+      "label": "練習：受け取る順と渡す順"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "ol",
+        "question": "同じ字面 fun h => h が、型側の example : Nat → Nat と命題側の example : (1 = 1) → (1 = 1)",
+        "starts": "同じ字面 fun h => h が、型側の example : Nat → Nat と命題"
+      },
+      "id": "identity-two-worlds",
+      "label": "練習：同じ恒等関数を両方の世界で使う"
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "ol",
+        "question": "#check applyFun double 3 の表示を予想してから確かめよ。",
+        "starts": "#check applyFun double 3 の表示を予想してから確かめよ。"
+      },
+      "id": "apply-double",
+      "label": "練習：double への適用結果"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "h2",
+        "starts": "1. 全称と単射の合成"
+      },
+      "id": "injective-composition",
+      "label": "単射どうしの合成：設定"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "p",
+        "starts": "証明の手順。"
+      },
+      "id": "injective-math-proof",
+      "label": "単射の証明を3段階で読む"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "p",
+        "starts": "論理式。「どの $x$ についても」は"
+      },
+      "id": "injective-formula",
+      "label": "単射の主張を論理式にする"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "p",
+        "starts": "形式化を意識した版。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。"
+      },
+      "id": "specialization",
+      "label": "全称と含意の使い方は適用"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "p",
+        "starts": "項。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の"
+      },
+      "id": "injective-expanded-proof",
+      "label": "定義を開いた単射の証明項"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "p",
+        "starts": "単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— Functio"
+      },
+      "id": "injective-library-proof",
+      "label": "Function.Injective を使う証明"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "pre",
+        "starts": "theorem comp_injective {α β γ : Type} {f : α ",
+        "part": "#check comp_injective"
+      },
+      "id": "injective-check",
+      "label": "comp_injective の型と暗黙引数"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "injective-types-exercise",
+      "label": "練習：単射の証明で部分項の型を追う"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "ol",
+        "question": "恒等関数が単射であることを示す theorem id_injective (α : Type) : Function.Injective (fun x",
+        "starts": "恒等関数が単射であることを示す theorem id_injective (α : Typ"
+      },
+      "id": "identity-injective",
+      "label": "練習：恒等関数の単射性"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "h3",
+        "starts": "整理 — 依存積と「すべての」"
+      },
+      "id": "forall-predicate",
+      "label": "述語と「すべての」の証明"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "p",
+        "starts": "小例には等式を使う。"
+      },
+      "id": "forall-reflexivity",
+      "label": "自然数を任意に取り rfl を返す"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "p",
+        "starts": "関数型 α → β を一般化して、"
+      },
+      "id": "dependent-products-forall",
+      "label": "依存積と全称命題の対応"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "pre",
+        "starts": "def mkPi {α : Type} {P : α → Type} (f : (a : "
+      },
+      "id": "make-dependent-function",
+      "label": "型側と命題側で依存関数を作る"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "p",
+        "starts": "使うとき（型側）: 点 a を与えると P a の項が出る。"
+      },
+      "id": "use-dependent-function",
+      "label": "型側：点を渡して P a の項を得る"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "p",
+        "starts": "使うとき（命題側）: 点 a を与えると Q a の証明が出る。"
+      },
+      "id": "use-forall-proof",
+      "label": "命題側：点を渡して Q a の証明を得る"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "h3",
+        "starts": "具体例: 述語と全称命題"
+      },
+      "id": "predicate-iszero",
+      "label": "IsZero：点ごとに命題を割り当てる"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "p",
+        "starts": "「すべての n について…」の証明は、依存関数そのものである:各 n を受け取って、命題 "
+      },
+      "id": "prove-all-mul-zero",
+      "label": "各 n について IsZero (n * 0) を示す"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-products",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "forall-specialization-exercise",
+      "label": "練習：引数7を結果の命題へ代入する"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "h2",
+        "starts": "2. 型検査が証明の検査になる"
+      },
+      "id": "verification-conclusion",
+      "label": "型検査が証明検査になる"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "p",
+        "starts": "ただし2つ、但し書きがある。第一に、この検査は宣言済みの公理に相対的である。 axiom "
+      },
+      "id": "axioms-and-sorry",
+      "label": "公理と sorry を監査する"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "h3",
+        "starts": "仮定を取り違えると、型が合わなくなる"
+      },
+      "id": "wrong-assumption",
+      "label": "仮定の取り違えは型の不一致"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "h3",
+        "starts": "省略を補う処理と、完成した項の検査"
+      },
+      "id": "elaboration-and-kernel",
+      "label": "省略の補完と完成した項の検査"
+    }
+  ],
+  "splits": [
+    {
+      "at": {
+        "section": "CH.reading-proofs",
+        "tag": "pre",
+        "starts": "theorem imp_trans (P Q R : Prop) (hPQ : P → Q"
+      },
+      "before": [
+        "#check imp_trans"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH.implication",
+        "tag": "pre",
+        "answer": true,
+        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
+        "starts": "def apply2Binder {α : Type} (f : α → α) (a : "
+      },
+      "before": [
+        "#check apply2Binder"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "pre",
+        "starts": "theorem comp_injective {α β γ : Type} {f : α "
+      },
+      "before": [
+        "#check comp_injective"
+      ]
+    }
+  ]
+}

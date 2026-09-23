@@ -12,13 +12,19 @@
   function included() {
     return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
   }
-  function steps(slide = active) { return Array.from(slide.querySelectorAll(':scope > .step')); }
+  function steps(slide = active) {
+    const groups = [];
+    for (const fragment of slide.querySelectorAll('.step[data-step]')) {
+      (groups[Number(fragment.dataset.step)] ||= []).push(fragment);
+    }
+    return groups;
+  }
   function updateHash() {
     const hash = `#${active.id}/${step + 1}`;
     if (location.hash !== hash) history.replaceState(null, '', hash);
   }
   function readHash() {
-    const match = location.hash.match(/^#([a-z0-9-]+)(?:\/(\d+))?$/);
+    const match = location.hash.match(/^#([a-z0-9_-]+)(?:\/(\d+))?$/);
     if (!match) return;
     const target = slides.find(slide => slide.id === match[1]);
     if (!target) return;
@@ -26,19 +32,32 @@
     step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
     if (active.dataset.kind !== 'main') optional.checked = true;
   }
+  function fitActive() {
+    if (reading) {
+      slides.forEach(slide => slide.removeAttribute('data-density'));
+      return;
+    }
+    const main = $('slides');
+    const style = getComputedStyle(main);
+    const available = viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    window.LectureLayout.fit(active, active, available);
+  }
   function render({scroll = false, announce = true} = {}) {
     const visible = included();
     const index = visible.indexOf(active);
     root.classList.toggle('include-optional', optional.checked);
     for (const slide of slides) {
       slide.hidden = reading ? !visible.includes(slide) : slide !== active;
-      steps(slide).forEach((fragment, i) => {
+      steps(slide).forEach((fragments, i) => {
         const hidden = !reading && i > (slide === active ? step : 0);
-        fragment.toggleAttribute('data-unrevealed', hidden);
-        fragment.inert = hidden;
-        fragment.setAttribute('aria-hidden', String(hidden));
+        for (const fragment of fragments) {
+          fragment.toggleAttribute('data-unrevealed', hidden);
+          fragment.inert = hidden;
+          fragment.setAttribute('aria-hidden', String(hidden));
+        }
       });
     }
+    fitActive();
     $('counter').textContent = `${index + 1} / ${visible.length}`;
     $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
     $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
@@ -69,7 +88,7 @@
     }
     render({scroll: changedSlide});
     if (!changedSlide && direction > 0) {
-      const fragment = steps()[step];
+      const fragment = steps()[step][0];
       const frame = viewport.getBoundingClientRect();
       const rect = fragment.getBoundingClientRect();
       if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
@@ -152,6 +171,9 @@
     } else if (event.key.toLowerCase() === 'm') showContents();
   });
   window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  window.addEventListener('resize', fitActive);
+  window.addEventListener('load', fitActive);
+  document.fonts.ready.then(fitActive);
   // Published section links can be opened directly in the slide edition too.
   const sectionTarget = location.hash.startsWith('#sec-') &&
     slides.find(slide => slide.dataset.section === location.hash.slice(5));

@@ -197,7 +197,7 @@ def main(docs: Path | None = None, titles: dict | None = None):
             stale.unlink()
     if docs is not None:
         publish(docs, lean2html.CHAPTERS, titles or {})
-    roots = ", ".join("`" + name for name in lean2html.CHAPTERS)
+    roots = ", ".join("`«" + name + "»" for name in lean2html.CHAPTERS)
     (OUT.parent / "lakefile.lean").write_text(f"""import Lake
 open Lake DSL
 

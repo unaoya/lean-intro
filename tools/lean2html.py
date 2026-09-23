@@ -29,17 +29,27 @@ SRC = ROOT / "src"
 OUT = ROOT / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
-CHAPTERS = ["Intro1a", "CH1", "Intro1b", "CH2", "Intro2", "Top", "Extra", "Ascoli"]
+CHAPTERS = ["01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools", "06_Topology", "07_Exercises", "08_Ascoli"]
+
+# 公開済み URL は本文のコピーではなく、新しい章への転送ページとして残す。
+LEGACY_CHAPTERS = {
+    "Intro1a": "01_TypesAndTerms", "CH1": "02_Forall",
+    "Intro1b": "03_InductiveTypes", "CH2": "04_Exists",
+    "Intro2": "05_MathematicalTools", "Top": "06_Topology",
+    "Extra": "07_Exercises", "Ascoli": "08_Ascoli",
+}
+
+# 通読版には含めるが、講義スライド（HTML・PDF）は作らない章。
+SLIDE_EXCLUDED_CHAPTERS = {"06_Topology", "07_Exercises", "08_Ascoli"}
 
 # ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
 # 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
-SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("Extra", "Ascoli")}
+SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("07_Exercises", "08_Ascoli")}
 
 SITE_TITLE = "はじめての Lean"
 SITE_CONCEPT = (
     "この教材の目的は、Lean のコードを<strong>書ける</strong>ようになることではなく、"
-    "証明が検査される<strong>仕組みを納得する</strong>ことである"
-    "（書く仕事は AI に任せてよい）。"
+    "証明が検査される<strong>仕組みを納得する</strong>ことである。"
 )
 SITE_GOALS = (
     "<h2>目標</h2>"
@@ -53,34 +63,26 @@ SITE_GOALS = (
     "<strong>定理の証明の検証にそのまま使える</strong>ことを納得する。"
     "「なぜそれで証明の正しさを検証したと思えるのか」への答えがここにある。</li>"
     "</ul>"
-    "<p>この2つの目標に向けて、Intro1a・Intro1b で次の3段階を学ぶ。</p>"
+    "<p>この2つの目標に向けて、第1章・第3章で次の3段階を学ぶ。</p>"
     "<ul>"
     "<li><strong>型がどのように作られるか</strong>を知る。</li>"
     "<li>その型の<strong>項をどのように作り、使うか</strong>を知る。</li>"
     "<li>複雑な項についても、<strong>部分項から順に型を推測できる</strong>ようになる。</li>"
     "</ul>"
-    "<p>CH1・CH2 では、「<strong>命題は型であり、証明はその型の項である</strong>」"
+    "<p>第2章・第4章では、「<strong>命題は型であり、証明はその型の項である</strong>」"
     "という対応を学ぶ。これによって、目標1の「項の型を推測する」仕組みが、"
     "目標2の「証明を検証する」仕組みへ接続する。</p>"
     "<h2>仕組みのスローガン</h2>"
     "<p>納得したいことは、突き詰めれば次の2つである。</p>"
     "<ol>"
-    "<li>文字列が<strong>項</strong>であるかどうかは、機械的に判定できる。</li>"
+    "<li>文字列が<strong>項</strong>であるかどうか、つまり文法規則に従っているかは、"
+    "機械的に判定できる。</li>"
     "<li>項が与えられたら、<strong>型</strong>が付くかどうかを機械的に判定でき、"
     "付く場合はその型を計算できる。</li>"
     "</ol>"
-    "<p>対象は「文字列」と「その中の項」という2層だけで済む。"
-    "「項」を「文法規則に従って作られる文字列」と定義するのだから、"
-    "①の「項である」＝「文法規則に従っている」は定義そのものである。"
-    "ただし、数字 <code>2</code> のような記法は、文字列の段階ではまだ型が決まらず、"
-    "置かれた場所で期待される型に応じて <code>Nat</code> とも <code>Int</code> とも"
-    "読まれる。①にはこの「読み方を決める」ことも含まれ、②の項は"
-    "読み方が決まったあとの項である。"
-    "実質は②にあり、この型の判定・計算がそのまま証明の検証になる、"
-    "というのが全体の筋である。</p>"
     "<h2>設計の方針</h2>"
     "<ul>"
-    "<li><strong>タクティクについて詳しくは説明しない</strong>。Top では、"
+    "<li><strong>タクティクについて詳しくは説明しない</strong>。第6章では、"
     "タクティクを証明項を組み立てるための仕組みとして簡単に紹介し、"
     "タクティクによる証明と、それに対応する項スタイルの証明を比較する。</li>"
     "<li><strong>mathlib は使わず、Lean 4 の標準環境（自動的に読み込まれる"
@@ -91,30 +93,19 @@ SITE_GOALS = (
     "<li>Lean を網羅的に紹介することは目的ではなく、必要な最低限の機能しか"
     "説明しない。</li>"
     "</ul>"
-    "<h2>構成と読む順</h2>"
-    "<p>読む順は <strong>Intro1a → CH1 → Intro1b → CH2 → Intro2 → Top"
-    "（→ 演習 Extra・Ascoli）</strong>。</p>"
-    "<p>型と項の道具を学んだところで、その道具を使う証明を読む。"
-    "この往復を2回行い、目標1の「項の型を読む」ことと、"
-    "目標2の「証明が検査される仕組みを納得する」ことを段階的につなぐ。</p>"
     "<ol>"
-    "<li><strong>1往復目 — 関数から、ならば・全称の証明へ。</strong>"
-    "Intro1a で項と型、定義、関数・依存関数、暗黙引数を学ぶ。"
-    "続く CH1 では、仮定や対象を受け取り、適用して進む証明を読む。"
+    "<li><strong>第1・2章 — 依存関数型から、ならば・全称の証明へ。</strong>"
+    "第1章で項と型、定義、関数・依存関数、暗黙引数を学ぶ。"
+    "続く第2章では、仮定や対象を受け取り、適用して進む証明を読む。"
     "「単射どうしの合成は単射」の証明まで進み、"
     "型検査が証明の検査になることを確かめる。</li>"
-    "<li><strong>2往復目 — 構成子と場合分けから、かつ・または・存在の証明へ。</strong>"
-    "Intro1b で帰納型、場合分け・再帰、structure を学び、"
-    "項を作る・分解する道具を増やす。続く CH2 では、その道具を使って"
+    "<li><strong>第3・4章 — 帰納型から、かつ・または・存在の証明へ。</strong>"
+    "第3章で帰納型、場合分け・再帰、structure を学び、"
+    "項を作る・分解する道具を増やす。続く第4章では、その道具を使って"
     "「かつ」「または」「矛盾」「存在」の証明を読む。"
     "偶数の和や全射の合成を例に、関数・構成子・場合分けを組み合わせ、"
     "等式の仕組みと証明検査の全体像を整理する。</li>"
     "</ol>"
-    "<p>そのあと、Intro2 で Top のための道具"
-    "（class・集合・記法）を揃え、Top では現物の数学"
-    "（位相空間の主定理: コンパクト空間からハウスドルフ空間への連続全単射は同相）"
-    "について両方を実感する。その先で、形式化を自分の研究に役立てる可能性を"
-    "考えたい。</p>"
 )
 SITE_NOTE = (
     "各 ✏ 練習には折りたたみの解答が付いている（解答もすべて Lean の検査済み）。"
@@ -185,7 +176,8 @@ def render_prose(lines: list[str], chapter: str = "", sections=None, *, section_
             level = len(m.group(1))
             heading = refs.HEADING_RE.fullmatch(line)
             attr = f' id="sec-{heading["label"]}"' if heading and section_ids else ""
-            title = f'{heading["number"]}. {heading["title"]}' if heading else m.group(2)
+            title = (f'{heading["number"]}. {heading["title"]}' if heading['marks'] == '##'
+                     else heading['title']) if heading else m.group(2)
             out.append(f"<h{level}{attr}>{md(title)}</h{level}>")
             i += 1
             continue
@@ -389,7 +381,25 @@ CALLOUT_START_RE = re.compile(r"^CALLOUT_START (optional|preview)$")
 CALLOUT_END = "CALLOUT_END"
 
 
-def render_chapter(name: str, segments, sections=None) -> str:
+def exercise_parts(lines):
+    """Split exercise prose without changing the local SOL lookup numbers."""
+    if not any(EXERCISE_HEAD_RE.match(line) for line in lines):
+        return [(None, lines)]
+    starts = [(i, int(match[1])) for i, line in enumerate(lines)
+              if (match := ITEM_RE.match(line))]
+    if not starts:
+        return [(None, lines)]
+    return [(None, lines[:starts[0][0]])] + [
+        (item, lines[start:starts[index + 1][0] if index + 1 < len(starts) else len(lines)])
+        for index, (start, item) in enumerate(starts)]
+
+
+def exercise_count(segments):
+    return sum(item is not None for kind, lines in segments if kind == "prose"
+               for item, _ in exercise_parts(lines))
+
+
+def render_chapter(name: str, segments, sections=None, *, exercise_start=1) -> str:
     """本文をレンダリングする。長い注記は CALLOUT_START/END でコードごと囲む。"""
     sol_path = SRC / f"{SOL_FILES[name]}.lean" if name in SOL_FILES else None
     sols = parse_solutions(sol_path) if sol_path and sol_path.exists() else None
@@ -398,6 +408,7 @@ def render_chapter(name: str, segments, sections=None) -> str:
         queues[label].append((item, solution))
     body = []
     sec, sol_i = None, 0
+    exercise_number = exercise_start
     active_callout = None
     for kind, lines in segments:
         first = next((l.strip() for l in lines if l.strip()), "")
@@ -425,15 +436,18 @@ def render_chapter(name: str, segments, sections=None) -> str:
                 sec = m['label']
             elif l.startswith("## "):
                 sec = None
-        rendered = render_prose(lines, name, sections)
-        callout = CALLOUT_HEAD_RE.match(first)
-        if callout and active_callout is None:
-            kind = "optional" if callout.group(1) == "補足" else "preview"
-            rendered = f'<aside class="note note--{kind}">{rendered}</aside>'
-        body.append(rendered)
-        if sols is None or not any(EXERCISE_HEAD_RE.match(l) for l in lines):
-            continue
-        for item in [int(m.group(1)) for l in lines if (m := ITEM_RE.match(l))]:
+        parts = []
+        for item, question_lines in exercise_parts(lines):
+            rendered = render_prose(question_lines, name, sections)
+            if item is None:
+                parts.append(rendered)
+                continue
+            number = exercise_number
+            exercise_number += 1
+            rendered = rendered.replace('<ol>', f'<ol class="exercise" start="{number}" data-exercise="{number}">', 1)
+            parts.append(rendered)
+            if sols is None:
+                continue
             label = f"{sec}:{item}"
             if not queues[sec]:
                 raise SystemExit(f"error: {name} 練習 {label} の解答がない（{SOL_FILES[name]}.lean）")
@@ -442,7 +456,13 @@ def render_chapter(name: str, segments, sections=None) -> str:
             if got != item:
                 raise SystemExit(f"error: {name} 練習 {label} の位置に SOL {got}（{SOL_FILES[name]}.lean の順序を確認）")
             inner = "\n".join(render_code(ls) if k == "code" else render_prose(ls, name, sections, section_ids=False) for k, ls in segs2)
-            body.append(f'<details class="sol"><summary>解答 {item}</summary>\n{inner}\n</details>')
+            parts.append(f'<details class="sol" data-exercise="{number}"><summary>解答 {number}</summary>\n{inner}\n</details>')
+        rendered = "\n".join(parts)
+        callout = CALLOUT_HEAD_RE.match(first)
+        if callout and active_callout is None:
+            kind = "optional" if callout.group(1) == "補足" else "preview"
+            rendered = f'<aside class="note note--{kind}">{rendered}</aside>'
+        body.append(rendered)
     if active_callout is not None:
         raise SystemExit(f"error: {name}: CALLOUT_END is missing")
     if sols is not None and sol_i != len(sols):
@@ -545,6 +565,7 @@ h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
 h1 { margin-top: 0; }
 pre { white-space: pre-wrap; overflow-wrap: break-word; overflow: visible; }
 table { display: table; width: 100%; }
+ol[data-exercise] { padding-left: 2.8em; }
 details.sol > summary { list-style: none; }
 details.sol > summary::-webkit-details-marker { display: none; }
 a { text-decoration: none; }
@@ -592,27 +613,73 @@ def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
 """
 
 ROLES = {
-    "Intro1a": "項と型・関数・依存関数・暗黙引数",
-    "CH1": "ならば・全称・単射の合成・証明検査の核心",
-    "Intro1b": "帰納型・場合分け・再帰・structure",
-    "CH2": "組と場合分け・存在・偶数と全射・検査の詳説",
-    "Intro2": "位相空間を読むための道具（class・集合の正体・記法の自作）",
-    "Top": "現物の数学が形式化される様子（主定理: コンパクト→ハウスドルフの連続全単射は同相）",
-    "Extra": "演習（sorry を自分で埋める）",
-    "Ascoli": "演習（sorry を自分で埋める）",
+    "06_Topology": "定義から「コンパクト空間からハウスドルフ空間への連続全単射は同相写像である」の証明まで",
+    "07_Exercises": "演習（sorry を自分で埋める）",
+    "08_Ascoli": "演習（sorry を自分で埋める）",
 }
 
 
-def toc_html(titles: dict, href) -> str:
-    """目次。`href(name)` がリンク先を返す（HTML は別ページ、PDF は同一文書内アンカー）。"""
-    out = [f"<h1>{html.escape(SITE_TITLE)}</h1>",
-           f"<p>{SITE_CONCEPT}</p>", SITE_GOALS, f"<p>{SITE_NOTE}</p>", "<ol>"]
-    for name in CHAPTERS:
+def introduction_html() -> str:
+    """通読版と講義版で共有する、教材の目的・目標・構成。"""
+    return f"<h1>{html.escape(SITE_TITLE)}</h1>\n<p>{SITE_CONCEPT}</p>\n{SITE_GOALS}"
+
+
+def chapter_links_html(titles: dict, chapters, href, *, group_exercises=False) -> str:
+    out = ["<ol>"]
+    exercises_added = False
+    for name in chapters:
+        if group_exercises and name in {"07_Exercises", "08_Ascoli"}:
+            if not exercises_added:
+                out.append(f'<li><a href="{href(name)}">発展演習</a></li>')
+                exercises_added = True
+            continue
         role = ROLES.get(name, "")
         suffix = f" — {role}" if role else ""
         out.append(f'<li><a href="{href(name)}">{inline(titles[name])}</a>{suffix}</li>')
     out.append("</ol>")
     return "\n".join(out)
+
+
+def toc_html(titles: dict, href) -> str:
+    """目次。`href(name)` は HTML の章ページ、または PDF 内のアンカー。"""
+    return introduction_html() + f"\n<p>{SITE_NOTE}</p>\n" + chapter_links_html(titles, CHAPTERS, href)
+
+
+def lecture_index_html(titles: dict, chapters) -> str:
+    return (introduction_html() + '<h2>講義の各章</h2>' +
+            chapter_links_html(titles, CHAPTERS,
+                               lambda name: ('slides/' if name in chapters else '') + name.lower() + '.html',
+                               group_exercises=True))
+
+
+def legacy_redirect_html(old: str, new: str, *, slide=False) -> str:
+    """Keep published links, including lecture page/reveal hashes, working."""
+    import json
+    destination = new.lower() + ".html"
+    migrate_hash = (f'if (fragment.startsWith({json.dumps("#" + old.lower() + "-")})) '
+                    f'fragment = {json.dumps("#" + new.lower() + "-")} + fragment.slice({len(old) + 2});'
+                    if slide else "")
+    return f'''<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<title>ページは移動しました</title>
+<script>
+let fragment = location.hash;
+{migrate_hash}
+location.replace({json.dumps(destination)} + location.search + fragment);
+</script>
+<meta http-equiv="refresh" content="0; url={destination}">
+</head><body><p>この章は<a href="{destination}">こちら</a>に移動しました。</p></body></html>
+'''
+
+
+def write_legacy_redirects(out: Path, slide_chapters) -> list[Path]:
+    paths = []
+    for old, new in LEGACY_CHAPTERS.items():
+        for folder, is_slide in [(out, False)] + ([(out / "slides", True)] if new in slide_chapters else []):
+            path = folder / (old.lower() + ".html")
+            path.write_text(legacy_redirect_html(old, new, slide=is_slide), encoding="utf-8")
+            paths.append(path)
+    return paths
 
 # ---------------------------------------------------------------- pdf
 
@@ -646,9 +713,9 @@ def pdf_html(titles: dict, bodies: dict) -> str:
     """全章を1つの印刷用 HTML にまとめる。練習の解答はすべて開いた状態にする。"""
     parts = [f'<section class="chapter" id="ch-index">\n{toc_html(titles, lambda n: f"#ch-{n.lower()}")}\n</section>']
     for name in CHAPTERS:
-        body = bodies[name].replace('<details class="sol">', '<details class="sol" open>')
+        body = bodies[name].replace('<details class="sol"', '<details open class="sol"')
         # Stable labels are globally unique, including in the combined document.
-        body = re.sub(r'href="(?:[a-z0-9]+\.html)?#(sec-[A-Za-z0-9_.-]+)"', r'href="#\1"', body)
+        body = re.sub(r'href="(?:[a-z0-9_-]+\.html)?#(sec-[A-Za-z0-9_.-]+)"', r'href="#\1"', body)
         parts.append(f'<section class="chapter" id="ch-{name.lower()}">\n{body}\n</section>')
     return page(SITE_TITLE, "\n".join(parts), css=PDF_CSS)
 
@@ -722,19 +789,22 @@ def file_digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build_signature(with_pdf):
+def build_signature(with_pdf, include_slide_notes=False):
     import hashlib
-    return hashlib.sha256((str(with_pdf) + "\n" + "\n".join(
+    return hashlib.sha256((str((with_pdf, include_slide_notes)) + "\n" + "\n".join(
         str(path.relative_to(ROOT)) + ":" + file_digest(path) for path in build_inputs())).encode()).hexdigest()
 
 
-def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = False):
+def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = False,
+         include_slide_notes: bool = False):
     import json
+    slide_chapters = [name for name in CHAPTERS if name not in SLIDE_EXCLUDED_CHAPTERS]
     cache = ROOT / ".lake/textbook-build.json"
     if if_needed and with_slides and cache.exists():
         try:
             previous = json.loads(cache.read_text())
-            if previous["signature"] == build_signature(with_pdf) and previous["outputs"] and all(
+            if previous["signature"] == build_signature(with_pdf, include_slide_notes) and previous["outputs"] and not any(
+                    (OUT / "slides" / f"{name.lower()}.html").exists() for name in SLIDE_EXCLUDED_CHAPTERS) and all(
                     (ROOT / name).is_file() and file_digest(ROOT / name) == value
                     for name, value in previous["outputs"].items()):
                 print("  通読版・講義版の HTML/PDF は最新です。")
@@ -751,17 +821,19 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
         raise SystemExit(str(exc)) from exc
     # Snapshot after reference synchronization, before rendering. An edit made
     # during a long PDF export must invalidate the next build, not be cached.
-    source_signature = build_signature(with_pdf) if with_slides and if_needed else None
+    source_signature = build_signature(with_pdf, include_slide_notes) if with_slides and if_needed else None
     titles, bodies = {}, {}
+    exercise_start = 1
     for name in CHAPTERS:
         segments = parse(SRC / f"{name}.lean")
         titles[name] = chapter_title(segments)
-        bodies[name] = render_chapter(name, segments, references.sections)
+        bodies[name] = render_chapter(name, segments, references.sections, exercise_start=exercise_start)
+        exercise_start += exercise_count(segments)
     OUT.mkdir(exist_ok=True)
     (OUT / ".nojekyll").write_text("")
     for idx, name in enumerate(CHAPTERS):
         out_path = OUT / f"{name.lower()}.html"
-        slide_link = f'<p class="lecture-link"><a href="slides/{name.lower()}.html">講義用スライド</a></p>' if with_slides else ""
+        slide_link = f'<p class="lecture-link"><a href="slides/{name.lower()}.html">講義用スライド</a></p>' if with_slides and name in slide_chapters else ""
         out_path.write_text(page(titles[name], slide_link + bodies[name], nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
@@ -782,7 +854,12 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
 
     if with_slides:
         import slides
-        slide_document, _ = slides.build(titles, bodies, CHAPTERS, OUT, head=KATEX_HEAD)
+        slide_document, _ = slides.build(titles, bodies, slide_chapters, OUT, head=KATEX_HEAD,
+                                        include_notes=include_slide_notes,
+                                        index_body=lecture_index_html(titles, slide_chapters))
+        for name in SLIDE_EXCLUDED_CHAPTERS:
+            (OUT / "slides" / f"{name.lower()}.html").unlink(missing_ok=True)
+    redirects = write_legacy_redirects(OUT, slide_chapters if with_slides else []) if with_student else []
     if with_pdf:
         build_pdf(titles, bodies)
         if with_slides:
@@ -790,7 +867,8 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
     if with_slides and if_needed:
         outputs = [OUT / "index.html", OUT / "slides/index.html"]
         outputs += [OUT / f"{name.lower()}.html" for name in CHAPTERS]
-        outputs += [OUT / f"slides/{name.lower()}.html" for name in CHAPTERS]
+        outputs += [OUT / f"slides/{name.lower()}.html" for name in slide_chapters]
+        outputs += redirects
         if with_pdf:
             outputs += [PDF_OUT, PDF_OUT.with_name("slides.pdf")]
         cache.parent.mkdir(exist_ok=True)
@@ -803,5 +881,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="src/*.lean → 通読版・講義版の HTML と PDF")
     ap.add_argument("--no-pdf", action="store_true", help="2種類の PDF を省略し、2種類の HTML だけ生成する")
     ap.add_argument("--if-needed", action="store_true", help="入力と生成物が一致していれば再生成を省略する")
+    ap.add_argument("--include-slide-notes", action="store_true", help="スライドの HTML・PDF に補足・先取りを含める（標準では省略）")
     args = ap.parse_args()
-    main(with_pdf=not args.no_pdf, if_needed=args.if_needed)
+    main(with_pdf=not args.no_pdf, if_needed=args.if_needed, include_slide_notes=args.include_slide_notes)

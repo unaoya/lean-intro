@@ -14,7 +14,16 @@ body.print-deck { margin: 0; background: #fcfcfa; }
 .print-head { top: 18px; padding-bottom: 12px; border-bottom: 1px solid #dce1e2; }
 .print-head span { max-width: 1040px; text-align: right; }
 .print-foot { bottom: 16px; padding-top: 12px; border-top: 1px solid #dce1e2; }
-.print-content { position: absolute; top: 100px; left: 112px; right: 112px; font-size: 26px; line-height: 1.8; }
+.print-content {
+  position: absolute; top: 100px; bottom: 70px; left: 112px; right: 112px;
+  font-size: 26px; line-height: 1.8; margin-bottom: 0;
+  display: flex; flex-direction: column; justify-content: safe center;
+}
+.print-body { display: flow-root; flex: none; }
+.print-content .slide-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+.print-deck .step[data-unrevealed] { visibility: hidden; }
+.print-slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) { visibility: hidden; }
+.print-slide[data-editorial] .print-content { top: 80px; }
 .print-content h1 { font-size: 39px; line-height: 1.5; margin: 0 0 28px; }
 .print-content h2 { font-size: 33px; line-height: 1.5; margin: 0 0 24px; }
 .print-content h3, .print-content h4 { font-size: 28px; line-height: 1.6; margin: 0 0 22px; }

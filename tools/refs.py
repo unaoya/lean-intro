@@ -9,12 +9,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 LABEL = r"[A-Za-z][A-Za-z0-9_.-]*"
-HEADING_RE = re.compile(r"^## (?:(?P<number>[0-9]+)\. )?(?P<title>.+?) \{#sec-(?P<label>" + LABEL + r")\}$")
+HEADING_RE = re.compile(r"^(?P<marks>##|###) (?:(?P<number>[0-9]+)\. )?(?P<title>.+?) \{#sec-(?P<label>" + LABEL + r")\}$")
 REF_RE = re.compile(r"\[(?P<text>[^\[\]\n]*(?:\n[^\[\]\n]*)?)\]\(#sec-(?P<label>" + LABEL + r")\)")
 DISPLAY_RE = re.compile(r"(?:(?P<file>`[A-Za-z0-9_]+\.lean`)(?P<gap>\s*の?\s*))?(?P<number>[0-9]*)(?P<space>[ \t]*)(?P<unit>節?)")
 SOL_RE = re.compile(r"^SOL (?P<label>" + LABEL + r"):(?P<item>[1-9][0-9]*)$")
 BARE_RE = re.compile(r"(?<![A-Za-z0-9_`.])(?:[0-9]+[ \t]*節|[0-9]+(?=[ \t]*[〜～–-][ \t]*[0-9]+[ \t]*節))")
-SECTION_STARTS = {"CH1": 0}
+SECTION_STARTS = {"02_Forall": 0}
 
 
 @dataclass
@@ -25,6 +25,7 @@ class Section:
     title: str
     path: Path
     line: int
+    level: int = 2
     supplements: list[str] = field(default_factory=list)
 
     @property
@@ -72,9 +73,9 @@ def analyze(src: Path, chapters: list[str], sol_files: dict[str, str], parse) ->
     result = Result()
     owners = {name: name for name in chapters}
     owners.update({sol: name for name, sol in sol_files.items()})
-    # ExtraSol / AscoliSol are compiled but are not embedded in the HTML.
-    for name in ("Extra", "Ascoli"):
-        if name in owners and (src / f"{name}Sol.lean").exists():
+    # Also check standalone solutions that are not embedded in the HTML.
+    for name in chapters:
+        if name not in sol_files and (src / f"{name}Sol.lean").exists():
             owners[f"{name}Sol"] = name
     segments = {}
     edits: dict[Path, list[tuple[int, int, str]]] = {}
@@ -104,20 +105,28 @@ def analyze(src: Path, chapters: list[str], sol_files: dict[str, str], parse) ->
         if name not in chapters:
             continue
         number = SECTION_STARTS.get(name, 1)
-        current = None
+        current = parent = None
         for kind, first_line, lines in segments[path]:
             if kind != "prose":
                 continue
             for i, line in enumerate(lines, first_line):
-                if line.startswith("## "):
-                    current = None
+                if line.startswith("## ") or (line.startswith("### ") and "{#sec-" in line):
                     heading = HEADING_RE.fullmatch(line)
                     if not heading:
+                        if line.startswith("## "):
+                            current = parent = None
                         if re.match(r"^## [0-9]+\.", line) or "{#sec-" in line:
                             error(path, i, line, "番号つき見出しには固定ラベル {#sec-名前} が必要です")
                         continue
+                    level = len(heading['marks'])
+                    if level == 3 and parent is None:
+                        error(path, i, line, "固定ラベル付きの小見出しには親の節が必要です")
+                        continue
                     label = heading['label']
-                    current = Section(label, name, number, heading['title'], path, i)
+                    current = Section(label, name, number if level == 2 else parent.number,
+                                      heading['title'], path, i, level=level)
+                    if level == 2:
+                        parent = current
                     if label in result.sections:
                         other = result.sections[label]
                         error(path, i, line, f"ラベル重複（{other.path.name}:{other.line}）")
@@ -127,8 +136,9 @@ def analyze(src: Path, chapters: list[str], sol_files: dict[str, str], parse) ->
                     raw_line = text[start:].split('\n', 1)[0]
                     start += raw_line.index(line)
                     # Only replace the prefix: the title may itself contain a reference.
-                    edit(path, start, start + heading.start('title'), f"## {number}. ")
-                    number += 1
+                    edit(path, start, start + heading.start('title'), f"## {number}. " if level == 2 else "### ")
+                    if level == 2:
+                        number += 1
                 elif current is not None and re.match(r"^### 補足(?:[（: ]|$)", line):
                     current.supplements.append(line)
 

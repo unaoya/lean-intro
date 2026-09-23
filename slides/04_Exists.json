@@ -1,0 +1,1194 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "at": {
+        "section": "04_Exists.intro",
+        "tag": "pre",
+        "starts": "import «02_Forall» import «03_InductiveTypes»"
+      },
+      "id": "introduction",
+      "label": "項の作り方と証明の仕方を合わせる"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "h2",
+        "starts": "1. 直積型と「かつ」"
+      },
+      "id": "and-introduction-elimination",
+      "label": "「かつ」を示すとき・使うとき"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "pre",
+        "starts": "def mkProd {α β : Type} (a : α) (b : β) : α ×"
+      },
+      "id": "product-and-conjunction",
+      "label": "型の組と証明の組を作る"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "p",
+        "starts": "型側: 組を入れ替える。"
+      },
+      "id": "swap-product",
+      "label": "組の入れ替えと「かつ」の入れ替え"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "theorem and_left {p q : Prop} : p ∧ q → p と型側の対応物 def fst' {α β : Type} : α × β → α を書き比べよ。"
+      },
+      "id": "first-component-exercise",
+      "label": "練習：左側を取り出す"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "ol",
+        "question": "theorem and_assoc' {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r) を ⟨…⟩ と .1 .2",
+        "starts": "theorem and_assoc' {p q r : Prop} : (p ∧ q) ∧"
+      },
+      "id": "and-associativity-exercise",
+      "label": "練習：証明の組を組み直す"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "ol",
+        "question": "具体的な命題でも示し方は同じであることを、 example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩ で確かめよ。",
+        "starts": "具体的な命題でも示し方は同じであることを、 example : (1 = 1) ∧ (2 "
+      },
+      "id": "concrete-and-exercise",
+      "label": "練習：具体的な等式の証明を組にする"
+    },
+    {
+      "at": {
+        "section": "CH.products",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "各点で二つの証明を組にして、 theorem all_and {α : Type} {Q R : α → Prop} :(∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a"
+      },
+      "id": "all-and-exercise",
+      "label": "練習：各点で2つの証明を組にする"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "h2",
+        "starts": "2. 直和型と「または」"
+      },
+      "id": "or-introduction-elimination",
+      "label": "「または」を示すとき・使うとき"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "pre",
+        "starts": "def inlSum {α β : Type} (a : α) : α ⊕ β := .i"
+      },
+      "id": "sum-and-disjunction",
+      "label": "左右の片側から項を作る"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "p",
+        "starts": "型側: 和を入れ替える。左なら右へ、右なら左へ。"
+      },
+      "id": "swap-sum",
+      "label": "直和の左右を入れ替える"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "p",
+        "starts": "命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。"
+      },
+      "id": "swap-or",
+      "label": "「または」の左右を入れ替える"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "p",
+        "starts": "型側の「使うとき」を一般の形で書いたもの。"
+      },
+      "id": "sum-elimination",
+      "label": "直和を場合分けで使う"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "p",
+        "starts": "命題側の「使うとき」。Or.elim と同じもの。字面は上と同じ。"
+      },
+      "id": "or-elimination",
+      "label": "「または」を場合分けで使う"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "or-idempotence-exercise",
+      "label": "練習：どちらの札でも同じ結論"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "ol",
+        "question": "theorem or_map {p q r : Prop} : (p → q) → p ∨ r → q ∨ r を書け（札を見て、左のときだけ関数を適",
+        "starts": "theorem or_map {p q r : Prop} : (p → q) → p ∨"
+      },
+      "id": "or-map-exercise",
+      "label": "練習：左の場合にだけ含意を使う"
+    },
+    {
+      "at": {
+        "section": "CH.sums",
+        "tag": "ol",
+        "question": "example : (1 = 2) ∨ (2 = 2) := .inr rfl が通ることを確かめよ（左の札が偽の命題でも、右から入れる）。",
+        "starts": "example : (1 = 2) ∨ (2 = 2) := .inr rfl が通ること"
+      },
+      "id": "concrete-or-exercise",
+      "label": "練習：右側の証明で「または」を示す"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "h2",
+        "starts": "3. 空の型と「⊥」"
+      },
+      "id": "empty-types",
+      "label": "構成子のない型と矛盾"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "p",
+        "starts": "型側: Empty の項があれば何の型の項でも作れる。"
+      },
+      "id": "empty-elimination",
+      "label": "空の型と矛盾からは何でも従う"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "p",
+        "starts": "否定 ¬p は p → False のことなので、実は新しい作り方ではない。"
+      },
+      "id": "negation",
+      "label": "否定は False への関数"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "h3",
+        "starts": "Prelude での定義 — Prop に住む帰納型"
+      },
+      "id": "empty-definitions",
+      "label": "Empty と False の定義"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "p",
+        "starts": "一点側の対応物もある。Unit（構成子1つ・引数なしの型、03_InductiveTypes.lean 1節）"
+      },
+      "id": "true-definition",
+      "label": "True の構成子と Bool との違い"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "contradiction-exercise",
+      "label": "練習：矛盾を作って使う"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "ol",
+        "question": "theorem dni {p : Prop} : p → ¬¬p を書け（¬¬p を示す向き。ほとんど1語で書ける）。書けたら、逆向き ¬¬p → p",
+        "starts": "theorem dni {p : Prop} : p → ¬¬p を書け（¬¬p を示す向"
+      },
+      "id": "double-negation-exercise",
+      "label": "練習：二重否定を示す"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "p",
+        "answer": true,
+        "question": "theorem dni {p : Prop} : p → ¬¬p を書け（¬¬p を示す向き。ほとんど1語で書ける）。書けたら、逆向き ¬¬p → p",
+        "starts": "逆向き ¬¬p → p は書けない。手持ちは hnn : (p → False) → Fa"
+      },
+      "id": "double-negation-converse",
+      "label": "逆向きに必要になる背理法"
+    },
+    {
+      "at": {
+        "section": "CH.empty-types",
+        "tag": "ol",
+        "question": "example : ¬False := fun h => h が通ることを確かめよ（¬False は False → False——恒等関数が証明にな",
+        "starts": "example : ¬False := fun h => h が通ることを確かめよ（¬Fa"
+      },
+      "id": "not-false-exercise",
+      "label": "練習：False の否定は恒等関数"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h2",
+        "starts": "4. 存在と依存和 — 偶数・全射の例から"
+      },
+      "id": "existence-introduction",
+      "label": "存在を示す：証人と根拠"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "ここで 2 が証人、rfl が 2 = 2 の証明である。⟨a, h⟩ は組と同じ記法だが"
+      },
+      "id": "existence-constructor",
+      "label": "Exists.intro と証人の扱い"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "例1: 任意の自然数 n について、n + n は偶数"
+      },
+      "id": "even-double-proof",
+      "label": "n + n が偶数である普通の証明"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "論理式。証明の構造が見えたところで、主張そのものも形式の言葉に直しておく。「任意の自然数 "
+      },
+      "id": "even-double-formula",
+      "label": "主張を全称と存在の論理式にする"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "形式化を意識した版。同じ証明を、各段で何の証明の仕方を使っているかを名指ししながら読み直す"
+      },
+      "id": "fix-an-arbitrary-number",
+      "label": "任意の n を固定する"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "n を固定したら、偶数の定義に戻る。「m が偶数」とは「ある k が存在して m = 2k"
+      },
+      "id": "choose-a-witness",
+      "label": "候補を挙げ、条件を満たすことを示す"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "項。これを Lean に持ち込む。02_Forall で学んだ全称と、直前の小例で見た存在を使うと、「"
+      },
+      "id": "formula-to-lean",
+      "label": "論理式から Lean の命題へ"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "02_Forall で見た theorem の形に当てはめ、コロンの右に命題、:= の右に証明の項を書"
+      },
+      "id": "two-mul",
+      "label": "必要な等式の向きをそろえる"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "pre",
+        "starts": "theorem even_double : ∀ n : Nat, ∃ k, n + n ="
+      },
+      "id": "even-double-term",
+      "label": "証明の3つの部品を項にする"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "エラーが出ない＝この項が宣言どおりの型を持つことを機械が確認した、ということである。形式化"
+      },
+      "id": "read-even-double",
+      "label": "項の部品と証明の動きを照合する"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "ところで論理式の側では、述語 Even に名前を付けて ∀n Even(n + n) と "
+      },
+      "id": "iseven-definition",
+      "label": "偶数という述語に名前を付ける"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "主張は ∀ n : Nat, IsEven (n + n) と略記できて——"
+      },
+      "id": "iseven-double",
+      "label": "定義を開いて同じ証明を使う"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "存在するものを使う"
+      },
+      "id": "existence-elimination",
+      "label": "存在を使う：証人と根拠に名前を付ける"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "pre",
+        "starts": "theorem exists_map {α : Type} {Q R : α → Prop"
+      },
+      "id": "exists-map",
+      "label": "証人を保ち、根拠を移す"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "exists_map の枝の中で、a、ha、hqr a、hqr a ha の型を順に予想せよ。"
+      },
+      "id": "exists-map-types-exercise",
+      "label": "練習：match の枝で型を追う"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "ol",
+        "question": "2段階で根拠を移す theorem exists_map2 {α : Type} {P Q R : α → Prop} :(∀ a, P a → Q ",
+        "starts": "2段階で根拠を移す theorem exists_map2 {α : Type} {P Q"
+      },
+      "id": "exists-map-twice-exercise",
+      "label": "練習：根拠を2段階で移す"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "例2: 偶数と偶数の和は偶数"
+      },
+      "id": "even-add-proof",
+      "label": "偶数の和：証明の7つの手順"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "（教科書なら「n = 2k、m = 2l と書けば n + m = 2k + 2l = 2"
+      },
+      "id": "even-add-formula",
+      "label": "仮定付きの主張を論理式にする"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "形式化を意識した版。今度は仮定つきの命題である。「…ならば—」の証明の仕方は、仮定を取って"
+      },
+      "id": "unpack-even-assumptions",
+      "label": "偶数という仮定から証人を取り出す"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "示すべきは（定義に戻ると）「n + m = 2j となる j の存在」。候補は j = k"
+      },
+      "id": "build-equality-chain",
+      "label": "候補の性質を等式の連鎖で示す"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "項。「取り出して名前を付ける」は、03_InductiveTypes.lean 1節の match をパターン"
+      },
+      "id": "equality-tools",
+      "label": "等式に操作を施す道具とつなぐ道具"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "pre",
+        "starts": "theorem isEven_add {n m : Nat} (hn : IsEven n"
+      },
+      "id": "even-add-term",
+      "label": "存在の分解と等式の連鎖を項にする"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "仮定 hn・hm が引数になっていることに注意——「ならばの証明=仮定を取る」も、項では "
+      },
+      "id": "read-even-add",
+      "label": "仮定と中間の名前が項でどう表れるか"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "例3: 全射どうしの合成は全射"
+      },
+      "id": "surjective-composition-proof",
+      "label": "全射の合成：普通の証明と論理式"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "形式化を意識した版（ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射"
+      },
+      "id": "surjective-composition-steps",
+      "label": "全称・存在・等式を組み合わせる"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "項。まず論理式をそのまま型に（仮定も全射の定義を開いた形で書く）:"
+      },
+      "id": "surjective-composition-term",
+      "label": "全射の定義を開いて項を書く"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "starts": "ライブラリの述語 Function.Surjective で略記して書き直すと—— 証明の"
+      },
+      "id": "surjective-composition-library",
+      "label": "ライブラリの述語で略記する"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "pre",
+        "starts": "theorem comp_surjective {α β γ : Type} {f : α",
+        "part": "#check comp_surjective"
+      },
+      "id": "injective-and-surjective",
+      "label": "単射と全射の証明を比べる"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) を isEven_double にならって書け（証人は n、根拠は rfl で済む——なぜ済むのか"
+      },
+      "id": "two-mul-exercise",
+      "label": "練習：2 * n の偶数性"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "ol",
+        "question": "「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は ",
+        "starts": "「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → "
+      },
+      "id": "add-two-exercise",
+      "label": "練習：偶数に2を足した証明"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "answer": true,
+        "question": "「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は ",
+        "starts": "論理式: ∀n (Even(n) → Even(n + 2))。"
+      },
+      "id": "add-two-formalization",
+      "label": "偶数に2を足す証明を形式化する"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "p",
+        "answer": true,
+        "question": "「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は ",
+        "starts": "項:"
+      },
+      "id": "add-two-term",
+      "label": "証人と等式の連鎖を項にする"
+    },
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "ol",
+        "question": "example : IsEven 10 := ⟨5, rfl⟩ が通ることを確かめよ（例1の一般論の、具体的な1点での実例である）。",
+        "starts": "example : IsEven 10 := ⟨5, rfl⟩ が通ることを確かめよ（例1"
+      },
+      "id": "ten-even-exercise",
+      "label": "練習：具体的な偶数の証人"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "h3",
+        "starts": "整理 — 依存和と「存在する」"
+      },
+      "id": "dependent-sums",
+      "label": "存在の例を依存和との対応で整理する"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "p",
+        "starts": "示すとき: ⟨a, b⟩。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには"
+      },
+      "id": "dependent-sum-use",
+      "label": "証人と根拠を作り、分解して使う"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "pre",
+        "starts": "def mkSigma {α : Type} {P : α → Type} (a : α)"
+      },
+      "id": "sigma-and-exists",
+      "label": "依存和の組と存在の証明"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "p",
+        "starts": "型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。"
+      },
+      "id": "curry-sigma",
+      "label": "依存和を受け取る関数をカリー化する"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "p",
+        "starts": "命題側: 「存在するなら r」は「どの点についても、条件を満たすなら r」と同じこと。 c"
+      },
+      "id": "curry-exists",
+      "label": "存在命題でも同じカリー化が通る"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "h3",
+        "starts": "部分型 — 第二成分が証明の依存和"
+      },
+      "id": "fin-structure",
+      "label": "Fin は値と証明の組"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "p",
+        "starts": "中身が分かれば、項も作れる。値が n に依存する依存関数の例として、「Fin (n + 1"
+      },
+      "id": "last-fin",
+      "label": "最後の番号を証明付きで作る"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "pre",
+        "starts": "#check last 2"
+      },
+      "id": "last-types",
+      "label": "入力を代入すると型が決まる"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "p",
+        "starts": "同じ族に沿って、「番号 n を受け取り、Fin (n + 1) の最初の番号 0 を返す」"
+      },
+      "id": "first-fin",
+      "label": "最初の番号を返す依存関数"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "pre",
+        "starts": "#check first 2"
+      },
+      "id": "first-and-last",
+      "label": "同じ 0 でも入力ごとに型が異なる"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "exists-left-exercise",
+      "label": "練習：存在の根拠の左側を取り出す"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "#check (last 4).val の表示を予想してから確かめよ（表示に付く ↑ は強制の印——上の補足で説明した）。",
+        "starts": "#check (last 4).val の表示を予想してから確かめよ（表示に付く ↑ は強"
+      },
+      "id": "last-val-exercise",
+      "label": "練習：Fin の中身の型"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩ が通ることを確かめよ。",
+        "starts": "example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩ が通る"
+      },
+      "id": "exists-zero-exercise",
+      "label": "練習：ゼロの存在を示す"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "#check first 4 の表示と、#eval (first 4).val の値を予想してから確かめよ。",
+        "starts": "#check first 4 の表示と、#eval (first 4).val の値を予想"
+      },
+      "id": "first-four-exercise",
+      "label": "練習：first の型と値"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "#check first 0 の表示を予想してから確かめよ（Fin (0 + 1) は1点の型である）。",
+        "starts": "#check first 0 の表示を予想してから確かめよ（Fin (0 + 1) は1点"
+      },
+      "id": "first-zero-exercise",
+      "label": "練習：1点の型の唯一の番号"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "（補足の確認）#eval (5 : Fin 4) の表示を予想してから確かめよ（補足の (5 : Fin 3) と同じ仕組みである）。",
+        "starts": "（補足の確認）#eval (5 : Fin 4) の表示を予想してから確かめよ（補足の ("
+      },
+      "id": "fin-wrap-exercise",
+      "label": "練習：Fin の数字と剰余"
+    },
+    {
+      "at": {
+        "section": "CH.dependent-sums",
+        "tag": "ol",
+        "question": "（補足の確認）#eval (first 5).val + (2 : Fin 3).val の値を予想してから確かめよ。",
+        "starts": "（補足の確認）#eval (first 5).val + (2 : Fin 3).val "
+      },
+      "id": "fin-nat-add-exercise",
+      "label": "練習：Fin の中身を取り出して足す"
+    },
+    {
+      "at": {
+        "section": "CH2.computation",
+        "tag": "h2",
+        "starts": "5. 等式と自然数の証明 — 計算・帰納法・構成子"
+      },
+      "id": "zero-mul-error",
+      "label": "計算が進まないと rfl は通らない"
+    },
+    {
+      "at": {
+        "section": "CH2.computation",
+        "tag": "p",
+        "starts": "理由は * の定義が第2引数についての再帰であること。n * 0 は第2引数が 0 なので"
+      },
+      "id": "recursion-direction",
+      "label": "掛け算の再帰する引数と帰納法"
+    },
+    {
+      "at": {
+        "section": "CH2.computation",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "concrete-zero-mul-exercise",
+      "label": "練習：具体的な値なら計算で一致する"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "整理 — 自然数の命題と構成子"
+      },
+      "id": "constructors-and-proofs",
+      "label": "等式の例を構成子の仕組みから整理する"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "等しさ Eq"
+      },
+      "id": "eq-definition",
+      "label": "Eq は構成子1つの帰納型"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "pre",
+        "starts": "example : 0 = 0 := Eq.refl 0 example : 0 = 0 "
+      },
+      "id": "eq-examples",
+      "label": "rfl で作れる等式と計算での照合"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "Prop と Type をまとめて扱う Sort"
+      },
+      "id": "sort",
+      "label": "Prop と Type をまとめる Sort"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "rfl の型を読む"
+      },
+      "id": "rfl-type",
+      "label": "rfl の型を左から読む"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "p",
+        "starts": "暗黙引数なので、普通は型や項を明示せず rfl とだけ書き、期待される等式から補ってもらう"
+      },
+      "id": "rfl-inference",
+      "label": "期待される等式から暗黙引数を決める"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "順序 Nat.le"
+      },
+      "id": "le-definition",
+      "label": "Nat.le の2つの構成子"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "pre",
+        "starts": "example : 0 ≤ 0 := Nat.le.refl example : 0 ≤ "
+      },
+      "id": "le-examples",
+      "label": "step を重ねて証明を作る"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "等式の法則は公理ではない"
+      },
+      "id": "equality-laws",
+      "label": "等式の法則は帰納型から導かれる"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "pre",
+        "starts": "#print axioms Eq.symm"
+      },
+      "id": "equality-axioms",
+      "label": "対称律の公理依存を確かめる"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "p",
+        "starts": "つまり Lean の基礎にあるのは等式の公理のリストではなく、「（健全性の条件を満たす）帰"
+      },
+      "id": "foundations",
+      "label": "依存関数型・宇宙・帰納型という土台"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "「全部」と「別々」も出てくる"
+      },
+      "id": "inductive-guarantees",
+      "label": "「全部」の保証と帰納法原理"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "le-exercise",
+      "label": "練習：step を2回重ねる"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "ol",
+        "question": "（補足の確認）本文の MyEq.symm にならって、MyEq.trans を自分で証明せよ（h₂ を match で分ければ h₁ がそのまま答えに",
+        "starts": "（補足の確認）本文の MyEq.symm にならって、MyEq.trans を自分で証明せ"
+      },
+      "id": "myeq-trans-exercise",
+      "label": "練習：等式の推移を場合分けで示す"
+    },
+    {
+      "at": {
+        "section": "CH.nat-proofs",
+        "tag": "ol",
+        "question": "（補足の確認）逆向きの橋 theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b ",
+        "starts": "（補足の確認）逆向きの橋 theorem MyEq.ofEq {α : Type} {a "
+      },
+      "id": "myeq-bridge-exercise",
+      "label": "練習：等式から MyEq への橋"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "h2",
+        "starts": "6. 示すときと使うときのまとめ"
+      },
+      "id": "proof-actions",
+      "label": "証明の動きと項の対応表"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "table",
+        "starts": "頭の動き項での正体 全称を示す: 任意に取るfun n => … ならばを示す: 仮定を取",
+        "part": "既知の定理を使う"
+      },
+      "id": "proof-actions-checking",
+      "label": "既知の定理・計算・型検査との対応"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "p",
+        "starts": "主張を Lean の命題として定め、証明の筋道も与えられたあとなら、散文から項へ進む仕事の"
+      },
+      "id": "what-checking-establishes",
+      "label": "主張と証明を与えた後の検査"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "p",
+        "starts": "示すときの形と使うときの形を並べると、左右で同じ形をしていることが見える。"
+      },
+      "id": "introduction-elimination-table",
+      "label": "型と命題の示し方・使い方"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "p",
+        "starts": "示すときの列は「その型（命題）を作るのに何が要るか」、使うときの列は「その型（命題）を持っ"
+      },
+      "id": "curry-howard",
+      "label": "証明は項の構成である"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "p",
+        "starts": "型側と命題側で同じ項が通ることの確認。 ⟨x.2, x.1⟩ という同じ式が、片方では組の"
+      },
+      "id": "same-term",
+      "label": "同じ項がデータにも証明にもなる"
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "and-to-or-exercise",
+      "label": "練習：取り出して別の構成子で包む"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "h2",
+        "starts": "7. 証明検査の詳説 — エラボレータとカーネル"
+      },
+      "id": "checking-slogan",
+      "label": "証明検査のスローガンを詳しくする"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "pre",
+        "starts": "ソースコード → 構文解析: 文字列を Lean の構文として読み取る → エラボレータ:"
+      },
+      "id": "checking-pipeline",
+      "label": "構文解析・エラボレータ・カーネル"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "starts": "賢い処理はすべて前段のエラボレータに、信頼はすべて後段のカーネルにある。この分業のおかげで"
+      },
+      "id": "kernel-trust",
+      "label": "項を組み立てる処理と最後の検査"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "starts": "この2段構えが仮定の飛ばしをどう捕まえるのかを、数学でよくある誤りで見ておく。 補題を使う"
+      },
+      "id": "missing-assumption",
+      "label": "明らかに見える仮定を穴にすると"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "starts": "このエラーを出したのは、2段構えの前段——エラボレータ——である。省略された仮定は「未解決"
+      },
+      "id": "counterexample",
+      "label": "埋まらない穴と n = 0 という反例"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "starts": "紙の上では「明らか」の一言で通ってしまう仮定の飛ばしが、 Lean では埋まらない穴として"
+      },
+      "id": "checking-assumptions",
+      "label": "仮定の証明も項として差し出す"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "h3",
+        "starts": "穴は書くときの道具にもなる"
+      },
+      "id": "holes-as-tools",
+      "label": "穴の型を見ながら証明を組み立てる"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "starts": "エラボレータが「残っている穴の型」を教えてくれている（⊢ の右が、いま作るべきものの型であ"
+      },
+      "id": "fill-the-witness",
+      "label": "証人を入れると次の目標が分かる"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "add-sub-cancel-exercise",
+      "label": "練習：必要な引数を渡して証明する"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "p",
+        "answer": true,
+        "question": "n + 1 - 1 = n は（n - 1 + 1 = n と違って）すべての n で正しい。 #check @Nat.add_sub_cancel ",
+        "starts": "丸括弧＝明示引数なので、使うときは n と m を実際に渡す:"
+      },
+      "id": "add-sub-cancel-answer",
+      "label": "型に合わせて n と 1 を渡す"
+    },
+    {
+      "at": {
+        "section": "CH2.checking-details",
+        "tag": "ol",
+        "question": "#eval (3 : Nat) - 5 の値を予想してから確かめよ（本文の 0 - 1 と同じく、自然数の引き算は切り捨てである）。",
+        "starts": "#eval (3 : Nat) - 5 の値を予想してから確かめよ（本文の 0 - 1 と"
+      },
+      "id": "truncated-subtraction-exercise",
+      "label": "練習：自然数の引き算の切り捨て"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "h2",
+        "starts": "8. 対応のずれ"
+      },
+      "id": "prop-data-difference",
+      "label": "証明の同一視とデータの区別"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "p",
+        "starts": "型側: どの点だったかを取り出せる。"
+      },
+      "id": "sigma-projections",
+      "label": "依存和から値と成分を取り出す"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 命題側では、これは書けない: -- -- def existsFst (h : ∃ "
+      },
+      "id": "exists-projection-error",
+      "label": "存在証明からデータを射影できない"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 命題側では、これは書けない: -- -- def existsFst (h : ∃ ",
+        "part": "-- 証明から値を取り出せてしまうと"
+      },
+      "id": "elimination-exceptions",
+      "label": "命題へ分解する場合と例外"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "theorem existsElim {α : Type} {r : Prop} {Q :"
+      },
+      "id": "exists-elimination",
+      "label": "存在証明を別の命題の証明に使う"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 「または」でも事情は同じ。どちらだったかを `Bool` として取り出そうとすると:"
+      },
+      "id": "or-data-error",
+      "label": "「または」からデータを取り出せない"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 「または」でも事情は同じ。どちらだったかを `Bool` として取り出そうとすると:",
+        "part": "-- と断られる"
+      },
+      "id": "or-prop-elimination",
+      "label": "命題を結論にする場合分け"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "exists-projection-exercise",
+      "label": "練習：存在証明の射影エラーを確認する"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "answer": true,
+        "question": "本文の existsFst の例を自分の環境で実際に書いてみて、エラーメッセージを自分の目で確かめよ。",
+        "starts": "def existsFst (h : ∃ a, Q a) : α := h.1 error",
+        "part": "error: Invalid projection"
+      },
+      "id": "exists-projection-error-answer",
+      "label": "存在証明の射影が拒否される理由"
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "p",
+        "starts": "これで二つの証明編の仕事——対応を作り、検査の正体を見届けること——は終わりである。なお "
+      },
+      "id": "closing",
+      "label": "対応を作り、検査の仕組みを確かめた"
+    }
+  ],
+  "splits": [
+    {
+      "at": {
+        "section": "CH2.existence",
+        "tag": "pre",
+        "starts": "theorem comp_surjective {α β γ : Type} {f : α"
+      },
+      "before": [
+        "#check comp_surjective"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH.introduction-elimination",
+        "tag": "table",
+        "starts": "頭の動き項での正体 全称を示す: 任意に取るfun n => … ならばを示す: 仮定を取"
+      },
+      "before": [
+        "既知の定理を使う"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 命題側では、これは書けない: -- -- def existsFst (h : ∃ "
+      },
+      "before": [
+        "-- 証明から値を取り出せてしまうと"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "starts": "-- 「または」でも事情は同じ。どちらだったかを `Bool` として取り出そうとすると:"
+      },
+      "before": [
+        "-- と断られる"
+      ]
+    },
+    {
+      "at": {
+        "section": "CH.prop-elimination",
+        "tag": "pre",
+        "answer": true,
+        "question": "本文の existsFst の例を自分の環境で実際に書いてみて、エラーメッセージを自分の目で確かめよ。",
+        "starts": "def existsFst (h : ∃ a, Q a) : α := h.1 error"
+      },
+      "before": [
+        "error: Invalid projection"
+      ]
+    }
+  ]
+}
