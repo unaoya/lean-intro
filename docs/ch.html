@@ -76,56 +76,188 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <li>型 <code>α</code> に対しては、項 <code>a : α</code> を<strong>作る</strong>。</li>
 <li>命題 <code>p</code> に対しては、証明 <code>h : p</code> を<strong>書く</strong>。</li>
 </ul>
-<p>型の世界での基本の活動は項を作ること、命題の世界での基本の活動は証明を書くこと。まず<a href="#sec-CH.reading-proofs">0節</a>で「そもそも証明するとは何をすることか」を具体例で考え直し、 <strong>命題に対応する型の項を作ることが証明することだ</strong>という、このファイルの中心の主張を立てる。そのあと、すでにある型（命題）から新しい型（命題）を作る操作を6つ並べ、それぞれについて、その命題を<strong>示すとき</strong>の書き方と<strong>使うとき</strong>の書き方を見比べる（型の側では「項を作るとき」と「項を使うとき」にあたる。論理学で導入則・除去則と呼ばれる区別だが、この教材では呼び名もこの2語で通す）。対応する項と証明が<strong>同じ字面で書ける</strong>ことが繰り返し現れる。</p>
-<table>
-<thead><tr><th></th><th>型</th><th>命題</th></tr></thead>
-<tbody>
-<tr><td>関数</td><td><code>α → β</code></td><td><code>p → q</code>（ならば）</td></tr>
-<tr><td>積</td><td><code>α × β</code></td><td><code>p ∧ q</code>（かつ）</td></tr>
-<tr><td>和</td><td><code>α ⊕ β</code></td><td><code>p ∨ q</code>（または）</td></tr>
-<tr><td>空</td><td><code>Empty</code></td><td><code>False</code>（⊥）</td></tr>
-<tr><td>依存積</td><td><code>(a : α) → P a</code></td><td><code>∀ a, Q a</code></td></tr>
-<tr><td>依存和</td><td><code>(a : α) × P a</code></td><td><code>∃ a, Q a</code></td></tr>
-</tbody></table>
+<p>型の世界での基本の活動は項を作ること、命題の世界での基本の活動は証明を書くこと。まず<a href="#sec-CH.reading-proofs">0節</a>で、小さな証明を一つずつ項に直し、 <code>Intro1.lean</code> と同じようにその型を追う。新しい論理記号は、必要になる直前に一つずつ導入する。そこで得た経験を、後の節で型の世界と並べて体系的に整理する。</p>
+<p>このファイルの中心の主張は、<strong>命題そのものを型とみなし、その型の項を作ることが証明することだ</strong>、というものである。したがって証明を読むときにも、特別な読み方を新しく覚えるのではなく、「この項の型は何か」を機械的に追えばよい。</p>
 <h2 id="sec-CH.reading-proofs">0. 証明するとは何をすることか</h2>
-<p><a href="intro1.html#sec-Intro1.terms-types"><code>Intro1.lean</code> 1節</a>からの積み上げで見たのは、 <strong>項の型は機械的に計算・検査できる</strong>ということだった。このファイルで納得したいのは、次の一つの主張である:</p>
-<p><strong>命題に対応する型があり、その型の項を作ることが、その命題を証明することである。</strong></p>
-<p>これが納得できれば、話は一気に進む。証明であるべき項の型を検査して、それが元の命題に一致していれば、<strong>証明の正しさを機械的に確かめたことになる</strong>——検査の手段は、<code>Intro1.lean</code> の型検査そのものだからである。</p>
-<p>だがこの主張は、初めて見ると奇妙に響く。証明とは論理をたどる営みで、項とは <code>fun n =&gt; n + n</code> のような式だったはずである。なぜ式を作ることが証明になるのか。それを納得するために、まず<strong>そもそも証明する、証明を読んで納得するとは何をすることか</strong>を、考え直すところから始めたい。</p>
-<p>数学の証明は、書かれ、読まれ、読んだ人が「正しい」と納得することで機能する。では、証明を読んで納得するとき、読者は何をしているのだろうか。</p>
-<p>こうモデル化できる。読者は<strong>文脈</strong>——いま使ってよいものの一覧（定理の仮定・既知の定理・ここまでに導いた事実）——を持って読み進める。そして各文で、次のような確認をしている。</p>
-<ul>
-<li>「〜とする」「任意に取る」— 新しい変数や仮定を文脈に<strong>加える</strong></li>
-<li>「A と B <strong>より</strong> C」— A と B が文脈に<strong>あるか</strong>、当てはめの条件が<strong>合うか</strong>を確かめて、C を文脈に加える</li>
-<li>「〜となる x を<strong>取る</strong>」— 文脈にある存在文を分解して、x とその性質を文脈に加える</li>
-<li>最後の文 — 示すべきことが、文脈にあるものから<strong>組めている</strong>かを確かめる</li>
-</ul>
-<p>重要なのは、どの確認も<strong>局所的</strong>だということである。見るのはその一文と現在の文脈だけでよく、証明全体の狙いや発想を理解する必要はない。しかも確認の中身は「一覧にあるか」「形が合うか」の照合であって、機械的に実行できる。直感や洞察が要るのは証明を<strong>見つける</strong>ときであって、<strong>検める</strong>作業には要らない。「納得した」とは、この検査がすべての文で通ったことの別名である。</p>
-<p>以下、初等的な事実を5つ、この観点で書き直していく。それぞれについて「ふつうの証明」から出発し、省略をすべて書き出した「詳細版」、主張そのものを述語論理で書く「論理式」、各段で何の証明の仕方を名指ししているかを言葉にした「形式化を意識した版」を経て、最後に「Lean の項」に至る。例1・例2では算術の事実を既知の定理として使い、例3ではその「既知」を信用せず自分で証明し、例4・例5では関数の性質を扱う。</p>
-<h3>例1: どの n についても n + n は偶数</h3>
+<p><a href="intro1.html#sec-Intro1.terms-types"><code>Intro1.lean</code> 1節</a>からの積み上げで見たのは、 <strong>項の型は機械的に計算・検査できる</strong>ということだった。このファイルで納得したいのは、次の主張である:</p>
+<p><strong>Lean では命題そのものが型であり、その型の項を作ることが、その命題を証明することである。</strong></p>
+<p>これが納得できれば、話は一気に進む。証明であるべき項の型を検査して、それが元の命題に一致していれば、<strong>証明の正しさを機械的に確かめたことになる</strong>——検査の手段は、<code>Intro1.lean</code> の型検査そのものだからである。ただし、ここで検査されるのは、<strong>すでに Lean の命題として書かれた主張に対する証明</strong>である。数学の主張をどの定義で、どの命題として表すかは、それとは別に人が考える必要がある。</p>
+<p>だがこの主張は、初めて見ると奇妙に響く。証明とは論理をたどる営みで、項とは <code>fun n =&gt; n + n</code> のような式だったはずである。なぜ式を作ることが証明になるのか。それを見るために、いちばん小さな推論から一段ずつ始めよう。</p>
+<h3>命題と証明の書き方</h3>
+<p>命題は <code>Prop</code> という型を持つ項である。そして <code>P : Prop</code> に対する <code>h : P</code> を、命題 <code>P</code> の<strong>証明</strong>と読む。</p>
+<pre class="quote"><code>P : Prop    — P は命題
+h : P       — h は P の証明</code></pre>
+<p>命題を型として持つ項に名前を付けるときは、<code>def</code> と同じ配置で <code>theorem</code> を使う:</p>
+<pre class="quote"><code>theorem 名前 (引数) : 命題 := 証明の項</code></pre>
+<p>この節の例では、宣言の引数をすべてその場に書く。したがって、まだ <code>section</code> や <code>variable</code> という新しい構文を覚える必要はない。</p>
+<h3>例1: P と「P ならば Q」から Q</h3>
+<p>命題 <code>P</code>、<code>Q</code>について、<code>P</code> であることと「<code>P</code> ならば <code>Q</code>」を仮定する。このとき <code>Q</code> を証明したい。</p>
+<p><strong>ふつうの証明</strong>。<code>P</code> である。また、<code>P</code> ならば <code>Q</code> である。したがって <code>Q</code> である。∎</p>
+<p><strong>型を意識した版</strong>。<code>P</code> の証明を <code>hP</code>、「<code>P</code> ならば <code>Q</code>」の証明を <code>hPQ</code> と名付ける:</p>
+<pre class="quote"><code>hP  : P
+hPQ : P → Q</code></pre>
+<p><code>hPQ : P → Q</code> は、<code>P</code> の証明を受け取ると <code>Q</code> の証明を返す関数として使える。したがって、<code>hPQ</code> に <code>hP</code> を渡した項 <code>hPQ hP</code> の型は <code>Q</code> である:</p>
+<pre class="quote"><code>hPQ : P → Q    hP : P
+----------------------
+       hPQ hP : Q</code></pre>
+<p>これは <code>f : α → β</code> と <code>a : α</code> から <code>f a : β</code> を得た、<code>Intro1.lean</code> の関数適用とまったく同じ型の照合である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> modus_ponens
+    (P Q : <span class="sort">Prop</span>)
+    (hP : P)
+    (hPQ : P → Q) :
+    Q :=
+  hPQ hP
+
+<span class="kw">#check</span> modus_ponens</code></pre>
+<pre class="quote"><code>modus_ponens (P Q : Prop) (hP : P) (hPQ : P → Q) : Q</code></pre>
+<p>宣言の最後で要求されている型は <code>Q</code>、右辺 <code>hPQ hP</code> の型も <code>Q</code>。 Lean が行う検査は、この一致を確かめることである。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li>次の <code>#check</code> の結果を予想してから確かめよ。出力の最後が <code>Q</code> になるまでを、 <code>P → Q</code> の入力型と出力型から説明せよ。</li>
+</ol>
+<pre class="quote"><code>   #check fun (P Q : Prop) (hP : P) (hPQ : P → Q) =&gt; hPQ hP</code></pre>
+<ol>
+<li>引数の順だけを入れ替えた <code>theorem use_imp (P Q : Prop) (hPQ : P → Q) (hP : P) : Q</code> の右辺を書け。</li>
+</ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">#check</span> <span class="kw">fun</span> (P Q : <span class="sort">Prop</span>) (hP : P) (hPQ : P → Q) =&gt; hPQ hP</code></pre>
+<pre class="quote"><code>fun P Q hP hPQ ↦ hPQ hP : ∀ (P Q : Prop), P → (P → Q) → Q</code></pre>
+<p><code>hPQ : P → Q</code> の入力型 <code>P</code> と <code>hP : P</code> が一致するので、適用結果の型は <code>hPQ</code> の出力型 <code>Q</code> になる。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">theorem</span> use_imp (P Q : <span class="sort">Prop</span>) (hPQ : P → Q) (hP : P) : Q :=
+  hPQ hP</code></pre>
+<p>引数の順が変わっても、適用する項 <code>hPQ hP</code> は変わらない。</p>
+</details>
+<h3>例2: 含意の推移</h3>
+<p>次は、「<code>P</code> ならば <code>Q</code>」と「<code>Q</code> ならば <code>R</code>」を仮定し、「<code>P</code> ならば <code>R</code>」を証明する。</p>
+<p><strong>ふつうの証明</strong>。<code>P</code> であると仮定する。<code>P</code> ならば <code>Q</code> なので、<code>Q</code> である。さらに、<code>Q</code> ならば <code>R</code> なので、<code>R</code> である。<code>P</code> を仮定して <code>R</code> を証明したので、 <code>P</code> ならば <code>R</code> である。∎</p>
+<p><strong>型を意識した版</strong>。「<code>P</code> ならば <code>Q</code>」の証明を <code>hPQ : P → Q</code>、「<code>Q</code> ならば <code>R</code>」の証明を <code>hQR : Q → R</code> とする。目標は <code>P → R</code> である。</p>
+<ol>
+<li><code>P → R</code> を作るため、まず <code>hP : P</code> を受け取る。</li>
+<li>例1と同じ適用により、<code>hPQ hP : Q</code>。</li>
+<li>もう一度適用すると、<code>hQR (hPQ hP) : R</code>。</li>
+<li><code>hP : P</code> を受け取って <code>R</code> の証明を返せたので、全体は <code>P → R</code>。</li>
+</ol>
+<p>この4段を、そのまま <code>fun</code> と適用で書く:</p>
+<pre class="lean"><code><span class="kw">theorem</span> imp_trans
+    (P Q R : <span class="sort">Prop</span>)
+    (hPQ : P → Q)
+    (hQR : Q → R) :
+    P → R :=
+  <span class="kw">fun</span> hP =&gt;
+    hQR (hPQ hP)
+
+<span class="kw">#check</span> imp_trans</code></pre>
+<pre class="quote"><code>imp_trans (P Q R : Prop) (hPQ : P → Q) (hQR : Q → R) : P → R</code></pre>
+<p>項は内側から読めばよい。<code>hPQ hP : Q</code>、したがって <code>hQR (hPQ hP) : R</code>、したがって <code>fun hP =&gt; hQR (hPQ hP) : P → R</code>。証明の各文でしていた照合が、そのまま項の型の推測になっている。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>theorem imp_refl (P : Prop) : P → P</code> を書け。</li>
+<li><code>P → Q</code>、<code>Q → R</code>、<code>R → S</code> を順に使う <code>theorem imp_trans3 (P Q R S : Prop) (hPQ : P → Q) (hQR : Q → R)(hRS : R → S) : P → S</code> を書け。まず最も内側の適用の型から予想すること。</li>
+</ol>
+<details class="sol"><summary>解答 1</summary>
+<pre class="lean"><code><span class="kw">theorem</span> imp_refl (P : <span class="sort">Prop</span>) : P → P :=
+  <span class="kw">fun</span> hP =&gt; hP</code></pre>
+<p>受け取った <code>hP : P</code> をそのまま返すので、関数全体の型は <code>P → P</code>。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">theorem</span> imp_trans3
+    (P Q R S : <span class="sort">Prop</span>)
+    (hPQ : P → Q)
+    (hQR : Q → R)
+    (hRS : R → S) :
+    P → S :=
+  <span class="kw">fun</span> hP =&gt; hRS (hQR (hPQ hP))</code></pre>
+<p>内側から <code>hPQ hP : Q</code>、<code>hQR (hPQ hP) : R</code>、 <code>hRS (hQR (hPQ hP)) : S</code> と型が決まる。</p>
+</details>
+<h3>全称量化を一つだけ加える</h3>
+<p>「どの <code>x</code> についても <code>Q x</code>」は <code>∀ x, Q x</code> と書く。これを示すには、<code>x</code> を一つ受け取って <code>Q x</code> の証明を返す。つまり、ここでも作る項は <code>fun</code> である。</p>
+<p>小例には等式を使う。<code>a = a</code> のように両辺が同じになる等式の証明は <code>rfl</code> と書く（詳しい説明は<a href="#sec-CH.propositions">1節</a>で行う）。どの自然数も自分自身に等しい:</p>
+<pre class="lean"><code><span class="kw">theorem</span> all_refl : ∀ n : Nat, n = n :=
+  <span class="kw">fun</span> n =&gt; (rfl : n = n)
+
+<span class="kw">#check</span> all_refl</code></pre>
+<pre class="quote"><code>all_refl (n : Nat) : n = n</code></pre>
+<p><code>fun n =&gt;</code> が「自然数 <code>n</code> を任意に取る」に対応し、その <code>n</code> に対して <code>rfl : n = n</code> を返している。</p>
+<h3>例3: 単射どうしの合成は単射</h3>
+<p><strong>ふつうの証明</strong>。</p>
+<ol>
+<li>x, y を任意に取り、h : g (f x) = g (f y) を仮定する。</li>
+<li>仮定 hg は「どんな u, v についても、g u = g v ならば u = v」という全称文である。u := f x、v := f y と<strong>特殊化</strong>して h に適用し、f x = f y を得る。</li>
+<li>hf を同様に f x = f y に適用して、x = y。これが示すべきことだった。∎</li>
+</ol>
+<p>（教科書なら「g (f x) = g (f y) とすると、g の単射性より f x = f y、f の単射性より x = y。∎」と2行で済ませるところである。）</p>
+<p><strong>論理式</strong>。示すべき結論「合成 g∘f が単射」を、単射の定義まで開くと</p>
+<pre class="quote"><code>∀x ∀y (g(f(x)) = g(f(y)) → x = y)</code></pre>
+<p>である。仮定 hg・hf も同じ形の論理式（∀u ∀v (g(u) = g(v) → u = v) など）であることが、この例の主役になる。</p>
+<p><strong>形式化を意識した版</strong>。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。だから頭の動きは「x, y を取り、さらに仮定 h を取る」。</p>
+<p>今度は、仮定 hg・hf の<strong>使い方</strong>が主役になる。hg 自身が全称+ならばの命題、つまり「<strong>当てはめて使う道具</strong>」である。<strong>全称文・ならば文の使い方は、対象を当てはめて適用すること</strong>——例1で <code>hPQ</code> に <code>hP</code> を渡したのと、実は同じ動きである。仮定も既知の定理も、文脈にある<strong>部品</strong>という資格は変わらない。</p>
+<p><strong>項</strong>。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の形で書く）:</p>
+<pre class="lean"><code><span class="kw">example</span> {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
+    (hg : ∀ u v, g u = g v → u = v) (hf : ∀ u v, f u = f v → u = v) :
+    ∀ x y, g (f x) = g (f y) → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</code></pre>
+<p>「取る」が3連続の <code>fun x y h</code>——<strong>全称も「ならば」も、項では同じ関数</strong>である。そして「〜の単射性<strong>より</strong>」という紙の一語が、適用 <code>hg (f x) (f y) h</code> そのものになる。ふつうの証明で意識した<strong>特殊化</strong>（u := f x、v := f y）を、ここでは引数として自分の手で書いている。</p>
+<p>単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— <code>Function.Injective f</code> である（このあと導入する <code>IsEven</code> と同じ、略記の発想）。これで書き直すと:</p>
+<pre class="lean"><code><span class="kw">theorem</span> comp_injective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
+    (hg : Function.Injective g) (hf : Function.Injective f) :
+    Function.Injective (<span class="kw">fun</span> x =&gt; g (f x)) :=
+  <span class="kw">fun</span> x y h =&gt; hf (hg h : f x = f y)
+
+<span class="kw">#check</span> comp_injective</code></pre>
+<pre class="quote"><code>comp_injective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Injective g) (hf : Function.Injective f) :
+  Function.Injective fun x ↦ g (f x)</code></pre>
+<p>主張が略記で縮んだだけでなく、証明からは特殊化 <code>(f x)</code>・<code>(f y)</code> も消えて <code>hg h</code> だけになった。<code>Function.Injective</code> は点の引数を<strong>暗黙引数</strong> （<code>{ }</code> の変種 <code>⦃ ⦄</code>。ここでは同じものと読んでよい）として宣言しているので、機械が埋めてくれるからである（型注釈 <code>: f x = f y</code> は「f x = f y を得る」という文の写しで、消しても通る）。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li>定義を開いた最初の <code>example</code> で、<code>hg (f x) (f y) h</code> と <code>hf x y (hg (f x) (f y) h)</code> の型を内側から順に予想せよ。</li>
+<li>恒等関数が単射であることを示す <code>theorem id_injective (α : Type) : Function.Injective (fun x : α =&gt; x)</code> を書け。</li>
+</ol>
+<details class="sol"><summary>解答 1</summary>
+<p><code>h : g (f x) = g (f y)</code> を <code>hg</code> に渡すと <code>hg (f x) (f y) h : f x = f y</code>。それを <code>hf</code> に渡すと <code>hf x y (hg (f x) (f y) h) : x = y</code> となる。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">theorem</span> id_injective (α : <span class="sort">Type</span>) : Function.Injective (<span class="kw">fun</span> x : α =&gt; x) :=
+  <span class="kw">fun</span> x y h =&gt; (h : x = y)</code></pre>
+<p>恒等関数について仮定される等式は最初から <code>x = y</code> なので、その証明 <code>h</code> をそのまま返せばよい。</p>
+</details>
+<h3>存在量化を一つだけ加える</h3>
+<p>「条件 <code>Q x</code> を満たす <code>x</code> が存在する」は <code>∃ x, Q x</code> と書く。示すときは、実際の候補 <code>a</code> と、その候補が条件を満たす証明 <code>h : Q a</code> を <code>⟨a, h⟩</code> で与える。たとえば、<code>2</code> に等しい自然数は存在する:</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_eq_two : ∃ n : Nat, n = 2 :=
+  ⟨2, rfl⟩
+
+<span class="kw">#check</span> exists_eq_two</code></pre>
+<pre class="quote"><code>exists_eq_two : ∃ n, n = 2</code></pre>
+<p>ここで <code>2</code> が<strong>証人</strong>、<code>rfl</code> が <code>2 = 2</code> の証明である。<code>⟨a, h⟩</code> は組と同じ記法だが、ここでは存在命題の構成子 <code>Exists.intro</code> を書いている。存在証明を一般のデータの組とまったく同じように扱えるわけではないことは、<a href="#sec-CH.prop-elimination">11節</a>で見る。</p>
+<p>全称と存在を別々に見たので、次はこの二つを組み合わせる。</p>
+<h3>例4: どの n についても n + n は偶数</h3>
 <p>偶数の定義から確認する。「m は偶数」とは「半分になる数がある」、すなわち <strong>m = 2k となる k が存在する</strong>ことである。</p>
-<p><strong>ふつうの証明</strong>。「n + n = 2n だから偶数である。∎」</p>
-<p><strong>詳細版</strong>。省略をすべて書き出す。</p>
+<p><strong>ふつうの証明</strong>。</p>
 <ol>
 <li>n を任意に取る。</li>
 <li>既知の定理 2n = n + n の左右を入れ替えて、n + n = 2n を得る。</li>
 <li>よって「半分」の証人として n が取れ、n + n は偶数である。∎</li>
 </ol>
+<p>（教科書なら「n + n = 2n だから偶数である。∎」と1行で済ませるところを、省略せずに書いた。）</p>
 <p><strong>論理式</strong>。証明の構造が見えたところで、主張そのものも形式の言葉に直しておく。「どの自然数 n についても、n + n は偶数である」は、述語論理の論理式では</p>
 <pre class="quote"><code>∀n Even(n + n)</code></pre>
 <p>と書ける。述語 Even を定義まで開けば</p>
 <pre class="quote"><code>∀n ∃k (n + n = 2k)</code></pre>
-<p>である。日本語の「どの…についても」「…となる—がある」が、量化子 ∀・∃ に置き換わっただけである。形式化と呼ばれる作業には、この<strong>主張の形式化</strong>と、これから行う<strong>証明の形式化</strong>の2段階がある——主張の側は、論理式で書けた時点でほぼ済んでいる。</p>
+<p>である。日本語の「どの…についても」「…となる—がある」が、量化子 ∀・∃ に置き換わっただけである。形式化と呼ばれる作業には、この<strong>主張の形式化</strong>と、これから行う<strong>証明の形式化</strong>の2段階がある——主張の側は、論理式で書けたことで論理的な骨格が見えた。Lean ではさらに、変数の型や使う定義を明示する。</p>
 <p><strong>形式化を意識した版</strong>。同じ証明を、各段で<strong>何の証明の仕方を使っているか</strong>を名指ししながら読み直す。</p>
 <p>まず n を任意に取り、この固定した n について「n + n は偶数」をこれから証明する——<strong>これが全称量化された命題の証明の仕方</strong>である。「どの n についても」を示すとは、n を1つ固定して（ただし n について何も仮定せずに）示すことにほかならない。</p>
 <p>n を固定したら、偶数の<strong>定義に戻る</strong>。「m が偶数」とは「ある k が存在して m = 2k となる」ことだった。いまの場合に当てはめると、示すべきは「n + n = 2k となる k が存在する」である。そして<strong>存在量化された命題の証明の仕方</strong>は、(i) 存在するものの<strong>候補</strong>を1つ挙げ、(ii) その候補が実際に求められる性質を満たすことの<strong>証明</strong>を与える——この2つを揃えることである。</p>
-<p>ここでは候補として k = n を取ればよい。すると満たすべき性質は n + n = 2n となり、これは成り立つので、証明が完成した。——ただし最後の一歩で、 <strong>n + n = 2n を既知の定理として使っている</strong>ことには注意しておく（この「既知」を信用せず自分で証明するとどうなるかは、例3で掘り下げる）。</p>
+<p>ここでは候補として k = n を取ればよい。すると満たすべき性質は n + n = 2n となり、これは成り立つので、証明が完成した。——ただし最後の一歩で、 <strong>n + n = 2n を既知の定理として使っている</strong>ことには注意しておく（この「既知」を自分で底までたどるとどうなるかは、下の補足で掘り下げる）。</p>
 <p>使った頭の動きは3つだけである: <strong>全称の証明</strong>（任意に取って示す）、 <strong>定義に戻る</strong>、<strong>存在の証明</strong>（候補+性質の証明）。</p>
-<p><strong>項</strong>。これを Lean に持ち込む。まず命題を書く記号を先取りする（それぞれ後の節で主役になる）。命題は <code>Prop</code> 型の項として書けるのだった（<a href="intro1.html#sec-Intro1.terms-types"><code>Intro1.lean</code> 1節</a>の先取りの回収である）。「どの n についても」は <code>∀ n, …</code>、「…となる k が存在する」は <code>∃ k, …</code> と書く。すると主張が、論理式とほぼ字面どおりに対応する形で書ける:</p>
+<p><strong>項</strong>。これを Lean に持ち込む。直前の小例で見たとおり、「どの n についても」は <code>∀ n, …</code>、「…となる k が存在する」は <code>∃ k, …</code> と書く。すると主張が、論理式とほぼ字面どおりに対応する形で書ける:</p>
 <pre class="quote"><code>論理式:  ∀n ∃k (n + n = 2k)
 Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</code></pre>
 <p>違いは1つだけ——<strong>束縛変数の走る範囲が型として明示される</strong>（<code>∀ n : Nat</code>）。述語論理では文脈が決めていたものが、Lean では型の仕事になる。 <strong>Lean の命題は、型注釈のついた論理式</strong>と読んでよい。主張の形式化はこれで済んだ。残るは証明の形式化である。</p>
-<p>定理の宣言は <code>theorem</code> で行う——<strong>形は <code>def</code> とまったく同じ</strong>で、コロンの右の「型」の位置に命題を書き、<code>:=</code> の右に証明を書く（<code>theorem</code> の正確な位置づけは次節で述べる）。その証明が、項である:</p>
+<p>冒頭で見た <code>theorem</code> の形に当てはめ、コロンの右に命題、<code>:=</code> の右に証明の項を書く。その前に、使う既知の定理の型も確認しておこう:</p>
+<pre class="lean"><code><span class="kw">#check</span> Nat.two_mul</code></pre>
+<pre class="quote"><code>Nat.two_mul (n : Nat) : 2 * n = n + n</code></pre>
+<p><code>Nat.two_mul n</code> は <code>2 * n = n + n</code> の証明である。いま必要な向きとは逆なので、 <code>.symm</code> で等式の左右を入れ替える。</p>
 <pre class="lean"><code><span class="kw">theorem</span> even_double : ∀ n : Nat, ∃ k, n + n = 2 * k :=
   <span class="kw">fun</span> n =&gt;                     <span class="cm">-- (1) n を任意に取る</span>
     ⟨n, (Nat.two_mul n).symm⟩  <span class="cm">-- (3) 証人は n、(2) 根拠は既知の定理の入れ替え</span>
@@ -135,10 +267,10 @@ Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</code></pre>
 <p>エラーが出ない＝この項が宣言どおりの型を持つことを機械が確認した、ということである。形式化を意識した版の頭の動きが、そのまま項の部品に写っている:</p>
 <ul>
 <li><code>fun n =&gt;</code> が「n を任意に取る」——全称の証明は、<strong>どの n を渡されても、その n での証明を返す関数</strong>になる（<a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の <code>fun</code> そのもの）。</li>
-<li><code>⟨n, …⟩</code> が「候補と、性質を満たす証明の組」——存在の証明は<strong>組</strong>になる（<a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>の <code>⟨ ⟩</code> そのもの）。なお、この候補のことを以後<strong>証人</strong>と呼ぶ。</li>
+<li><code>⟨n, …⟩</code> が「候補と、性質を満たす証明」——存在命題の構成子も <a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>の組と同じ <code>⟨ ⟩</code> 記法で書ける。この候補のことを以後<strong>証人</strong>と呼ぶ。</li>
 <li><code>(Nat.two_mul n).symm</code> が「既知の定理を使う」——既知の定理 <code>Nat.two_mul n : 2 * n = n + n</code> は名前のついた完成品の項で、<code>n</code> を渡す <strong>適用</strong>の形で取り出す。<code>.symm</code> は等式の左右を入れ替える道具である。</li>
 </ul>
-<p>番号にも注意——詳細版の 1→3→2 の順に部品が並び替わっている。 <strong>散文は発見の順で書かれ、項は命題の形の順で組まれる</strong>のである。</p>
+<p>番号にも注意——ふつうの証明の 1→3→2 の順に部品が並び替わっている。 <strong>散文は発見の順で書かれ、項は命題の形の順で組まれる</strong>のである。</p>
 <p>ところで論理式の側では、述語 Even に名前を付けて ∀n Even(n + n) と <strong>略記</strong>できた。Lean でも同じことができる——述語を<strong>名前のついた定義</strong>にすればよい:</p>
 <p>偶数であること: 半分になる数が存在する。</p>
 <pre class="lean"><code><span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k, n = 2 * k
@@ -152,9 +284,36 @@ Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</code></pre>
 <span class="kw">#check</span> isEven_double</code></pre>
 <pre class="quote"><code>isEven_double (n : Nat) : IsEven (n + n)</code></pre>
 <p><strong>証明の項は一字も変わらない</strong>。<code>IsEven (n + n)</code> と <code>∃ k, n + n = 2 * k</code> が定義上同じであることは、型検査器が<strong>定義を展開して勝手に照合してくれる</strong> からである（<code>Map Nat Nat</code> を計算すると <code>Nat → Nat</code> になったのと同じ）。形式化を意識した版の「<strong>定義に戻る</strong>」に対応する部品が項のどこにもないのは、このためである。以後は略記した <code>IsEven</code> の側を使う。</p>
-<h3>例2: 偶数と偶数の和は偶数</h3>
-<p><strong>ふつうの証明</strong>。「n = 2k、m = 2l と書けば n + m = 2k + 2l = 2(k + l)。∎」</p>
-<p><strong>詳細版</strong>。</p>
+<h3>存在するものを使う</h3>
+<p>存在を<strong>示す</strong>ときは証人と根拠を <code>⟨a, ha⟩</code> で渡した。存在命題の証明を <strong>使う</strong>ときは、その構成子を <code>match</code> で調べ、証人と根拠に名前を付ける。</p>
+<p>次の小例では、「<code>Q a</code> ならば <code>R a</code>」がすべての <code>a</code> について成り立つとする。さらに <code>Q a</code> を満たす <code>a</code> が存在するなら、同じ <code>a</code> が <code>R a</code> も満たす:</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_map {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
+    (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a :=
+  <span class="kw">fun</span> hqr h =&gt;
+    <span class="kw">match</span> h <span class="kw">with</span>
+    | ⟨a, ha⟩ =&gt; ⟨a, hqr a ha⟩
+
+<span class="kw">#check</span> exists_map</code></pre>
+<pre class="quote"><code>exists_map {α : Type} {Q R : α → Prop} : (∀ (a : α), Q a → R a) → (∃ a, Q a) → ∃ a, R a</code></pre>
+<p>型を順に追うと、<code>a : α</code>、<code>ha : Q a</code>、<code>hqr a : Q a → R a</code>、したがって <code>hqr a ha : R a</code>。よって <code>⟨a, hqr a ha⟩ : ∃ a, R a</code> となる。 <code>match</code> の枝に入ったあとの型だけを見れば、例1と同じ関数適用である。</p>
+<h3>✏ 練習</h3>
+<ol>
+<li><code>exists_map</code> の枝の中で、<code>a</code>、<code>ha</code>、<code>hqr a</code>、<code>hqr a ha</code> の型を順に予想せよ。</li>
+<li>2段階で根拠を移す <code>theorem exists_map2 {α : Type} {P Q R : α → Prop} :(∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a</code> を書け。証人は変えず、例2の含意の推移を各点で使えばよい。</li>
+</ol>
+<details class="sol"><summary>解答 1</summary>
+<p><code>match</code> の枝では <code>a : α</code>、<code>ha : Q a</code>。したがって <code>hqr a : Q a → R a</code>、<code>hqr a ha : R a</code> となる。</p>
+</details>
+<details class="sol"><summary>解答 2</summary>
+<pre class="lean"><code><span class="kw">theorem</span> exists_map2 {α : <span class="sort">Type</span>} {P Q R : α → <span class="sort">Prop</span>} :
+    (∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a :=
+  <span class="kw">fun</span> hpq hqr h =&gt;
+    <span class="kw">match</span> h <span class="kw">with</span>
+    | ⟨a, ha⟩ =&gt; ⟨a, hqr a (hpq a ha)⟩</code></pre>
+<p>存在証明から取り出した証人 <code>a</code> はそのまま使い、根拠だけを <code>P a → Q a → R a</code> と2段階で移している。</p>
+</details>
+<h3>例5: 偶数と偶数の和は偶数</h3>
+<p><strong>ふつうの証明</strong>。</p>
 <ol>
 <li>n, m を任意に取り、hn「n は偶数」・hm「m は偶数」を仮定する。</li>
 <li>hn から、n = 2k となる k を取り、この等式を hk と名付ける。</li>
@@ -164,13 +323,14 @@ Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</code></pre>
 <li>分配法則より 2k + 2l = 2(k + l)。4〜6 を = のつながりとして読めば n + m = 2(k + l)。</li>
 <li>よって証人 k + l により、n + m は偶数である。∎</li>
 </ol>
+<p>（教科書なら「n = 2k、m = 2l と書けば n + m = 2k + 2l = 2(k + l)。∎」と 1行で済ませるところである。）</p>
 <p><strong>論理式</strong>。主張は</p>
 <pre class="quote"><code>∀n ∀m (Even(n) → Even(m) → Even(n + m))</code></pre>
-<p>——n と m の全称量化の内側に、「ならば」（→）が2つ並ぶ形である（Even(n) ∧ Even(m) → … と「かつ」でまとめても同値だが、仮定を1つずつ取る詳細版の読みには、→ の並びのほうが対応する）。</p>
+<p>——n と m の全称量化の内側に、「ならば」（→）が2つ並ぶ形である（Even(n) ∧ Even(m) → … と「かつ」でまとめても同値だが、仮定を1つずつ取るふつうの証明の読みには、→ の並びのほうが対応する）。</p>
 <p><strong>形式化を意識した版</strong>。今度は仮定つきの命題である。「…ならば—」の証明の仕方は、<strong>仮定を取って</strong>（名前を付けて）結論を示すこと——全称のときの「n を取る」と同じ頭の動きである。</p>
 <p>仮定 hn を<strong>使う</strong>番になったら、また定義に戻る。hn は「n = 2k となる k が存在する」ことの証明である。<strong>存在量化された命題の使い方</strong>は、証明の仕方のちょうど逆で、<strong>存在するものを1つ取り出して名前を付ける</strong>——「k をそういう数とする。以後 hk : n = 2 * k が使える」と宣言する動きである。hm からも同様に l と hl を取り出す。</p>
 <p>示すべきは（定義に戻ると）「n + m = 2j となる j の存在」。候補は j = k + l で、満たすべき性質は n + m = 2(k + l) である。この等式は一度には出ないので、 <strong>等式の連鎖</strong>で作る: hk の<strong>両辺に同じ操作 (· + m) を施して</strong> n + m = 2k + m、 hl から同様に 2k + m = 2k + 2l、分配法則（既知の定理）で 2k + 2l = 2(k + l)、最後に<strong>3本の等式をつなぐ</strong>。ふつうの証明で「= を続けて書く」ことの正体は、この「両辺に同じ操作」と「つなぐ」の繰り返しである。</p>
-<p><strong>項</strong>。「取り出して名前を付ける」は、<a href="intro1.html#sec-Intro1.inductive-types"><code>Intro1.lean</code> 4節</a>の <code>match</code> をパターン <code>⟨k, hk⟩</code> で使えばよい——存在の証明は「証人と根拠の組」だから、組と同じようにほどける。「両辺に同じ操作」は <code>congrArg</code>、「つなぐ」は <code>.trans</code> という名前の道具である（<code>(· + m)</code> は <code>fun x =&gt; x + m</code> の略記。 <code>(2 * k + ·)</code> なら <code>fun x =&gt; 2 * k + x</code>）。道具の型を先に挙げておく——以下の照合はこの3つの型と適用規則だけでできる（表示中の <code>Sort u_1</code> は <code>Prop</code> と <code>Type</code> を束ねる宇宙の表記で、ここでは <code>Type</code> か <code>Prop</code> と読めばよい）:</p>
+<p><strong>項</strong>。「取り出して名前を付ける」は、<a href="intro1.html#sec-Intro1.inductive-types"><code>Intro1.lean</code> 4節</a>の <code>match</code> をパターン <code>⟨k, hk⟩</code> で使えばよい——存在命題の構成子 <code>Exists.intro</code> を調べ、証人と根拠に名前を付けている。「両辺に同じ操作」は <code>congrArg</code>、「つなぐ」は <code>.trans</code> という名前の道具である（<code>(· + m)</code> は <code>fun x =&gt; x + m</code> の略記。 <code>(2 * k + ·)</code> なら <code>fun x =&gt; 2 * k + x</code>）。道具の型を先に挙げておく——以下の照合はこの3つの型と適用規則だけでできる（表示中の <code>Sort u_1</code> は <code>Prop</code> と <code>Type</code> を束ねる宇宙の表記で、ここでは <code>Type</code> か <code>Prop</code> と読めばよい）:</p>
 <pre class="quote"><code>@congrArg : ∀ {α : Sort u_1} {β : Sort u_2} {a₁ a₂ : α} (f : α → β),
             a₁ = a₂ → f a₁ = f a₂
 @Eq.trans : ∀ {α : Sort u_1} {a b c : α}, a = b → b = c → a = c
@@ -185,8 +345,8 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 
 <span class="kw">#check</span> isEven_add</code></pre>
 <pre class="quote"><code>isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m)</code></pre>
-<p>仮定 hn・hm が<strong>引数</strong>になっていることに注意——「ならばの証明=仮定を取る」も、項では <code>fun</code> と同じ扱いである（詳細版の (1) は引数の宣言に吸収されている）。主張全体も論理式 ∀n ∀m (… → … → …) の写しである: 定理の引数の列は∀ と → を <a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の binder 形式で書いたもので、n・m は値から決まるため暗黙引数 <code>{ }</code> になっている。</p>
-<p>もう1つ、形式化を意識した版で付けた名前 h1〜h3 は、項では<strong>式の入れ子</strong>に吸収されている——名前は考えの整理のための道具であって、証明の実体は式である。コメントの番号で詳細版と対応づけたので、読みにくければ番号の順に内側から組み立て直しながら読むとよい。例1と同じく、<strong>散文は発見の順、項は命題の形の順</strong>である。</p>
+<p>仮定 hn・hm が<strong>引数</strong>になっていることに注意——「ならばの証明=仮定を取る」も、項では <code>fun</code> と同じ扱いである（ふつうの証明の (1) は引数の宣言に吸収されている）。主張全体も論理式 ∀n ∀m (… → … → …) の写しである: 定理の引数の列は∀ と → を <a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の binder 形式で書いたもので、n・m は値から決まるため暗黙引数 <code>{ }</code> になっている。</p>
+<p>もう1つ、形式化を意識した版で付けた名前 h1〜h3 は、項では<strong>式の入れ子</strong>に吸収されている——名前は考えの整理のための道具であって、証明の実体は式である。コメントの番号でふつうの証明と対応づけたので、読みにくければ番号の順に内側から組み立て直しながら読むとよい。例4と同じく、<strong>散文は発見の順、項は命題の形の順</strong>である。</p>
 <aside class="note note--optional">
 <h3>補足（初読は飛ばしてよい）: 途中の項の型を確かめる</h3>
 <p>連鎖の途中——たとえば (4) と (5) をつないだところ——の型も <code>#check</code> で確かめられる。等式の証明に <code>h1</code>・<code>h2</code> と名前を付けた文脈を、既習の <code>fun</code> で用意すればよい:</p>
@@ -198,19 +358,20 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
   Eq.trans h1 h2 : ∀ (n m k l : Nat), n + m = 2 * k + m → 2 * k + m = 2 * k + 2 * l → n + m = 2 * k + 2 * l</code></pre>
 <p>出力全体は <code>fun</code> で作った関数の型であり、最後の <code>n + m = 2 * k + 2 * l</code> が、この文脈での <code>h1.trans h2</code> の型である。その右辺は <code>h3</code> の左辺と一致するので、さらに <code>.trans h3</code> とつなげて <code>n + m = 2 * (k + l)</code> を得る。</p>
 </aside>
-<h3>例3: 掘り下げ — 「既知」だった 2n = n + n を自分で証明する</h3>
-<p>例1で使った <code>Nat.two_mul</code> を、今度は信用せずに自分で証明してみる。</p>
-<p><strong>ふつうの証明</strong>。「n についての帰納法で明らか。∎」</p>
-<p><strong>詳細版</strong>。</p>
+<aside class="note note--optional">
+<h3>補足（初読は飛ばしてよい）: 「既知」だった 2n = n + n を自分で証明する</h3>
+<p>例4で使った <code>Nat.two_mul</code> を、今度は定義と計算まで自分でたどってみる。</p>
+<p><strong>ふつうの証明</strong>。</p>
 <ol>
 <li>n = 0 のとき: 両辺とも 0。</li>
 <li>n = k + 1 のとき: k での等式 2k = k + k が使えるとする。 2(k + 1) = 2k + 2 = (k + k) + 2 = (k + 1) + (k + 1)。∎</li>
 </ol>
+<p>（教科書なら「n についての帰納法で明らか。∎」で済ませるところである。）</p>
 <p><strong>論理式</strong>。主張は</p>
 <pre class="quote"><code>∀n (2n = n + n)</code></pre>
 <p>——量化子1つと等式だけの、いちばん簡素な形である。今回は述語の略記も要らない。</p>
 <p><strong>形式化を意識した版</strong>。全称の証明の仕方には、「任意に取る」のほかにもう1つ、自然数に固有の方法がある——<strong>帰納法</strong>である: 0 の場合を示し、「k で成り立つ<strong>ならば</strong> k + 1 でも成り立つ」を示す。</p>
-<p>0 の場合、示すべき 2·0 = 0 + 0 は<strong>両辺とも計算すれば 0</strong> になる。計算で一致する等式には、それ以上の証明は要らない。k + 1 の場合のポイントは、 <strong>帰納法の仮定 2k = k + k を「既知の定理」と同じ資格で使ってよい</strong>こと——あとは例2で覚えた等式の連鎖である。</p>
+<p>0 の場合、示すべき 2·0 = 0 + 0 は<strong>両辺とも計算すれば 0</strong> になる。計算で一致する等式には、それ以上の証明は要らない。k + 1 の場合のポイントは、 <strong>帰納法の仮定 2k = k + k を「既知の定理」と同じ資格で使ってよい</strong>こと——あとは例5で覚えた等式の連鎖である。</p>
 <p>ただし、連鎖の途中の1歩「(k + 1) + k = (k + k) + 1」が、また別の「既知」（succ_add と呼ばれる事実）を呼んでしまう。信用しないと決めたので、 <strong>これも同じ流儀（帰納法）で証明する</strong>。今度の各段は計算と「両辺に + 1」だけで閉じ、新しい既知はもう現れない——底に着いた。</p>
 <p><strong>項</strong>。帰納法は、<a href="intro1.html#sec-Intro1.inductive-types"><code>Intro1.lean</code> 4節</a>の<strong>再帰</strong> そのものとして書ける。「k での場合の証明」は、自分自身の再帰呼び出しで手に入る（<code>toN</code> の再帰と同じ形である。また、計算で一致する等式の証明は <code>rfl</code> と書く——次節で解剖する）:</p>
 <pre class="lean"><code><span class="kw">theorem</span> succ_add&#x27; : ∀ (n m : Nat), (n + 1) + m = (n + m) + 1 := <span class="kw">fun</span> n m =&gt;
@@ -218,55 +379,27 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
   | 0     =&gt; rfl                                  <span class="cm">-- 両辺とも計算で n + 1</span>
   | j + 1 =&gt; congrArg (· + 1) (succ_add&#x27; n j)     <span class="cm">-- 帰納法の仮定は再帰呼び出し</span>
 
-<span class="kw">theorem</span> two_mul&#x27; : ∀ n : Nat, 2 * n = n + n := <span class="kw">fun</span> n =&gt;
+<span class="kw">theorem</span> two_mul_from_scratch : ∀ n : Nat, 2 * n = n + n := <span class="kw">fun</span> n =&gt;
   <span class="kw">match</span> n <span class="kw">with</span>
   | 0     =&gt; rfl
   | k + 1 =&gt;
-    (congrArg (· + 2) (two_mul&#x27; k)).trans          <span class="cm">-- 2(k+1) = 2k+2 = (k+k)+2</span>
+    (congrArg (· + 2) (two_mul_from_scratch k)).trans <span class="cm">-- 2(k+1) = 2k+2 = (k+k)+2</span>
       ((congrArg (· + 1) (succ_add&#x27; k k)).symm :
-        (k + k) + 2 = (k + 1) + (k + 1))           <span class="cm">-- 型注釈は詳細版の式変形の写し</span>
+        (k + k) + 2 = (k + 1) + (k + 1))           <span class="cm">-- 型注釈はふつうの証明の式変形の写し</span>
 
-<span class="kw">#check</span> two_mul&#x27;</code></pre>
-<pre class="quote"><code>two_mul&#x27; (n : Nat) : 2 * n = n + n</code></pre>
+<span class="kw">#check</span> two_mul_from_scratch</code></pre>
+<pre class="quote"><code>two_mul_from_scratch (n : Nat) : 2 * n = n + n</code></pre>
 <p>どこまで掘っても、現れたのは同じ仕組みで書かれた項だけだった。それを機械に確認させることもできる:</p>
-<pre class="lean"><code><span class="kw">#print</span> axioms two_mul&#x27;</code></pre>
-<pre class="quote"><code>&#x27;two_mul&#x27;&#x27; does not depend on any axioms</code></pre>
-<p>例1で「既知」と呼んだものは信用ではない——<strong>底（定義と計算）まで、すべて検査済みの項</strong>なのである。</p>
-<h3>例4: 単射どうしの合成は単射</h3>
-<p><strong>ふつうの証明</strong>。「g (f x) = g (f y) とすると、g の単射性より f x = f y。 f の単射性より x = y。∎」</p>
-<p><strong>詳細版</strong>。</p>
-<ol>
-<li>x, y を任意に取り、h : g (f x) = g (f y) を仮定する。</li>
-<li>仮定 hg は「どんな u, v についても、g u = g v ならば u = v」という全称文である。u := f x、v := f y と<strong>特殊化</strong>して h に適用し、f x = f y を得る。</li>
-<li>hf を同様に f x = f y に適用して、x = y。これが示すべきことだった。∎</li>
-</ol>
-<p><strong>論理式</strong>。示すべき結論「合成 g∘f が単射」を、単射の定義まで開くと</p>
-<pre class="quote"><code>∀x ∀y (g(f(x)) = g(f(y)) → x = y)</code></pre>
-<p>である。仮定 hg・hf も同じ形の論理式（∀u ∀v (g(u) = g(v) → u = v) など）であることが、この例の主役になる。</p>
-<p><strong>形式化を意識した版</strong>。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。だから頭の動きは「x, y を取り、さらに仮定 h を取る」。</p>
-<p>今度は、仮定 hg・hf の<strong>使い方</strong>が主役になる。hg 自身が全称+ならばの命題、つまり「<strong>当てはめて使う道具</strong>」である。<strong>全称文・ならば文の使い方は、対象を当てはめて適用すること</strong>——例1の「既知の定理 Nat.two_mul を n に適用」と、実は同じ動きである。仮定も既知の定理も、文脈にある<strong>部品</strong>という資格は変わらない。</p>
-<p><strong>項</strong>。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の形で書く）:</p>
-<pre class="lean"><code><span class="kw">example</span> {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
-    (hg : ∀ u v, g u = g v → u = v) (hf : ∀ u v, f u = f v → u = v) :
-    ∀ x y, g (f x) = g (f y) → x = y :=
-  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</code></pre>
-<p>「取る」が3連続の <code>fun x y h</code>——<strong>全称も「ならば」も、項では同じ関数</strong>である。そして「〜の単射性<strong>より</strong>」という紙の一語が、適用 <code>hg (f x) (f y) h</code> そのものになる。詳細版で意識した<strong>特殊化</strong>（u := f x、v := f y）を、ここでは引数として自分の手で書いている。</p>
-<p>単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— <code>Function.Injective f</code> である（例1の <code>IsEven</code> と同じ、略記の発想）。これで書き直すと:</p>
-<pre class="lean"><code><span class="kw">theorem</span> comp_injective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
-    (hg : Function.Injective g) (hf : Function.Injective f) :
-    Function.Injective (<span class="kw">fun</span> x =&gt; g (f x)) :=
-  <span class="kw">fun</span> x y h =&gt; hf (hg h : f x = f y)
-
-<span class="kw">#check</span> comp_injective</code></pre>
-<pre class="quote"><code>comp_injective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Injective g) (hf : Function.Injective f) :
-  Function.Injective fun x ↦ g (f x)</code></pre>
-<p>主張が略記で縮んだだけでなく、証明からは特殊化 <code>(f x)</code>・<code>(f y)</code> も消えて <code>hg h</code> だけになった。<code>Function.Injective</code> は点の引数を<strong>暗黙引数</strong> （<code>{ }</code> の変種 <code>⦃ ⦄</code>。ここでは同じものと読んでよい）として宣言しているので、機械が埋めてくれるからである（型注釈 <code>: f x = f y</code> は「f x = f y を得る」という文の写しで、消しても通る）。</p>
-<h3>例5: 全射どうしの合成は全射</h3>
+<pre class="lean"><code><span class="kw">#print</span> axioms two_mul_from_scratch</code></pre>
+<pre class="quote"><code>&#x27;two_mul_from_scratch&#x27; does not depend on any axioms</code></pre>
+<p>例4で「既知」と呼んだものは単なる未検査の信用ではない——<strong>底（定義と計算）まで、すべて検査済みの項</strong>なのである。</p>
+</aside>
+<h3>例6: 全射どうしの合成は全射</h3>
 <p><strong>ふつうの証明</strong>。「c を取る。g の全射性より g b = c となる b があり、 f の全射性より f a = b となる a がある。すると g (f a) = g b = c。∎」</p>
 <p><strong>論理式</strong>。示すべき結論「合成 g∘f が全射」は、定義まで開くと</p>
 <pre class="quote"><code>∀c ∃a (g(f(a)) = c)</code></pre>
-<p>——例1と同じ「∀ の内側に ∃」の形が、関数の文脈で再登場する。</p>
-<p><strong>形式化を意識した版</strong>（今回は詳細版を兼ねる。ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射の定義「どの点にも、そこへ送られてくる元がある」に戻ると、hg c は「g b = c となる b の存在」の証明——存在の使い方で b と hb を<strong>取り出す</strong>（例2）。hf b からも a と ha を取り出す。示すべきは「g (f a) = c となる a の存在」だから、候補 a と性質の証明を組にする（例1）。性質 g (f a) = c は等式の連鎖で: ha の<strong>両辺に g を施して</strong> g (f a) = g b、 hb と<strong>つなぐ</strong>（例2）。∎</p>
+<p>——例4と同じ「∀ の内側に ∃」の形が、関数の文脈で再登場する。</p>
+<p><strong>形式化を意識した版</strong>（ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射の定義「どの点にも、そこへ送られてくる元がある」に戻ると、hg c は「g b = c となる b の存在」の証明——存在の使い方で b と hb を<strong>取り出す</strong>（上の <code>exists_map</code> と同じ）。hf b からも a と ha を取り出す。示すべきは「g (f a) = c となる a の存在」だから、候補 a と性質の証明を <code>⟨a, …⟩</code> で構成する（例4の前の存在の小例）。性質 g (f a) = c は等式の連鎖で: ha の<strong>両辺に g を施して</strong> g (f a) = g b、 hb と<strong>つなぐ</strong>（例5）。∎</p>
 <p><strong>項</strong>。まず論理式をそのまま型に（仮定も全射の定義を開いた形で書く）:</p>
 <pre class="lean"><code><span class="kw">example</span> {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : ∀ c, ∃ b, g b = c) (hf : ∀ b, ∃ a, f a = b) :
@@ -276,7 +409,7 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
     | ⟨b, hb⟩ =&gt;
       <span class="kw">match</span> hf b <span class="kw">with</span>
       | ⟨a, ha⟩ =&gt; ⟨a, (congrArg g ha).trans hb⟩</code></pre>
-<p>ライブラリの述語 <code>Function.Surjective</code> で略記して書き直すと—— <strong>証明の項は一字も変わらない</strong>（定義上同じ命題だからである。例1と同じ）:</p>
+<p>ライブラリの述語 <code>Function.Surjective</code> で略記して書き直すと—— <strong>証明の項は一字も変わらない</strong>（定義上同じ命題だからである。例4と同じ）:</p>
 <pre class="lean"><code><span class="kw">theorem</span> comp_surjective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : Function.Surjective g) (hf : Function.Surjective f) :
     Function.Surjective (<span class="kw">fun</span> x =&gt; g (f x)) :=
@@ -289,14 +422,13 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <span class="kw">#check</span> comp_surjective</code></pre>
 <pre class="quote"><code>comp_surjective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Surjective g) (hf : Function.Surjective f) :
   Function.Surjective fun x ↦ g (f x)</code></pre>
-<p>例4と並べると対になっている: 単射は <code>fun</code> と適用だけの世界、全射は取り出しと組の世界。そして入れ子の <code>match</code> は、「b を取り出した<strong>あとの世界</strong>で a を取り出す」という証明の依存関係を、形として見せている。</p>
+<p>例3と並べると対になっている: 単射は <code>fun</code> と適用だけの世界、全射は存在の構成子と <code>match</code> の世界。そして入れ子の <code>match</code> は、「b を取り出した<strong>あとの世界</strong>で a を取り出す」という証明の依存関係を、形として見せている。</p>
 <h3>ここまでのまとめ — 頭の動きの一覧</h3>
-<p>5つの例で使った頭の動きは、これだけである。</p>
+<p>ここまでの例で使った頭の動きを並べると、次のようになる。</p>
 <table>
 <thead><tr><th>頭の動き</th><th>項での正体</th></tr></thead>
 <tbody>
 <tr><td>全称を示す: 任意に取る</td><td><code>fun n =&gt; …</code></td></tr>
-<tr><td>全称を示す: 帰納法</td><td>再帰する <code>match</code></td></tr>
 <tr><td>ならばを示す: 仮定を取る</td><td><code>fun h =&gt; …</code>（引数）</td></tr>
 <tr><td>全称・ならばを使う: 当てはめる</td><td>適用 <code>hg h</code></td></tr>
 <tr><td>存在を示す: 証人+根拠</td><td><code>⟨w, h⟩</code></td></tr>
@@ -307,14 +439,14 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <tr><td>計算で決着</td><td><code>rfl</code></td></tr>
 <tr><td>「∎」</td><td>型検査が通ること</td></tr>
 </tbody></table>
-<p>主張は論理式に（そして型注釈を付ければそのまま Lean の型に）、証明は「ふつうの証明 → 詳細版 → 形式化を意識した版 → 項」へと磨かれた。進むにつれて増えたのは<strong>省略の穴埋め</strong>だけで、新しい種類の思考は何も足していない。形式化とは翻訳ではなく、<strong>詳細化の極限</strong>である。</p>
-<p>証明を読んで納得するとは、冒頭のモデル化のとおり、有限種類の動きが正しく行われていることを一文ずつ検査することだった。各動きは項の部品に写り、その検査は<strong>項の型検査</strong>に写る。そして、詳細版の各文に読者が行う局所的な照合——「文脈にあるか」「形が合うか」——を、一行も飽きず、一箇所も「まあいいか」と流さずに実行するものこそ、型検査器である。冒頭の主張——命題に対応する型の項を作ることが証明することである——は、この表を信じるなら、もう奇妙には響かないはずである。</p>
-<p>残りの節は、この表を精密化する。<a href="#sec-CH.propositions">1節</a>で最小の例（1 + 1 = 2）を解剖し、<a href="#sec-CH.implication">2</a>〜<a href="#sec-CH.dependent-sums">7節</a>で「ならば・かつ・または・矛盾・すべての・存在する」を型の世界と1対1に対応させ、 <a href="#sec-CH.introduction-elimination">8節</a>でまとめの対照表を作る。 <a href="#sec-CH.nat-proofs">9節</a>では <code>=</code> や <code>≤</code> という命題<strong>そのもの</strong>が帰納型で作られていることまで掘る。そのうえで<a href="#sec-CH.type-checking">10節</a>が、冒頭の主張の回収——「型検査が証明の検査になる」——である。（まだ出ていない動きも少数ある——「または」の場合分けなどは対照表の節で揃う。）</p>
+<p>主張を Lean の命題として定め、証明の筋道も与えられたあとなら、散文から項へ進む仕事の多くは、省略されていた引数や中間項を明示することである。各段の「文脈にあるか」「入力の型が合うか」「結果が目標の型か」という照合は、 <strong>項の型検査</strong>にそのまま写る。</p>
+<p>もちろん、数学の主張にふさわしい定義を選ぶことや、証明を発見することまで型検査が代わってくれるわけではない。ここで分かったのは、主張と証明項が与えられたあと、その証明項が本当に主張の型を持つかは、局所的な規則を積み重ねて機械的に検査できる、ということである。冒頭の主張——命題そのものを型とみなし、その型の項を作ることが証明することである——も、もう奇妙には響かないはずである。</p>
+<p>残りの節は、<a href="#sec-CH.reading-proofs">0節</a>で経験したことを型の世界と並べて整理し、まだ扱っていない論理記号を加える。<a href="#sec-CH.propositions">1節</a>で命題・等式・<code>rfl</code> を整理し、 <a href="#sec-CH.implication">2</a>〜<a href="#sec-CH.dependent-sums">7節</a>で「ならば・かつ・または・矛盾・すべての・存在する」を型の世界と対応させ、 <a href="#sec-CH.introduction-elimination">8節</a>でまとめの対照表を作る。 <a href="#sec-CH.nat-proofs">9節</a>では <code>=</code> や <code>≤</code> という命題<strong>そのもの</strong>が帰納型で作られていることまで掘る。そのうえで<a href="#sec-CH.type-checking">10節</a>が、冒頭の主張の回収——「型検査が証明の検査になる」——である。（まだ出ていない動きも少数ある——「または」の場合分けなどは対照表の節で揃う。）</p>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)</code> を <code>isEven_double</code> にならって書け（証人は <code>n</code>、根拠は <code>rfl</code> で済む——なぜ済むのかも考えること）。</li>
-<li>「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 詳細版 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</li>
-<li><code>example : IsEven 10 := ⟨5, rfl⟩</code> が通ることを確かめよ（例1の一般論の、具体的な1点での実例である）。</li>
+<li>「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</li>
+<li><code>example : IsEven 10 := ⟨5, rfl⟩</code> が通ることを確かめよ（例4の一般論の、具体的な1点での実例である）。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">theorem</span> isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
@@ -322,14 +454,14 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <p>証人は <code>n</code>。示すべき根拠は <code>2 * n = 2 * n</code> そのものなので、<code>rfl</code> で済む（<code>isEven_double</code> では <code>n + n = 2 * n</code> の変形が要ったが、ここでは両辺が字面から一致している）。</p>
 </details>
 <details class="sol"><summary>解答 2</summary>
-<p><strong>ふつうの証明</strong>: <code>n</code> が偶数なら <code>n = 2k</code> と書ける。すると <code>n + 2 = 2k + 2 = 2(k + 1)</code> だから、<code>n + 2</code> も偶数である。∎</p>
-<p><strong>詳細版</strong>:</p>
+<p><strong>ふつうの証明</strong>:</p>
 <ol>
 <li>仮定 <code>IsEven n</code> を分解し、<code>k</code> と <code>hk : n = 2 * k</code> を得る。</li>
 <li><code>hk</code> の両辺に右から 2 を足して、<code>n + 2 = 2 * k + 2</code>。</li>
 <li><code>2 * k + 2 = 2 * (k + 1)</code> は、既知の定理 <code>Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2</code> の対称形。</li>
 <li>2〜3 をつないで <code>n + 2 = 2 * (k + 1)</code>。よって証人 <code>k + 1</code> で偶数である。∎</li>
 </ol>
+<p>（1行で書けば「<code>n = 2k</code> と書けると <code>n + 2 = 2k + 2 = 2(k + 1)</code>。∎」である。）</p>
 <p><strong>論理式</strong>: ∀n (Even(n) → Even(n + 2))。</p>
 <p><strong>形式化を意識した版</strong>: 仮定を取る（ならばの証明）。<code>hn</code> は存在文なので、取り出して <code>k</code> と <code>hk</code> に名前を付ける（存在の使い方）。示すべきは（定義に戻ると）「<code>n + 2 = 2j</code> となる <code>j</code> の存在」。候補は <code>j = k + 1</code> で、性質 <code>n + 2 = 2 * (k + 1)</code> は等式の連鎖——<code>hk</code> の両辺に <code>(· + 2)</code> を施し、 <code>Nat.mul_succ</code> の対称形とつなぐ。</p>
 <p><strong>項</strong>:</p>
@@ -337,14 +469,14 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
   <span class="kw">fun</span> _ hn =&gt;
     <span class="kw">match</span> hn <span class="kw">with</span>
     | ⟨k, hk⟩ =&gt; ⟨k + 1, (congrArg (· + 2) hk).trans (Nat.mul_succ 2 k).symm⟩</code></pre>
-<p>本文の例2と同じ部品（<code>match</code> の分解・<code>congrArg</code>・<code>.trans</code>・証人の組）だけで書けている。</p>
+<p>本文の例5と同じ部品（<code>match</code> の分解・<code>congrArg</code>・<code>.trans</code>・証人の組）だけで書けている。</p>
 </details>
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : IsEven 10 := ⟨5, rfl⟩</code></pre>
 <p>証人 <code>5</code>、根拠は <code>10 = 2 * 5</code>——計算で一致するので <code>rfl</code>。</p>
 </details>
-<h2 id="sec-CH.propositions">1. 準備 — 命題・theorem・rfl</h2>
-<p>対照表に入る前に、命題の世界の書き方を最小限そろえる（<code>Intro1.lean</code> は型の世界に集中し、命題の話をこのファイルまで持ち越した）。</p>
+<h2 id="sec-CH.propositions">1. 整理 — 命題・theorem・rfl</h2>
+<p><a href="#sec-CH.reading-proofs">0節</a>では、命題・<code>theorem</code>・<code>rfl</code> を必要になるたびに使った。ここで改めて、それぞれが型と項の言葉で何を意味していたかを整理する。</p>
 <p><a href="intro1.html#sec-Intro1.terms-types"><code>Intro1.lean</code> の1節</a>で見たとおり、<strong>命題は <code>Prop</code> という型を持つ項</strong>である。命題を作る記号 <code>=</code> や <code>&lt;</code> も記法だが、裏の仕組みは異なる: <code>=</code> はどの型でも使える1つの述語 <code>Eq</code> の記法であり、 <code>&lt;</code> は <code>+</code> と同じ仲間で、型ごとにクラスの仕組みで意味が決まる（クラスの仕組みそのものは <code>Intro2.lean</code> で説明する）。</p>
 <ul>
 <li><code>=</code> <code>&lt;</code> — <strong>ざっくり</strong>: <code>Nat</code> の上では、どちらも <code>Nat → Nat → Prop</code> という型の関数とみなせばよい。<code>1 + 1 : Nat</code> と <code>2 : Nat</code> を渡すから <code>1 + 1 = 2 : Prop</code>。 <strong>正確には</strong>: <code>=</code> はどの型でも使える <code>Eq : α → α → Prop</code>（<code>α</code> は両辺の型から決まる暗黙引数。定義そのものは<a href="#sec-CH.nat-proofs">9節</a>で見る）、<code>&lt;</code> は型ごとに登録簿で意味が決まる演算である。</li>
@@ -356,7 +488,7 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</code></pre>
 <pre class="lean"><code><span class="kw">#check</span> one_add_one</code></pre>
 <pre class="quote"><code>one_add_one : 1 + 1 = 2</code></pre>
 <p><code>rfl</code> は「両辺が定義から計算して一致する」ことを理由にする等式の証明である（なぜこれが証明と言えるのかは、<a href="#sec-CH.nat-proofs">9節</a>で <code>Eq</code> の定義とともに見る）。 <code>rfl</code> 単体の型も <code>#check rfl</code> で見られる——表示は <code>rfl.{u} {α : Sort u} {a : α} : a = a</code>、つまり「任意の <code>a</code> について <code>a = a</code> の証明」である（<code>Sort</code> の読み方は <code>Intro2.lean</code> で）。</p>
-<p>ここで型検査が何をしたかに注意。「項 <code>rfl</code> の型は命題 <code>1 + 1 = 2</code> と一致するか」という <a href="intro1.html#sec-Intro1.definitions"><code>Intro1.lean</code> 2節</a>以来の検査が、そのまま<strong>証明の検査</strong>になっている。この見方を本格的に展開するのが、このファイルの仕事である。</p>
+<p>ここで型検査が何をしたかに注意。「項 <code>rfl</code> の型は命題 <code>1 + 1 = 2</code> と一致するか」という <a href="intro1.html#sec-Intro1.definitions"><code>Intro1.lean</code> 2節</a>以来の検査が、そのまま<strong>証明の検査</strong>になっている。 <a href="#sec-CH.reading-proofs">0節</a>で行った証明項の検査も、すべてこの見方の繰り返しだった。</p>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>#check 3 &lt; 5</code> と <code>#check 3 = 5</code> の表示を予想してから確かめよ（偽の命題も命題である、を思い出すこと）。</li>
@@ -384,7 +516,8 @@ is not definitionally equal to the right-hand side
   5</code></pre>
 <p>「<code>rfl</code> は両辺が計算で一致するときだけ使える」という規則の破れがそのまま報告されている。</p>
 </details>
-<h2 id="sec-CH.implication">2. 関数型と「ならば」</h2>
+<h2 id="sec-CH.implication">2. 整理 — 関数型と「ならば」</h2>
+<p><a href="#sec-CH.reading-proofs">0節</a>の例1・例2では、含意の証明を関数として使い、また <code>fun</code> で作った。ここでは型の世界の関数と命題の世界の含意を横に並べ、同じ字面になることを整理する。</p>
 <p><strong>示すとき</strong>: <code>fun x =&gt; e</code> で作る。<code>x : α</code> を仮に置いて <code>e : β</code> を作れば <code>α → β</code> が得られる。「<code>p</code> を仮定すれば <code>q</code> が示せる」なら <code>p → q</code> が言える、というのと同じ形。</p>
 <p><strong>使うとき</strong>: <code>f a</code> と適用する。関数に項を与えれば値が出る。含意に証明を与えれば結論の証明が出る。</p>
 <p>作るとき（型側）: <code>β</code> の項が1つあれば、<code>α</code> から <code>β</code> への関数が作れる。</p>
@@ -418,7 +551,7 @@ is not definitionally equal to the right-hand side
 <p>型側と命題側を<strong>同じ字面</strong>で書けることを、自分の手で確かめる。</p>
 <ol>
 <li>「2回適用」を両方の世界で書け: <code>def apply2 {α : Type} : (α → α) → α → α</code> と <code>theorem applyTwice {p : Prop} : (p → p) → p → p</code>。</li>
-<li>「A より B、B より C」の連鎖 <code>theorem chain {p q r : Prop} : (p → q) → (q → r) → p → r</code> を項で書け。</li>
+<li>仮定を受け取る順を入れ替える <code>theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r</code> を項で書け。 <code>p</code> と <code>q</code> の証明をどの順に受け取っても、適用するときは関数の入力順に戻す。</li>
 <li>同じ字面 <code>fun h =&gt; h</code> が、型側の <code>example : Nat → Nat</code> と命題側の <code>example : (1 = 1) → (1 = 1)</code> の<strong>両方</strong>で通ることを確かめよ。</li>
 <li><code>#check applyFun Nat.succ 3</code> の表示を予想してから確かめよ。</li>
 </ol>
@@ -429,9 +562,9 @@ is not definitionally equal to the right-hand side
 <p><code>:=</code> の右は同じ字面。型の世界の「関数を2回適用」と、命題の世界の「推論を2回適用」が、同じ項で書ける。</p>
 </details>
 <details class="sol"><summary>解答 2</summary>
-<pre class="lean"><code><span class="kw">theorem</span> chain {p q r : <span class="sort">Prop</span>} : (p → q) → (q → r) → p → r :=
-  <span class="kw">fun</span> hpq hqr hp =&gt; hqr (hpq hp)</code></pre>
-<p><code>hp : p</code> に「A より B」を適用して <code>q</code>、続けて「B より C」を適用して <code>r</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> imp_swap {p q r : <span class="sort">Prop</span>} : (p → q → r) → q → p → r :=
+  <span class="kw">fun</span> h hq hp =&gt; h hp hq</code></pre>
+<p>外側では <code>q</code> の証明、次に <code>p</code> の証明を受け取るが、<code>h</code> はまず <code>p</code>、次に <code>q</code> を要求するので、適用は <code>h hp hq</code> の順になる。</p>
 </details>
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : Nat → Nat := <span class="kw">fun</span> h =&gt; h
@@ -608,7 +741,8 @@ inductive False : Prop</code></pre>
 <pre class="lean"><code><span class="kw">example</span> : ¬False := <span class="kw">fun</span> h =&gt; h</code></pre>
 <p><code>¬False</code> は <code>False → False</code>——恒等関数が証明になる。</p>
 </details>
-<h2 id="sec-CH.dependent-products">6. 依存積と「すべての」</h2>
+<h2 id="sec-CH.dependent-products">6. 整理 — 依存積と「すべての」</h2>
+<p><a href="#sec-CH.reading-proofs">0節</a>では <code>∀</code> を「任意に取る」「点を当てはめる」と読んだ。ここでは、これが型の世界の依存関数と同じ仕組みであることを整理する。</p>
 <p>関数型 <code>α → β</code> を一般化して、行き先の型が入力ごとに変わってよいことにしたのが依存積 <code>(a : α) → P a</code>。<code>P : α → Type</code> は「<code>α</code> の各点に型を割り当てるもの」。</p>
 <p>命題側で対応するのは全称量化 <code>∀ a, Q a</code>。 <code>Q : α → Prop</code> は「<code>α</code> の各点に命題を割り当てるもの」で、形はまったく同じ。</p>
 <p><strong>示すとき・使うとき</strong>: 関数のときと変わらず <code>fun x =&gt; e</code> と <code>f a</code>。 <code>α → β</code> は <code>P</code> が定数のときの特別な場合なので、これは自然なこと。</p>
@@ -681,7 +815,8 @@ but is expected to have type
 <pre class="quote"><code>applyForall all_mul_zero 7 : IsZero (7 * 0)</code></pre>
 <p><code>∀ n, IsZero (n * 0)</code> に点 <code>7</code> を代入した、特殊化された命題の証明になる。</p>
 </details>
-<h2 id="sec-CH.dependent-sums">7. 依存和と「存在する」</h2>
+<h2 id="sec-CH.dependent-sums">7. 整理 — 依存和と「存在する」</h2>
+<p><a href="#sec-CH.reading-proofs">0節</a>では <code>∃</code> の証明を <code>⟨証人, 根拠⟩</code> で作り、<code>match</code> で使った。ここでは、それを型の世界の依存和と並べて整理する。</p>
 <p>直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>（<code>P : α → Type</code>、型の族）。命題側で対応するのが存在量化 <code>∃ a, Q a</code>（<code>Q : α → Prop</code>、命題の族）。</p>
 <p><strong>示すとき</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</p>
 <p><strong>使うとき</strong>: 組を分解する。型側は <code>.1</code> <code>.2</code> で取り出せる。命題側にはここだけ制限があるので、後の <a href="#sec-CH.prop-elimination">11 節</a>で見る。</p>
@@ -726,17 +861,17 @@ but is expected to have type
 <pre class="quote"><code>last 9 : Fin (9 + 1)</code></pre>
 <h3>✏ 練習</h3>
 <ol>
-<li><code>theorem exists_map {α : Type} {Q R : α → Prop} :(∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a</code> を書け（証人はそのまま、根拠だけ差し替える）。</li>
+<li><code>theorem exists_left {α : Type} {Q R : α → Prop} :(∃ a, Q a ∧ R a) → ∃ a, Q a</code> を書け（証人はそのまま使い、根拠の左側だけを取り出す）。</li>
 <li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——<a href="intro2.html#sec-Intro2.families-fin"><code>Intro2.lean</code> 2節</a>の補足で説明する）。</li>
 <li><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
-<pre class="lean"><code><span class="kw">theorem</span> exists_map {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
-    (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a :=
-  <span class="kw">fun</span> f h =&gt;
+<pre class="lean"><code><span class="kw">theorem</span> exists_left {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
+    (∃ a, Q a ∧ R a) → ∃ a, Q a :=
+  <span class="kw">fun</span> h =&gt;
     <span class="kw">match</span> h <span class="kw">with</span>
-    | ⟨a, ha⟩ =&gt; ⟨a, f a ha⟩</code></pre>
-<p><code>∃</code> を分解して証人 <code>a</code> と根拠 <code>ha</code> を取り出し、証人はそのまま、根拠だけ <code>f a</code> で差し替えて組み直す。</p>
+    | ⟨a, hq, _⟩ =&gt; ⟨a, hq⟩</code></pre>
+<p><code>∃</code> を分解して証人 <code>a</code> と根拠 <code>Q a ∧ R a</code> を取り出す。証人はそのまま、根拠の左側 <code>hq : Q a</code> だけを包み直す。</p>
 </details>
 <details class="sol"><summary>解答 2</summary>
 <pre class="lean"><code><span class="kw">#check</span> (last 4).val</code></pre>
@@ -902,11 +1037,18 @@ or definition name, but `h` is a proof of
 <p>証明は項なのだから、「証明が正しいか」は「項が主張どおりの型を持つか」という <strong>型検査</strong>の問題になる。型検査は機械的な計算であり、Lean はすべての宣言に対してそれを実行している。だから、ファイルがエラーなしに受理された時点で、そこに書かれた全定理の検査は済んでいる。</p>
 <p>ただし2つ、但し書きがある。第一に、この検査は<strong>宣言済みの公理に相対的</strong>である。 <code>axiom bad : False</code> のような宣言もエラーなく受理できてしまうので、「何を公理として使ったか」は <code>#print axioms</code> で別に監査する必要がある。第二に、証明を保留する印 <code>sorry</code> はエラーではなく<strong>警告</strong>になる（依存すると <code>#print axioms</code> に <code>sorryAx</code> が現れる）。だから正確には、「エラーがなく、<code>sorry</code> の警告もなく、<code>#print axioms</code> の結果が納得できる公理だけ」を見る。<code>Top.lean</code> の末尾で、主定理に対してこの監査を実行する。</p>
 <h3>正確には: エラボレータとカーネル</h3>
-<p>ここまで「型検査」と一括りに呼んできた処理は、正確には2段階に分かれている。</p>
+<p>トップページでは、全体の仕組みを次のようなスローガンで表した。</p>
+<ol>
+<li>文字列が項であるかどうかを機械的に判定する。</li>
+<li>項に型が付くかどうかを機械的に判定し、付く場合はその型を計算する。</li>
+</ol>
+<p>この見方は、項の型を追いながらコードを読むためには十分である。ただし、実際の Lean の内部では、ここで一括りにした処理がいくつかの段階に分かれている。ここでスローガンをより正確に言い直そう。</p>
 <pre class="quote"><code>ソースコード
+  → 構文解析: 文字列を Lean の構文として読み取る
   → エラボレータ: 記法を展開し、省略された引数（暗黙引数・インスタンス引数）を
     埋め、タクティク（`Top.lean` 1節）を実行して、省略のない項を組み立てる
   → カーネル: 完成した項の型を、小さな規則集だけで検査する</code></pre>
+<p>したがって、スローガンの「文字列が項であるかを判定する」は、正確には「構文解析のあと、エラボレータがカーネルに渡せる項を組み立てる」という処理である。また「項の型を推測する」は、ソースコードに対するエラボレータの型推論と、完成した項に対するカーネルの型検査をまとめた言い方である。</p>
 <p>賢い処理はすべて前段のエラボレータに、信頼はすべて後段のカーネルにある。この分業のおかげで、前段がどれだけ複雑でも——記法が凝っていても、インスタンス探索が連鎖しても、タクティクが長大でも——<strong>誤った項が組み上がればカーネルが拒否する</strong>。証明の信頼性を支えているのは、エラボレータの賢さではなくカーネルの単純さである。これまで「型検査が暗黙引数を埋める」のように言ってきた箇所も、正確にはエラボレータの仕事である。</p>
 <p>この2段構えが仮定の飛ばしをどう捕まえるのかを、数学でよくある誤りで見ておく。 <strong>補題を使うとき、その仮定の確認が甘い</strong>という誤りである。</p>
 <p>例えば <code>n - 1 + 1 = n</code> は一見明らかに見える。ライブラリには <code>Nat.sub_add_cancel : m ≤ n → n - m + m = n</code> という補題があるから、これを当てて済ませたくなる。仮定 <code>1 ≤ n</code> は「明らか」なので穴 <code>_</code> のままにしておくと:</p>
@@ -929,7 +1071,7 @@ error: don&#x27;t know how to synthesize placeholder
 context:
 n : Nat
 ⊢ IsEven (n + n)</code></pre>
-<p>エラボレータが「残っている穴の型」を教えてくれている（<code>⊢</code> の右が、いま作るべきものの型である）。型の頭が <code>∃</code> だから部品は <code>⟨ ⟩</code>——証人だけ埋めて <code>⟨n, _⟩</code> と書けば、報告は <code>⊢ n + n = 2 * n</code> に変わる。<a href="#sec-CH.reading-proofs">0節</a>の4段の梯子は <strong>読む</strong>ための道具立てだったが、<strong>書く</strong>ときは、この機械との対話で同じ梯子を一段ずつ降りていける。</p>
+<p>エラボレータが「残っている穴の型」を教えてくれている（<code>⊢</code> の右が、いま作るべきものの型である）。型の頭が <code>∃</code> だから部品は <code>⟨ ⟩</code>——証人だけ埋めて <code>⟨n, _⟩</code> と書けば、報告は <code>⊢ n + n = 2 * n</code> に変わる。<a href="#sec-CH.reading-proofs">0節</a>の梯子——ふつうの証明から項まで——は<strong>読む</strong>ための道具立てだったが、<strong>書く</strong>ときは、この機械との対話で同じ梯子を一段ずつ降りていける。</p>
 <p>なお、型検査が保証するのは「主張したことを証明した」ことまでで、「主張が意図した数学を言えている」ことは保証しない。この点は <code>Top.lean</code> の冒頭で扱う。</p>
 <h3>✏ 練習</h3>
 <ol>

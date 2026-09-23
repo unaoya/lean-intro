@@ -6,6 +6,88 @@ import CH
 
 /-! SOL CH.reading-proofs:1 -/
 
+#check fun (P Q : Prop) (hP : P) (hPQ : P → Q) => hPQ hP
+
+/-!
+    fun P Q hP hPQ ↦ hPQ hP : ∀ (P Q : Prop), P → (P → Q) → Q
+
+`hPQ : P → Q` の入力型 `P` と `hP : P` が一致するので、適用結果の型は
+`hPQ` の出力型 `Q` になる。
+-/
+
+/-! SOL CH.reading-proofs:2 -/
+
+theorem use_imp (P Q : Prop) (hPQ : P → Q) (hP : P) : Q :=
+  hPQ hP
+
+/-!
+引数の順が変わっても、適用する項 `hPQ hP` は変わらない。
+-/
+
+/-! SOL CH.reading-proofs:1 -/
+
+theorem imp_refl (P : Prop) : P → P :=
+  fun hP => hP
+
+/-!
+受け取った `hP : P` をそのまま返すので、関数全体の型は `P → P`。
+-/
+
+/-! SOL CH.reading-proofs:2 -/
+
+theorem imp_trans3
+    (P Q R S : Prop)
+    (hPQ : P → Q)
+    (hQR : Q → R)
+    (hRS : R → S) :
+    P → S :=
+  fun hP => hRS (hQR (hPQ hP))
+
+/-!
+内側から `hPQ hP : Q`、`hQR (hPQ hP) : R`、
+`hRS (hQR (hPQ hP)) : S` と型が決まる。
+-/
+
+/-! SOL CH.reading-proofs:1 -/
+
+/-!
+`h : g (f x) = g (f y)` を `hg` に渡すと
+`hg (f x) (f y) h : f x = f y`。それを `hf` に渡すと
+`hf x y (hg (f x) (f y) h) : x = y` となる。
+-/
+
+/-! SOL CH.reading-proofs:2 -/
+
+theorem id_injective (α : Type) : Function.Injective (fun x : α => x) :=
+  fun x y h => (h : x = y)
+
+/-!
+恒等関数について仮定される等式は最初から `x = y` なので、その証明 `h` を
+そのまま返せばよい。
+-/
+
+/-! SOL CH.reading-proofs:1 -/
+
+/-!
+`match` の枝では `a : α`、`ha : Q a`。したがって
+`hqr a : Q a → R a`、`hqr a ha : R a` となる。
+-/
+
+/-! SOL CH.reading-proofs:2 -/
+
+theorem exists_map2 {α : Type} {P Q R : α → Prop} :
+    (∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a :=
+  fun hpq hqr h =>
+    match h with
+    | ⟨a, ha⟩ => ⟨a, hqr a (hpq a ha)⟩
+
+/-!
+存在証明から取り出した証人 `a` はそのまま使い、根拠だけを
+`P a → Q a → R a` と2段階で移している。
+-/
+
+/-! SOL CH.reading-proofs:1 -/
+
 theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
   fun n => ⟨n, rfl⟩
 
@@ -18,16 +100,15 @@ theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
 /-! SOL CH.reading-proofs:2 -/
 
 /-!
-**ふつうの証明**: `n` が偶数なら `n = 2k` と書ける。すると
-`n + 2 = 2k + 2 = 2(k + 1)` だから、`n + 2` も偶数である。∎
-
-**詳細版**:
+**ふつうの証明**:
 
 1. 仮定 `IsEven n` を分解し、`k` と `hk : n = 2 * k` を得る。
 2. `hk` の両辺に右から 2 を足して、`n + 2 = 2 * k + 2`。
 3. `2 * k + 2 = 2 * (k + 1)` は、既知の定理
    `Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2` の対称形。
 4. 2〜3 をつないで `n + 2 = 2 * (k + 1)`。よって証人 `k + 1` で偶数である。∎
+
+（1行で書けば「`n = 2k` と書けると `n + 2 = 2k + 2 = 2(k + 1)`。∎」である。）
 
 **論理式**: ∀n (Even(n) → Even(n + 2))。
 
@@ -46,7 +127,7 @@ theorem isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
     | ⟨k, hk⟩ => ⟨k + 1, (congrArg (· + 2) hk).trans (Nat.mul_succ 2 k).symm⟩
 
 /-!
-本文の例2と同じ部品（`match` の分解・`congrArg`・`.trans`・証人の組）だけで
+本文の例5と同じ部品（`match` の分解・`congrArg`・`.trans`・証人の組）だけで
 書けている。
 -/
 
@@ -112,11 +193,12 @@ theorem applyTwice {p : Prop} : (p → p) → p → p := fun f h => f (f h)
 
 /-! SOL CH.implication:2 -/
 
-theorem chain {p q r : Prop} : (p → q) → (q → r) → p → r :=
-  fun hpq hqr hp => hqr (hpq hp)
+theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r :=
+  fun h hq hp => h hp hq
 
 /-!
-`hp : p` に「A より B」を適用して `q`、続けて「B より C」を適用して `r`。
+外側では `q` の証明、次に `p` の証明を受け取るが、`h` はまず `p`、次に `q`
+を要求するので、適用は `h hp hq` の順になる。
 -/
 
 /-! SOL CH.implication:3 -/
@@ -265,15 +347,15 @@ example : IsZero (5 * 0) := all_mul_zero 5
 
 /-! SOL CH.dependent-sums:1 -/
 
-theorem exists_map {α : Type} {Q R : α → Prop} :
-    (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a :=
-  fun f h =>
+theorem exists_left {α : Type} {Q R : α → Prop} :
+    (∃ a, Q a ∧ R a) → ∃ a, Q a :=
+  fun h =>
     match h with
-    | ⟨a, ha⟩ => ⟨a, f a ha⟩
+    | ⟨a, hq, _⟩ => ⟨a, hq⟩
 
 /-!
-`∃` を分解して証人 `a` と根拠 `ha` を取り出し、証人はそのまま、
-根拠だけ `f a` で差し替えて組み直す。
+`∃` を分解して証人 `a` と根拠 `Q a ∧ R a` を取り出す。証人はそのまま、
+根拠の左側 `hq : Q a` だけを包み直す。
 -/
 
 /-! SOL CH.dependent-sums:2 -/
