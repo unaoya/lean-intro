@@ -507,7 +507,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> continuous_id</code></pre>
 <pre class="quote"><code>continuous_id {X : Type} [TopologicalSpace X] : Continuous fun x ↦ x</code></pre>
 <p>仮定なしの定理。結論の中の <code>fun x ↦ x</code> が恒等写像。</p>
-<p>連続写像の合成は連続。 <code>(g ∘ f) ⁻¹&#x27; s</code> が <code>f ⁻¹&#x27; (g ⁻¹&#x27; s)</code> と定義上等しいので、引き戻しを2回続けるだけ。名前を <code>Continuous.comp</code> としたので、<code>hg.comp hf</code> とドット記法で使える（<a href="intro1.html#sec-Intro1.dot-notation"><code>Intro1.lean</code> 7節</a>）。</p>
+<p>連続写像の合成は連続。 <code>(g ∘ f) ⁻¹&#x27; s</code> が <code>f ⁻¹&#x27; (g ⁻¹&#x27; s)</code> と定義上等しいので、引き戻しを2回続けるだけ。名前を <code>Continuous.comp</code> としたので、<code>hg.comp hf</code> とドット記法で使える（<a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>）。</p>
 <pre class="lean"><code><span class="kw">theorem</span> Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (<span class="kw">fun</span> x =&gt; g (f x)) :=
   <span class="kw">fun</span> s hs =&gt; hf _ (hg s hs)

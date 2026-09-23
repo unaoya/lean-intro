@@ -166,8 +166,9 @@ theorem two_add_three : 2 + 3 = 5 := rfl
 /-! SOL CH.propositions:3 -/
 
 /-!
-受理されない。`rfl` の型は `a = a` の形しか取れないのに、
-宣言された型は `2 + 2 = 5`——両辺が計算で一致しない——だからである:
+受理されない。`rfl` が与える `a = a` という型を、宣言された型 `2 + 2 = 5` と
+照合しようとしても、`2 + 2` と `5` は定義的に等しくないからである。
+この宣言を実行すると、エラーに次の部分が現れる:
 
     theorem oops : 2 + 2 = 5 := rfl
 
@@ -176,8 +177,11 @@ theorem two_add_three : 2 + 3 = 5 := rfl
     is not definitionally equal to the right-hand side
       5
 
-「`rfl` は両辺が計算で一致するときだけ使える」という規則の破れが
-そのまま報告されている。
+`Not a definitional equality` は「定義的に等しくない」という意味である。
+定義的等しさと、等式を別の証明で示せることの違いは、
+[1節](#sec-CH.propositions)の補足「定義的等しさと、等しいことの証明」で説明した。
+この例の命題は偽だが、一般に `rfl` が使えないだけで命題が偽だとは判断できない。
+補足の `0 + n = n` は、`rfl` では済まなくても証明できる例である。
 -/
 
 /-! SOL CH.implication:1 -/
@@ -186,9 +190,43 @@ def apply2 {α : Type} : (α → α) → α → α := fun f a => f (f a)
 
 theorem applyTwice {p : Prop} : (p → p) → p → p := fun f h => f (f h)
 
+#check apply2
+
+/-!
+    apply2 {α : Type} : (α → α) → α → α
+-/
+
+#check applyTwice
+
+/-!
+    applyTwice {p : Prop} : (p → p) → p → p
+-/
+
 /-!
 `:=` の右は同じ字面。型の世界の「関数を2回適用」と、命題の世界の
 「推論を2回適用」が、同じ項で書ける。
+
+次に、`fun` で受け取っていた引数をコロンの左に移し、binder 形式で書く:
+-/
+
+def apply2Binder {α : Type} (f : α → α) (a : α) : α := f (f a)
+
+theorem applyTwiceBinder {p : Prop} (f : p → p) (h : p) : p := f (f h)
+
+#check apply2Binder
+
+/-!
+    apply2Binder {α : Type} (f : α → α) (a : α) : α
+-/
+
+#check applyTwiceBinder
+
+/-!
+    applyTwiceBinder {p : Prop} (f : p → p) (h : p) : p
+
+最後の2つの引数を矢印形式に読み替えれば、それぞれ
+`(α → α) → α → α` と `(p → p) → p → p` になる。
+宣言の書き方が変わっただけで、型も、受け取った引数から作る項も変わらない。
 -/
 
 /-! SOL CH.implication:2 -/

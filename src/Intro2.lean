@@ -67,11 +67,10 @@ instance : Pointed Nat where
 /-!
     @inferInstance : {α : Sort u_1} → [i : α] → α
 
-表示に、初めて見る記法が2つある。頭の `@` は「暗黙引数も省略せずに表示・指定する」
+頭の `@` は「暗黙引数も省略せずに表示・指定する」
 という印で、`@inferInstance` は `inferInstance` の省略なし版である。
-`Sort u` は `Prop` と `Type` たちを束ねる書き方で、`Prop = Sort 0`、
-`Type = Sort 1`、`Type 1 = Sort 2`、…と読む。つまりこの関数は
-どの宇宙の型に対しても使える、ということである。
+`Sort u` は、[`CH.lean` 1節](#sec-CH.propositions)で見た、`Prop` や `Type`、`Type 1` などを
+まとめて扱う宇宙の表記である。つまりこの関数は、命題も通常の型も対象にできる。
 -/
 
 /-!
@@ -185,8 +184,9 @@ instance が形に合う → その前提 `Pointed Nat`・`Pointed Point` をさ
 
 /-! ### 記法もクラスで動いている
 
-[`Intro1.lean` 3節](#sec-Intro1.functions)の「正確には」で、「`+` の正体は汎用の演算で、どの型の足し算かは
-登録簿から決まる」と述べた。その登録簿が、標準ライブラリのクラス `Add` である:
+[`Intro1.lean` 3節](#sec-Intro1.functions)の先取りで、`+` は `HAdd.hAdd` を使う記法であり、
+型に応じて演算が選ばれると述べた。同じ型どうしの足し算を指定するために、
+標準ライブラリにはクラス `Add` が用意されている:
 
     class Add (α : Type u) where
       add : α → α → α
@@ -216,8 +216,8 @@ instance : Add Point where
 
 /-! ### 補足（初読は飛ばしてよい）: `+` と数値リテラルの登録簿
 
-正確に言うと、`+` の読み先は `HAdd`（左右の型が違ってもよい、さらに一般の版）
-なのだが、「`Add α` があれば `HAdd α α α` にもなる」という**橋渡しの
+正確に言うと、`+` の読み先は、左右の型が違ってもよいクラス `HAdd` の関数
+`HAdd.hAdd` である。「`Add α` があれば `HAdd α α α` にもなる」という**橋渡しの
 インスタンス**が標準ライブラリに用意されているので、`Add` を登録するだけで
 記法まで使えるようになる。登録簿の検索は、このように**連鎖**する。
 
@@ -585,7 +585,8 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
 
 `s ⊆ s` を展開すれば `∀ a, a ∈ s → a ∈ s`——各点で「`p → p`」を示すだけ
 （[`CH.lean` 2節](#sec-CH.implication)の世界そのもの）である。名前を `Set.〜` にしたのは
-ドット記法（[`Intro1.lean` 7節](#sec-Intro1.dot-notation)）のためで、この命名の仕組みは次節で説明する。
+ドット記法（[`Intro1.lean` 5節](#sec-Intro1.structures)で見た関数適用の略記）のためで、
+この命名の仕組みは次節で説明する。
 
 `Top.lean` はこの `Set` を土台に、`∩`・`∪`・補集合・像・逆像・集合族……と
 道具を足していく。
@@ -609,7 +610,7 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
 
 /-! ## 5. namespace — 名前の接頭辞 {#sec-Intro2.namespaces}
 
-[`Intro1.lean` 7節](#sec-Intro1.dot-notation)のドット記法や、前節の `Set.subset_refl` という名前を
+[`Intro1.lean` 5節](#sec-Intro1.structures)のドット記法や、前節の `Set.subset_refl` という名前を
 支えている**名前空間**の仕組みを見ておく。
 `namespace N … end N` で囲うと、中の宣言の本名に `N.` が付く:
 -/

@@ -772,7 +772,7 @@ theorem continuous_id : Continuous (fun x : X => x) :=
 
 /-- 連続写像の合成は連続。
 `(g ∘ f) ⁻¹' s` が `f ⁻¹' (g ⁻¹' s)` と定義上等しいので、引き戻しを2回続けるだけ。
-名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（[`Intro1.lean` 7節](#sec-Intro1.dot-notation)）。 -/
+名前を `Continuous.comp` としたので、`hg.comp hf` とドット記法で使える（[`Intro1.lean` 5節](#sec-Intro1.structures)）。 -/
 theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) :=
   fun s hs => hf _ (hg s hs)

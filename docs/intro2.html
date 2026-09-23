@@ -92,7 +92,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p>これで括弧が3種類そろった。<a href="intro1.html#sec-Intro1.dependent-functions"><code>Intro1.lean</code> 6節</a>の <code>( )</code>（明示）・<code>{ }</code>（暗黙）に加えて、<code>[inst : C α]</code> が<strong>インスタンス引数</strong>である——他の引数との単一化だけでは決まらず、エラボレータが <code>instance</code> として登録された項の中から探索して埋める。</p>
 <pre class="lean"><code><span class="kw">#check</span> @inferInstance</code></pre>
 <pre class="quote"><code>@inferInstance : {α : Sort u_1} → [i : α] → α</code></pre>
-<p>表示に、初めて見る記法が2つある。頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は <code>Prop</code> と <code>Type</code> たちを束ねる書き方で、<code>Prop = Sort 0</code>、 <code>Type = Sort 1</code>、<code>Type 1 = Sort 2</code>、…と読む。つまりこの関数はどの宇宙の型に対しても使える、ということである。</p>
+<p>頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は、<a href="ch.html#sec-CH.propositions"><code>CH.lean</code> 1節</a>で見た、<code>Prop</code> や <code>Type</code>、<code>Type 1</code> などをまとめて扱う宇宙の表記である。つまりこの関数は、命題も通常の型も対象にできる。</p>
 <p>確かめてみる。次の <code>example</code> も名前を付けない宣言で、こちらは登録簿にも載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。</p>
 <pre class="lean"><code><span class="kw">example</span> : Pointed Nat := inferInstance</code></pre>
 <p>登録してあるので、これは見つかって受理される（<code>example</code> は受理されると Infoview には何も表示しない）。登録していない型では失敗する:</p>
@@ -141,7 +141,7 @@ Hint: Type class instance resolution failures can be inspected with the
 <pre class="quote"><code>0</code></pre>
 <p><code>Pair Nat Point</code> の基点はどこにも直接は登録していないのに、見つかった。探索が<strong>連鎖</strong>するからである: <code>Pointed (Pair Nat Point)</code> を探す → 上の誘導 instance が形に合う → その前提 <code>Pointed Nat</code>・<code>Pointed Point</code> をさらに登録簿から探す——と、機械が自動でつないでいく。<code>Extra.lean</code> の発展演習で「積空間 <code>X × Y</code> に位相が自動で載る」のも、これと同じ仕組みである。</p>
 <h3>記法もクラスで動いている</h3>
-<p><a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の「正確には」で、「<code>+</code> の正体は汎用の演算で、どの型の足し算かは登録簿から決まる」と述べた。その登録簿が、標準ライブラリのクラス <code>Add</code> である:</p>
+<p><a href="intro1.html#sec-Intro1.functions"><code>Intro1.lean</code> 3節</a>の先取りで、<code>+</code> は <code>HAdd.hAdd</code> を使う記法であり、型に応じて演算が選ばれると述べた。同じ型どうしの足し算を指定するために、標準ライブラリにはクラス <code>Add</code> が用意されている:</p>
 <pre class="quote"><code>class Add (α : Type u) where
   add : α → α → α</code></pre>
 <p><code>Point</code> に足し算を登録してみる:</p>
@@ -154,7 +154,7 @@ Hint: Type class instance resolution failures can be inspected with the
 <pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2 + Point.mk 3 4).x</code></pre>
 <pre class="quote"><code>4</code></pre>
 <aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>+</code> と数値リテラルの登録簿</h3>
-<p>正確に言うと、<code>+</code> の読み先は <code>HAdd</code>（左右の型が違ってもよい、さらに一般の版）なのだが、「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。</p>
+<p>正確に言うと、<code>+</code> の読み先は、左右の型が違ってもよいクラス <code>HAdd</code> の関数 <code>HAdd.hAdd</code> である。「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。</p>
 <p>数字のリテラルにも同じ仕組みがあり、そちらは <code>OfNat</code> というクラスが担っている（<a href="#sec-Intro2.families-fin">2節</a>の補足で、<code>(2 : Fin 3)</code> のようなリテラルが通る理由として再登場する）。</p>
 <p>なお、この教材の <code>Pointed</code> は練習用の自作クラスである。標準ライブラリにも同じ形のクラス <code>Inhabited</code>（フィールド名は <code>default</code>）があり、「少なくとも1つ項を持つ型」の既定値として広く使われている。</p></aside>
 <h3>✏ 練習</h3>
@@ -376,7 +376,7 @@ in the application
 
 <span class="kw">#check</span> Set.subset_refl</code></pre>
 <pre class="quote"><code>Set.subset_refl {X : Type} (s : Set X) : s ⊆ s</code></pre>
-<p><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code>——各点で「<code>p → p</code>」を示すだけ（<a href="ch.html#sec-CH.implication"><code>CH.lean</code> 2節</a>の世界そのもの）である。名前を <code>Set.〜</code> にしたのはドット記法（<a href="intro1.html#sec-Intro1.dot-notation"><code>Intro1.lean</code> 7節</a>）のためで、この命名の仕組みは次節で説明する。</p>
+<p><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code>——各点で「<code>p → p</code>」を示すだけ（<a href="ch.html#sec-CH.implication"><code>CH.lean</code> 2節</a>の世界そのもの）である。名前を <code>Set.〜</code> にしたのはドット記法（<a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>で見た関数適用の略記）のためで、この命名の仕組みは次節で説明する。</p>
 <p><code>Top.lean</code> はこの <code>Set</code> を土台に、<code>∩</code>・<code>∪</code>・補集合・像・逆像・集合族……と道具を足していく。</p>
 <h3>✏ 練習</h3>
 <ol>
@@ -416,7 +416,7 @@ in the application
 <p>集合への所属は命題。中身が <code>¬…</code> でも、<code>∈</code> の式全体の型は <code>Prop</code> である。</p>
 </details>
 <h2 id="sec-Intro2.namespaces">5. namespace — 名前の接頭辞</h2>
-<p><a href="intro1.html#sec-Intro1.dot-notation"><code>Intro1.lean</code> 7節</a>のドット記法や、前節の <code>Set.subset_refl</code> という名前を支えている<strong>名前空間</strong>の仕組みを見ておく。 <code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く:</p>
+<p><a href="intro1.html#sec-Intro1.structures"><code>Intro1.lean</code> 5節</a>のドット記法や、前節の <code>Set.subset_refl</code> という名前を支えている<strong>名前空間</strong>の仕組みを見ておく。 <code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く:</p>
 <pre class="lean"><code><span class="kw">namespace</span> Geometry
 
 <span class="kw">def</span> origin : Point := ⟨0, 0⟩
