@@ -36,6 +36,10 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
 aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
 aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
 aside.note p { margin: .4rem 0; }
@@ -65,6 +69,10 @@ details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-ra
 details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
 details.sol[open] > summary { margin-bottom: .4rem; }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
 <nav><span><a href="ch1.html">← CH1</a></span><a href="index.html">目次</a><span><a href="ch2.html">CH2 →</a></span></nav>
@@ -844,7 +852,7 @@ Not considering parameter n of loop:
 <p>つまり<strong>構成子の個数が直和の項数を、各構成子の引数が直積の因子を</strong>与える。 <code>Signal</code> は 1 ⊔ 1 ⊔ 1（3点集合）、<code>MySum α β</code> は α ⊔ β（直和だけ）、 <code>Point</code> は Nat × Nat（直和が1項に退化して直積だけ）、構成子が0個なら空集合（<code>Empty</code>）。「structure は直積」と「帰納型は直和のようなもの」は矛盾しない——直和を<strong>使って</strong>直積を定義しているのではなく、構成子の<strong>個数</strong>と<strong>引数</strong>という直交した2つの軸が、それぞれ直和と直積に対応しているのである。</p>
 <p>なおアナロジーの注意を1つ。集合と違って、型は<strong>外延（要素の一致）では同一視されない</strong>。<code>Point</code> と <code>Pair Nat Nat</code> は「中身」は同じだが別の型である（この話は <a href="ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> 6節</a>の <code>Fin</code> の補足でも再登場する）。</p></aside>
 <h3>フィールドは前のフィールドに依存してよい</h3>
-<p>今度は、「どの集合を選ぶかで、その上に載せる構造の集まりも変わる」という状況を考えよう。サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 X と、その上の群構造を1つ指定することである。集合 X ごとにその上の群構造全体を Grp(X) と書けば、群全体は<strong>集合族の直和</strong> ⊔_{X} Grp(X) として捉えられ、個々の群がその要素に当たる。ここで群構造には、演算・単位元・逆元と、それらが満たす公理を含めている。同様に、位相空間を1つ指定することも、集合 X とその上の位相を1つ指定することである。</p>
+<p>今度は、「どの集合を選ぶかで、その上に載せる構造の集まりも変わる」という状況を考えよう。サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 X と、その上の群構造を1つ指定することである。集合 X ごとにその上の群構造全体を Grp(X) と書けば、群全体は<strong>集合族の直和</strong> $\bigsqcup_{X} \mathrm{Grp}(X)$ として捉えられ、個々の群がその要素に当たる。ここで群構造には、演算・単位元・逆元と、それらが満たす公理を含めている。同様に、位相空間を1つ指定することも、集合 X とその上の位相を1つ指定することである。</p>
 <p>一般に、族の直和 ⊔_{a ∈ A} B(a) の要素は、「a を1つ選び、それに応じた B(a) の要素を1つ添える」という組である。 structure でも、<strong>後のフィールドの型を、前のフィールドに依存させる</strong>ことで、この形のデータを表せる。証明をフィールドに持たせる実例は <code>CH2.lean</code> で読み、ここでは単純な<strong>点付き集合</strong>——集合と、その要素を1つ選んだ組——を例にしよう。</p>
 <p><a href="intro1a.html#sec-Intro1.terms-types"><code>Intro1a.lean</code> 1節</a>で見たとおり型も項だから、フィールドの値として<strong>型そのもの</strong>を持たせ、次のフィールドの型をその値で決める、ということができる:</p>
 <pre class="lean"><code><span class="kw">structure</span> PointedType : <span class="sort">Type</span> 1 <span class="kw">where</span>

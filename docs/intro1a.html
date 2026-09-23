@@ -36,6 +36,10 @@ pre { background: var(--code-bg); border: 1px solid var(--border); border-radius
       padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
 pre code { background: none; padding: 0; font-size: .85rem; }
 pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
 aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
 aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
 aside.note p { margin: .4rem 0; }
@@ -65,6 +69,10 @@ details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-ra
 details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
 details.sol[open] > summary { margin-bottom: .4rem; }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
 <nav><span></span><a href="index.html">目次</a><span><a href="ch1.html">CH1 →</a></span></nav>
@@ -655,9 +663,7 @@ in the application
 <h3>一般の族と、依存する適用</h3>
 <p>一般に <code>B : A → Type</code> は、各 <code>a : A</code> に型 <code>B a</code> を割り当てる<strong>型の族</strong>である。その各点で項を返す関数の型が <code>(a : A) → B a</code> である。 <code>Tuple</code> の例では <code>A = Nat</code>、<code>B = Tuple</code> とすればよい。</p>
 <p>適用の規則も、それに合わせて一般化される:</p>
-<pre class="quote"><code>f : (a : A) → B a    x : A
--------------------------
-         f x : B x</code></pre>
+<div class="rule"><div class="prem"><span>f : (a : A) → B a</span><span>x : A</span></div><div class="concl">f x : B x</div></div>
 <p>入力の型が合うかを確かめたうえで、結果の型の中の <code>a</code> にも実引数 <code>x</code> を入れる。 <code>constTuple 3</code> の型が <code>Tuple 3</code> になったのは、この代入である。結果の型が入力によらない場合が、これまでの <code>A → C</code> である。</p>
 <p>集合族の言葉では、各 a に B(a) の要素を一つずつ指定するので、族の直積 ∏_{a∈A} B(a)の要素に相当する。<code>idAt</code> も、各型 α に恒等写像という <code>α → α</code> の項を指定する例だった。</p>
 <h3>✏ 練習</h3>
