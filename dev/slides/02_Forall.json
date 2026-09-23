@@ -503,10 +503,28 @@
       "at": {
         "section": "CH.type-checking",
         "tag": "p",
-        "starts": "ただし2つ、但し書きがある。第一に、この検査は宣言済みの公理に相対的である。 axiom "
+        "starts": "この主張には但し書きが3つある。第一は、この検査が宣言済みの公理に相対的であること。"
       },
       "id": "axioms-and-sorry",
       "label": "公理と sorry を監査する"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "h3",
+        "starts": "その検査は、形式化したかったものの検査か"
+      },
+      "id": "what-was-checked",
+      "label": "形式化したかったものの検査か"
+    },
+    {
+      "at": {
+        "section": "CH.type-checking",
+        "tag": "p",
+        "starts": "第3点について、Lean の理論"
+      },
+      "id": "consistency-assumption",
+      "label": "理論の解釈と ZFC"
     },
     {
       "at": {
