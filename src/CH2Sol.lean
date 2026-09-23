@@ -222,6 +222,54 @@ example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩
 証人 `0` と、`IsZero 0` すなわち `0 = 0` の証明 `rfl` の組である。
 -/
 
+/-! SOL CH.dependent-sums:4 -/
+
+#check first 4
+
+/-!
+    first 4 : Fin (4 + 1)
+
+定義どおり `Fin (4 + 1)`（計算すれば `Fin 5`）。
+-/
+
+#eval (first 4).val
+
+/-!
+    0
+
+`first` は `n` によらず `0` を返す。
+-/
+
+/-! SOL CH.dependent-sums:5 -/
+
+#check first 0
+
+/-!
+    first 0 : Fin (0 + 1)
+
+`Fin (0 + 1)`——要素が1つしかない型で、その唯一の要素が `first 0` である。
+-/
+
+/-! SOL CH.dependent-sums:6 -/
+
+#eval (5 : Fin 4)
+
+/-!
+    1
+
+補足の `(5 : Fin 3)` と同じ仕組みで、`5` を `4` で割った余りが入る。
+-/
+
+/-! SOL CH.dependent-sums:7 -/
+
+#eval (first 5).val + (2 : Fin 3).val
+
+/-!
+    2
+
+`(first 5).val = 0`、`(2 : Fin 3).val = 2` で、和は `Nat` の `2`。
+-/
+
 /-! SOL CH.introduction-elimination:1 -/
 
 theorem andToOr {p q : Prop} : p ∧ q → p ∨ q := fun h => .inl h.1

@@ -30,7 +30,7 @@ src/
   CH1.lean      ならば・全称・単射の合成・証明検査の核心
   Intro1b.lean  帰納型・場合分け・再帰・structure
   CH2.lean      組と場合分け・存在・偶数と全射・等式の仕組み・検査の詳説
-  Intro2.lean   Top のための道具（class と instance・Fin・集合 Set・記法の自作・名前空間）
+  Intro2.lean   Top のための道具（class と instance・記法の自作・集合 Set・名前空間）
   Top.lean      位相空間（主定理: コンパクト → ハウスドルフの連続全単射は同相）
   Extra.lean    発展演習（位相空間の圏・自由忘却随伴・別定義との等価性・誘導位相）
 

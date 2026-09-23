@@ -121,7 +121,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p><code>Signal</code> でも <code>export Signal (red)</code> と宣言すれば、その後は <code>red</code> という短い名前を使える。また、<code>open Signal in</code> をコマンドの前に置くと、そのコマンドの中で接頭辞なしの名前を使える:</p>
 <pre class="quote"><code>open Signal in
 #check red</code></pre>
-<p>こうした名前の管理の仕組みは、<a href="intro2.html#sec-Intro2.namespaces"><code>Intro2.lean</code> 5節</a>で扱う。このあと本文で使う <code>.red</code>・<code>.yellow</code>・<code>.green</code> は、<code>open</code> や <code>export</code> を必要とせず、期待される型から名前を補う書き方である。</p>
+<p>こうした名前の管理の仕組みは、<a href="intro2.html#sec-Intro2.namespaces"><code>Intro2.lean</code> 4節</a>で扱う。このあと本文で使う <code>.red</code>・<code>.yellow</code>・<code>.green</code> は、<code>open</code> や <code>export</code> を必要とせず、期待される型から名前を補う書き方である。</p>
 <p>この違いは、これから見る <code>match</code> の場合分けでも大事になる。接頭辞なしの名前を用意していない状態で <code>| red =&gt; ...</code> と書くと、<code>red</code> は構成子ではなく、どの値でも受け取る<strong>新しい変数の名前</strong>になる。赤の場合を指定するには、 <code>| Signal.red =&gt; ...</code> または <code>| .red =&gt; ...</code> と書く。</p>
 </aside>
 <aside class="note note--preview"><h3>先取り（CH2）: 「全部」と「別々」を支える道具</h3>
@@ -696,7 +696,7 @@ Not considering parameter n of loop:
 <p><code>Point.swap : Point → Point</code> なので、<code>p : Point</code> に対して <code>p.swap : Point</code>。さらに <code>p.swap.x : Nat</code> と続けられる。内側から読むと、<code>p.swap.x</code> は <code>Point.x (Point.swap p)</code> の略記である。次の値は、入れ替える前の第2成分 <code>2</code> のはずだ:</p>
 <pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2).swap.x</code></pre>
 <pre class="quote"><code>2</code></pre>
-<p><code>swap</code> で <code>x</code> と <code>y</code> が入れ替わった。ドットを使わずに <code>#eval Point.x (Point.swap (Point.mk 1 2))</code> と書いても、同じ <code>2</code> が返る。このような名前の付け方の一般論——名前空間——は、 <a href="intro2.html#sec-Intro2.namespaces"><code>Intro2.lean</code> 5節</a>で扱う。</p>
+<p><code>swap</code> で <code>x</code> と <code>y</code> が入れ替わった。ドットを使わずに <code>#eval Point.x (Point.swap (Point.mk 1 2))</code> と書いても、同じ <code>2</code> が返る。このような名前の付け方の一般論——名前空間——は、 <a href="intro2.html#sec-Intro2.namespaces"><code>Intro2.lean</code> 4節</a>で扱う。</p>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>Point.zeroX (p : Point) : Point</code> を定義し、第1成分だけを <code>0</code> にせよ。本体では <code>p.y</code> と <code>.mk</code> の両方を使う。<code>#eval (Point.mk 1 2).zeroX.x</code> の値を予想して確かめよ。</li>
@@ -842,7 +842,7 @@ Not considering parameter n of loop:
 <p>前節の直和とここの直積をまとめると、ここまでの非再帰的で、構成子の引数の型が互いに依存しない例は、集合の言葉でこう読める:</p>
 <pre class="quote"><code>(構成子1の引数たちの直積) ⊔ (構成子2の引数たちの直積) ⊔ …</code></pre>
 <p>つまり<strong>構成子の個数が直和の項数を、各構成子の引数が直積の因子を</strong>与える。 <code>Signal</code> は 1 ⊔ 1 ⊔ 1（3点集合）、<code>MySum α β</code> は α ⊔ β（直和だけ）、 <code>Point</code> は Nat × Nat（直和が1項に退化して直積だけ）、構成子が0個なら空集合（<code>Empty</code>）。「structure は直積」と「帰納型は直和のようなもの」は矛盾しない——直和を<strong>使って</strong>直積を定義しているのではなく、構成子の<strong>個数</strong>と<strong>引数</strong>という直交した2つの軸が、それぞれ直和と直積に対応しているのである。</p>
-<p>なおアナロジーの注意を1つ。集合と違って、型は<strong>外延（要素の一致）では同一視されない</strong>。<code>Point</code> と <code>Pair Nat Nat</code> は「中身」は同じだが別の型である（この話は <code>Intro2.lean</code> の <code>Fin</code> の補足でも再登場する）。</p></aside>
+<p>なおアナロジーの注意を1つ。集合と違って、型は<strong>外延（要素の一致）では同一視されない</strong>。<code>Point</code> と <code>Pair Nat Nat</code> は「中身」は同じだが別の型である（この話は <a href="ch2.html#sec-CH.dependent-sums"><code>CH2.lean</code> 6節</a>の <code>Fin</code> の補足でも再登場する）。</p></aside>
 <h3>フィールドは前のフィールドに依存してよい</h3>
 <p>今度は、「どの集合を選ぶかで、その上に載せる構造の集まりも変わる」という状況を考えよう。サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 X と、その上の群構造を1つ指定することである。集合 X ごとにその上の群構造全体を Grp(X) と書けば、群全体は<strong>集合族の直和</strong> ⊔_{X} Grp(X) として捉えられ、個々の群がその要素に当たる。ここで群構造には、演算・単位元・逆元と、それらが満たす公理を含めている。同様に、位相空間を1つ指定することも、集合 X とその上の位相を1つ指定することである。</p>
 <p>一般に、族の直和 ⊔_{a ∈ A} B(a) の要素は、「a を1つ選び、それに応じた B(a) の要素を1つ添える」という組である。 structure でも、<strong>後のフィールドの型を、前のフィールドに依存させる</strong>ことで、この形のデータを表せる。証明をフィールドに持たせる実例は <code>CH2.lean</code> で読み、ここでは単純な<strong>点付き集合</strong>——集合と、その要素を1つ選んだ組——を例にしよう。</p>

@@ -127,18 +127,18 @@ theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
 /-! ## 2. 集合 {#sec-Top.sets}
 
 集合 `Set`（実体は述語 `α → Prop`）と、内包記法 `{a | p a}`・所属 `∈`・
-包含 `⊆` は [`Intro2.lean` 4節](#sec-Intro2.sets)で作った。ここではその上に、残りの道具——
+包含 `⊆` は [`Intro2.lean` 3節](#sec-Intro2.sets)で作った。ここではその上に、残りの道具——
 `∩`・`∪`・`∅`・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。
 -/
 
--- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（[`Intro2.lean` 5節](#sec-Intro2.namespaces)）
+-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（[`Intro2.lean` 4節](#sec-Intro2.namespaces)）
 namespace Set
 
 -- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる
 variable {α : Type}
 
 /-!
-`∩` `∪` `∅` の記法も、[`Intro2.lean` 4節](#sec-Intro2.sets)の `∈`・`⊆` と同じやり方——
+`∩` `∪` `∅` の記法も、[`Intro2.lean` 3節](#sec-Intro2.sets)の `∈`・`⊆` と同じやり方——
 標準ライブラリの記法用クラスへの `instance` 登録——で使えるようにする。
 `⟨…⟩` はクラスの構成子にフィールドの中身を渡す書き方である。
 -/
@@ -245,7 +245,7 @@ def sUnion (S : Set (Set α)) : Set α := {a | ∃ s, s ∈ S ∧ a ∈ s}
 prefix:110 "⋃₀ " => Set.sUnion
 
 /-- 添字づけられた集合族 `U : I → Set α` の合併。族とは「添字を受け取って
-集合を返す関数」である（[`Intro2.lean` 2節](#sec-Intro2.families-fin)の型の族の仲間）。`sUnion` が
+集合を返す関数」である（[`Intro1a.lean` 4節](#sec-Intro1.dependent-functions)の型の族の仲間）。`sUnion` が
 「集合の集まり」を受け取るのに対し、こちらは添字でパラメータづけた族を受け取る。 -/
 def iUnion {I : Type} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
@@ -538,7 +538,7 @@ docstring を付けられ、フィールドが増えたり順序が変わった�
 -/
 
 /-- `⋃ i, U i` で族全体の合併を表す（`syntax`・`macro_rules` の仕組みは
-[`Intro2.lean` 3節](#sec-Intro2.notation)）。 -/
+[`Intro2.lean` 2節](#sec-Intro2.notation)）。 -/
 syntax:110 "⋃ " ident ", " term : term
 /-- `⋃ i ∈ J, U i` で添字を `J` に制限した合併を表す。 -/
 syntax:110 "⋃ " ident " ∈ " term:110 ", " term : term

@@ -126,7 +126,7 @@ CALLOUT_START optional
     open Signal in
     #check red
 
-こうした名前の管理の仕組みは、[`Intro2.lean` 5節](#sec-Intro2.namespaces)で扱う。
+こうした名前の管理の仕組みは、[`Intro2.lean` 4節](#sec-Intro2.namespaces)で扱う。
 このあと本文で使う `.red`・`.yellow`・`.green` は、`open` や `export` を
 必要とせず、期待される型から名前を補う書き方である。
 
@@ -937,7 +937,7 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 `swap` で `x` と `y` が入れ替わった。ドットを使わずに
 `#eval Point.x (Point.swap (Point.mk 1 2))` と書いても、同じ `2` が返る。
 このような名前の付け方の一般論——名前空間——は、
-[`Intro2.lean` 5節](#sec-Intro2.namespaces)で扱う。
+[`Intro2.lean` 4節](#sec-Intro2.namespaces)で扱う。
 -/
 
 /-!
@@ -1080,7 +1080,7 @@ structure（名前は `Prod`）として定義されている。
 
 なおアナロジーの注意を1つ。集合と違って、型は**外延（要素の一致）では
 同一視されない**。`Point` と `Pair Nat Nat` は「中身」は同じだが別の型である
-（この話は `Intro2.lean` の `Fin` の補足でも再登場する）。
+（この話は [`CH2.lean` 6節](#sec-CH.dependent-sums)の `Fin` の補足でも再登場する）。
 -/
 
 /-!

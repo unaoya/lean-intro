@@ -553,23 +553,69 @@ but is expected to have type
 <pre class="quote"><code>structure Fin (n : Nat) where
   val : Nat
   isLt : val &lt; n</code></pre>
-<p>値 <code>val</code> と、「その値が <code>n</code> 未満だ」という<strong>証明</strong> <code>isLt</code> の組——依存和の第二成分を命題にしたもの——である。このように、述語で切り出した「値と証明の組」の型を<strong>部分型</strong>と呼ぶ（専用記法 <code>{x // p x}</code> は <code>Top.lean</code> で使う）。</p>
+<p>値 <code>val</code> と、「その値が <code>n</code> 未満だ」という<strong>証明</strong> <code>isLt</code> の組——依存和の第二成分を命題にしたもの——である。このように、述語で切り出した「値と証明の組」の型を<strong>部分型</strong>と呼ぶ（専用記法 <code>{x // p x}</code> は <code>Extra.lean</code> で使う）。</p>
 <p>中身が分かれば、項も作れる。値が <code>n</code> に依存する依存関数の例として、「<code>Fin (n + 1)</code> の<strong>最後の</strong>番号」を作ってみる:</p>
 <pre class="lean"><code><span class="kw">def</span> last : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> n =&gt; ⟨n, Nat.lt_succ_self n⟩
 
 <span class="kw">#check</span> last</code></pre>
 <pre class="quote"><code>last (n : Nat) : Fin (n + 1)</code></pre>
-<p>値 <code>n</code> に、命題 n &lt; n + 1 の証明（ライブラリの <code>Nat.lt_succ_self n</code>）を添えて組にしている。<code>Intro2.lean</code> では、この型の項を数値リテラルで書く仕組みも読む。</p>
+<p>値 <code>n</code> に、命題 n &lt; n + 1 の証明（ライブラリの <code>Nat.lt_succ_self n</code>）を添えて組にしている。</p>
 <pre class="lean"><code><span class="kw">#check</span> last 2</code></pre>
 <pre class="quote"><code>last 2 : Fin (2 + 1)</code></pre>
 <p>型の中の <code>n</code> に <code>2</code> が入った。</p>
 <pre class="lean"><code><span class="kw">#check</span> last 9</code></pre>
 <pre class="quote"><code>last 9 : Fin (9 + 1)</code></pre>
+<p>同じ族に沿って、「番号 <code>n</code> を受け取り、<code>Fin (n + 1)</code> の<strong>最初の</strong>番号 0 を返す」関数も書ける:</p>
+<pre class="lean"><code><span class="kw">def</span> first : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> _ =&gt; 0
+
+<span class="kw">#check</span> first</code></pre>
+<pre class="quote"><code>first (n : Nat) : Fin (n + 1)</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> first 2</code></pre>
+<pre class="quote"><code>first 2 : Fin (2 + 1)</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> first 9</code></pre>
+<pre class="quote"><code>first 9 : Fin (9 + 1)</code></pre>
+<p>値はどれも「0 番」だが、その <code>0</code> の住んでいる型が入力ごとに違う。 <code>0</code> と書けるのは、数字が期待される型に応じて読まれる記法だからである（<a href="intro1a.html#sec-Intro1.functions"><code>Intro1a.lean</code> 3節</a>）。 <code>last</code> と見比べてほしい。<code>first</code> の値は常に 0 番なので証明を書かずに済むが、 <code>last</code> は値 <code>n</code> が型の上限すれすれに依存するぶん、<code>n &lt; n + 1</code> の証明を添える必要があった。</p>
+<aside class="note note--optional">
+<h3>補足（初読は飛ばしてよい）: では <code>2 : Fin 3</code> なのか？</h3>
+<p>「<code>Fin 3</code> は 3 未満の番号の型」と聞くと、集合 {0, 1, 2} ⊂ ℕ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 <code>Fin 3</code> の項は、上で見たとおり値と証明の組であり、<code>Nat</code> の項とは<strong>別の型の項</strong>である。集合のように、<code>Fin 3</code> が <code>Nat</code> の部分集合として含まれているわけではない。</p>
+<p>まぎらわしいことに、<code>(2 : Fin 3)</code> という書き方自体は通る:</p>
+<pre class="lean"><code><span class="kw">#check</span> (2 : Nat)</code></pre>
+<pre class="quote"><code>2 : Nat</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> (2 : Fin 3)</code></pre>
+<pre class="quote"><code>2 : Fin 3</code></pre>
+<p>これは数字 <code>2</code> が<strong>記法</strong>であり、期待される型に応じて別々の項に読まれるからである（<a href="intro1a.html#sec-Intro1.functions"><code>Intro1a.lean</code> 3節</a>の <code>2 : Int</code> と同じ仕組み）。 <code>(2 : Nat)</code> は自然数の項、<code>(2 : Fin 3)</code> は <code>Fin 3</code> の「2 番」の項で、 <strong>同じ字面の、別の項</strong>なのである。所属を判定しているのではない証拠に、 <code>(5 : Fin 3)</code> すら通り、3 で割った<strong>余り</strong>として読まれる:</p>
+<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 3)</code></pre>
+<pre class="quote"><code>2</code></pre>
+<p><code>2</code> になった。リテラルをどう読むかは、<code>Fin</code> 用に用意された読み方で決まる（その仕組みは <a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>の補足で見る）。</p>
+<p><code>.val</code> は「番号を自然数として取り出す」関数（<code>Fin n → Nat</code>）である:</p>
+<pre class="lean"><code><span class="kw">#eval</span> (2 : Fin 3).val</code></pre>
+<pre class="quote"><code>2</code></pre>
+<p>2つの <code>2</code> を等号で結ぼうとすると、面白いことが起きる:</p>
+<pre class="lean"><code><span class="kw">#check</span> (2 : Nat) = (2 : Fin 3)</code></pre>
+<pre class="quote"><code>2 = ↑2 : Prop</code></pre>
+<p>型エラーにはならないが、右辺に <code>↑</code> が付いた。これは<strong>強制</strong>（coercion）の印で、 Lean が <code>Fin 3 → Nat</code> の写像（<code>.val</code>）を自動で挟み、「<code>Nat</code> の世界に持ち上げてから比べる」形に読み替えている。逆向きはそうはいかない。<code>Fin 3</code> を引数に取る関数を用意して、<code>(2 : Nat)</code> を渡してみると:</p>
+<pre class="quote"><code>def useFin (x : Fin 3) : Fin 3 := x
+#check useFin (2 : Nat)
+
+error: Application type mismatch: The argument
+  2
+has type
+  Nat
+but is expected to have type
+  Fin 3
+in the application
+  useFin 2</code></pre>
+<p><code>Nat → Fin 3</code> の向きには「3 未満に収まっているか」の確認が要るので、自動では埋められない。まとめると、<code>Fin 3</code> と <code>Nat</code> の関係は「部分集合と全体」ではなく、<strong>写像 <code>.val</code> で結ばれた別々の型</strong>である。</p>
+</aside>
 <h3>✏ 練習</h3>
 <ol>
 <li><code>theorem exists_left {α : Type} {Q R : α → Prop} :(∃ a, Q a ∧ R a) → ∃ a, Q a</code> を書け（証人はそのまま使い、根拠の左側だけを取り出す）。</li>
-<li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——<a href="intro2.html#sec-Intro2.families-fin"><code>Intro2.lean</code> 2節</a>の補足で説明する）。</li>
+<li><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——上の補足で説明した）。</li>
 <li><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</li>
+<li><code>#check first 4</code> の表示と、<code>#eval (first 4).val</code> の値を予想してから確かめよ。</li>
+<li><code>#check first 0</code> の表示を予想してから確かめよ（<code>Fin (0 + 1)</code> は1点の型である）。</li>
+<li>（補足の確認）<code>#eval (5 : Fin 4)</code> の表示を予想してから確かめよ（補足の <code>(5 : Fin 3)</code> と同じ仕組みである）。</li>
+<li>（補足の確認）<code>#eval (first 5).val + (2 : Fin 3).val</code> の値を予想してから確かめよ。</li>
 </ol>
 <details class="sol"><summary>解答 1</summary>
 <pre class="lean"><code><span class="kw">theorem</span> exists_left {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
@@ -587,6 +633,29 @@ but is expected to have type
 <details class="sol"><summary>解答 3</summary>
 <pre class="lean"><code><span class="kw">example</span> : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code></pre>
 <p>証人 <code>0</code> と、<code>IsZero 0</code> すなわち <code>0 = 0</code> の証明 <code>rfl</code> の組である。</p>
+</details>
+<details class="sol"><summary>解答 4</summary>
+<pre class="lean"><code><span class="kw">#check</span> first 4</code></pre>
+<pre class="quote"><code>first 4 : Fin (4 + 1)</code></pre>
+<p>定義どおり <code>Fin (4 + 1)</code>（計算すれば <code>Fin 5</code>）。</p>
+<pre class="lean"><code><span class="kw">#eval</span> (first 4).val</code></pre>
+<pre class="quote"><code>0</code></pre>
+<p><code>first</code> は <code>n</code> によらず <code>0</code> を返す。</p>
+</details>
+<details class="sol"><summary>解答 5</summary>
+<pre class="lean"><code><span class="kw">#check</span> first 0</code></pre>
+<pre class="quote"><code>first 0 : Fin (0 + 1)</code></pre>
+<p><code>Fin (0 + 1)</code>——要素が1つしかない型で、その唯一の要素が <code>first 0</code> である。</p>
+</details>
+<details class="sol"><summary>解答 6</summary>
+<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 4)</code></pre>
+<pre class="quote"><code>1</code></pre>
+<p>補足の <code>(5 : Fin 3)</code> と同じ仕組みで、<code>5</code> を <code>4</code> で割った余りが入る。</p>
+</details>
+<details class="sol"><summary>解答 7</summary>
+<pre class="lean"><code><span class="kw">#eval</span> (first 5).val + (2 : Fin 3).val</code></pre>
+<pre class="quote"><code>2</code></pre>
+<p><code>(first 5).val = 0</code>、<code>(2 : Fin 3).val = 2</code> で、和は <code>Nat</code> の <code>2</code>。</p>
 </details>
 <h2 id="sec-CH.introduction-elimination">7. 示すときと使うときのまとめ</h2>
 <h3>普通の証明で行ったこと — 頭の動きの一覧</h3>

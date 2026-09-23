@@ -148,13 +148,13 @@ fun {p} h ↦ h</code></pre>
 <p>こちらは手書きの <code>fun h =&gt; h</code> と同じ字面に戻る。</p>
 </details>
 <h2 id="sec-Top.sets">2. 集合</h2>
-<p>集合 <code>Set</code>（実体は述語 <code>α → Prop</code>）と、内包記法 <code>{a | p a}</code>・所属 <code>∈</code>・包含 <code>⊆</code> は <a href="intro2.html#sec-Intro2.sets"><code>Intro2.lean</code> 4節</a>で作った。ここではその上に、残りの道具—— <code>∩</code>・<code>∪</code>・<code>∅</code>・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。</p>
-<pre class="lean"><code><span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 5節）</span>
+<p>集合 <code>Set</code>（実体は述語 <code>α → Prop</code>）と、内包記法 <code>{a | p a}</code>・所属 <code>∈</code>・包含 <code>⊆</code> は <a href="intro2.html#sec-Intro2.sets"><code>Intro2.lean</code> 3節</a>で作った。ここではその上に、残りの道具—— <code>∩</code>・<code>∪</code>・<code>∅</code>・補集合・像・逆像・集合族・有限性・外延性——を積んでいく。</p>
+<pre class="lean"><code><span class="cm">-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（`Intro2.lean` 4節）</span>
 <span class="kw">namespace</span> Set
 
 <span class="cm">-- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる</span>
 <span class="kw">variable</span> {α : <span class="sort">Type</span>}</code></pre>
-<p><code>∩</code> <code>∪</code> <code>∅</code> の記法も、<a href="intro2.html#sec-Intro2.sets"><code>Intro2.lean</code> 4節</a>の <code>∈</code>・<code>⊆</code> と同じやり方——標準ライブラリの記法用クラスへの <code>instance</code> 登録——で使えるようにする。 <code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方である。</p>
+<p><code>∩</code> <code>∪</code> <code>∅</code> の記法も、<a href="intro2.html#sec-Intro2.sets"><code>Intro2.lean</code> 3節</a>の <code>∈</code>・<code>⊆</code> と同じやり方——標準ライブラリの記法用クラスへの <code>instance</code> 登録——で使えるようにする。 <code>⟨…⟩</code> はクラスの構成子にフィールドの中身を渡す書き方である。</p>
 <p>共通部分 <code>s ∩ t</code>: 両方に属する点の全体（「かつ」）。</p>
 <pre class="lean"><code><span class="kw">instance</span> : Inter (Set α) := ⟨<span class="kw">fun</span> s t =&gt; {a | a ∈ s ∧ a ∈ t}⟩
 
@@ -207,7 +207,7 @@ fun {p} h ↦ h</code></pre>
 <p>引数の型が <code>Set (Set α)</code>＝「集合の集合」であることに注意。</p>
 <p>前置記法 <code>⋃₀ S</code>。</p>
 <pre class="lean"><code><span class="kw">prefix</span>:110 &quot;⋃₀ &quot; =&gt; Set.sUnion</code></pre>
-<p>添字づけられた集合族 <code>U : I → Set α</code> の合併。族とは「添字を受け取って集合を返す関数」である（<a href="intro2.html#sec-Intro2.families-fin"><code>Intro2.lean</code> 2節</a>の型の族の仲間）。<code>sUnion</code> が「集合の集まり」を受け取るのに対し、こちらは添字でパラメータづけた族を受け取る。</p>
+<p>添字づけられた集合族 <code>U : I → Set α</code> の合併。族とは「添字を受け取って集合を返す関数」である（<a href="intro1a.html#sec-Intro1.dependent-functions"><code>Intro1a.lean</code> 4節</a>の型の族の仲間）。<code>sUnion</code> が「集合の集まり」を受け取るのに対し、こちらは添字でパラメータづけた族を受け取る。</p>
 <pre class="lean"><code><span class="kw">def</span> iUnion {I : <span class="sort">Type</span>} (U : I → Set α) : Set α := {a | ∃ i, a ∈ U i}
 
 <span class="kw">#check</span> iUnion</code></pre>
@@ -375,7 +375,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
   ⟨<span class="kw">fun</span> _ _ h =&gt; h, <span class="kw">fun</span> b =&gt; ⟨b, rfl⟩⟩</code></pre>
 <p>単射性: 仮定 <code>h : a₁ = a₂</code> がそのままゴール（恒等写像なので送り先の等式＝元の等式）。先頭の <code>fun _ _</code> は2点 <code>a₁ a₂</code> のぶんの束縛である。全射性: 点 <code>b</code> への証人は <code>b</code> 自身、根拠は <code>rfl</code>。</p>
 </details>
-<p><code>⋃ i, U i</code> で族全体の合併を表す（<code>syntax</code>・<code>macro_rules</code> の仕組みは <a href="intro2.html#sec-Intro2.notation"><code>Intro2.lean</code> 3節</a>）。</p>
+<p><code>⋃ i, U i</code> で族全体の合併を表す（<code>syntax</code>・<code>macro_rules</code> の仕組みは <a href="intro2.html#sec-Intro2.notation"><code>Intro2.lean</code> 2節</a>）。</p>
 <pre class="lean"><code><span class="kw">syntax</span>:110 &quot;⋃ &quot; ident &quot;, &quot; term : term</code></pre>
 <p><code>⋃ i ∈ J, U i</code> で添字を <code>J</code> に制限した合併を表す。</p>
 <pre class="lean"><code><span class="kw">syntax</span>:110 &quot;⋃ &quot; ident &quot; ∈ &quot; term:110 &quot;, &quot; term : term

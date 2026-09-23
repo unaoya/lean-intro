@@ -480,7 +480,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre>
 <pre class="lean"><code><span class="kw">#check</span> (HAdd.hAdd : Nat → Nat → Nat)</code></pre>
 <pre class="quote"><code>HAdd.hAdd : Nat → Nat → Nat</code></pre>
 <p>Lean は指定された型に合う <strong>instance（インスタンス）</strong>を自動的に補う。標準環境では、同じ型どうしの足し算を指定する <code>Add</code> というクラスを経由して、 <code>Nat.add</code> が使われる。このつながりは標準ライブラリの定義によるものであり、上の2つの型が同じだから、という理由ではない。同じ型の関数でも中身は異なり得る。</p>
-<p>ここでは「<code>+</code> は記法で、型に応じて演算が選ばれ、自然数では <code>Nat.add</code> が使われる」と押さえておけばよい。ここでは <code>HAdd.hAdd</code> の一般的な型には立ち入らない。クラスやインスタンスの定義・選択の仕組みは、<a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で扱う。数字も型に応じて解釈される記法であり、その仕組みは <code>OfNat</code> というクラスが担う。今は、ほかの型の指定がなければ <code>3</code> などを <code>Nat</code> の項として読めばよい。</p>
+<p>ここでは「<code>+</code> は記法で、型に応じて演算が選ばれ、自然数では <code>Nat.add</code> が使われる」と押さえておけばよい。ここでは <code>HAdd.hAdd</code> の一般的な型には立ち入らない。クラスやインスタンスの定義・選択の仕組みは、<a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>で扱う。数字も型に応じて解釈される記法であり、その仕組みは <code>OfNat</code> というクラスが担う（<a href="intro2.html#sec-Intro2.classes"><code>Intro2.lean</code> 1節</a>の補足で見る）。今は、ほかの型の指定がなければ <code>3</code> などを <code>Nat</code> の項として読めばよい。</p>
 </aside>
 <h3>型はどう決まるか——下から計算し、上から期待を伝える</h3>
 <p><a href="#sec-Intro1.definitions">2節</a>で「型検査が走る」と述べ、この節の冒頭で <code>double 21</code> の2点確認を見た。一般の形をまとめておく。適用についての規則はただ1つである:</p>
