@@ -32,24 +32,25 @@ SRC = ROOT / "src"
 OUT = REPO / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
-CHAPTERS = ["01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools", "06_Topology", "07_Exercises", "08_Ascoli", "09_Covering"]
+CHAPTERS = ["01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools", "06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"]
 
 # 公開済み URL は本文のコピーではなく、新しい章への転送ページとして残す。
 LEGACY_CHAPTERS = {
     "Intro1a": "01_TypesAndTerms", "CH1": "02_Forall",
     "Intro1b": "03_InductiveTypes", "CH2": "04_Exists",
     "Intro2": "05_MathematicalTools", "Top": "06_Topology",
-    "Extra": "07_Exercises", "Ascoli": "08_Ascoli",
+    "Extra": "07_Exercises", "Ascoli": "09_Ascoli",
+    "08_Ascoli": "09_Ascoli", "09_Covering": "11_Covering",
     # さらに前の章名の URL
     "Intro1": "01_TypesAndTerms", "CH": "02_Forall",
 }
 
 # 通読版には含めるが、講義スライド（HTML・PDF）は作らない章。
-SLIDE_EXCLUDED_CHAPTERS = {"06_Topology", "07_Exercises", "08_Ascoli", "09_Covering"}
+SLIDE_EXCLUDED_CHAPTERS = {"06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"}
 
 # ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
 # 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
-SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("07_Exercises", "08_Ascoli", "09_Covering")}
+SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering")}
 
 SITE_TITLE = "はじめての Lean"
 SITE_CONCEPT = (
@@ -619,8 +620,10 @@ def page(title: str, body: str, nav: str = "", css: str = CSS) -> str:
 ROLES = {
     "06_Topology": "定義から「コンパクト空間からハウスドルフ空間への連続全単射は同相写像である」の証明まで",
     "07_Exercises": "演習（sorry を自分で埋める）",
-    "08_Ascoli": "演習（sorry を自分で埋める）",
-    "09_Covering": "演習（sorry を自分で埋める）",
+    "08_Real": "演習（sorry を自分で埋める）",
+    "09_Ascoli": "演習（sorry を自分で埋める）",
+    "10_AscoliReal": "演習（sorry を自分で埋める）",
+    "11_Covering": "演習（sorry を自分で埋める）",
 }
 
 
@@ -633,7 +636,7 @@ def chapter_links_html(titles: dict, chapters, href, *, group_exercises=False) -
     out = ["<ol>"]
     exercises_added = False
     for name in chapters:
-        if group_exercises and name in {"07_Exercises", "08_Ascoli", "09_Covering"}:
+        if group_exercises and name in {"07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"}:
             if not exercises_added:
                 out.append(f'<li><a href="{href(name)}">発展演習</a></li>')
                 exercises_added = True

@@ -3,7 +3,7 @@ import «06_Topology»
 /-! # 発展演習: グラフの被覆
 
 `06_Topology.lean` まで読み終えた人のための演習問題集
-（`07_Exercises.lean`・`08_Ascoli.lean` とは独立に読める）。題材は**被覆と基本群**で、
+（`07_Exercises.lean`・`08_Real.lean`・`09_Ascoli.lean`・`10_AscoliReal.lean` とは独立に読める）。題材は**被覆と基本群**で、
 ゴールは「円周の基本群は整数の群 $\mathbb{Z}$ と同型」の離散版である。
 
 ## 位相空間の被覆の証明の骨組み
@@ -51,8 +51,8 @@ Part F はそれまでの結果をすべて使う。
 
 ## 進め方
 
-`07_Exercises.lean`・`08_Ascoli.lean` と同じく、`sorry` を自分の証明で置き換える。
-解答は `09_CoveringSol.lean` にある。与えてある宣言（`sorry` のないもの）も、
+`07_Exercises.lean`・`09_Ascoli.lean` と同じく、`sorry` を自分の証明で置き換える。
+解答は `11_CoveringSol.lean` にある。与えてある宣言（`sorry` のないもの）も、
 問題を解くときに使ってよい。`06_Topology.lean` からは、全単射 `Function.Bijective` だけを使う。
 -/
 
@@ -920,9 +920,9 @@ theorem pi1_bouquet :
       Function.Bijective deg :=
   sorry
 
-/-! 解答（`09_CoveringSol.lean`）では、主定理が依存する公理は
+/-! 解答（`11_CoveringSol.lean`）では、主定理が依存する公理は
 `propext`・`Classical.choice`・`Quot.sound` の 3 つだけである。
-`06_Topology.lean` の最終定理・`08_Ascoli.lean` の主定理と同じである。
+`06_Topology.lean` の最終定理・`09_Ascoli.lean` の主定理と同じである。
 問題を解き終えたら、次の出力に `sorryAx` が残っていないことを確かめよ。
 -/
 

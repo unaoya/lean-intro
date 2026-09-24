@@ -19,7 +19,7 @@
 - 原稿を改稿したら、アンカーの一致だけでなく、全表示後のページの収まりを HTML・PDF で確認する。
   収まらなくなったら、内容を読んで境界を再編集する。本文の削除や文字の縮小で対処しない。
 
-06_Topology・07_Exercises・08_Ascoli はスライド生成の対象外。通読版 HTML・PDF には含める。
+06_Topology・07_Exercises・08_Real・09_Ascoli・10_AscoliReal・11_Covering はスライド生成の対象外。通読版 HTML・PDF には含める。
 対象外の章は `tools/lean2html.py` の `SLIDE_EXCLUDED_CHAPTERS` で管理する。
 
 標準ビルドでは、補足・先取りの注記ブロックをスライド HTML・PDF から省く。
@@ -116,7 +116,7 @@ HTML は画面のリサイズ・全画面切替でも配置を更新し、小さ
 本文の「✏ 練習」は 01_TypesAndTerms から 06_Topology まで、補足・先取り内も含めて通し番号を付ける。
 通読版・スライド版で番号を共有するため、補足を省いたスライドでは欠番があり得る。
 Lean 内の問題番号と `SOL 固定ラベル:問題番号` は対応付け用の局所番号として残す。
-07_Exercises・08_Ascoli の別形式の「問題」はこの通し番号の対象外。
+07_Exercises・08_Real・09_Ascoli・10_AscoliReal・11_Covering の別形式の「問題」はこの通し番号の対象外。
 
 通読版 HTML は解答を折り畳み、通読版 PDF は開く。
 スライド PDF は HTML の各表示段階につき1ページを生成する。

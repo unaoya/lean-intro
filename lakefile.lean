@@ -12,7 +12,7 @@ VS Code で Lean のファイルを開くと、Lean がまずこのファイル�
 あとで教材が更新されたかを `Start.lean` で確かめられるようにする。
 
 章の一覧（この行が変わると Lean がこのファイルを読み直し、新しい章がコピーされる）:
-01_TypesAndTerms 02_Forall 03_InductiveTypes 04_Exists 05_MathematicalTools 06_Topology 07_Exercises 08_Ascoli 09_Covering
+01_TypesAndTerms 02_Forall 03_InductiveTypes 04_Exists 05_MathematicalTools 06_Topology 07_Exercises 08_Real 09_Ascoli 10_AscoliReal 11_Covering
 -/
 
 def setupMyWork : IO Unit := do

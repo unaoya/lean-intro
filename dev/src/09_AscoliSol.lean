@@ -2,7 +2,7 @@ import «06_Topology»
 
 /-! # 発展演習 Ascoli の解答
 
-`08_Ascoli.lean` の全問題の解答。問題文と説明はそちらを参照。
+`09_Ascoli.lean` の全問題の解答。問題文と説明はそちらを参照。
 -/
 
 /-! ## Part A: 一様構造 -/

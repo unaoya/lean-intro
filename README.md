@@ -50,8 +50,10 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで、位相空間�
 | 数学を記述する道具 | `05_MathematicalTools.lean` |
 | 位相空間 | `06_Topology.lean` |
 | 発展演習 | `07_Exercises.lean` |
-| 発展演習 — Ascoli の定理 | `08_Ascoli.lean` |
-| 発展演習 — グラフの被覆と基本群 | `09_Covering.lean` |
+| 発展演習 — 実数 | `08_Real.lean` |
+| 発展演習 — Ascoli の定理 | `09_Ascoli.lean` |
+| 発展演習 — 実数版 Arzelà–Ascoli の定理 | `10_AscoliReal.lean` |
+| 発展演習 — グラフの被覆と基本群 | `11_Covering.lean` |
 
 ### 教材が更新されたとき
 

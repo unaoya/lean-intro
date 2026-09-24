@@ -54,7 +54,7 @@ Part A〜D が本体で、ここまでに選択公理による「選択」は有
 
 ## 進め方
 
-`07_Exercises.lean` と同じく、`sorry` を自分の証明で置き換える。解答は `08_AscoliSol.lean` にある。
+`07_Exercises.lean` と同じく、`sorry` を自分の証明で置き換える。解答は `09_AscoliSol.lean` にある。
 与えてある宣言（`sorry` のないもの）も、問題を解くときに使ってよい。
 -/
 

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>発展演習: 実数版 Arzelà–Ascoli の定理</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
+}
+
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+<nav><span><a href="09_ascoli.html">← 09_Ascoli</a></span><a href="index.html">目次</a><span><a href="11_covering.html">11_Covering →</a></span></nav>
+<main>
+<pre class="lean"><code><span class="kw">import</span> «08_RealSol»
+<span class="kw">import</span> «09_AscoliSol»</code></pre>
+<h1>発展演習: 実数版 Arzelà–Ascoli の定理</h1>
+<p><code>08_Real.lean</code>（実数）と <code>09_Ascoli.lean</code>（ブルバキ流 Ascoli の定理）の続き。抽象的な Ascoli の定理から、解析の講義でおなじみの形を導く:</p>
+<p>&gt; <strong>Arzelà–Ascoli の定理</strong>: 閉区間 <code>[a, b]</code> 上の実数値関数の族が&gt; 一様有界かつ一様等連続なら、その族のどの関数列も、一様収束する部分列を持つ。</p>
+<h2>何が新しく要るか</h2>
+<p><code>09_Ascoli.lean</code> の主定理（コンパクト版 <code>ascoli_compact</code>）を実数に使うには、仮定を1つずつ実数の言葉で確かめればよい。Ascoli の議論そのものはやり直さない。</p>
+<ul>
+<li>実数に一様構造を入れる（Part A）。<code>|a - b| &lt; ε</code> で近縁を作る</li>
+<li>各点での値の集合がコンパクト集合に入る——一様有界なら <code>[-M, M]</code> に入り、それがコンパクトであることは <code>08_Real.lean</code> の <strong>Heine–Borel</strong>（<code>isCompact_Icc</code>）である</li>
+<li>等連続性を <code>ε</code>-論法の形で言い直す（Part C）</li>
+</ul>
+<p>これで「閉集合版」（Part D）がすぐに出る。そこから、閉包を取って「相対コンパクト版」（Part F）、さらに集積点と部分列を作って「点列版」（Part G）へ進み、最後に定義域を閉区間にする（Part H）。逆向き（Part E）も <code>09_Ascoli.lean</code> の結果から出る。</p>
+<h2>構成</h2>
+<ul>
+<li>Part A: 実数の一様構造</li>
+<li>Part B: 2つの位相の一致</li>
+<li>Part C: 用語の対応（等連続性・一様有界性）</li>
+<li>Part D: 実数版 Ascoli（閉集合版）</li>
+<li>Part E: 逆向き——コンパクトなら一様有界かつ等連続</li>
+<li>Part F: 相対コンパクト版（閉包）</li>
+<li>Part G: 点列版（一様収束する部分列）</li>
+<li>Part H: 閉区間上の関数（古典的な Arzelà–Ascoli の定理）</li>
+</ul>
+<h2>進め方</h2>
+<p>これまでと同じく、<code>sorry</code> を自分の証明で置き換える。解答は <code>10_AscoliRealSol.lean</code> にある。このファイルは <code>08_Real.lean</code>・<code>09_Ascoli.lean</code> の<strong>解答</strong>を import しているので、それらを解き終えていなくても、そこで示した定理をすべて使える。</p>
+<pre class="lean"><code><span class="kw">open</span> CompleteOrderedField UniformSpace
+
+<span class="kw">variable</span> {R : <span class="sort">Type</span>} [CompleteOrderedField R]</code></pre>
+<h2>Part A: 実数の一様構造</h2>
+<p>2点 <code>a</code>・<code>b</code> が「<code>ε</code> より近い」という関係 <code>{(a, b) | |a - b| &lt; ε}</code> を含む関係を、近縁とする。一様構造の5公理は、<code>08_Real.lean</code> の計算規則から出る。とくに <code>comp</code>（「半分」の近縁）は三角不等式 <code>abs_sub_le</code> と <code>add_halves</code> による <code>ε/2</code> 論法である。</p>
+<p>問題1: 実数の一様構造が公理を満たすことを示せ。</p>
+<p>ヒント: <code>inter_mem</code> では2つの <code>ε</code> の小さいほう（<code>CompleteOrderedField.min</code>・<code>lt_min</code>）を取る。 <code>comp</code> では <code>{p | abs (p.1 - p.2) &lt; ε / 2}</code> を「半分」にする。</p>
+<pre class="lean"><code><span class="kw">instance</span> realUniformSpace : UniformSpace R <span class="kw">where</span>
+  Entourage := {V | ∃ ε, 0 &lt; ε ∧ ∀ a b : R, abs (a - b) &lt; ε → (a, b) ∈ V}
+  univ_mem := <span class="sorry">sorry</span>
+  mono := <span class="sorry">sorry</span>
+  inter_mem := <span class="sorry">sorry</span>
+  refl := <span class="sorry">sorry</span>
+  symm := <span class="sorry">sorry</span>
+  comp := <span class="sorry">sorry</span></code></pre>
+<p>近縁 <code>{(a, b) | |a - b| &lt; ε}</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> distLt (ε : R) : Set (R × R) := {p | abs (p.1 - p.2) &lt; ε}
+
+<span class="kw">theorem</span> distLt_mem {ε : R} (hε : 0 &lt; ε) : distLt ε ∈ 𝓤 R := ⟨ε, hε, <span class="kw">fun</span> _ _ h =&gt; h⟩</code></pre>
+<h2>Part B: 2つの位相の一致</h2>
+<p>この時点で、実数には位相が<strong>2つ</strong>載っている。</p>
+<ul>
+<li><code>08_Real.lean</code> で入れた <code>ε</code>-位相 <code>CompleteOrderedField.instTopologicalSpace</code></li>
+<li><code>09_Ascoli.lean</code> の instance <code>UniformSpace.toTopologicalSpace</code> が、Part A の一様構造から作る位相</li>
+</ul>
+<p>どちらも「どの点のまわりにも <code>ε</code>-近傍が収まる集合が開」という同じ定義に見えるが、定義の字面が違う（片方は近縁を経由する）ので、Lean にとっては別の項である。 <code>IsCompact (Icc a b)</code> と書くとインスタンス探索は後者を選び、<code>08_Real.lean</code> の <code>isCompact_Icc a b</code>（前者についての定理）はそのままでは型が合わない。</p>
+<p>そこで、2つの位相が<strong>等しい</strong>ことを示し（問題2）、その等式で定理を運ぶ（問題3）。</p>
+<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: インスタンスの菱形</h3>
+<p>同じ型に同じクラスのインスタンスが2通りの経路で作られる状況を、<strong>菱形</strong>（diamond）と呼ぶ。 mathlib では、一様構造のクラスが位相そのものをフィールドとして持ち、実数の一様構造を作るときに「その位相は既存の位相と等しい」ことの証明を添える、という設計で菱形を避けている。ここでは <code>09_Ascoli.lean</code> の定義を変えずに、等式を1本示して済ませる。</p></aside>
+<p>開集合が一致する位相は等しい。フィールド <code>IsOpen</code> 以外は命題なので、 <code>IsOpen</code> が関数として等しければ構造全体が等しい。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TopologicalSpace.ext_iff_isOpen {X : <span class="sort">Type</span>} {t₁ t₂ : TopologicalSpace X}
+    (h : ∀ s, t₁.IsOpen s ↔ t₂.IsOpen s) : t₁ = t₂ := <span class="kw">by</span>
+  <span class="kw">cases</span> t₁
+  <span class="kw">cases</span> t₂
+  congr
+  funext s
+  <span class="kw">exact</span> propext (h s)</code></pre>
+<p>問題2: 一様構造から定まる位相は、<code>08_Real.lean</code> の <code>ε</code>-位相と等しいことを示せ。</p>
+<p>ヒント: <code>TopologicalSpace.ext_iff_isOpen</code> で開集合の同値に還元する。 <code>|y - x|</code> と <code>|x - y|</code> の入れ替えに <code>abs_sub_comm</code> を使う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> uniform_topology_eq :
+    (UniformSpace.toTopologicalSpace : TopologicalSpace R) =
+      CompleteOrderedField.instTopologicalSpace :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題3: Heine–Borel を、一様構造の位相についての主張に運べ。</p>
+<p>ヒント: <code>rw [uniform_topology_eq]</code> でゴールの中の位相を書き換えてから、<code>isCompact_Icc</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isCompact_Icc&#x27; (a b : R) : IsCompact (Icc a b) :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part C: 用語の対応</h2>
+<p>解析でふつうに使う <code>ε</code>-論法の形の定義を用意し、<code>09_Ascoli.lean</code> の定義と対応させる。定義域 <code>X</code> はここでは一般の位相空間である。</p>
+<pre class="lean"><code><span class="kw">section</span> Dictionary
+
+<span class="kw">variable</span> {X : <span class="sort">Type</span>} [TopologicalSpace X]</code></pre>
+<p><code>ε</code>-論法での等連続性: どの点 <code>x</code> とどの <code>ε &gt; 0</code> にも <code>x</code> の開近傍 <code>U</code> があって、族のどの関数も <code>U</code> の上で <code>f x</code> から <code>ε</code> 以上ずれない。</p>
+<pre class="lean"><code><span class="kw">def</span> EquicontinuousR (H : Set (X → R)) : <span class="sort">Prop</span> :=
+  ∀ x ε, 0 &lt; ε → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ f ∈ H, ∀ y ∈ U, abs (f y - f x) &lt; ε</code></pre>
+<p>一様有界: 族のすべての関数の値が、共通の <code>M</code> で抑えられる。</p>
+<pre class="lean"><code><span class="kw">def</span> UniformlyBounded (H : Set (X → R)) : <span class="sort">Prop</span> := ∃ M, ∀ f ∈ H, ∀ x, abs (f x) ≤ M</code></pre>
+<p>問題4: <code>ε</code>-論法の等連続性と、近縁による等連続性（<code>09_Ascoli.lean</code>）は同値であることを示せ。</p>
+<p>ヒント: <code>⟹</code> では近縁 <code>V</code> に含まれる <code>ε</code>-関係を使い、<code>⟸</code> では近縁 <code>distLt ε</code> を使う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> equicontinuousR_iff {H : Set (X → R)} : EquicontinuousR H ↔ Equicontinuous H :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題5: <code>|a| ≤ M</code> なら <code>a ∈ [-M, M]</code> であることを示せ（<code>neg_abs_le</code>・<code>le_abs_self</code>）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> mem_Icc_of_abs_le {a M : R} (h : abs a ≤ M) : a ∈ Icc (-M) M :=
+  <span class="sorry">sorry</span>
+
+omit [TopologicalSpace X] in</code></pre>
+<p>問題6: 一様有界なら、各点での値の集合はコンパクト集合（<code>[-M, M]</code>）に含まれることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> UniformlyBounded.pointwise {H : Set (X → R)} (h : UniformlyBounded H) (x : X) :
+    ∃ K : Set R, IsCompact K ∧ (<span class="kw">fun</span> f =&gt; f x) &#x27;&#x27; H ⊆ K :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part D: 実数版 Ascoli（閉集合版）</h2>
+<p>問題7（実数版 Ascoli の定理、閉集合版）: コンパクト空間上の実数値関数の族が等連続・一様有界で、一様収束の位相で閉なら、コンパクトであることを示せ。 <code>09_Ascoli.lean</code> の <code>ascoli_compact</code> に、問題4・6を渡すだけである。</p>
+<pre class="lean"><code><span class="kw">theorem</span> arzela_ascoli_closed [CompactSpace X] {H : Set (X → R)} (hH : EquicontinuousR H)
+    (hb : UniformlyBounded H) (hcl : IsClosed H) : IsCompact H :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part E: 逆向き——コンパクトなら一様有界かつ等連続</h2>
+<p>等連続性は <code>09_Ascoli.lean</code> の問題30（コンパクト ⇒ 全有界）と問題18（全有界 ⇒ 等連続）から出る。一様有界性のために、「有限個の有界な集合の合併は有界」を用意する。上界の最大値を取る代わりに、上界の絶対値の和を取ると、場合分けが減る。</p>
+<p>問題8: 有限個の有界な集合で覆われる集合は有界であることを示せ。「<code>y</code> は <code>M</code> で抑えられる」を一般の述語 <code>B y M</code>（<code>M</code> について単調）として述べておき、実数（問題9）と関数（問題11）の両方に使う。</p>
+<p>ヒント: リストについての再帰。<code>A :: L</code> では、<code>s</code> のうち <code>A</code> に入らない点の集合に再帰し、 2つの上界 <code>M₁</code>・<code>M₂</code> から <code>abs M₁ + abs M₂</code> を作る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> bounded_of_cover {β : <span class="sort">Type</span>} (B : β → R → <span class="sort">Prop</span>)
+    (hB : ∀ y M M&#x27;, B y M → M ≤ M&#x27; → B y M&#x27;) {s : Set β} :
+    ∀ L : List (Set β), (∀ A ∈ L, ∃ M, ∀ y ∈ A, y ∈ s → B y M) →
+      (∀ y ∈ s, ∃ A ∈ L, y ∈ A) → ∃ M, ∀ y ∈ s, B y M :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題9: 実数の全有界集合は有界であることを示せ。</p>
+<p>ヒント: <code>distLt 1</code> について小さい集合で覆い、問題8を使う。<code>s</code> の点 <code>a</code> を含む片は <code>|a| + 1</code> で抑えられる（<code>abs_le_abs_add_abs_sub</code>）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> TotallyBounded.bounded {s : Set R} (hs : TotallyBounded s) :
+    ∃ M, ∀ y ∈ s, abs y ≤ M :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題10: コンパクト空間上の連続関数は有界であることを示せ。</p>
+<p>ヒント: 値の集合 <code>f &#x27;&#x27; univ</code> はコンパクト（<code>IsCompact.image</code>）なので全有界（<code>IsCompact.totallyBounded</code>）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> bounded_of_continuous [CompactSpace X] {f : X → R} (hf : Continuous f) :
+    ∃ M, ∀ x, abs (f x) ≤ M :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題11（逆向き）: 連続関数からなる、一様収束の位相でコンパクトな族は、一様有界かつ等連続であることを示せ。</p>
+<p>ヒント: 一様有界性は、<code>unifRel (distLt 1)</code> について小さい片で族を覆い、問題8を使う。族の関数 <code>g</code> を含む片は、<code>g</code> の上界（問題10）に <code>1</code> を足した数で抑えられる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> arzela_ascoli_converse [CompactSpace X] {H : Set (X → R)}
+    (hc : ∀ f ∈ H, Continuous f) (hH : IsCompact H) :
+    UniformlyBounded H ∧ EquicontinuousR H :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part F: 相対コンパクト版（閉包）</h2>
+<p>Part D の「閉」の仮定を外すため、族の<strong>閉包</strong>を取る。閉包も一様有界・等連続であることを示せば、 Part D から閉包がコンパクト、つまり族が相対コンパクトであることがわかる。</p>
+<p>閉包: どの開近傍も <code>s</code> と交わる点の全体。</p>
+<pre class="lean"><code><span class="kw">def</span> closure {α : <span class="sort">Type</span>} [TopologicalSpace α] (s : Set α) : Set α :=
+  {a | ∀ U, IsOpen U → a ∈ U → ∃ b, b ∈ U ∧ b ∈ s}</code></pre>
+<p>問題12: 集合は閉包に含まれることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> subset_closure {α : <span class="sort">Type</span>} [TopologicalSpace α] (s : Set α) : s ⊆ closure s :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題13: 閉包は閉集合であることを示せ。</p>
+<p>ヒント: <code>isOpen_of_nhds</code>（<code>06_Topology.lean</code>）。閉包の外の点 <code>a</code> には <code>s</code> と交わらない開近傍 <code>U</code> があり、<code>U</code> の点はどれも閉包の外にある。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isClosed_closure {α : <span class="sort">Type</span>} [TopologicalSpace α] (s : Set α) : IsClosed (closure s) :=
+  <span class="sorry">sorry</span></code></pre>
+<p>閉包の点の近くには、元の集合の点がある（一様収束の意味で）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_near_of_mem_closure {X : <span class="sort">Type</span>} {H : Set (X → R)} {f : X → R}
+    (hf : f ∈ closure H) {ε : R} (hε : 0 &lt; ε) : ∃ g, g ∈ H ∧ ∀ x, abs (f x - g x) &lt; ε := <span class="kw">by</span>
+  <span class="kw">have</span> hV : unifRel (distLt ε) ∈ 𝓤 (X → R) := ⟨_, distLt_mem hε, <span class="kw">fun</span> _ h =&gt; h⟩
+  <span class="kw">have</span> ⟨O, hO, hfO, hOV⟩ := exists_open_ball hV f
+  <span class="kw">have</span> ⟨g, hgO, hgH⟩ := hf O hO hfO
+  <span class="kw">exact</span> ⟨g, hgH, hOV g hgO⟩
+
+omit [TopologicalSpace X] in</code></pre>
+<p>問題14: 一様有界な族の閉包は一様有界であることを示せ（上界は <code>M + 1</code> にしてよい）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> UniformlyBounded.closure {H : Set (X → R)} (h : UniformlyBounded H) :
+    UniformlyBounded (closure H) :=
+  <span class="sorry">sorry</span></code></pre>
+<p><code>a &lt; ε/4</code>・<code>b &lt; ε/2</code>・<code>c &lt; ε/4</code> なら <code>a + b + c &lt; ε</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> add_three_lt {a b c ε : R} (ha : a &lt; ε / 2 / 2) (hb : b &lt; ε / 2) (hc : c &lt; ε / 2 / 2) :
+    a + b + c &lt; ε := <span class="kw">by</span>
+  <span class="kw">have</span> h₁ := add_lt_add ha hc
+  <span class="kw">rw</span> [add_halves] at h₁
+  <span class="kw">have</span> h₂ := add_lt_add h₁ hb
+  <span class="kw">rw</span> [add_halves] at h₂
+  <span class="kw">have</span> e : a + b + c = a + c + b := <span class="kw">by</span> ac_rfl
+  <span class="kw">rw</span> [e]
+  <span class="kw">exact</span> h₂</code></pre>
+<p>問題15: 等連続な族の閉包は等連続であることを示せ。</p>
+<p>ヒント: <code>ε/4</code>・<code>ε/2</code>・<code>ε/4</code> の3分割（<code>add_three_lt</code>）。閉包の関数 <code>f</code> に一様に <code>ε/4</code> 近い族の関数 <code>g</code> を取り、<code>|f y - f x| ≤ |f y - g y| + |g y - g x| + |g x - f x|</code> とする。</p>
+<pre class="lean"><code><span class="kw">theorem</span> EquicontinuousR.closure {H : Set (X → R)} (h : EquicontinuousR H) :
+    EquicontinuousR (closure H) :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題16（実数版 Ascoli の定理、相対コンパクト版）: コンパクト空間上の実数値関数の族が等連続・一様有界なら、その閉包はコンパクトであることを示せ。</p>
+<pre class="lean"><code><span class="kw">theorem</span> arzela_ascoli_closure [CompactSpace X] {H : Set (X → R)} (hH : EquicontinuousR H)
+    (hb : UniformlyBounded H) : IsCompact (closure H) :=
+  <span class="sorry">sorry</span></code></pre>
+<h2>Part G: 点列版（一様収束する部分列）</h2>
+<p>コンパクト性から点列版へ進む。2段に分ける。</p>
+<ol>
+<li>コンパクト集合の中の点列は<strong>集積点</strong> <code>g</code> を持つ: <code>g</code> のどの開近傍にも、どこまで先に行っても点列の項が入る（問題17）</li>
+<li>近傍を <code>1/(k+1)</code>-球と小さくしながら、その中に入る項を順に選ぶと、 <code>g</code> に一様収束する部分列ができる（問題19）</li>
+</ol>
+<p>2 で <code>1/(k+1) → 0</code> を使うところで、<code>08_Real.lean</code> の<strong>アルキメデス性</strong>（<code>exists_nat_gt</code>）が効く。逆数の計算を避けるため、<code>1/(k+1)</code>-球を <code>{(a, b) | |a - b| * (k + 1) &lt; 1}</code> の形で表す。部分列の添字 <code>φ</code> は「<code>φ k &lt; φ (k + 1)</code>」を満たす関数として表す。</p>
+<p>問題17: コンパクト集合の中の点列は集積点を持つことを示せ。</p>
+<p>方針: 背理法。<code>K</code> のどの点 <code>g</code> にも、ある番号 <code>N g</code> から先の項が入らない開近傍 <code>U g</code> がある（添字型は部分型 <code>{g // g ∈ K}</code>）。有限部分被覆の番号の和 <code>N</code> を取ると、項 <code>u N</code> はどの <code>U g</code> にも入らないはずだが、<code>K</code> は覆われているので矛盾する。番号の和は <code>(P.map N).sum</code>、和が各項以上であることはリストについての帰納法で示す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> IsCompact.exists_clusterPt {α : <span class="sort">Type</span>} [TopologicalSpace α] {K : Set α}
+    (hK : IsCompact K) {u : Nat → α} (hu : ∀ n, u n ∈ K) :
+    ∃ g, g ∈ K ∧ ∀ U, IsOpen U → g ∈ U → ∀ N, ∃ n, N ≤ n ∧ u n ∈ U :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題18: <code>ε⁻¹ &lt; n</code> かつ <code>|d| * n &lt; 1</code> なら <code>|d| &lt; ε</code> であることを示せ。</p>
+<p>ヒント: 背理法。<code>ε ≤ |d|</code> なら <code>1 = ε * ε⁻¹ &lt; ε * n ≤ |d| * n &lt; 1</code> となる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> lt_of_mul_natCast_lt_one {d ε n : R} (hε : 0 &lt; ε) (hn : ε⁻¹ &lt; n)
+    (h : abs d * n &lt; 1) : abs d &lt; ε :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> natCast_succ_pos (k : Nat) : (0 : R) &lt; natCast (k + 1) := <span class="kw">by</span>
+  <span class="kw">rw</span> [natCast_succ]
+  <span class="kw">exact</span> lt_of_le_of_lt (natCast_nonneg k) (lt_add_of_pos_right _ zero_lt_one)
+
+<span class="kw">theorem</span> natCast_le_natCast {m n : Nat} (h : m ≤ n) : (natCast m : R) ≤ natCast n := <span class="kw">by</span>
+  <span class="kw">have</span> ⟨k, hk⟩ := Nat.exists_eq_add_of_le h
+  <span class="kw">rw</span> [hk, natCast_add]
+  <span class="kw">have</span> := add_le_add_left _ _ (natCast_nonneg k) (natCast m : R)
+  <span class="kw">rw</span> [add_zero] at this
+  <span class="kw">exact</span> this</code></pre>
+<p>近縁 <code>{(a, b) | |a - b| * (k + 1) &lt; 1}</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> distInv (k : Nat) : Set (R × R) := {p | abs (p.1 - p.2) * natCast (k + 1) &lt; 1}
+
+<span class="kw">theorem</span> distInv_mem (k : Nat) : distInv (R := R) k ∈ 𝓤 R := <span class="kw">by</span>
+  <span class="kw">have</span> hk := natCast_succ_pos (R := R) k
+  <span class="kw">refine</span> ⟨(natCast (k + 1))⁻¹, inv_pos hk, <span class="kw">fun</span> a b h =&gt; ?_⟩
+  <span class="kw">have</span> := mul_lt_mul_of_pos_left h hk
+  <span class="kw">rw</span> [mul_comm (natCast (k + 1)) (natCast (k + 1))⁻¹, inv_mul_cancel (ne_of_lt hk).symm,
+    mul_comm] at this
+  <span class="kw">exact</span> this</code></pre>
+<p>問題19: 点列の集積点 <code>g</code> に一様収束する部分列を作れ。</p>
+<p>方針:</p>
+<ol>
+<li>各 <code>k</code> と <code>N</code> について、<code>N</code> 以後の項で、<code>g</code> から一様に <code>distInv k</code>-近いものがある（<code>unifRel (distInv k)</code> について <code>exists_open_ball</code> で開近傍を取り、集積点の性質を使う）</li>
+<li>その項の番号を <code>c k N</code> と <code>Classical.choose</code> で選び、<code>Nat.rec</code> で <code>φ 0 = c 0 0</code>、<code>φ (k + 1) = c (k + 1) (φ k + 1)</code> と再帰的に定める</li>
+<li><code>ε &gt; 0</code> にはアルキメデス性で <code>ε⁻¹ &lt; natCast N</code> となる <code>N</code> を取り、問題18を使う</li>
+</ol>
+<pre class="lean"><code><span class="kw">theorem</span> exists_subseq_tendsto {X : <span class="sort">Type</span>} {u : Nat → X → R} {g : X → R}
+    (hg : ∀ U, IsOpen U → g ∈ U → ∀ N, ∃ n, N ≤ n ∧ u n ∈ U) :
+    ∃ φ : Nat → Nat, (∀ k, φ k &lt; φ (k + 1)) ∧
+      ∀ ε, 0 &lt; ε → ∃ N, ∀ k, N ≤ k → ∀ x, abs (u (φ k) x - g x) &lt; ε :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題20（実数版 Ascoli の定理、点列版）: コンパクト空間上の等連続・一様有界な関数族のどの関数列も、一様収束する部分列を持ち、その極限は連続であることを示せ。</p>
+<p>ヒント: 閉包（問題16）の中で集積点を取り（問題17）、問題19。極限の連続性は、閉包の等連続性（問題15）から出る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> arzela_ascoli_seq [CompactSpace X] {H : Set (X → R)} (hH : EquicontinuousR H)
+    (hb : UniformlyBounded H) {u : Nat → X → R} (hu : ∀ n, u n ∈ H) :
+    ∃ φ : Nat → Nat, (∀ k, φ k &lt; φ (k + 1)) ∧ ∃ g : X → R,
+      (∀ x ε, 0 &lt; ε → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ y ∈ U, abs (g y - g x) &lt; ε) ∧
+      ∀ ε, 0 &lt; ε → ∃ N, ∀ k, N ≤ k → ∀ x, abs (u (φ k) x - g x) &lt; ε :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span> Dictionary</code></pre>
+<h2>Part H: 閉区間上の関数（古典的な Arzelà–Ascoli の定理）</h2>
+<p>最後に、定義域を閉区間 <code>[a, b]</code> にする。閉区間は <code>R</code> の部分集合 <code>Icc a b</code> だが、関数の定義域には型が要るので、部分型 <code>{x // x ∈ Icc a b}</code> を使い、部分空間位相を入れる。</p>
+<p>部分空間位相: 全体の開集合で切り取った集合を開とする。</p>
+<pre class="lean"><code><span class="kw">instance</span> subspaceTopology {α : <span class="sort">Type</span>} [TopologicalSpace α] (p : α → <span class="sort">Prop</span>) :
+    TopologicalSpace (Subtype p) <span class="kw">where</span>
+  IsOpen s := ∃ U : Set α, IsOpen U ∧ ∀ x : Subtype p, x ∈ s ↔ x.1 ∈ U
+  isOpen_univ := ⟨Set.univ, isOpen_univ, <span class="kw">fun</span> _ =&gt; ⟨<span class="kw">fun</span> _ =&gt; trivial, <span class="kw">fun</span> _ =&gt; trivial⟩⟩
+  isOpen_inter := <span class="kw">fun</span> _ _ ⟨U, hU, hsU⟩ ⟨V, hV, htV⟩ =&gt;
+    ⟨U ∩ V, isOpen_inter _ _ hU hV, <span class="kw">fun</span> x =&gt;
+      ⟨<span class="kw">fun</span> ⟨h₁, h₂⟩ =&gt; ⟨(hsU x).mp h₁, (htV x).mp h₂⟩,
+       <span class="kw">fun</span> ⟨h₁, h₂⟩ =&gt; ⟨(hsU x).mpr h₁, (htV x).mpr h₂⟩⟩⟩
+  isOpen_sUnion := <span class="kw">fun</span> S hS =&gt;
+    ⟨⋃₀ {U | IsOpen U ∧ ∀ x : Subtype p, x.1 ∈ U → x ∈ ⋃₀ S},
+     isOpen_sUnion _ <span class="kw">fun</span> _ hU =&gt; hU.1, <span class="kw">fun</span> x =&gt;
+      ⟨<span class="kw">fun</span> ⟨s, hsS, hxs⟩ =&gt;
+        <span class="kw">have</span> ⟨U, hU, hsU⟩ := hS s hsS
+        ⟨U, ⟨hU, <span class="kw">fun</span> y hy =&gt; ⟨s, hsS, (hsU y).mpr hy⟩⟩, (hsU x).mp hxs⟩,
+       <span class="kw">fun</span> ⟨_, ⟨_, hU⟩, hxU⟩ =&gt; hU x hxU⟩⟩</code></pre>
+<p>問題21: 閉区間（部分空間）はコンパクト空間であることを示せ。</p>
+<p>ヒント: 部分空間の開被覆 <code>W i</code> の各片を切り取る全体の開集合 <code>U i</code> を <code>Classical.choose</code> で選び、 <code>U</code> が <code>Icc a b</code> を覆うことから問題3で有限個に減らす。</p>
+<pre class="lean"><code><span class="kw">instance</span> (a b : R) : CompactSpace {x // x ∈ Icc a b} <span class="kw">where</span>
+  isCompact_univ := <span class="sorry">sorry</span></code></pre>
+<p>問題22: 古典的な<strong>一様等連続性</strong>（<code>δ</code> が点によらない）から、等連続性が出ることを示せ。</p>
+<p>ヒント: 点 <code>x</code> の開近傍として <code>{y | |y - x| &lt; δ}</code> を取る。これは <code>ball x δ</code> を切り取った集合で、 <code>ball x δ</code> の開性は <code>08_Real.lean</code> の <code>isOpen_ball</code>（問題2で位相を書き換えてから使う）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> equicontinuousR_of_uniform {a b : R} {H : Set ({x // x ∈ Icc a b} → R)}
+    (h : ∀ ε, 0 &lt; ε → ∃ δ, 0 &lt; δ ∧ ∀ f ∈ H, ∀ x y : {x // x ∈ Icc a b},
+      abs (y.1 - x.1) &lt; δ → abs (f y - f x) &lt; ε) :
+    EquicontinuousR H :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題23（古典的な Arzelà–Ascoli の定理）: 閉区間上の実数値関数の族が一様有界かつ一様等連続なら、そのどの関数列も一様収束する部分列を持つことを示せ（問題20・21・22）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> arzela_ascoli {a b : R} {H : Set ({x // x ∈ Icc a b} → R)}
+    (hb : ∃ M, ∀ f ∈ H, ∀ x, abs (f x) ≤ M)
+    (heq : ∀ ε, 0 &lt; ε → ∃ δ, 0 &lt; δ ∧ ∀ f ∈ H, ∀ x y : {x // x ∈ Icc a b},
+      abs (y.1 - x.1) &lt; δ → abs (f y - f x) &lt; ε)
+    {u : Nat → {x // x ∈ Icc a b} → R} (hu : ∀ n, u n ∈ H) :
+    ∃ φ : Nat → Nat, (∀ k, φ k &lt; φ (k + 1)) ∧ ∃ g : {x // x ∈ Icc a b} → R,
+      ∀ ε, 0 &lt; ε → ∃ N, ∀ k, N ≤ k → ∀ x, abs (u (φ k) x - g x) &lt; ε :=
+  <span class="sorry">sorry</span></code></pre>
+<p>解答（<code>10_AscoliRealSol.lean</code>）では、古典的な Arzelà–Ascoli の定理が依存する公理は <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の3つだけである。実数の公理は <code>class</code> の引数なので現れない。<code>09_Ascoli.lean</code> で自作した Zorn の補題（超フィルター補題）を経由していることは、公理の一覧からは見えない——それは公理ではなく、証明された定理だからである。問題を解き終えたら、次の出力に <code>sorryAx</code> が残っていないことを確かめよ。</p>
+<pre class="lean"><code><span class="kw">#print</span> axioms arzela_ascoli</code></pre>
+</main>
+<nav><span><a href="09_ascoli.html">← 09_Ascoli</a></span><a href="index.html">目次</a><span><a href="11_covering.html">11_Covering →</a></span></nav>
+</body>
+</html>

@@ -205,8 +205,11 @@ def tidy(out) -> str:
 
 
 def relocate_imports(text: str) -> str:
-    """本文の `import «02_Forall»` を、受講者用プロジェクトの Original/ のモジュールに向ける。"""
-    return IMPORT_RE.sub(lambda m: f"import LeanIntro.Original.«{m[1]}»", text)
+    """本文の `import «02_Forall»` を、受講者用プロジェクトの Original/ のモジュールに向ける。
+    `import «08_RealSol»` のように解答を import している章（演習の章の結果を前提にする章）は、
+    Solutions/ のモジュールに向ける。受講者が前の演習を解き終えていなくても sorry が混ざらない。"""
+    return IMPORT_RE.sub(
+        lambda m: f"import LeanIntro.{'Solutions' if m[2] else 'Original'}.«{m[1]}»", text)
 
 
 def exercise_numbers(path: Path, start: int, lean2html) -> dict:
