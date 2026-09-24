@@ -16,7 +16,7 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 末尾の定理 `Homeomorph.ofContinuousBijective` を信じるのに必要なのは、次の3つだけである。
 
 1. Lean の**カーネル**が正しいこと。エラボレータやタクティクがどれだけ複雑でも、
-   最後に項を検査するのはカーネルの小さな規則集だけである（[`04_Exists.lean` の7節](#sec-CH2.checking-details)）
+   最後に項を検査するのはカーネルの小さな規則集だけである（[`04_Exists.lean` の8節](#sec-CH2.checking-details)）
 2. このファイルに書いた**定義**が、意図した数学的概念を写していること
 3. 末尾の `#print axioms` に表示される3つの公理
 
@@ -52,12 +52,12 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで位相空間を�
 
 `02_Forall.lean`・`04_Exists.lean` では、証明はすべて項として直接書いた。Lean にはもう1つの流儀があり、
 `by` に続けて、項を組み立てる**命令**（タクティク）の列を書く。
-[`04_Exists.lean` 1節](#sec-CH.products)の `swapAnd` をタクティクで書き直してみる。
+[`04_Exists.lean` 2節](#sec-CH.products)の `swapAnd` をタクティクで書き直してみる。
 -/
 
 theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
   intro h            -- `fun h =>` に対応
-  exact ⟨h.2, h.1⟩   -- この項をそのまま置く
+  exact ⟨h.right, h.left⟩   -- この項をそのまま置く
 
 #check swapAnd'
 
@@ -80,11 +80,11 @@ theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
     theorem swapAnd' : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
     fun {p q} h ↦ ⟨h.right, h.left⟩
 
-タクティクが生成した項は、[`04_Exists.lean` 1節](#sec-CH.products)で手書きした `swapAnd` と同じものである。
+タクティクが生成した項は、[`04_Exists.lean` 2節](#sec-CH.products)で手書きした `swapAnd` と同じものである。
 -/
 
 /-!
-だから[`04_Exists.lean` 7節](#sec-CH2.checking-details)の話はそのまま当てはまる: タクティクで書いた証明も、
+だから[`04_Exists.lean` 8節](#sec-CH2.checking-details)の話はそのまま当てはまる: タクティクで書いた証明も、
 出来上がった項が型検査を通ることで検証される。
 
 このファイルは証明が長いので、タクティク主体で書く。出てくるものの早見表:
@@ -115,7 +115,7 @@ theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
 
 /-! ### ✏ 練習
 
-1. [`04_Exists.lean` 2節](#sec-CH.sums)の `swapOr` をタクティク（`intro`・`cases`・`exact`）で
+1. [`04_Exists.lean` 3節](#sec-CH.sums)の `swapOr` をタクティク（`intro`・`cases`・`exact`）で
    書き直し、`#print` で生成された項を元の `swapOr` と見比べよ。字面は一致しない——
    `cases` は `match` ではなく `Or.casesOn` を直接置くからである。
    **それでも型は同じ**であり、検査されるのはその型だけである、
@@ -174,7 +174,7 @@ instance : EmptyCollection (Set α) := ⟨{_a | False}⟩
     ∅ : Set Nat
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: `instance` の内部名
+/-! ### 補足: `instance` の内部名
 
 `instance` は名前のない宣言だが、実際には Lean が自動で命名している。
 上の3つは `Set.instInter` のような名前になる
@@ -286,7 +286,7 @@ example : (fun n : Nat => n + 1) ⁻¹' {m | m = 3} = {n | n + 1 = 3} := rfl
 /-! 括弧を省いた記法は結合の強さに従って読まれる。細かい順位は次の補足で確かめる。 -/
 
 /-! CALLOUT_START optional -/
-/-! ### 補足（初読は飛ばしてよい）: 記法の結合の強さ
+/-! ### 補足: 記法の結合の強さ
 
 `postfix:max` や `infixl:80` の数字は結合の強さで、大きいほど強く結合する。
 ここまでの記法と標準ライブラリの `∩`（70）・`∪`（65）の間には
@@ -325,7 +325,7 @@ def Finite (s : Set α) : Prop := ∃ (n : Nat) (f : Fin n → α), ∀ a ∈ s,
 -/
 
 /-- 空集合は有限。`n = 0` とし、拾う関数には `Fin.elim0`（`Fin 0` は空の型なので、
-そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` を示す形（[`04_Exists.lean` 4節](#sec-CH.dependent-sums)）。 -/
+そこからはどこへでも関数が作れる）を渡す。`⟨…, …, …⟩` は `∃` を示す形（[`04_Exists.lean` 1節](#sec-CH.dependent-sums)）。 -/
 theorem Finite.empty : (∅ : Set α).Finite :=
   ⟨0, Fin.elim0, fun _ ha => False.elim ha⟩
 
@@ -386,7 +386,7 @@ theorem compl_compl (s : Set α) : sᶜᶜ = s :=
 （位相の節の `isOpen_union` で使う）。
 
 証明中の `have ⟨u, hu, hau⟩ := ha` はここが初出の構文で、「`ha`（`∃` の証明）を
-**分解して名前を付ける**」と読む——`match`（[`04_Exists.lean` 4節](#sec-CH.dependent-sums)）の
+**分解して名前を付ける**」と読む——`match`（[`04_Exists.lean` 1節](#sec-CH.dependent-sums)）の
 1ケース版の略記であり、タクティクとしても項としても同じ形で書ける。
 分解を伴わない `have h : 主張 := 根拠`（名前を付けて続きで使う）もこの先で
 頻用する。`h ▸ hau` は「等式 `h` で `hau` の型を書き換える」記法。 -/
@@ -475,7 +475,7 @@ theorem interFin_mem : ∀ (n : Nat) (W : Fin n → Set α) (a : α), a ∈ inte
     ∀ i, a ∈ W i := fun n W a h i =>
   match n with
   | 0 => Fin.elim0 i
-  | n + 1 => Fin.cases h.1 (fun j => interFin_mem n (fun k => W k.succ) a h.2 j) i
+  | n + 1 => Fin.cases h.left (fun j => interFin_mem n (fun k => W k.succ) a h.right j) i
 
 #check interFin_mem
 
@@ -491,7 +491,7 @@ end Set
 
 1. `example : (2 : Nat) ∈ ({n | n < 5} : Set Nat)` を証明せよ。
    ヒント: `∈` と `setOf` を展開すればゴールは `2 < 5`、すなわち `3 ≤ 5`——
-   [`04_Exists.lean` 5節](#sec-CH.nat-proofs)の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
+   [`04_Exists.lean` 6節](#sec-CH.nat-proofs)の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
 2. `#print axioms Set.compl_compl` の結果を予想してから確かめよ
    （背理法を使った証明だった）。
 -/
@@ -521,11 +521,11 @@ structure Function.Bijective {α β : Type} (f : α → β) : Prop where
 写像の性質（写像を受け取って命題を返す）。
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: なぜ `∧` でなく `structure` なのか
+/-! ### 補足: なぜ `∧` でなく `structure` なのか
 
 `Function.Injective f ∧ Function.Surjective f` と束ねても内容は同じだが、
-ここでは `structure` にする。取り出しが `hbij.1` ではなく
-`hbij.injective` と書けて、読み手に意図が伝わる。フィールドごとに
+ここでは `structure` にする。`hbij.injective`、`hbij.surjective` のように、
+性質の名前で取り出せるので、読み手に意図が伝わる。フィールドごとに
 docstring を付けられ、フィールドが増えたり順序が変わったりしても
 使う側の記述が壊れにくい、という利点もある。
 -/
@@ -587,7 +587,7 @@ class TopologicalSpace (X : Type) where
 「`X` 上の位相全体の型」で、その項1つが位相1つに当たる。
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: 開集合系を「集合の集合」と見る
+/-! ### 補足: 開集合系を「集合の集合」と見る
 
 主フィールドの型 `Set X → Prop` は `Set (Set X)` と同じもの——
 つまり `IsOpen` は「部分集合の集まり」P(P(X)) の元である。
@@ -629,7 +629,7 @@ theorem isOpen_empty : IsOpen (∅ : Set X) := by
 /-!
 同じ証明を項で直接書くと、次のようになる。`have h : … := …;` の並びが
 タクティクの `have` に、`h ▸ e` が `rw [← h]; exact e` に対応する
-（`▸` は等式 `h` で `e` の型を書き換える演算子。[`04_Exists.lean` 8節](#sec-CH.prop-elimination)）。
+（`▸` は等式 `h` で `e` の型を書き換える演算子。[`04_Exists.lean` 9節](#sec-CH.prop-elimination)）。
 -/
 
 example : IsOpen (∅ : Set X) :=
@@ -841,7 +841,7 @@ def IsCompact (K : Set X) : Prop :=
 表示は短いが、定義の中身は上のとおり `∀` が3つ重なった命題である。
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: `IsCompact` を `class` にしない理由
+/-! ### 補足: `IsCompact` を `class` にしない理由
 
 `Hausdorff` と違って、こちらは `class` にしない。`IsCompact` は個々の
 部分集合ごとの述語で、`hK : IsCompact K` というふつうの仮定として渡したり、
@@ -873,7 +873,7 @@ class CompactSpace (X : Type) [TopologicalSpace X] : Prop where
 有限性は受け取った `J` をそのまま使い回すだけなので、`Fin n` を開ける必要はない。
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: `lemma` という宣言名
+/-! ### 補足: `lemma` という宣言名
 
 なお mathlib では、細かい補題を `theorem` の同義語 `lemma` で宣言する慣例が
 あるが、`lemma` は core Lean にはない（mathlib がマクロで定義している）。
@@ -905,7 +905,7 @@ example {α β : Type} {f : α → β} {K : Set α} {I : Type}
   fun x hx => h (f x) ⟨x, hx, rfl⟩
 
 /-- 逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。
-証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（[`04_Exists.lean` 4節](#sec-CH.dependent-sums)）。 -/
+証明中の `have ⟨x, hx, hfx⟩ := …` は `∃`（依存和）の分解（[`04_Exists.lean` 1節](#sec-CH.dependent-sums)）。 -/
 theorem Set.image_subset_biUnion {α β : Type} {f : α → β} {K : Set α} {I : Type}
     {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹' U i) : f '' K ⊆ ⋃ i ∈ J, U i := by
   intro b hb
@@ -994,9 +994,9 @@ theorem isOpen_of_nhds {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W
       have ⟨W, hW, haW, hWs⟩ := h a ha
       exact ⟨W, ⟨hW, hWs⟩, haW⟩
     · intro ⟨W, hW, haW⟩
-      exact hW.2 a haW
+      exact hW.right a haW
   rw [heq]
-  exact isOpen_sUnion _ fun _ hW => hW.1
+  exact isOpen_sUnion _ fun _ hW => hW.left
 
 #check isOpen_of_nhds
 
@@ -1013,8 +1013,8 @@ example {s : Set X} (h : ∀ a ∈ s, ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
       ⟨fun ha =>
         match h a ha with
         | ⟨W, hW, haW, hWs⟩ => ⟨W, ⟨hW, hWs⟩, haW⟩,
-       fun ⟨_, hW, haW⟩ => hW.2 a haW⟩
-  heq ▸ isOpen_sUnion _ fun _ hW => hW.1
+       fun ⟨_, hW, haW⟩ => hW.right a haW⟩
+  heq ▸ isOpen_sUnion _ fun _ hW => hW.left
 
 /-- 「点 `y` を分離する開集合の組」を名前付きで束ねた structure（`Function.Bijective`
 と同じ理由で、`∧` のネストではなくフィールド名を選ぶ）。`left` は `K` を覆う側
@@ -1394,7 +1394,7 @@ example [CompactSpace X] [Hausdorff Y]
 
 `where` 構文で `Homeomorph` の6フィールドを埋める。逆写像は、全射性 `hbij.surjective` の
 「存在する」から `Classical.choose` で1つ選んで作る。存在の証明から値を
-取り出すこの操作が普通の項の構成では許されないこと（[`04_Exists.lean` 8節](#sec-CH.prop-elimination)の
+取り出すこの操作が普通の項の構成では許されないこと（[`04_Exists.lean` 9節](#sec-CH.prop-elimination)の
 「対応のずれ」）の代金が、公理 `Classical.choice` への依存と
 `noncomputable`（この関数は計算はできないが、項としては正当）という印である。
 
@@ -1454,7 +1454,7 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
     'Homeomorph.ofContinuousBijective' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: 排中律から選択公理への依存経路
+/-! ### 補足: 排中律から選択公理への依存経路
 
 `by_cases` は排中律を使う。Lean では排中律は公理として直接追加されたものではなく、
 Diaconescu の定理によって `Classical.choice` から導かれた**定理**である。

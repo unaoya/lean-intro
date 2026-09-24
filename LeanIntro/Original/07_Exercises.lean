@@ -40,7 +40,7 @@ theorem continuous_to_indiscrete {X Y : Type} [tX : TopologicalSpace X] (f : X �
 
 -- 問題4（主張も自分で書く）:
 -- 「密着位相を入れた `Bool` はハウスドルフでない」を形式化し、証明せよ。
--- ヒント: 否定 `¬p` は `p → False`（[`04_Exists.lean` 3節](#sec-CH.empty-types)）。
+-- ヒント: 否定 `¬p` は `p → False`（[`04_Exists.lean` 4節](#sec-CH.empty-types)）。
 -- `true` と `false` を分離する開集合の組が取れたとして、矛盾を導く。
 -- （ここに theorem を書く）
 

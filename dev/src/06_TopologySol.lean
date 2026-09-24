@@ -45,7 +45,7 @@ example : (2 : Nat) ∈ ({n | n < 5} : Set Nat) :=
 
 /-!
 `∈` と `setOf` を展開するとゴールは `2 < 5`、すなわち `2 + 1 ≤ 5`。
-`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（[`04_Exists.lean` 5節](#sec-CH.nat-proofs)）。
+`Nat.le.refl : 3 ≤ 3` から `step` を2回で `3 ≤ 5` に届く（[`04_Exists.lean` 6節](#sec-CH.nat-proofs)）。
 -/
 
 /-! SOL Top.sets:2 -/

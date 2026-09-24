@@ -150,7 +150,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
     v = G.init e ∧ Wf G (G.term e) l w := <span class="kw">by</span>
   <span class="kw">cases</span> h <span class="kw">with</span>
   | cons _ h&#x27; =&gt; <span class="kw">exact</span> ⟨rfl, h&#x27;⟩</code></pre>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 逆転補題を与えておく理由</h3>
+<aside class="note note--optional"><h3>補足: 逆転補題を与えておく理由</h3>
 <p>道 <code>h : Wf G v (e :: l) w</code> を <code>cases h</code> で分解すると、Lean は添字の等式 <code>v = G.init e</code> を解いて変数 <code>v</code> を消そうとする。添字の片方が変数ならこれは解けるが、両辺がどちらも関数の適用になると解けない。たとえば <code>e :: ē :: l</code> の形の道を 2 段続けて <code>cases</code> で分解すると、2 段目で <code>G.init (G.bar e)</code>（<code>e</code> の終点）と <code>G.init e&#x27;</code>（次の辺 <code>e&#x27;</code> の始点）を等しいとおく必要が生じ、依存消去の失敗（Dependent elimination failed）というエラーになる。</p>
 <p>逆転補題 <code>Wf.cons_inv</code> は、添字を変数 <code>v</code> のままにして分解し、解けない等式を <strong>結論の一部</strong> <code>v = G.init e</code> として返す。こうすると等式は証明の中で <code>rw</code> に使えるただの仮定になる。以下の問題では、道の分解には <code>cases</code> ではなくこの 2 つの補題を使うとよい。</p></aside>
 <p>問題2: 道の連接は道であることを示せ。</p>
@@ -239,7 +239,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
   | refl (l : List G.E) : Reduces G l l
   | trans {l l&#x27; l&#x27;&#x27; : List G.E} :
       Reduces G l l&#x27; → Reduces G l&#x27; l&#x27;&#x27; → Reduces G l l&#x27;&#x27;</code></pre>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 削除だけの関係 <code>Reduces</code> を別に立てる理由</h3>
+<aside class="note note--optional"><h3>補足: 削除だけの関係 <code>Reduces</code> を別に立てる理由</h3>
 <p>語のホモトピー <code>Homotopic</code> は語についての関係で、道であること（隣接条件）は見ていない。道の水準で考えると、backtrack の<strong>削除</strong>は道を道に写す（問題13）が、 <strong>挿入</strong>はそうとは限らない。挿入する辺 <code>e</code> の始点が、挿入する位置の頂点と一致している必要があるからである。</p>
 <p>そこで、道についての議論はすべて削除だけの関係 <code>Reduces</code> で行い、挿入は正規形定理の中に閉じ込める。どの語も削除だけで正規形に到達する（問題10）ので、 2 つのホモトピックな道は、どちらも削除だけで同じ正規形に縮められる。紙の上では「ホモトピーで変形する」と一言で済ませるところだが、形式化すると、この区別が避けられない形で表に出てくる。</p></aside>
 <pre class="lean"><code><span class="kw">theorem</span> Reduces.toHomotopic {l l&#x27; : List G.E} (h : Reduces G l l&#x27;) :
@@ -599,7 +599,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
   <span class="sorry">sorry</span>
 
 <span class="kw">end</span> SGraph.Covering</code></pre>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 問題24〜26はグラフを使っていない</h3>
+<aside class="note note--optional"><h3>補足: 問題24〜26はグラフを使っていない</h3>
 <p>問題24〜26の証明を振り返ると、グラフであることを直接には一度も使っていない。使ったのは、持ち上げが一意に定まること（<code>liftEnd_eq</code>）と、道の類の亜群の法則（問題18）だけである。したがって、位相空間の被覆についても、道とホモトピーの持ち上げさえ示せば、モノドロミーについての同じ定理が同じ証明で得られる。被覆の理論のうち解析が要るのは持ち上げの部分だけで、そこから先は持ち上げの一意性から出る。</p></aside>
 <pre class="lean"><code><span class="kw">open</span> SGraph</code></pre>
 <p>花束のループ（正の向きの辺 1 本からなる道）を、直線グラフの点 <code>i</code> から持ち上げると、 <code>i</code> から <code>i + 1</code> への辺になる。つまりループの類はファイバー（整数全体）に <code>+1</code> で作用する。 Part F で示す $\pi_1 \cong \mathbb{Z}$ の対応の中身は、この作用である。</p>

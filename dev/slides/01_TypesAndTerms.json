@@ -13,8 +13,7 @@
     {
       "at": {
         "section": "Intro1.terms-types",
-        "tag": "h2",
-        "starts": "1. 項と型"
+        "tag": "h2"
       },
       "id": "terms-and-types",
       "label": "項と型の大まかなイメージ"
@@ -113,8 +112,7 @@
     {
       "at": {
         "section": "Intro1.definitions",
-        "tag": "h2",
-        "starts": "2. def — 新しい項を定義する"
+        "tag": "h2"
       },
       "id": "definition-x",
       "label": "def の形と x の定義"
@@ -217,8 +215,7 @@
     {
       "at": {
         "section": "Intro1.functions",
-        "tag": "h2",
-        "starts": "3. 関数"
+        "tag": "h2"
       },
       "id": "function-types",
       "label": "関数の型 A → B"
@@ -286,7 +283,7 @@
       "at": {
         "section": "Intro1.functions",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "関数 $\\mathrm{inc} : \\mathbb{N} \\to \\mathbb{N}$ を $\\mathrm{inc}(n) = n + 1$ で定める。これを fun を用いて Lean で定義"
       },
       "id": "increment-exercise",
@@ -418,7 +415,7 @@
       "at": {
         "section": "Intro1.functions",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "関数 $\\mathrm{addThree} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{addThree}(n) = 3 + n$ を、plus 3 : Nat → N"
       },
       "id": "add-three-exercise",
@@ -458,7 +455,7 @@
       "at": {
         "section": "Intro1.functions",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 g' は (a : Nat) (b : Nat) と分け、g'' は (a b : Nat) とまとめること。"
       },
       "id": "two-binders-exercise",
@@ -527,7 +524,7 @@
       "at": {
         "section": "Intro1.functions",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "写像 $\\mathrm{twice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\mathbb{N}, \\mathbb{N})$ "
       },
       "id": "twice-exercise",
@@ -846,8 +843,7 @@
     {
       "at": {
         "section": "Intro1.dependent-functions",
-        "tag": "h2",
-        "starts": "4. 依存関数型 — 入力によって結果の型が変わる"
+        "tag": "h2"
       },
       "id": "dependent-functions",
       "label": "集合族の直積の要素としての依存関数"
@@ -1021,9 +1017,9 @@
     {
       "at": {
         "section": "Intro1.dependent-functions",
-        "tag": "h3",
-        "starts": "✏ 練習",
-        "next": "Tuple 2 を定義で展開すると、どんな型になるか。 constTuple 2 の内側の引数と結果の型を答えよ。"
+        "tag": "ol",
+        "starts": "Tuple 2 を定義で展開すると、どんな型になるか。 constTuple 2 の内側の引数と結果の型を答えよ。",
+        "question": "Tuple 2 を定義で展開すると、どんな型になるか。 constTuple 2 の内側の引数と結果の型を答えよ。"
       },
       "id": "tuple-expansion-exercise",
       "label": "練習：Tuple 2 を展開して読む"

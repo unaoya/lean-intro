@@ -521,14 +521,14 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 `idAt A` が恒等関数を返すのに対し、`constAt A B a` は定数関数を返す。
 -/
 
-/-! SOL Intro1.dependent-functions:1 -/
+/-! SOL Intro1.dependent-functions:3 -/
 
 /-!
 `Tuple 2` は `Fin 2 → Nat`。内側では番号 `i : Fin 2` を受け取り、自然数7を返す。
 族 `Tuple` の行き先は `Type` だが、その型の項 `constTuple 2` の行き先は `Nat` である。
 -/
 
-/-! SOL Intro1.dependent-functions:2 -/
+/-! SOL Intro1.dependent-functions:4 -/
 
 def repeatTuple (n : Nat) (a : Nat) : Tuple n := fun _ => a
 

@@ -2,7 +2,7 @@
 
 import LeanIntro.Original.«03_InductiveTypes»
 
--- ✏ 練習 42 の解答
+-- ✏ 練習 40 の解答
 
 #eval match Signal.yellow with
   | Signal.red => Signal.green
@@ -14,7 +14,7 @@ import LeanIntro.Original.«03_InductiveTypes»
   | Signal.green => Signal.yellow
   | Signal.yellow => Signal.red
 
--- ✏ 練習 43 の解答
+-- ✏ 練習 41 の解答
 
 def signalCode : Signal → Nat := fun s =>
   match s with
@@ -24,7 +24,7 @@ def signalCode : Signal → Nat := fun s =>
 
 #eval signalCode Signal.yellow
 
--- ✏ 練習 44 の解答
+-- ✏ 練習 42 の解答
 
 def prev : Signal → Signal := fun s =>
   match s with
@@ -32,9 +32,9 @@ def prev : Signal → Signal := fun s =>
   | Signal.yellow => Signal.green
   | Signal.green  => Signal.red
 
-#eval prev (next Signal.red)
+#eval prev (Signal.next Signal.red)
 
--- ✏ 練習 45 の解答
+-- ✏ 練習 43 の解答
 
 def isGreen : Signal → Bool := fun s =>
   match s with
@@ -43,7 +43,7 @@ def isGreen : Signal → Bool := fun s =>
 
 #eval isGreen Signal.red
 
--- ✏ 練習 46 の解答
+-- ✏ 練習 44 の解答
 
 def stopSignal : Signal := .red
 
@@ -51,7 +51,7 @@ def stopSignal : Signal := .red
 
 #eval stopSignal
 
--- ✏ 練習 47 の解答
+-- ✏ 練習 45 の解答
 
 def tagOf : NatOrBool → Bool := fun x =>
   match x with
@@ -60,11 +60,11 @@ def tagOf : NatOrBool → Bool := fun x =>
 
 #eval tagOf (NatOrBool.nat 3)
 
--- ✏ 練習 48 の解答
+-- ✏ 練習 46 の解答
 
 #eval valueOf (NatOrBool.bool true)
 
--- ✏ 練習 49 の解答
+-- ✏ 練習 47 の解答
 
 def flagOf : NatOrBool → Bool := fun x =>
   match x with
@@ -73,7 +73,7 @@ def flagOf : NatOrBool → Bool := fun x =>
 
 #eval flagOf (NatOrBool.bool true)
 
--- ✏ 練習 50 の解答
+-- ✏ 練習 48 の解答
 
 inductive NatPair : Type where
   | mk (a b : Nat) : NatPair
@@ -82,7 +82,7 @@ inductive NatPair : Type where
 
 #check NatPair.mk 3 5
 
--- ✏ 練習 51 の解答
+-- ✏ 練習 49 の解答
 
 def firstNat : NatPair → Nat := fun p =>
   match p with
@@ -100,7 +100,7 @@ def secondNat : NatPair → Nat := fun p =>
 
 #eval secondNat (NatPair.mk 3 5)
 
--- ✏ 練習 52 の解答
+-- ✏ 練習 50 の解答
 
 inductive FlaggedNat : Type where
   | mk (n : Nat) (flag : Bool) : FlaggedNat
@@ -109,7 +109,7 @@ inductive FlaggedNat : Type where
 
 #check FlaggedNat.mk 3 true
 
--- ✏ 練習 53 の解答
+-- ✏ 練習 51 の解答
 
 def numberOf : FlaggedNat → Nat := fun p =>
   match p with
@@ -127,7 +127,7 @@ def flagOfPair : FlaggedNat → Bool := fun p =>
 
 #eval flagOfPair (FlaggedNat.mk 3 true)
 
--- ✏ 練習 54 の解答
+-- ✏ 練習 52 の解答
 
 inductive MixedData : Type where
   | pair (a b : Nat) : MixedData
@@ -140,7 +140,7 @@ inductive MixedData : Type where
 
 #check MixedData.empty
 
--- ✏ 練習 55 の解答
+-- ✏ 練習 53 の解答
 
 def readNumber : MixedData → Nat := fun x =>
   match x with
@@ -156,7 +156,7 @@ def readNumber : MixedData → Nat := fun x =>
 
 #eval readNumber MixedData.empty
 
--- ✏ 練習 56 の解答
+-- ✏ 練習 54 の解答
 
 def mergeBool : MySum Bool Bool → Bool := fun x =>
   match x with
@@ -167,11 +167,11 @@ def mergeBool : MySum Bool Bool → Bool := fun x =>
 
 #eval mergeBool (MySum.inr false)
 
--- ✏ 練習 57 の解答
+-- ✏ 練習 55 の解答
 
 #eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)
 
--- ✏ 練習 58 の解答
+-- ✏ 練習 56 の解答
 
 def isZeroMyNat : MyNat → Bool := fun n =>
   match n with
@@ -182,7 +182,7 @@ def isZeroMyNat : MyNat → Bool := fun n =>
 
 #eval isZeroMyNat (MyNat.succ MyNat.zero)
 
--- ✏ 練習 59 の解答
+-- ✏ 練習 57 の解答
 
 def toN : MyNat → Nat := fun m =>
   match m with
@@ -191,13 +191,13 @@ def toN : MyNat → Nat := fun m =>
 
 #eval toN (MyNat.succ (MyNat.succ MyNat.zero))
 
--- ✏ 練習 60 の解答
+-- ✏ 練習 58 の解答
 
 def myThree : MyNat := MyNat.succ (MyNat.succ (MyNat.succ MyNat.zero))
 
 #reduce add myThree MyNat.zero
 
--- ✏ 練習 61 の解答
+-- ✏ 練習 59 の解答
 
 inductive Two : Type where
   | a : Two
@@ -215,7 +215,7 @@ def ofBool : Bool → Two := fun b =>
 
 #eval toBool (ofBool true)
 
--- ✏ 練習 62 の解答
+-- ✏ 練習 60 の解答
 
 def g1 : Two → Bool := fun t =>
   match t with
@@ -237,7 +237,7 @@ def g4 : Two → Bool := fun t =>
   | .a => false
   | .b => false
 
--- ✏ 練習 63 の解答
+-- ✏ 練習 61 の解答
 
 def mul : MyNat → MyNat → MyNat := fun m n =>
   match n with
@@ -246,7 +246,7 @@ def mul : MyNat → MyNat → MyNat := fun m n =>
 
 #eval toN (mul myThree myThree)
 
--- ✏ 練習 64 の解答
+-- ✏ 練習 62 の解答
 
 def ofN : Nat → MyNat := fun n =>
   match n with
@@ -255,7 +255,7 @@ def ofN : Nat → MyNat := fun n =>
 
 #eval toN (ofN 3)
 
--- ✏ 練習 65 の解答
+-- ✏ 練習 63 の解答
 
 def pairAt (A : Type) (f g : A → Nat) : A → Point :=
   fun a => Point.mk (f a) (g a)
@@ -266,26 +266,26 @@ def pairAt (A : Type) (f g : A → Nat) : A → Point :=
 
 #eval Point.y (pairAt Nat (fun n => n + 1) (fun n => 2 * n) 3)
 
--- ✏ 練習 66 の解答
+-- ✏ 練習 64 の解答
 
 def moveRight (p : Point) : Point :=
   Point.mk (Point.x p + 1) (Point.y p)
 
 #eval Point.x (moveRight (Point.mk 1 2))
 
--- ✏ 練習 67 の解答
+-- ✏ 練習 65 の解答
 
 def Point.zeroX (p : Point) : Point := .mk 0 p.y
 
 #eval (Point.mk 1 2).zeroX.x
 
--- ✏ 練習 68 の解答
+-- ✏ 練習 66 の解答
 
 #eval (Point.mk 1 2).swap.swap.x
 
 #eval Point.x (Point.swap (Point.swap (Point.mk 1 2)))
 
--- ✏ 練習 69 の解答
+-- ✏ 練習 67 の解答
 
 structure Circle : Type where
   center : Point
@@ -295,7 +295,7 @@ structure Circle : Type where
 
 #check Circle.center
 
--- ✏ 練習 70 の解答
+-- ✏ 練習 68 の解答
 
 def makeCircle : Point → Nat → Circle := fun p n => Circle.mk p n
 
@@ -303,7 +303,7 @@ def makeCircle : Point → Nat → Circle := fun p n => Circle.mk p n
 
 #eval Circle.radius (makeCircle (Point.mk 1 2) 3)
 
--- ✏ 練習 71 の解答
+-- ✏ 練習 69 の解答
 
 def centerX : Circle → Nat := fun c => Point.x (Circle.center c)
 
@@ -311,13 +311,13 @@ def centerX : Circle → Nat := fun c => Point.x (Circle.center c)
 
 #eval centerX (makeCircle (Point.mk 1 2) 3)
 
--- ✏ 練習 72 の解答
+-- ✏ 練習 70 の解答
 
 #eval Point.y (Point.mk 1 2)
 
 #eval (Point.mk 1 2).y
 
--- ✏ 練習 73 の解答
+-- ✏ 練習 71 の解答
 
 structure Rect : Type where
   corner : Point
@@ -328,7 +328,7 @@ def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩
 
 #eval r.corner.x
 
--- ✏ 練習 74 の解答
+-- ✏ 練習 72 の解答
 
 def rectArea : Rect → Nat := fun s => s.width * s.height
 
@@ -336,11 +336,11 @@ def rectArea : Rect → Nat := fun s => s.width * s.height
 
 #eval rectArea r
 
--- ✏ 練習 75 の解答
+-- ✏ 練習 73 の解答
 
 #check Pair.mk true 0
 
--- ✏ 練習 76 の解答
+-- ✏ 練習 74 の解答
 
 def curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat := fun a b => F ⟨a, b⟩
 
@@ -352,13 +352,13 @@ def uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat := fun p => G p.fs
 
 #eval curryP (fun p => p.fst + p.snd) 3 4
 
--- ✏ 練習 77 の解答
+-- ✏ 練習 75 の解答
 
 def pointedBool : PointedType := ⟨Bool, true⟩
 
 #check PointedType.mk Nat
 
--- ✏ 練習 78 の解答
+-- ✏ 練習 76 の解答
 
 def attachNat : Nat → PointedType := fun n => ⟨Nat, n⟩
 
@@ -366,7 +366,7 @@ def attachNat : Nat → PointedType := fun n => ⟨Nat, n⟩
 
 #reduce (attachNat 3).point
 
--- ✏ 練習 79 の解答
+-- ✏ 練習 77 の解答
 
 def baseType : PointedType → Type := fun p => p.carrier
 
@@ -376,7 +376,7 @@ def baseType : PointedType → Type := fun p => p.carrier
 
 #reduce (types := true) baseType pointedBool
 
--- ✏ 練習 80 の解答
+-- ✏ 練習 78 の解答
 
 def mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
   ⟨p.carrier, f p.point⟩
@@ -385,7 +385,7 @@ def mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
 
 #reduce (mapPointed pointedNat Nat.succ).point
 
--- ✏ 練習 81 の解答
+-- ✏ 練習 79 の解答
 
 def getPoint (p : PointedType) : p.carrier := p.point
 
@@ -395,35 +395,65 @@ def getPoint (p : PointedType) : p.carrier := p.point
 
 #reduce getPoint pointedBool
 
--- ✏ 練習 82 の解答
+-- ✏ 練習 80 の解答
 
 def makePair (α β : Type) (a : α) (b : β) : Pair α β := Pair.mk a b
 
 #check makePair Nat Bool 3 true
 
--- ✏ 練習 83 の解答
+-- ✏ 練習 81 の解答
 
 def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
 
 #check swapAt Nat Bool
 
--- ✏ 練習 84 の解答
+-- ✏ 練習 82 の解答
 
 #check idAt Signal
 
+-- ✏ 練習 83 の解答
+
+#check (last 4).val
+
+-- ✏ 練習 84 の解答
+
+#check first 4
+
+#eval (first 4).val
+
 -- ✏ 練習 85 の解答
+
+#check first 0
+
+-- ✏ 練習 86 の解答
+
+#eval (5 : Fin 4)
+
+-- ✏ 練習 87 の解答
+
+#eval (first 5).val + (2 : Fin 3).val
+
+-- ✏ 練習 88 の解答
 
 def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
 
 #eval flipNat (fun a b => a - b) 3 10
 
--- ✏ 練習 86 の解答
+def flipAt (A : Type) (F : A → A → A) : A → A → A := fun a b => F b a
+
+#eval flipAt Signal (fun a _ => a) Signal.red Signal.green
+
+-- ✏ 練習 89 の解答
 
 def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
 #eval iterate3 double 1
 
--- ✏ 練習 87 の解答
+def iterate3At (A : Type) (F : A → A) : A → A := fun a => F (F (F a))
+
+#eval iterate3At Signal Signal.next Signal.red
+
+-- ✏ 練習 90 の解答
 
 def boolToSignal : Bool → Signal := fun b =>
   match b with
@@ -437,13 +467,13 @@ def signalToBool : Signal → Bool := fun s =>
 
 #eval signalToBool (boolToSignal true)
 
--- ✏ 練習 88 の解答
+-- ✏ 練習 91 の解答
 
 def mapPoint (F : Nat → Nat) (p : Point) : Point := ⟨F p.x, F p.y⟩
 
 #eval (mapPoint double (Point.mk 2 3)).y
 
--- ✏ 練習 89 の解答
+-- ✏ 練習 92 の解答
 
 def swapMySum (A B : Type) : MySum A B → MySum B A := fun x =>
   match x with
@@ -452,13 +482,13 @@ def swapMySum (A B : Type) : MySum A B → MySum B A := fun x =>
 
 #eval fromSum (swapMySum Bool Nat (MySum.inl true))
 
--- ✏ 練習 90 の解答
+-- ✏ 練習 93 の解答
 
 def pointedOf (A : Type) (a : A) : PointedType := ⟨A, a⟩
 
 #check pointedOf Bool true
 
--- ✏ 練習 91 の解答
+-- ✏ 練習 94 の解答
 
 def applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A :=
   match n with
@@ -467,7 +497,7 @@ def applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A :=
 
 #eval applyN Nat double 3 1
 
--- ✏ 練習 92 の解答
+-- ✏ 練習 95 の解答
 
 def diag (A : Type) (a : A) : Pair A A := ⟨a, a⟩
 

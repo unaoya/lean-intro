@@ -49,12 +49,12 @@ def prev : Signal → Signal := fun s =>
   | Signal.yellow => Signal.green
   | Signal.green  => Signal.red
 
-#eval prev (next Signal.red)
+#eval prev (Signal.next Signal.red)
 
 /-!
     Signal.red
 
-`next Signal.red = Signal.green`、`prev Signal.green = Signal.red` で戻ってくる。
+`Signal.next Signal.red = Signal.green`、`prev Signal.green = Signal.red` で戻ってくる。
 -/
 
 /-! SOL Intro1.inductive-types:2 -/
@@ -101,7 +101,7 @@ def tagOf : NatOrBool → Bool := fun x =>
     true
 -/
 
-/-! SOL Intro1.inductive-types:1 -/
+/-! SOL Intro1.inductive-types:2 -/
 
 #eval valueOf (NatOrBool.bool true)
 
@@ -111,7 +111,7 @@ def tagOf : NatOrBool → Bool := fun x =>
 `bool` の札なので2つ目の場合に当たり、中身によらず `0` を返す。
 -/
 
-/-! SOL Intro1.inductive-types:2 -/
+/-! SOL Intro1.inductive-types:3 -/
 
 def flagOf : NatOrBool → Bool := fun x =>
   match x with
@@ -175,7 +175,7 @@ def secondNat : NatPair → Nat := fun p =>
     5
 -/
 
-/-! SOL Intro1.inductive-types:1 -/
+/-! SOL Intro1.inductive-types:3 -/
 
 inductive FlaggedNat : Type where
   | mk (n : Nat) (flag : Bool) : FlaggedNat
@@ -192,7 +192,7 @@ inductive FlaggedNat : Type where
     FlaggedNat.mk 3 true : FlaggedNat
 -/
 
-/-! SOL Intro1.inductive-types:2 -/
+/-! SOL Intro1.inductive-types:4 -/
 
 def numberOf : FlaggedNat → Nat := fun p =>
   match p with
@@ -461,7 +461,7 @@ def pairAt (A : Type) (f g : A → Nat) : A → Point :=
 第1成分を取り出すと f(3) = 4、第2成分を取り出すと g(3) = 6 に戻る。
 -/
 
-/-! SOL Intro1.structures:1 -/
+/-! SOL Intro1.structures:2 -/
 
 def moveRight (p : Point) : Point :=
   Point.mk (Point.x p + 1) (Point.y p)
@@ -499,7 +499,7 @@ def Point.zeroX (p : Point) : Point := .mk 0 p.y
     1
 -/
 
-/-! SOL Intro1.structures:1 -/
+/-! SOL Intro1.structures:3 -/
 
 structure Circle : Type where
   center : Point
@@ -519,7 +519,7 @@ structure Circle : Type where
 構成子 `mk` と、フィールドごとの取り出し関数が自動で定義されている。
 -/
 
-/-! SOL Intro1.structures:2 -/
+/-! SOL Intro1.structures:4 -/
 
 def makeCircle : Point → Nat → Circle := fun p n => Circle.mk p n
 
@@ -535,7 +535,7 @@ def makeCircle : Point → Nat → Circle := fun p n => Circle.mk p n
     3
 -/
 
-/-! SOL Intro1.structures:3 -/
+/-! SOL Intro1.structures:5 -/
 
 def centerX : Circle → Nat := fun c => Point.x (Circle.center c)
 
@@ -554,7 +554,7 @@ def centerX : Circle → Nat := fun c => Point.x (Circle.center c)
 関数適用をドットで書けば、本体は `c.center.x` とも書ける。
 -/
 
-/-! SOL Intro1.structures:1 -/
+/-! SOL Intro1.structures:6 -/
 
 #eval Point.y (Point.mk 1 2)
 
@@ -570,7 +570,7 @@ def centerX : Circle → Nat := fun c => Point.x (Circle.center c)
 同じ値。後ろに付けるドットは `Point.y (…)` の略記である。
 -/
 
-/-! SOL Intro1.structures:2 -/
+/-! SOL Intro1.structures:7 -/
 
 structure Rect : Type where
   corner : Point
@@ -588,7 +588,7 @@ def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩
 2フィールドに当たる。`r.corner.x` は `Point.x (Rect.corner r)` の略記である。
 -/
 
-/-! SOL Intro1.structures:3 -/
+/-! SOL Intro1.structures:8 -/
 
 def rectArea : Rect → Nat := fun s => s.width * s.height
 
@@ -655,7 +655,7 @@ def pointedBool : PointedType := ⟨Bool, true⟩
 依存関数の部分適用である。
 -/
 
-/-! SOL Intro1.structures:1 -/
+/-! SOL Intro1.structures:2 -/
 
 def attachNat : Nat → PointedType := fun n => ⟨Nat, n⟩
 
@@ -671,7 +671,7 @@ def attachNat : Nat → PointedType := fun n => ⟨Nat, n⟩
     3
 -/
 
-/-! SOL Intro1.structures:2 -/
+/-! SOL Intro1.structures:3 -/
 
 def baseType : PointedType → Type := fun p => p.carrier
 
@@ -696,7 +696,7 @@ def baseType : PointedType → Type := fun p => p.carrier
 `(types := true)` を付けたので、型を返す式も計算され、`Nat`・`Bool` と表示された。
 -/
 
-/-! SOL Intro1.structures:3 -/
+/-! SOL Intro1.structures:4 -/
 
 def mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
   ⟨p.carrier, f p.point⟩
@@ -767,6 +767,64 @@ def swapAt (α β : Type) (a : α) (b : β) : Pair β α := Pair.mk b a
     idAt Signal : Signal → Signal
 -/
 
+/-! SOL Intro1.subtypes:1 -/
+
+#check (last 4).val
+
+/-!
+    ↑(last 4) : Nat
+
+`.val` の適用が強制の印 `↑` で表示される。型は `Fin 5` の中身の `Nat`。
+-/
+
+/-! SOL Intro1.subtypes:2 -/
+
+#check first 4
+
+/-!
+    first 4 : Fin (4 + 1)
+
+定義どおり `Fin (4 + 1)`（計算すれば `Fin 5`）。
+-/
+
+#eval (first 4).val
+
+/-!
+    0
+
+`first` は `n` によらず `0` を返す。
+-/
+
+/-! SOL Intro1.subtypes:3 -/
+
+#check first 0
+
+/-!
+    first 0 : Fin (0 + 1)
+
+`Fin (0 + 1)`——要素が1つしかない型で、その唯一の要素が `first 0` である。
+-/
+
+/-! SOL Intro1.subtypes:4 -/
+
+#eval (5 : Fin 4)
+
+/-!
+    1
+
+補足の `(5 : Fin 3)` と同じ仕組みで、`5` を `4` で割った余りが入る。
+-/
+
+/-! SOL Intro1.subtypes:5 -/
+
+#eval (first 5).val + (2 : Fin 3).val
+
+/-!
+    2
+
+`(first 5).val = 0`、`(2 : Fin 3).val = 2` で、和は `Nat` の `2`。
+-/
+
 /-! SOL Intro1.exercises:1 -/
 
 def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
@@ -779,6 +837,20 @@ def flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := fun a b => F b a
 `flipNat F 3 10 = F 10 3 = 10 - 3`。
 -/
 
+def flipAt (A : Type) (F : A → A → A) : A → A → A := fun a b => F b a
+
+/-!
+自然数についての演算は使っていないので、`Nat` を任意の型 `A` に変えても同じ項で書ける。
+-/
+
+#eval flipAt Signal (fun a _ => a) Signal.red Signal.green
+
+/-!
+    Signal.green
+
+引数を交換してから元の関数に渡すので、元の第2引数 `Signal.green` が返る。
+-/
+
 /-! SOL Intro1.exercises:2 -/
 
 def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
@@ -789,6 +861,20 @@ def iterate3 (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
     8
 
 `1 → 2 → 4 → 8`。
+-/
+
+/-!
+自然数という型だけを一般化する。3回適用するという項の形は同じである。
+-/
+
+def iterate3At (A : Type) (F : A → A) : A → A := fun a => F (F (F a))
+
+#eval iterate3At Signal Signal.next Signal.red
+
+/-!
+    Signal.red
+
+赤から緑、黄、赤と3回変わり、元の信号に戻る。
 -/
 
 /-! SOL Intro1.exercises:3 -/

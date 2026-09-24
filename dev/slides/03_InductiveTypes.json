@@ -13,8 +13,7 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
-        "tag": "h2",
-        "starts": "1. 帰納型（inductive type）"
+        "tag": "h2"
       },
       "id": "inductive-types",
       "label": "def と inductive の役割"
@@ -68,15 +67,6 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "項の作り方と使い方"
-      },
-      "id": "creation-and-use",
-      "label": "作り方に対応する使い方"
-    },
-    {
-      "at": {
-        "section": "Intro1.inductive-types",
-        "tag": "h3",
         "starts": "02_Forall との接続: 仮定として使う・結論として示す"
       },
       "id": "proof-connection",
@@ -85,8 +75,17 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
+        "tag": "h3",
+        "starts": "項の作り方と使い方"
+      },
+      "id": "creation-and-use",
+      "label": "作り方に対応する使い方"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
         "tag": "p",
-        "starts": "まず match だけを使ってみよう。match 対象 with のあとに、構成子ごとに "
+        "starts": "帰納型の項を構成子に応じて場合分けして使う記法が match"
       },
       "id": "match-signal",
       "label": "match の枝を選んで計算する"
@@ -125,7 +124,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "p",
-        "starts": "定義した関数を試したい。まず next Signal.red という項を読む: 2点確認よ"
+        "starts": "定義した関数を試したい。まず Signal.next Signal.red という項を読む: 2点確認よ"
       },
       "id": "next-computation",
       "label": "next の適用を予想して計算する"
@@ -142,8 +141,17 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "def nextShort : Signal → Signal := fun s => match s with | .red => .green | .green => .yel"
+      },
+      "id": "signal-abbreviation-code",
+      "label": "構成子の接頭辞を省いて書く"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "Signal.red・Signal.yellow・Signal.green をそれぞれ 0・1・2 に送る signalCode : Signal → Nat を match で書け。それぞれの場合に"
       },
       "id": "signal-code-exercise",
@@ -175,7 +183,7 @@
         "section": "Intro1.inductive-types",
         "tag": "h3",
         "starts": "✏ 練習",
-        "next": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.red) の表示を予想してから確かめよ（Signal"
+        "next": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (Signal.next Signal.red) の表示を予想してから確かめよ（Signal"
       },
       "id": "prev-exercise",
       "label": "練習：next の逆向き"
@@ -185,9 +193,9 @@
         "section": "Intro1.inductive-types",
         "tag": "pre",
         "answer": true,
-        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.r",
+        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (Signal.next Signal.r",
         "starts": "def prev : Signal → Signal := fun s => match ",
-        "part": "#eval prev (next Signal.red)"
+        "part": "#eval prev (Signal.next Signal.red)"
       },
       "id": "prev-computation",
       "label": "next と prev を順に適用する"
@@ -260,6 +268,24 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "#check NatOrBool.nat.inj"
+      },
+      "id": "nat-constructor-injective",
+      "label": "自然数を包む構成子の単射性"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
+        "tag": "pre",
+        "starts": "#check NatOrBool.bool.inj"
+      },
+      "id": "bool-constructor-injective",
+      "label": "Bool を包む構成子の単射性"
+    },
+    {
+      "at": {
+        "section": "Intro1.inductive-types",
         "tag": "p",
         "starts": "今度は NatOrBool の項を使う側である。ここで集合の直和の普遍性を思い出そう。直和"
       },
@@ -279,7 +305,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "中身の値には触れず、.nat の札なら true、.bool の札なら false を返す tagOf : NatOrBool → Bool を書け。不要な中身には _ を使える。 #eval tag"
       },
       "id": "tag-exercise",
@@ -288,9 +314,9 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
-        "tag": "h3",
-        "starts": "✏ 練習",
-        "next": "#eval valueOf (NatOrBool.bool true) の値を予想してから確かめよ（どちらの場合に当たるか）。"
+        "tag": "ol",
+        "starts": "#eval valueOf (NatOrBool.bool true) の値を予想してから確かめよ（どちらの場合に当たるか）。",
+        "question": "#eval valueOf (NatOrBool.bool true) の値を予想してから確かめよ（どちらの場合に当たるか）。"
       },
       "id": "value-exercise",
       "label": "練習：Bool の側を計算する"
@@ -318,7 +344,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "自然数の組 (a, b) を表す型 NatPair : Type を inductive で定義せよ。構成子は mk の1つとし、自然数を2つ受け取るものとする。 #check NatPair.mk "
       },
       "id": "natpair-exercise",
@@ -361,9 +387,9 @@
     {
       "at": {
         "section": "Intro1.inductive-types",
-        "tag": "h3",
-        "starts": "✏ 練習（書く）",
-        "next": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 #check FlaggedNat.mk と #c"
+        "tag": "ol",
+        "starts": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 #check FlaggedNat.mk と #c",
+        "question": "自然数 n と真偽値 flag の組を表す型 FlaggedNat : Type を inductive で定義せよ。構成子は mk の1つとする。 #check FlaggedNat.mk と #c"
       },
       "id": "flaggednat-exercise",
       "label": "練習：自然数と Bool を組にする"
@@ -415,7 +441,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "次の3種類のデータを表す型 MixedData : Type を inductive で定義せよ。構成子 pair は自然数を2つ、flagged は自然数と真偽値を受け取り、 empty は引数を受"
       },
       "id": "mixeddata-exercise",
@@ -530,7 +556,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "MySum Bool Bool の左右どちらの札からも、中身の Bool をそのまま返す mergeBool : MySum Bool Bool → Bool を書け。 #eval mergeBool"
       },
       "id": "merge-bool-exercise",
@@ -608,7 +634,7 @@
       "at": {
         "section": "Intro1.inductive-types",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "isZeroMyNat : MyNat → Bool を match で書き、.zero なら true、 .succ _ なら false を返せ。#eval isZeroMyNat MyNat.z"
       },
       "id": "iszero-exercise",
@@ -757,8 +783,7 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h2",
-        "starts": "2. structure"
+        "tag": "h2"
       },
       "id": "structure-from-inductive",
       "label": "構成子1つの帰納型から structure へ"
@@ -806,7 +831,11 @@
         "starts": "期待される型が Point と分かる位置では、Point.mk を .mk とも書ける。 "
       },
       "id": "dot-constructor",
-      "label": "期待される型から .mk を補う"
+      "label": "期待される型から .mk を補う",
+      "column_at": {
+        "section": "Intro1.structures",
+        "code": "def pointFromDot : Point := .mk 1 2"
+      }
     },
     {
       "at": {
@@ -839,7 +868,7 @@
       "at": {
         "section": "Intro1.structures",
         "tag": "h3",
-        "starts": "✏ 練習（書く）",
+        "starts": "✏ 練習",
         "next": "型 A と2本の写像 f g : A → Nat が与えられたとする。$a$ を組 $(f(a), g(a))$ に送る写像 pairAt A f g : A → Point を定めたい。 pairA"
       },
       "id": "pairat-exercise",
@@ -859,9 +888,9 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h3",
-        "starts": "✏ 練習（書く）",
-        "next": "Point の第1成分だけを1増やす moveRight : Point → Point を書け。成分の取り出しには Point.x・Point.y、作成には Point.mk を使う。 #eval "
+        "tag": "ol",
+        "starts": "Point の第1成分だけを1増やす moveRight : Point → Point を書け。成分の取り出しには Point.x・Point.y、作成には Point.mk を使う。 #eval ",
+        "question": "Point の第1成分だけを1増やす moveRight : Point → Point を書け。成分の取り出しには Point.x・Point.y、作成には Point.mk を使う。 #eval "
       },
       "id": "move-right-exercise",
       "label": "練習：第1座標だけを動かす"
@@ -907,9 +936,9 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h3",
-        "starts": "✏ 練習",
-        "next": "次の structure を定義し、#check で構成子と取り出し関数が自動定義されていることを確かめよ:"
+        "tag": "ol",
+        "starts": "次の structure を定義し、#check で構成子と取り出し関数が自動定義されていることを確かめよ:",
+        "question": "次の structure を定義し、#check で構成子と取り出し関数が自動定義されていることを確かめよ:"
       },
       "id": "circle-exercise",
       "label": "練習：Point をフィールドに持つ Circle"
@@ -959,9 +988,9 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h3",
-        "starts": "✏ 練習",
-        "next": "#eval Point.y (Point.mk 1 2) の値を予想してから確かめよ。さらに (Point.mk 1 2).y とも書けることを試し、同じ値が返ることを確かめよ。"
+        "tag": "ol",
+        "starts": "#eval Point.y (Point.mk 1 2) の値を予想してから確かめよ。さらに (Point.mk 1 2).y とも書けることを試し、同じ値が返ることを確かめよ。",
+        "question": "#eval Point.y (Point.mk 1 2) の値を予想してから確かめよ。さらに (Point.mk 1 2).y とも書けることを試し、同じ値が返ることを確かめよ。"
       },
       "id": "point-y-exercise",
       "label": "練習：射影の2通りの書き方"
@@ -1018,20 +1047,11 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h3",
-        "starts": "フィールドを番号で指定する"
-      },
-      "id": "numbered-fields",
-      "label": "フィールドを番号で指定する"
-    },
-    {
-      "at": {
-        "section": "Intro1.structures",
         "tag": "p",
-        "starts": "次は Pair Nat Bool の第2フィールドなので、型は Bool、値は true "
+        "starts": "集合のアナロジーでは、Point は直積 $\\mathrm{Nat} \\times \\mathrm{Nat}$、Pair α β は直積 $\\alpha \\times \\beta$"
       },
-      "id": "second-field",
-      "label": "第2フィールドと直積としての解釈"
+      "id": "structures-as-products",
+      "label": "直積の組と二つの射影"
     },
     {
       "at": {
@@ -1074,6 +1094,15 @@
       },
       "id": "currying-computation",
       "label": "カリー化した関数を計算する"
+    },
+    {
+      "at": {
+        "section": "Intro1.structures",
+        "tag": "h3",
+        "starts": "族の直積と直和では、何を選ぶのか"
+      },
+      "id": "sum-and-product",
+      "label": "すべての添字について選ぶ直積・一つを選ぶ直和"
     },
     {
       "at": {
@@ -1151,9 +1180,9 @@
     {
       "at": {
         "section": "Intro1.structures",
-        "tag": "h3",
-        "starts": "✏ 練習（書く）",
-        "next": "自然数 n を点付き集合 (Nat, n) に送る写像 attachNat : Nat → PointedType を書け。型を #check し、#reduce (attachNat 3).poin"
+        "tag": "ol",
+        "starts": "自然数 n を点付き集合 (Nat, n) に送る写像 attachNat : Nat → PointedType を書け。型を #check し、#reduce (attachNat 3).poin",
+        "question": "自然数 n を点付き集合 (Nat, n) に送る写像 attachNat : Nat → PointedType を書け。型を #check し、#reduce (attachNat 3).poin"
       },
       "id": "attach-nat-exercise",
       "label": "練習：自然数を点付き集合にする"
@@ -1204,15 +1233,6 @@
       "at": {
         "section": "Intro1.structures",
         "tag": "h3",
-        "starts": "族の直積と直和では、何を選ぶのか"
-      },
-      "id": "sum-and-product",
-      "label": "すべての添字について選ぶ直積・一つを選ぶ直和"
-    },
-    {
-      "at": {
-        "section": "Intro1.structures",
-        "tag": "h3",
         "starts": "✏ 練習",
         "next": "型 α・β とその項 a・b から組を作る makePair (α β : Type) (a : α) (b : β) : Pair α β を書け。 #check makePair Nat Bool"
       },
@@ -1241,9 +1261,83 @@
     },
     {
       "at": {
+        "section": "Intro1.subtypes",
+        "tag": "h3",
+        "starts": "部分型 — 値と証明の組"
+      },
+      "id": "fin-structure",
+      "label": "Fin は値と証明の組"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "p",
+        "starts": "中身が分かれば、項も作れる。値が n に依存する依存関数の例として、「Fin (n + 1"
+      },
+      "id": "last-fin",
+      "label": "最後の番号を証明付きで作る"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "pre",
+        "starts": "#check last 2"
+      },
+      "id": "last-types",
+      "label": "入力を代入すると型が決まる"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "p",
+        "starts": "同じ族に沿って、「番号 n を受け取り、Fin (n + 1) の最初の番号 0 を返す」"
+      },
+      "id": "first-fin",
+      "label": "最初の番号を返す依存関数"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "pre",
+        "starts": "#check first 2"
+      },
+      "id": "first-and-last",
+      "label": "同じ 0 でも入力ごとに型が異なる"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#check (last 4).val"
+      },
+      "id": "last-val-exercise",
+      "label": "練習：Fin の中身の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "ol",
+        "question": "#check first 4 の表示と、#eval (first 4).val の値を予想してから確かめよ。",
+        "starts": "#check first 4 の表示と、#eval (first 4).val の値を予想"
+      },
+      "id": "first-four-exercise",
+      "label": "練習：first の型と値"
+    },
+    {
+      "at": {
+        "section": "Intro1.subtypes",
+        "tag": "ol",
+        "question": "#check first 0 の表示を予想してから確かめよ（Fin (0 + 1) は1点の型である）。",
+        "starts": "#check first 0 の表示を予想してから確かめよ（Fin (0 + 1) は1点"
+      },
+      "id": "first-zero-exercise",
+      "label": "練習：1点の型の唯一の番号"
+    },
+    {
+      "at": {
         "section": "Intro1.exercises",
-        "tag": "h2",
-        "starts": "3. まとめ練習 — 小さな型つき言語で書く"
+        "tag": "h2"
       },
       "id": "integrated-exercises",
       "label": "集合と写像の仕様を型と項にする"
@@ -1260,12 +1354,45 @@
     {
       "at": {
         "section": "Intro1.exercises",
+        "tag": "p",
+        "answer": true,
+        "question": "写像 $F : \\mathbb{N} \\times \\mathbb{N} \\to \\mathbb{N}$",
+        "starts": "解答"
+      },
+      "id": "flip-nat-answer",
+      "label": "引数を交換する：Nat で確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "pre",
+        "starts": "def flipAt (A : Type) (F : A → A → A) : A → A → A := fun a b => F b a",
+        "answer": true,
+        "question": "写像 $F : \\mathbb{N} \\times \\mathbb{N} \\to \\mathbb{N}$ に対して、$G(a, b) = F"
+      },
+      "id": "flip-general",
+      "label": "練習：引数の交換を一般化する"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
         "tag": "ol",
         "question": "写像の集合の間の写像 $T : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\math",
         "starts": "写像の集合の間の写像 $T : \\mathrm{Map}(\\mathbb{N}, \\mat"
       },
       "id": "iterate-exercise",
       "label": "練習：写像を3回繰り返す"
+    },
+    {
+      "at": {
+        "section": "Intro1.exercises",
+        "tag": "p",
+        "starts": "自然数という型だけを一般化する。3回適用するという項の形は同じである。",
+        "answer": true,
+        "question": "写像の集合の間の写像 $T : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}("
+      },
+      "id": "iterate-general",
+      "label": "練習：反復を一般化して Signal に使う"
     },
     {
       "at": {
@@ -1395,8 +1522,7 @@
     {
       "at": {
         "section": "03_InductiveTypes.heading-c604f7c3af23",
-        "tag": "h2",
-        "starts": "付録: 記号の打ち方まとめ"
+        "tag": "h2"
       },
       "id": "symbols",
       "label": "付録：記号の打ち方"
@@ -1430,11 +1556,11 @@
         "section": "Intro1.inductive-types",
         "tag": "pre",
         "answer": true,
-        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (next Signal.r",
+        "question": "Signal の「逆回り」prev : Signal → Signal を match で定義し、 #eval prev (Signal.next Signal.r",
         "starts": "def prev : Signal → Signal := fun s => match "
       },
       "before": [
-        "#eval prev (next Signal.red)"
+        "#eval prev (Signal.next Signal.red)"
       ]
     },
     {

@@ -100,7 +100,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <pre class="quote"><code>Type : Type 1</code></pre>
 <p><code>Type</code> もまた項であり、その型は <code>Type 1</code>。</p>
 <aside class="note note--optional">
-<h3>補足（初読は飛ばしてよい）: 宇宙の階段</h3>
+<h3>補足: 宇宙の階段</h3>
 <pre class="lean"><code><span class="kw">#check</span> <span class="sort">Type</span> 1</code></pre>
 <pre class="quote"><code>Type 1 : Type 2</code></pre>
 <p><code>Type</code>, <code>Type 1</code>, <code>Type 2</code>, … の階層を宇宙（universe）と呼ぶ。この教材では宇宙には<strong>深入りしない</strong>。</p>
@@ -126,7 +126,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 </aside>
 <p>ここまでで確かめたことは2つである: <strong>項の型はいつでも <code>#check</code> で調べられる</strong>こと、そして<strong>型も項である</strong>こと。</p>
 <p><code>#check</code> という機能があることから分かるように、Lean には<strong>項を与えると、その型を機械的に計算する仕組み</strong>がある。この仕組みを証明の検証に使うのが、冒頭で述べたこの教材の行き先である。命題 <code>P : Prop</code> に対して、その命題を型とする項 <code>h : P</code> を作ることが、<code>P</code> の証明を与えることになる。だから、その項が型 <code>P</code> を持つかを検査すれば、証明の検査になる。この対応を納得するのが <code>02_Forall.lean</code> の目標である。まずこの章で関数の型を追い、次の <code>02_Forall.lean</code> で証明の例を読む。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>Nat</code> や <code>Bool</code> はどこから来たか——Prelude</h3>
+<aside class="note note--optional"><h3>補足: <code>Nat</code> や <code>Bool</code> はどこから来たか——Prelude</h3>
 <p><code>import</code> を1行も書いていないのに <code>Nat</code>・<code>Bool</code>・<code>+</code> が使えるのは、Lean が起動時に <strong>Prelude</strong>——標準ライブラリの核——を自動で読み込んでいるからである。この教材で「標準ライブラリ」と呼ぶものの実体はただの Lean のソースファイルで、 <code>Nat</code> も <code>Bool</code> も、<a href="03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>・<a href="03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>で自作する型とまったく同じ仕組みで定義されている。特別なのは「最初から読み込まれている」ことだけである。</p></aside>
 <h3>✏ 練習</h3>
 <ol class="exercise" start="1" data-exercise="1">
@@ -271,7 +271,7 @@ but is expected to have type
   Nat
 in the application
   double true</code></pre>
-<h3>✏ 練習（書く）</h3>
+<h3>✏ 練習</h3>
 <ol class="exercise" start="5" data-exercise="5">
 <li>関数 $\mathrm{inc} : \mathbb{N} \to \mathbb{N}$ を $\mathrm{inc}(n) = n + 1$ で定める。これを <code>fun</code> を用いて Lean で定義せよ。 <code>#check inc</code> の型と <code>#eval inc 4</code> の値を予想してから確かめよ。</li>
 </ol>
@@ -373,7 +373,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre>
 <pre class="quote"><code>plus 3 4 : Nat</code></pre>
 <pre class="lean"><code><span class="kw">#eval</span> plus 3 4</code></pre>
 <pre class="quote"><code>7</code></pre>
-<h3>✏ 練習（書く）</h3>
+<h3>✏ 練習</h3>
 <ol class="exercise" start="11" data-exercise="11">
 <li>関数 $\mathrm{addThree} : \mathbb{N} \to \mathbb{N}$、$\mathrm{addThree}(n) = 3 + n$ を、<code>plus 3 : Nat → Nat</code> を使って Lean で定義せよ。<code>#check addThree</code> と <code>#eval addThree 4</code> の表示を予想してから確かめよ。</li>
 </ol>
@@ -406,7 +406,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre>
 <pre class="quote"><code>def plus (a b : Nat) : Nat := a + b</code></pre>
 <p><code>fun</code> の引数もまとめられる。次も、もとの定義と同じ関数を表す:</p>
 <pre class="quote"><code>def plus : Nat → Nat → Nat := fun a b =&gt; a + b</code></pre>
-<h3>✏ 練習（書く）</h3>
+<h3>✏ 練習</h3>
 <ol class="exercise" start="13" data-exercise="13">
 <li>先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 <code>g&#x27;</code> は <code>(a : Nat) (b : Nat)</code> と分け、<code>g&#x27;&#x27;</code> は <code>(a b : Nat)</code> とまとめること。 <code>#check g&#x27;</code>・<code>#check g&#x27;&#x27;</code> の表示と、<code>#eval g&#x27; 2 4</code>・<code>#eval g&#x27;&#x27; 2 4</code> の値を予想してから確かめよ。</li>
 </ol>
@@ -446,7 +446,7 @@ double&#x27; (n : Nat) : Nat        （binder 形式）</code></pre>
 <span class="kw">#check</span> applyAt</code></pre>
 <pre class="quote"><code>applyAt (F : Nat → Nat) (n : Nat) : Nat</code></pre>
 <p>矢印形式では <code>(Nat → Nat) → Nat → Nat</code> である。<code>F</code> を1つ渡すと、残りの引数 <code>n : Nat</code> を受け取る関数が返る。<code>(F n : Nat)</code> とまとめてしまうと両方が <code>Nat</code> 型という指定になるので、ここでは使えない。</p>
-<h3>✏ 練習（書く）</h3>
+<h3>✏ 練習</h3>
 <ol class="exercise" start="14" data-exercise="14">
 <li>写像 $\mathrm{twice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(n)))$ で定める。つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。これを Lean で <code>def twice (F : Nat → Nat) : Nat → Nat := …</code> と定義せよ。 <code>#check twice</code>・<code>#check twice double</code> の表示と <code>#eval twice double 3</code> の値を予想してから確かめよ。</li>
 </ol>
@@ -689,7 +689,7 @@ in the application
 <pre class="lean"><code><span class="kw">#check</span> Fin</code></pre>
 <pre class="quote"><code>Fin (n : Nat) : Type</code></pre>
 <p>binder 形式を読み替えると <code>Fin : Nat → Type</code>。<code>Fin</code> 自体は、自然数を受け取って型を返す<strong>普通の関数</strong>であり、自然数を添字とする型の族を与える。</p>
-<p><code>Fin n</code> は、集合 $\{0, 1, \ldots, n-1\}$ に対応する型と思ってよい（<code>Fin 0</code> には要素がない）。正確には、0 以上 n 未満の値と、その範囲に入る証明を組にする。この見方は、<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> の4節</a>で部分型（サブタイプ）として説明する。</p>
+<p><code>Fin n</code> は、集合 $\{0, 1, \ldots, n-1\}$ に対応する型と思ってよい（<code>Fin 0</code> には要素がない）。正確には、0 以上 n 未満の値と、その範囲に入る証明を組にする。この見方は、<a href="03_inductivetypes.html#sec-Intro1.subtypes"><code>03_InductiveTypes.lean</code> の2節</a>で部分型（サブタイプ）として説明する。</p>
 <pre class="lean"><code><span class="kw">def</span> Tuple : Nat → <span class="sort">Type</span> := <span class="kw">fun</span> n =&gt; Fin n → Nat
 
 <span class="kw">#check</span> Tuple</code></pre>
@@ -750,7 +750,6 @@ in the application
 <pre class="quote"><code>5</code></pre>
 <p><code>idAt A</code> が恒等関数を返すのに対し、<code>constAt A B a</code> は定数関数を返す。</p>
 </details>
-<h3>✏ 練習</h3>
 <ol class="exercise" start="26" data-exercise="26">
 <li><code>Tuple 2</code> を定義で展開すると、どんな型になるか。 <code>constTuple 2</code> の内側の引数と結果の型を答えよ。</li>
 </ol>
@@ -781,7 +780,7 @@ in the application
 <p>省略を補う前処理は<strong>エラボレーション</strong>と呼ぶ。暗黙引数は、その後の型の照合ではほかの引数と同じように扱われる。手がかりが足りなければ補えない場合もある。結果の型を注釈して補う例は、<a href="03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> の1節</a>で見る。括弧 <code>[ ]</code> は <code>05_MathematicalTools.lean</code> の class とともに説明する。</p>
 <p>省略した引数など未確定の部分は、出力では <code>_</code> や <code>?m.…</code> と表示されることがある。項を書く位置に自分で <code>_</code> を置くと、Lean にその部分の補完を求められる。 <code>fun _ =&gt; …</code> の <code>_</code> は別の用法で、受け取る引数に名前を付けないという意味である。</p>
 <aside class="note note--optional">
-<h3>補足（初読は飛ばしてよい）: ライブラリにもある型の族</h3>
+<h3>補足: ライブラリにもある型の族</h3>
 <p>標準環境の <code>Vector Nat n</code> は、長さが n と決まった自然数の列の型である。 <code>Vector Nat : Nat → Type</code> は、<code>Tuple</code> と同じ形の族である。</p>
 <pre class="lean"><code><span class="kw">#check</span> Vector Nat 3</code></pre>
 <pre class="quote"><code>Vector Nat 3 : Type</code></pre>

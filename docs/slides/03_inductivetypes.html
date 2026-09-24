@@ -134,9 +134,12 @@ main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
 .slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
 .slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
 .slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
-.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.45; margin-bottom: 8px; }
-.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; }
-.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.45; margin-bottom: 4px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
+.slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
+.slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
+.slide[data-density="dense"] :is(ul, ol), .print-slide[data-density="dense"] .print-content :is(ul, ol) { margin-bottom: 6px; }
 .enhanced .slide[hidden] { display: none; }
 .enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
 .enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
@@ -234,7 +237,7 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <p><span class="step" data-step="0"><code>02_Forall.lean</code> では、関数を作り適用することで、ならば・全称の証明を読んだ。この章では、項を作る道具を増やす。構成子で項を作り、場合分けや射影で使う仕組みを学ぶ。次の <code>04_Exists.lean</code> では、それが「かつ」「または」「存在する」などの証明に対応する。</span></p>
 <p><span class="step" data-step="1">依存関数型と暗黙引数は既習である。構成子や取り出し関数も、その型を追って読もう。</span></p></article>
 <article class="slide" id="03_inductivetypes-inductive-types" data-kind="main" data-label="def と inductive の役割" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro1.inductive-types">1. 帰納型（inductive type）</h2></div>
-<p><span class="step" data-step="0">型を作る部品の1つ目が、帰納型である。帰納型は<strong>構成子（constructor）のリスト</strong>で型を定義する。構成子とは「その型の項の<strong>作り方</strong>」のことで、帰納型の項は、構成子で作られたものが<strong>すべて</strong>である。集合のアナロジーで先に言っておくと、帰納型は<strong>集合の直和や集合の直積</strong>にあたるものを一挙に作れる部品である（節の中で順に見る）。</span></p>
+<p><span class="step" data-step="0">型を作る部品の2つ目が、帰納型である。帰納型は<strong>構成子（constructor）のリスト</strong>で型を定義する。構成子とは「その型の項の<strong>作り方</strong>」のことで、集合のアナロジーで先に言っておくと、帰納型は<strong>集合の直和や集合の直積</strong>にあたるものを一挙に作れる部品である（節の中で順に見る）。</span></p>
 <p><span class="step" data-step="1">宣言には <code>inductive</code> を使う。<code>def</code> が既存の項を使って定義を導入するのに対し、 <code>inductive</code> は、<strong>新しい型と、その型の項を作る構成子をまとめて導入する</strong>宣言である。型も項なので、これも項を導入する宣言の仲間だが、<code>def</code> の単なる別表記ではない。</span></p></article>
 <article class="slide" id="03_inductivetypes-signal-definition" data-kind="main" data-label="Signal の3つの構成子" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">いちばん単純なのは、構成子がどれも引数を取らない<strong>列挙型</strong>である。集合の言葉では、要素を列挙して<strong>有限集合を作る</strong>ことにあたる。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> Signal : <span class="sort">Type</span> <span class="kw">where</span>
@@ -259,22 +262,23 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   | false : Bool
   | true : Bool</span></code></pre>
 <p><span class="step" data-step="2">型 <code>Bool</code> と、構成子 <code>Bool.false</code>・<code>Bool.true</code> が一緒に導入されている。その直後にある <code>export Bool (false true)</code> は、接頭辞なしの名前も用意する宣言である。その意味と、ドットによる省略との違いを、次の補足で整理する。</span></p></article>
-<article class="slide" id="03_inductivetypes-creation-and-use" data-kind="main" data-label="作り方に対応する使い方" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>項の作り方と使い方</h3></div>
-<p><span class="step" data-step="0">型を読むときには、その型の項の<strong>作り方</strong>と<strong>使い方</strong>を対にして考えよう。型を <code>T</code> とすると:</span></p>
-<ul><li data-step="1" class="step"><strong>作る側</strong>では、<code>T</code> の項を与える。例えば <code>Signal.red</code> は <code>Signal</code> の項を作る。関数なら、<code>A → T</code> のように<strong>行き先が <code>T</code></strong> であり、必要な材料から <code>T</code> の項を作る。</li><li data-step="1" class="step"><strong>使う側</strong>では、<code>T</code> の項を受け取って別の項を作る。関数の型は <code>T → B</code> のように<strong>定義域が <code>T</code></strong> になる。</li></ul>
-<p><span class="step" data-step="2">帰納型の項を<strong>構成子に応じて場合分けして使う</strong>記法が <strong><code>match</code></strong> である。構成子ごとに、それを受け取ったときに返す項を書く。 <code>Signal</code> なら、3つの構成子それぞれに対応して、返す項を1つずつ書けばよい。集合の言葉では、3点集合からの写像を、各点の行き先を指定して定めるのと同じである。</span></p></article>
 <article class="slide" id="03_inductivetypes-proof-connection" data-kind="main" data-label="仮定と結論へのつながり" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>02_Forall との接続: 仮定として使う・結論として示す</h3></div>
-<p><span class="step" data-step="0">命題を型と見ると、この区別は「その命題の証明を仮定として使う」ことと、「その命題を結論として、その証明を作る」ことに対応する。この見方は <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.introduction-elimination"><code>04_Exists.lean</code> 6節</a>で改めて説明する。</span></p></article>
-<article class="slide" id="03_inductivetypes-match-signal" data-kind="main" data-label="match の枝を選んで計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">まず <code>match</code> だけを使ってみよう。<code>match 対象 with</code> のあとに、構成子ごとに <code>| 構成子 =&gt; 返す項</code> を並べる。全体は1つの項で、対象の構成子に対応する場合の項が値になる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> <span class="kw">match</span> Signal.red <span class="kw">with</span>
+<p><span class="step" data-step="0">命題を型と見ると、「作る・使う」という区別は「その命題の証明を仮定として使う」ことと、「その命題を結論として、その証明を作る」ことに対応する。この見方は <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.introduction-elimination"><code>04_Exists.lean</code> 7節</a>で改めて説明する。</span></p></article>
+<article class="slide" id="03_inductivetypes-creation-and-use" data-kind="main" data-label="作り方に対応する使い方" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>項の作り方と使い方</h3></div>
+<p><span class="step" data-step="0">関数型では、<code>fun</code> で項を<strong>作り</strong>、引数を渡す<strong>適用</strong>で項を使った。帰納型でも、この二つの役割を対にして見よう。</span></p>
+<p><span class="step" data-step="1">型を読むときには、その型の項の<strong>作り方</strong>と<strong>使い方</strong>を対にして考えよう。型を <code>T</code> とすると:</span></p>
+<ul><li data-step="2" class="step"><strong>作る側</strong>では、<code>T</code> の項を与える。例えば <code>Signal.red</code> は <code>Signal</code> の項を作る。関数なら、<code>A → T</code> のように<strong>行き先が <code>T</code></strong> であり、必要な材料から <code>T</code> の項を作る。</li><li data-step="2" class="step"><strong>使う側</strong>では、<code>T</code> の項を受け取って別の項を作る。関数の型は <code>T → B</code> のように<strong>定義域が <code>T</code></strong> になる。</li></ul></article>
+<article class="slide" id="03_inductivetypes-match-signal" data-kind="main" data-label="match の枝を選んで計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">帰納型の項を<strong>構成子に応じて場合分けして使う</strong>記法が <strong><code>match</code></strong> である。構成子ごとに、それを受け取ったときに返す項を書く。 <code>Signal</code> なら、3つの構成子それぞれに対応して、返す項を1つずつ書けばよい。集合の言葉では、3点集合からの写像を、各点の行き先を指定して定めるのと同じである。</span></p>
+<p><span class="step" data-step="1">まず <code>match</code> だけを使ってみよう。<code>match 対象 with</code> のあとに、構成子ごとに <code>| 構成子 =&gt; 返す項</code> を並べる。全体は1つの項で、対象の構成子に対応する場合の項が値になる:</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> <span class="kw">match</span> Signal.red <span class="kw">with</span>
   | Signal.red =&gt; Signal.green
   | Signal.green =&gt; Signal.yellow
   | Signal.yellow =&gt; Signal.red</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">Signal.green</span></code></pre>
-<p><span class="step" data-step="3">対象が <code>Signal.red</code> なので、1つ目の場合が選ばれて <code>Signal.green</code> になった。</span></p></article>
+<pre class="quote"><code><span class="step" data-step="3">Signal.green</span></code></pre>
+<p><span class="step" data-step="4">対象が <code>Signal.red</code> なので、1つ目の場合が選ばれて <code>Signal.green</code> になった。</span></p></article>
 <article class="slide" id="03_inductivetypes-match-exercise" data-kind="main" data-label="練習：yellow と green で場合分け" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="42" data-exercise="42"><li><span class="step" data-step="0">上の <code>match</code> の対象を <code>Signal.yellow</code> に変えた項と、<code>Signal.green</code> に変えた項を書き、それぞれの値を予想してから <code>#eval</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 42</span></p>
+<ol class="exercise" start="40" data-exercise="40"><li><span class="step" data-step="0">上の <code>match</code> の対象を <code>Signal.yellow</code> に変えた項と、<code>Signal.green</code> に変えた項を書き、それぞれの値を予想してから <code>#eval</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 40</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> <span class="kw">match</span> Signal.yellow <span class="kw">with</span>
   | Signal.red =&gt; Signal.green
   | Signal.green =&gt; Signal.yellow
@@ -287,23 +291,29 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="1">Signal.yellow</span></code></pre>
 <p><span class="step" data-step="2">対象の構成子に対応する場合が選ばれる。<code>Signal.yellow</code> なら3つ目、 <code>Signal.green</code> なら2つ目の場合である。</span></p></article>
 <article class="slide" id="03_inductivetypes-next-function" data-kind="main" data-label="match を関数の本体にする" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">関数記法 <code>fun</code> と <code>match</code> を組み合わせて、次の信号を返す関数を書こう。 <code>fun</code> で受け取った <code>s : Signal</code> を、<code>match s with</code> で場合分けする:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> next : Signal → Signal := <span class="kw">fun</span> s =&gt;
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Signal.next : Signal → Signal := <span class="kw">fun</span> s =&gt;
   <span class="kw">match</span> s <span class="kw">with</span>
   | Signal.red =&gt; Signal.green
   | Signal.green =&gt; Signal.yellow
   | Signal.yellow =&gt; Signal.red
 
-<span class="kw">#check</span> next</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">next : Signal → Signal</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-next-computation" data-kind="main" data-label="next の適用を予想して計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">定義した関数を試したい。まず <code>next Signal.red</code> という項を読む: 2点確認より型は <code>Signal</code>、値は定義の1行目（<code>Signal.red =&gt; Signal.green</code>）から <code>Signal.green</code> になるはずである。</span></p>
+<span class="kw">#check</span> Signal.next</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Signal.next : Signal → Signal</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-next-computation" data-kind="main" data-label="next の適用を予想して計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">定義した関数を試したい。まず <code>Signal.next Signal.red</code> という項を読む: 2点確認より型は <code>Signal</code>、値は定義の1行目（<code>Signal.red =&gt; Signal.green</code>）から <code>Signal.green</code> になるはずである。</span></p>
 <p><span class="step" data-step="1">計算結果は <code>#eval</code> で確かめられる。いま作ったばかりの型の値も、構成子の形で表示される:</span></p>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> next Signal.red</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> Signal.next Signal.red</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">Signal.green</span></code></pre>
 <p><span class="step" data-step="4">たしかに赤の次は青になった。</span></p></article>
-<article class="slide" id="03_inductivetypes-constructor-shorthand" data-kind="main" data-label="期待される型と構成子の略記" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ここで、<strong>型を手がかりに名前の接頭辞を補うドット記法</strong>を紹介する。期待される型が <code>Signal</code> と分かっている位置では、<code>Signal.red</code> を <code>.red</code> と省略できる。例えば <code>(.red : Signal)</code> なら、型注釈から接頭辞 <code>Signal</code> が補われる。 <code>.yellow</code>・<code>.green</code> も同じである。次の <code>match</code> では、場合分けする項の型から構成子の接頭辞が分かる。まず練習で試し、そのあと本文でも省略形を使う。</span></p></article>
-<article class="slide" id="03_inductivetypes-signal-code-exercise" data-kind="main" data-label="練習：Signal を自然数に送る" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="43" data-exercise="43"><li><span class="step" data-step="0"><code>Signal.red</code>・<code>Signal.yellow</code>・<code>Signal.green</code> をそれぞれ <code>0</code>・<code>1</code>・<code>2</code> に送る <code>signalCode : Signal → Nat</code> を <code>match</code> で書け。それぞれの場合に返す項が同じ型になることを確かめ、<code>#eval signalCode Signal.yellow</code> の値を予想してから実行せよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 43</span></p>
+<article class="slide" id="03_inductivetypes-constructor-shorthand" data-kind="main" data-label="期待される型と構成子の略記" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ここで、<strong>型を手がかりに名前の接頭辞を補うドット記法</strong>を紹介する。期待される型が <code>Signal</code> と分かっている位置では、<code>Signal.red</code> を <code>.red</code> と省略できる。例えば <code>(.red : Signal)</code> なら、型注釈から接頭辞 <code>Signal</code> が補われる。 <code>.yellow</code>・<code>.green</code> も同じである。次の <code>match</code> では、場合分けする項の型から構成子の接頭辞が分かる。先ほどの関数を、この省略形で書き直そう。</span></p></article>
+<article class="slide" id="03_inductivetypes-signal-abbreviation-code" data-kind="main" data-label="構成子の接頭辞を省いて書く" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> nextShort : Signal → Signal := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | .red =&gt; .green
+  | .green =&gt; .yellow
+  | .yellow =&gt; .red</span></code></pre>
+<p><span class="step" data-step="1">これは先ほどの <code>Signal.next</code> と同じ場合分けである。対象が <code>Signal</code> 型なので、枝の <code>.red</code> などは <code>Signal.red</code> などと読まれる。返す型も <code>Signal</code> なので、右辺でも同じ省略形を使える。</span></p></article>
+<article class="slide" id="03_inductivetypes-signal-code-exercise" data-kind="main" data-label="練習：Signal を自然数に送る" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="41" data-exercise="41"><li><span class="step" data-step="0"><code>Signal.red</code>・<code>Signal.yellow</code>・<code>Signal.green</code> をそれぞれ <code>0</code>・<code>1</code>・<code>2</code> に送る <code>signalCode : Signal → Nat</code> を <code>match</code> で書け。それぞれの場合に返す項が同じ型になることを確かめ、<code>#eval signalCode Signal.yellow</code> の値を予想してから実行せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 41</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> signalCode : Signal → Nat := <span class="kw">fun</span> s =&gt;
   <span class="kw">match</span> s <span class="kw">with</span>
   | .red =&gt; 0
@@ -323,8 +333,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="1">isRed : Signal → Bool</span></code></pre>
 <p><span class="step" data-step="2">パターンの <code>.red</code> が <code>Signal.red</code> の略と分かるのは、<code>isRed</code> の型から「<code>match</code> している <code>s</code> は <code>Signal</code> 型のはず」と決まっているからである。</span></p></article>
 <article class="slide" id="03_inductivetypes-prev-exercise" data-kind="main" data-label="練習：next の逆向き" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="44" data-exercise="44"><li><span class="step" data-step="0"><code>Signal</code> の「逆回り」<code>prev : Signal → Signal</code> を <code>match</code> で定義し、 <code>#eval prev (next Signal.red)</code> の表示を予想してから確かめよ（<code>Signal.red</code> に戻ってくるはずである）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 44</span></p>
+<ol class="exercise" start="42" data-exercise="42"><li><span class="step" data-step="0"><code>Signal</code> の「逆回り」<code>prev : Signal → Signal</code> を <code>match</code> で定義し、 <code>#eval prev (Signal.next Signal.red)</code> の表示を予想してから確かめよ（<code>Signal.red</code> に戻ってくるはずである）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 42</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> prev : Signal → Signal := <span class="kw">fun</span> s =&gt;
   <span class="kw">match</span> s <span class="kw">with</span>
   | Signal.red    =&gt; Signal.yellow
@@ -332,11 +342,11 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   | Signal.green  =&gt; Signal.red
 
 </span></code></pre></article>
-<article class="slide" id="03_inductivetypes-prev-computation" data-kind="main" data-label="next と prev を順に適用する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> prev (next Signal.red)</span></code></pre>
+<article class="slide" id="03_inductivetypes-prev-computation" data-kind="main" data-label="next と prev を順に適用する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> prev (Signal.next Signal.red)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">Signal.red</span></code></pre>
-<p><span class="step" data-step="2"><code>next Signal.red = Signal.green</code>、<code>prev Signal.green = Signal.red</code> で戻ってくる。</span></p></article>
-<article class="slide" id="03_inductivetypes-wildcard-exercise" data-kind="main" data-label="練習：残りの場合をまとめる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="45" data-exercise="45"><li><span class="step" data-step="0"><code>isRed</code> にならって <code>isGreen : Signal → Bool</code> を書き、 <code>#eval isGreen Signal.red</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 45</span></p>
+<p><span class="step" data-step="2"><code>Signal.next Signal.red = Signal.green</code>、<code>prev Signal.green = Signal.red</code> で戻ってくる。</span></p></article>
+<article class="slide" id="03_inductivetypes-wildcard-exercise" data-kind="main" data-label="練習：残りの場合をまとめる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="43" data-exercise="43"><li><span class="step" data-step="0"><code>isRed</code> にならって <code>isGreen : Signal → Bool</code> を書き、 <code>#eval isGreen Signal.red</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 43</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> isGreen : Signal → Bool := <span class="kw">fun</span> s =&gt;
   <span class="kw">match</span> s <span class="kw">with</span>
   | Signal.green =&gt; true
@@ -344,8 +354,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 
 <span class="kw">#eval</span> isGreen Signal.red</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">false</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-stop-signal-exercise" data-kind="main" data-label="練習：期待される型から .red を読む" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="46" data-exercise="46"><li><span class="step" data-step="0"><code>def stopSignal : Signal := .red</code> を宣言し、<code>#check stopSignal</code> と <code>#eval stopSignal</code> の表示を予想してから確かめよ。 <code>.red</code> の接頭辞がどこから分かるかを説明せよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 46</span></p>
+<article class="slide" id="03_inductivetypes-stop-signal-exercise" data-kind="main" data-label="練習：期待される型から .red を読む" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="44" data-exercise="44"><li><span class="step" data-step="0"><code>def stopSignal : Signal := .red</code> を宣言し、<code>#check stopSignal</code> と <code>#eval stopSignal</code> の表示を予想してから確かめよ。 <code>.red</code> の接頭辞がどこから分かるかを説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 44</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> stopSignal : Signal := .red
 
 <span class="kw">#check</span> stopSignal</span></code></pre>
@@ -355,8 +365,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <p><span class="step" data-step="5">宣言の <code>: Signal</code> から期待される型が分かるので、<code>.red</code> は <code>Signal.red</code> に解決される。</span></p></article>
 <article class="slide" id="03_inductivetypes-unit-and-empty" data-kind="main" data-label="構成子が1つの型と0個の型" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">構成子の個数を減らしていくと、おなじみの集合が現れる。構成子が1つ・引数なしなら <strong>一点集合</strong>（Prelude の <code>Unit</code>。項は <code>Unit.unit</code> ただ1つ）。構成子を<strong>1つも</strong> 書かなければ<strong>空集合</strong>に当たる型になる。Prelude の <code>Empty</code> がそれである:</span></p>
 <pre class="quote"><code><span class="step" data-step="1">inductive Empty : Type</span></code></pre>
-<p><span class="step" data-step="2">項の作り方がないのだから、<code>Empty</code> の項は存在しない。（それでも <code>Empty</code> <strong>から</strong>の関数は書ける——場合分けすべき場合が1つもないので、何も書かずに関数が完成する。空集合からの写像がただ1つあることに当たる。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types"><code>04_Exists.lean</code> 3節</a>の <code>elimEmpty</code> で実物を見る。）</span></p>
-<p><span class="step" data-step="3">実は同じことが <code>Prop</code> の世界でもできて、命題の <code>True</code> と <code>False</code> は帰納型として定義されている。命題の世界の帰納型の話は、このファイルでは扱わず <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types"><code>04_Exists.lean</code> 3節</a>でまとめて見る。</span></p></article>
+<p><span class="step" data-step="2">項の作り方がないのだから、<code>Empty</code> の項は存在しない。（それでも <code>Empty</code> <strong>から</strong>の関数は書ける——場合分けすべき場合が1つもないので、何も書かずに関数が完成する。空集合からの写像がただ1つあることに当たる。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types"><code>04_Exists.lean</code> 4節</a>の <code>elimEmpty</code> で実物を見る。）</span></p>
+<p><span class="step" data-step="3">実は同じことが <code>Prop</code> の世界でもできて、命題の <code>True</code> と <code>False</code> は帰納型として定義されている。命題の世界の帰納型の話は、このファイルでは扱わず <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types"><code>04_Exists.lean</code> 4節</a>でまとめて見る。</span></p></article>
 <article class="slide" id="03_inductivetypes-constructor-arguments" data-kind="main" data-label="引数を取る構成子" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>構成子は引数を取れる</h3></div>
 <p><span class="step" data-step="0">構成子に引数を持たせることもできる。構成子の引数は、 <code>def</code> と同じくコロンの左に書ける（<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の binder 形式）:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> NatOrBool : <span class="sort">Type</span> <span class="kw">where</span>
@@ -374,7 +384,18 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   | bool : Bool → NatOrBool</span></code></pre>
 <p><span class="step" data-step="2"><code>NatOrBool</code> の項は「<code>nat</code> の札が付いた自然数」か「<code>bool</code> の札が付いた真偽値」のどちらか。集合のアナロジーでは、<code>NatOrBool</code> は <code>Nat</code> と <code>Bool</code> の <strong>直和（非交和）</strong>と思える。</span></p></article>
 <article class="slide" id="03_inductivetypes-sum-guarantees" data-kind="main" data-label="構成子の単射性を表す補題" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">帰納型の仕組みから、構成子の性質を証明できる。例えば、異なる構成子で作った <code>NatOrBool.nat n</code> と <code>NatOrBool.bool b</code> は等しくないことが証明できる。</span></p>
-<p><span class="step" data-step="1">各構成子が<strong>単射であることも証明できる</strong>。<code>NatOrBool.nat n = NatOrBool.nat m</code> ならば <code>n = m</code>、同様に <code>NatOrBool.bool b = NatOrBool.bool c</code> ならば <code>b = c</code> である。この単射性を表す補題 <code>NatOrBool.nat.inj</code> と <code>NatOrBool.bool.inj</code> は、帰納型の宣言に伴って Lean が自動生成する。</span></p></article>
+<p><span class="step" data-step="1">各構成子が<strong>単射であることも証明できる</strong>。<code>NatOrBool.nat n = NatOrBool.nat m</code> ならば <code>n = m</code>、同様に <code>NatOrBool.bool b = NatOrBool.bool c</code> ならば <code>b = c</code> である。この単射性を表す補題 <code>NatOrBool.nat.inj</code> と <code>NatOrBool.bool.inj</code> は、帰納型の宣言に伴って Lean が自動生成する。型と証明の本体を表示してみよう。</span></p></article>
+<article class="slide" id="03_inductivetypes-nat-constructor-injective" data-kind="main" data-label="自然数を包む構成子の単射性" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> NatOrBool.nat.inj</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#print</span> NatOrBool.nat.inj</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">theorem NatOrBool.nat.inj : ∀ {n n_1 : Nat}, NatOrBool.nat n = NatOrBool.nat n_1 → n = n_1 :=
+fun {n n_1} x =&gt; NatOrBool.nat.noConfusion x fun n_eq =&gt; n_eq</span></code></pre>
+<p><span class="step" data-step="4">単射性が仮定として追加されたのではなく、証明の項を持つ補題が作られている。 <code>noConfusion</code> の仕組みは<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 6節</a>の補足で見る。</span></p></article>
+<article class="slide" id="03_inductivetypes-bool-constructor-injective" data-kind="main" data-label="Bool を包む構成子の単射性" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> NatOrBool.bool.inj</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">NatOrBool.bool.inj {b b✝ : Bool} : NatOrBool.bool b = NatOrBool.bool b✝ → b = b✝</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#print</span> NatOrBool.bool.inj</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">theorem NatOrBool.bool.inj : ∀ {b b_1 : Bool}, NatOrBool.bool b = NatOrBool.bool b_1 → b = b_1 :=
+fun {b b_1} x =&gt; NatOrBool.bool.noConfusion x fun b_eq =&gt; b_eq</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-sum-universal-property" data-kind="main" data-label="直和からの写像と場合分け" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">今度は <code>NatOrBool</code> の項を使う側である。ここで集合の<strong>直和の普遍性</strong>を思い出そう。直和からある集合への写像は、各成分からその集合への写像を1本ずつ与えると定まる。列挙型で各点の行き先を指定したのも、1点集合の直和と思えば同じ形である。</span></p>
 <p><span class="step" data-step="1"><code>match</code> の書き方も、列挙型から1段拡張される。構成子に引数がある場合は、場合分けの左側で中身に名前を付け、右側でそれを使える。次の <code>NatOrBool → Nat</code> 型の関数は、自然数の側では中身をそのまま返し、真偽値の側では常に <code>0</code> を返す。<code>.nat n</code> の <code>n</code> は、取り出した <code>Nat</code> 型の中身である:</span></p></article>
 <article class="slide" id="03_inductivetypes-valueof" data-kind="main" data-label="構成子の中身を取り出して使う" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> valueOf : NatOrBool → Nat := <span class="kw">fun</span> x =&gt;
@@ -385,9 +406,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <span class="kw">#check</span> valueOf</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">valueOf : NatOrBool → Nat</span></code></pre>
 <p><span class="step" data-step="2">2つ目の場合の左側に書いた <code>_</code> は、「この場合分けでは中身を<strong>使わない</strong>ので名前を付けない」という印である（名前を付けてもよいが、使わない変数に名前を付けると Lean が警告を出す）。</span></p></article>
-<article class="slide" id="03_inductivetypes-tag-exercise" data-kind="main" data-label="練習：構成子の札を調べる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="47" data-exercise="47"><li><span class="step" data-step="0">中身の値には触れず、<code>.nat</code> の札なら <code>true</code>、<code>.bool</code> の札なら <code>false</code> を返す <code>tagOf : NatOrBool → Bool</code> を書け。不要な中身には <code>_</code> を使える。 <code>#eval tagOf (NatOrBool.nat 3)</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 47</span></p>
+<article class="slide" id="03_inductivetypes-tag-exercise" data-kind="main" data-label="練習：構成子の札を調べる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="45" data-exercise="45"><li><span class="step" data-step="0">中身の値には触れず、<code>.nat</code> の札なら <code>true</code>、<code>.bool</code> の札なら <code>false</code> を返す <code>tagOf : NatOrBool → Bool</code> を書け。不要な中身には <code>_</code> を使える。 <code>#eval tagOf (NatOrBool.nat 3)</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 45</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> tagOf : NatOrBool → Bool := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .nat _ =&gt; true
@@ -395,14 +416,13 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 
 <span class="kw">#eval</span> tagOf (NatOrBool.nat 3)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">true</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-value-exercise" data-kind="main" data-label="練習：Bool の側を計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="48" data-exercise="48"><li><span class="step" data-step="0"><code>#eval valueOf (NatOrBool.bool true)</code> の値を予想してから確かめよ（どちらの場合に当たるか）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 48</span></p>
+<article class="slide" id="03_inductivetypes-value-exercise" data-kind="main" data-label="練習：Bool の側を計算する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="46" data-exercise="46"><li><span class="step" data-step="0"><code>#eval valueOf (NatOrBool.bool true)</code> の値を予想してから確かめよ（どちらの場合に当たるか）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 46</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> valueOf (NatOrBool.bool true)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">0</span></code></pre>
 <p><span class="step" data-step="3"><code>bool</code> の札なので2つ目の場合に当たり、中身によらず <code>0</code> を返す。</span></p></article>
-<article class="slide" id="03_inductivetypes-flag-exercise" data-kind="main" data-label="練習：Bool の中身を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="49" data-exercise="49"><li><span class="step" data-step="0">「<code>bool</code> の札なら中身を、<code>nat</code> の札なら <code>false</code> を返す」関数 <code>flagOf : NatOrBool → Bool</code> を書き、<code>#eval flagOf (NatOrBool.bool true)</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 49</span></p>
+<article class="slide" id="03_inductivetypes-flag-exercise" data-kind="main" data-label="練習：Bool の中身を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="47" data-exercise="47"><li><span class="step" data-step="0">「<code>bool</code> の札なら中身を、<code>nat</code> の札なら <code>false</code> を返す」関数 <code>flagOf : NatOrBool → Bool</code> を書き、<code>#eval flagOf (NatOrBool.bool true)</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 47</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> flagOf : NatOrBool → Bool := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .nat _  =&gt; false
@@ -412,9 +432,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">true</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-multiple-arguments" data-kind="main" data-label="複数の引数を取る構成子" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>構成子の引数を複数にする</h3></div>
 <p><span class="step" data-step="0">構成子は、引数を2つ以上受け取ってもよい。書き方は関数の binder 形式と同じで、同じ型なら <code>(a b : Nat)</code>、異なる型なら <code>(n : Nat) (flag : Bool)</code> のように並べる。 <code>match</code> で使うときも、例えば <code>.mk a b</code> と、取り出す中身の名前を順に並べる。まず構成子が1つの場合から練習しよう。</span></p></article>
-<article class="slide" id="03_inductivetypes-natpair-exercise" data-kind="main" data-label="練習：NatPair を宣言する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="50" data-exercise="50"><li><span class="step" data-step="0">自然数の組 <code>(a, b)</code> を表す型 <code>NatPair : Type</code> を <code>inductive</code> で定義せよ。構成子は <code>mk</code> の1つとし、自然数を2つ受け取るものとする。 <code>#check NatPair.mk</code> と <code>#check NatPair.mk 3 5</code> の表示を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 50</span></p>
+<article class="slide" id="03_inductivetypes-natpair-exercise" data-kind="main" data-label="練習：NatPair を宣言する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="48" data-exercise="48"><li><span class="step" data-step="0">自然数の組 <code>(a, b)</code> を表す型 <code>NatPair : Type</code> を <code>inductive</code> で定義せよ。構成子は <code>mk</code> の1つとし、自然数を2つ受け取るものとする。 <code>#check NatPair.mk</code> と <code>#check NatPair.mk 3 5</code> の表示を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 48</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> NatPair : <span class="sort">Type</span> <span class="kw">where</span>
   | mk (a b : Nat) : NatPair
 
@@ -423,8 +443,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="1">NatPair.mk (a b : Nat) : NatPair</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> NatPair.mk 3 5</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">NatPair.mk 3 5 : NatPair</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-projections-exercise" data-kind="main" data-label="練習：2つの自然数を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="51" data-exercise="51"><li><span class="step" data-step="0">第1成分を返す写像 <code>firstNat : NatPair → Nat</code> と、第2成分を返す写像 <code>secondNat : NatPair → Nat</code> を、それぞれ <code>match</code> で書け。両関数の型を <code>#check</code> し、<code>#eval firstNat (NatPair.mk 3 5)</code> と <code>#eval secondNat (NatPair.mk 3 5)</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 51</span></p>
+<article class="slide" id="03_inductivetypes-projections-exercise" data-kind="main" data-label="練習：2つの自然数を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="49" data-exercise="49"><li><span class="step" data-step="0">第1成分を返す写像 <code>firstNat : NatPair → Nat</code> と、第2成分を返す写像 <code>secondNat : NatPair → Nat</code> を、それぞれ <code>match</code> で書け。両関数の型を <code>#check</code> し、<code>#eval firstNat (NatPair.mk 3 5)</code> と <code>#eval secondNat (NatPair.mk 3 5)</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 49</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> firstNat : NatPair → Nat := <span class="kw">fun</span> p =&gt;
   <span class="kw">match</span> p <span class="kw">with</span>
   | .mk a _ =&gt; a
@@ -442,9 +462,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="5">3</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="6"><span class="kw">#eval</span> secondNat (NatPair.mk 3 5)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="7">5</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-flaggednat-exercise" data-kind="main" data-label="練習：自然数と Bool を組にする" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="52" data-exercise="52"><li><span class="step" data-step="0">自然数 <code>n</code> と真偽値 <code>flag</code> の組を表す型 <code>FlaggedNat : Type</code> を <code>inductive</code> で定義せよ。構成子は <code>mk</code> の1つとする。 <code>#check FlaggedNat.mk</code> と <code>#check FlaggedNat.mk 3 true</code> の表示を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 52</span></p>
+<article class="slide" id="03_inductivetypes-flaggednat-exercise" data-kind="main" data-label="練習：自然数と Bool を組にする" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="50" data-exercise="50"><li><span class="step" data-step="0">自然数 <code>n</code> と真偽値 <code>flag</code> の組を表す型 <code>FlaggedNat : Type</code> を <code>inductive</code> で定義せよ。構成子は <code>mk</code> の1つとする。 <code>#check FlaggedNat.mk</code> と <code>#check FlaggedNat.mk 3 true</code> の表示を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 50</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> FlaggedNat : <span class="sort">Type</span> <span class="kw">where</span>
   | mk (n : Nat) (flag : Bool) : FlaggedNat
 
@@ -453,8 +472,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="1">FlaggedNat.mk (n : Nat) (flag : Bool) : FlaggedNat</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> FlaggedNat.mk 3 true</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">FlaggedNat.mk 3 true : FlaggedNat</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-mixed-projections-exercise" data-kind="main" data-label="練習：型の違う成分を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="53" data-exercise="53"><li><span class="step" data-step="0">自然数の成分を返す <code>numberOf : FlaggedNat → Nat</code> と、真偽値の成分を返す <code>flagOfPair : FlaggedNat → Bool</code> を <code>match</code> で書け。両関数の型を <code>#check</code> し、<code>FlaggedNat.mk 3 true</code> に適用した値を予想して <code>#eval</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 53</span></p>
+<article class="slide" id="03_inductivetypes-mixed-projections-exercise" data-kind="main" data-label="練習：型の違う成分を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="51" data-exercise="51"><li><span class="step" data-step="0">自然数の成分を返す <code>numberOf : FlaggedNat → Nat</code> と、真偽値の成分を返す <code>flagOfPair : FlaggedNat → Bool</code> を <code>match</code> で書け。両関数の型を <code>#check</code> し、<code>FlaggedNat.mk 3 true</code> に適用した値を予想して <code>#eval</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 51</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> numberOf : FlaggedNat → Nat := <span class="kw">fun</span> p =&gt;
   <span class="kw">match</span> p <span class="kw">with</span>
   | .mk n _ =&gt; n
@@ -473,9 +492,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="6"><span class="kw">#eval</span> flagOfPair (FlaggedNat.mk 3 true)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="7">true</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-mixed-constructors" data-kind="main" data-label="引数の個数も型も異なる構成子" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">さらに、構成子を複数にして、それぞれに異なる個数・型の引数を持たせることもできる。</span></p></article>
-<article class="slide" id="03_inductivetypes-mixeddata-exercise" data-kind="main" data-label="練習：MixedData の3通りの作り方" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="54" data-exercise="54"><li><span class="step" data-step="0">次の3種類のデータを表す型 <code>MixedData : Type</code> を <code>inductive</code> で定義せよ。構成子 <code>pair</code> は自然数を2つ、<code>flagged</code> は自然数と真偽値を受け取り、 <code>empty</code> は引数を受け取らないものとする。 3つの構成子の型を予想して <code>#check</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 54</span></p>
+<article class="slide" id="03_inductivetypes-mixeddata-exercise" data-kind="main" data-label="練習：MixedData の3通りの作り方" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="52" data-exercise="52"><li><span class="step" data-step="0">次の3種類のデータを表す型 <code>MixedData : Type</code> を <code>inductive</code> で定義せよ。構成子 <code>pair</code> は自然数を2つ、<code>flagged</code> は自然数と真偽値を受け取り、 <code>empty</code> は引数を受け取らないものとする。 3つの構成子の型を予想して <code>#check</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 52</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> MixedData : <span class="sort">Type</span> <span class="kw">where</span>
   | pair (a b : Nat) : MixedData
   | flagged (n : Nat) (flag : Bool) : MixedData
@@ -487,8 +506,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">MixedData.flagged (n : Nat) (flag : Bool) : MixedData</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> MixedData.empty</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">MixedData.empty : MixedData</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-readnumber-exercise" data-kind="main" data-label="練習：MixedData から自然数を読む" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="55" data-exercise="55"><li><span class="step" data-step="0">写像 <code>readNumber : MixedData → Nat</code> を、<code>pair a b</code> は <code>a + b</code> に、 <code>flagged n flag</code> は <code>n</code> に、<code>empty</code> は <code>0</code> に送るものとして定める。これを <code>match</code> で書き、型を <code>#check</code> せよ。さらに <code>MixedData.pair 3 5</code>、 <code>MixedData.flagged 3 true</code>、<code>MixedData.empty</code> に適用した値を予想して <code>#eval</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 55</span></p>
+<article class="slide" id="03_inductivetypes-readnumber-exercise" data-kind="main" data-label="練習：MixedData から自然数を読む" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="53" data-exercise="53"><li><span class="step" data-step="0">写像 <code>readNumber : MixedData → Nat</code> を、<code>pair a b</code> は <code>a + b</code> に、 <code>flagged n flag</code> は <code>n</code> に、<code>empty</code> は <code>0</code> に送るものとして定める。これを <code>match</code> で書き、型を <code>#check</code> せよ。さらに <code>MixedData.pair 3 5</code>、 <code>MixedData.flagged 3 true</code>、<code>MixedData.empty</code> に適用した値を予想して <code>#eval</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 53</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> readNumber : MixedData → Nat := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .pair a b =&gt; a + b
@@ -537,9 +556,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-fromsum-type" data-kind="main" data-label="fromSum の型と直和からの写像" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> fromSum</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">fromSum : MySum Nat Bool → Nat</span></code></pre>
 <p><span class="step" data-step="2">直和の普遍性との対応も同じで、<code>inl</code> の場合は <code>Nat</code> から <code>Nat</code> への恒等写像、 <code>inr</code> の場合は <code>Bool</code> から <code>Nat</code> への、常に <code>0</code> を返す写像を指定している。</span></p></article>
-<article class="slide" id="03_inductivetypes-merge-bool-exercise" data-kind="main" data-label="練習：左右の Bool を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="56" data-exercise="56"><li><span class="step" data-step="0"><code>MySum Bool Bool</code> の左右どちらの札からも、中身の <code>Bool</code> をそのまま返す <code>mergeBool : MySum Bool Bool → Bool</code> を書け。 <code>#eval mergeBool (MySum.inl true)</code> と <code>#eval mergeBool (MySum.inr false)</code> を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 56</span></p>
+<article class="slide" id="03_inductivetypes-merge-bool-exercise" data-kind="main" data-label="練習：左右の Bool を取り出す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="54" data-exercise="54"><li><span class="step" data-step="0"><code>MySum Bool Bool</code> の左右どちらの札からも、中身の <code>Bool</code> をそのまま返す <code>mergeBool : MySum Bool Bool → Bool</code> を書け。 <code>#eval mergeBool (MySum.inl true)</code> と <code>#eval mergeBool (MySum.inr false)</code> を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 54</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> mergeBool : MySum Bool Bool → Bool := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .inl b =&gt; b
@@ -551,8 +570,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> mergeBool (MySum.inr false)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">false</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-getleft-exercise" data-kind="main" data-label="練習：左の中身と既定値" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="57" data-exercise="57"><li><span class="step" data-step="0"><code>#eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)</code> の値を予想してから確かめよ。（<code>MySum.inl 3</code> だけでは <code>β</code> が決まらないので、型注釈で教えている。）</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 57</span></p>
+<ol class="exercise" start="55" data-exercise="55"><li><span class="step" data-step="0"><code>#eval getLeft 7 (MySum.inl 3 : MySum Nat Bool)</code> の値を予想してから確かめよ。（<code>MySum.inl 3</code> だけでは <code>β</code> が決まらないので、型注釈で教えている。）</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 55</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> getLeft 7 (MySum.inl 3 : MySum Nat Bool)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">3</span></code></pre>
 <p><span class="step" data-step="3"><code>inl</code> の札なので、既定値 <code>7</code> ではなく中身の <code>3</code> が返る。</span></p></article>
@@ -579,9 +598,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">MyNat.zero.succ.succ</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-successor-dot" data-kind="main" data-label="succ をドット記法で書く" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>MyNat.zero.succ.succ</code> は <code>MyNat.succ (MyNat.succ MyNat.zero)</code> のことである。ここでも<strong>型から名前の接頭辞を補う</strong>ドット記法が使われている。 <code>.red</code> では期待される型を手がかりにしたが、今度は<strong>ドットの左の項の型</strong>が手がかりになる。 <code>n : MyNat</code> に対して <code>n.succ</code> と書くと、Lean は型 <code>MyNat</code> から関数 <code>MyNat.succ</code> を見つけ、そこに <code>n</code> を渡す。つまり <code>n.succ</code> は関数適用 <code>MyNat.succ n</code> の略記である。</span></p>
 <p><span class="step" data-step="1">型を順に追うと、<code>MyNat.zero : MyNat</code>、<code>MyNat.zero.succ : MyNat</code>、さらに <code>MyNat.zero.succ.succ : MyNat</code> となる。たしかに <code>succ</code> が2回重なった項、つまり「2」が返ってきた。</span></p></article>
-<article class="slide" id="03_inductivetypes-iszero-exercise" data-kind="main" data-label="練習：ゼロかどうかを判定する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="58" data-exercise="58"><li><span class="step" data-step="0"><code>isZeroMyNat : MyNat → Bool</code> を <code>match</code> で書き、<code>.zero</code> なら <code>true</code>、 <code>.succ _</code> なら <code>false</code> を返せ。<code>#eval isZeroMyNat MyNat.zero</code> と <code>#eval isZeroMyNat (MyNat.succ MyNat.zero)</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 58</span></p>
+<article class="slide" id="03_inductivetypes-iszero-exercise" data-kind="main" data-label="練習：ゼロかどうかを判定する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="56" data-exercise="56"><li><span class="step" data-step="0"><code>isZeroMyNat : MyNat → Bool</code> を <code>match</code> で書き、<code>.zero</code> なら <code>true</code>、 <code>.succ _</code> なら <code>false</code> を返せ。<code>#eval isZeroMyNat MyNat.zero</code> と <code>#eval isZeroMyNat (MyNat.succ MyNat.zero)</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 56</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> isZeroMyNat : MyNat → Bool := <span class="kw">fun</span> n =&gt;
   <span class="kw">match</span> n <span class="kw">with</span>
   | .zero =&gt; true
@@ -592,8 +611,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="1">true</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> isZeroMyNat (MyNat.succ MyNat.zero)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">false</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-ton-exercise" data-kind="main" data-label="練習：MyNat を Nat に送る" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="59" data-exercise="59"><li><span class="step" data-step="0"><code>toN : MyNat → Nat</code> を再帰で書け。<code>.zero</code> は <code>0</code>、<code>.succ k</code> は <code>toN k + 1</code> に送る。<code>#eval toN (MyNat.succ (MyNat.succ MyNat.zero))</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 59</span></p>
+<article class="slide" id="03_inductivetypes-ton-exercise" data-kind="main" data-label="練習：MyNat を Nat に送る" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="57" data-exercise="57"><li><span class="step" data-step="0"><code>toN : MyNat → Nat</code> を再帰で書け。<code>.zero</code> は <code>0</code>、<code>.succ k</code> は <code>toN k + 1</code> に送る。<code>#eval toN (MyNat.succ (MyNat.succ MyNat.zero))</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 57</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> toN : MyNat → Nat := <span class="kw">fun</span> m =&gt;
   <span class="kw">match</span> m <span class="kw">with</span>
   | .zero   =&gt; 0
@@ -604,15 +623,15 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-standard-inductive-types" data-kind="main" data-label="標準の帰納型とのつながり" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">標準ライブラリの型はほとんどすべて帰納型である。 <code>Bool</code> <code>Unit</code> <code>Empty</code>（上で引用した）、<code>Nat</code>（リテラル <code>3</code> は <code>succ (succ (succ zero))</code> の表示）、<code>04_Exists.lean</code> に出てくる <code>×</code> <code>⊕</code>、さらには命題の側の <code>And</code> <code>Or</code> <code>Eq</code> すらもそうなのだが、命題の話は <code>04_Exists.lean</code> に譲る。</span></p>
 <p><span class="step" data-step="1"><code>06_Topology.lean</code> では、<code>Nat</code> の再帰で集合の有限個の共通部分 <code>interFin</code> を定義し、その性質もまた再帰で証明している。<strong>再帰で書いた証明が数学的帰納法</strong>である。</span></p></article>
 <article class="slide" id="03_inductivetypes-three-exercise" data-kind="main" data-label="練習：succ を3回重ねる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="60" data-exercise="60"><li><span class="step" data-step="0"><code>MyNat</code> の項として 3 を <code>def myThree : MyNat := …</code>（<code>succ</code> 3回）と書き、 <code>#reduce add myThree MyNat.zero</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 60</span></p>
+<ol class="exercise" start="58" data-exercise="58"><li><span class="step" data-step="0"><code>MyNat</code> の項として 3 を <code>def myThree : MyNat := …</code>（<code>succ</code> 3回）と書き、 <code>#reduce add myThree MyNat.zero</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 58</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> myThree : MyNat := MyNat.succ (MyNat.succ (MyNat.succ MyNat.zero))
 
 #reduce add myThree MyNat.zero</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">MyNat.zero.succ.succ.succ</span></code></pre>
 <p><span class="step" data-step="3">第2引数が <code>.zero</code> の場合なので、<code>myThree</code> そのものが返る。</span></p></article>
-<article class="slide" id="03_inductivetypes-two-exercise" data-kind="main" data-label="練習：2点の型と Bool の対応" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="61" data-exercise="61"><li><span class="step" data-step="0">2点の列挙型 <code>inductive Two : Type where | a : Two | b : Two</code> を定義せよ。<code>Two</code> と <code>Bool</code> は集合としては同じ2点集合だが、型としては別物である。往復の関数 <code>toBool : Two → Bool</code> と <code>ofBool : Bool → Two</code> を書き、 <code>#eval toBool (ofBool true)</code> を確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 61</span></p>
+<article class="slide" id="03_inductivetypes-two-exercise" data-kind="main" data-label="練習：2点の型と Bool の対応" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="59" data-exercise="59"><li><span class="step" data-step="0">2点の列挙型 <code>inductive Two : Type where | a : Two | b : Two</code> を定義せよ。<code>Two</code> と <code>Bool</code> は集合としては同じ2点集合だが、型としては別物である。往復の関数 <code>toBool : Two → Bool</code> と <code>ofBool : Bool → Two</code> を書き、 <code>#eval toBool (ofBool true)</code> を確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 59</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> Two : <span class="sort">Type</span> <span class="kw">where</span>
   | a : Two
   | b : Two
@@ -630,8 +649,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 
 <span class="kw">#eval</span> toBool (ofBool true)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">true</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-four-functions-exercise" data-kind="main" data-label="練習：2点の型からの4つの写像" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="62" data-exercise="62"><li><span class="step" data-step="0"><code>Two → Bool</code> の関数は、集合のアナロジーで数えると $2 \times 2 = 4$ 通りあるはずである。その4つすべてを <code>def g1 : Two → Bool := …</code> から <code>g4</code> まで書け（前問の <code>toBool</code> はその1つ）。有限型の間の関数を書くことは、 <strong>値の対応表を書くこと</strong>にほかならない。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 62</span></p>
+<article class="slide" id="03_inductivetypes-four-functions-exercise" data-kind="main" data-label="練習：2点の型からの4つの写像" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="60" data-exercise="60"><li><span class="step" data-step="0"><code>Two → Bool</code> の関数は、集合のアナロジーで数えると $2 \times 2 = 4$ 通りあるはずである。その4つすべてを <code>def g1 : Two → Bool := …</code> から <code>g4</code> まで書け（前問の <code>toBool</code> はその1つ）。有限型の間の関数を書くことは、 <strong>値の対応表を書くこと</strong>にほかならない。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 60</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> g1 : Two → Bool := <span class="kw">fun</span> t =&gt;
   <span class="kw">match</span> t <span class="kw">with</span>
   | .a =&gt; true
@@ -654,8 +673,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   | .a =&gt; false
   | .b =&gt; false</span></code></pre>
 <p><span class="step" data-step="1"><code>g2</code> が前問の <code>toBool</code> と同じ対応である。2点 <code>a</code>・<code>b</code> それぞれに行き先が 2通りずつあるので、関数は 2 × 2 = 4 通り——<code>match</code> のそれぞれの場合に返す項の指定がちょうど対応表の書き方になっている。</span></p></article>
-<article class="slide" id="03_inductivetypes-recursive-mul-exercise" data-kind="main" data-label="練習：足し算を使って掛け算を定義する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="63" data-exercise="63"><li><span class="step" data-step="0">（発展）掛け算 <code>mul : MyNat → MyNat → MyNat</code> を、本文の <code>add</code> の再帰にならって書け（<code>m × 0 = 0</code>、<code>m × (k + 1) = m × k + m</code> を写す: <code>.zero</code> の場合は <code>.zero</code>、<code>.succ k</code> の場合は <code>add (mul m k) m</code> を返す）。 <code>#eval toN (mul myThree myThree)</code> の値を予想してから確かめよ（<code>toN</code>・<code>myThree</code> は前の練習で書いたもの）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 63</span></p>
+<article class="slide" id="03_inductivetypes-recursive-mul-exercise" data-kind="main" data-label="練習：足し算を使って掛け算を定義する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="61" data-exercise="61"><li><span class="step" data-step="0">（発展）掛け算 <code>mul : MyNat → MyNat → MyNat</code> を、本文の <code>add</code> の再帰にならって書け（<code>m × 0 = 0</code>、<code>m × (k + 1) = m × k + m</code> を写す: <code>.zero</code> の場合は <code>.zero</code>、<code>.succ k</code> の場合は <code>add (mul m k) m</code> を返す）。 <code>#eval toN (mul myThree myThree)</code> の値を予想してから確かめよ（<code>toN</code>・<code>myThree</code> は前の練習で書いたもの）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 61</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> mul : MyNat → MyNat → MyNat := <span class="kw">fun</span> m n =&gt;
   <span class="kw">match</span> n <span class="kw">with</span>
   | .zero   =&gt; .zero
@@ -665,8 +684,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-recursive-mul-computation" data-kind="main" data-label="再帰した掛け算の結果を確認する" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> toN (mul myThree myThree)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">9</span></code></pre>
 <p><span class="step" data-step="2"><code>add</code> と同じく、第2引数の構造にそった再帰である。3 × 3 = 9。</span></p></article>
-<article class="slide" id="03_inductivetypes-ofn-exercise" data-kind="main" data-label="練習：Nat の場合分けで MyNat に戻す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="64" data-exercise="64"><li><span class="step" data-step="0">（発展）上で書いた <code>toN : MyNat → Nat</code> の逆向きの関数 <code>ofN : Nat → MyNat</code> を書き、<code>#eval toN (ofN 3)</code> の値を予想してから確かめよ。（<code>ofN</code> では <code>Nat</code> の項を <code>match n with | 0 =&gt; … | k + 1 =&gt; …</code> で場合分けできる。<code>| k + 1</code> は <code>| .succ k</code> と同じ「後続の自然数」の場合で、 <code>k</code> は一つ前の自然数を表す。したがって <code>ofN k</code> は元の入力より小さい数への再帰である。これは方程式 <code>n = k + 1</code> を解く操作ではなく、<code>Nat</code> の構成子による場合分けである。この書き方はここが初出である。また、<strong>すべての</strong> <code>n</code> で往復が恒等になることの証明には数学的帰納法が要る。<code>04_Exists.lean</code> のあとで戻ってくるとよい。）</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-ofn-answer" data-kind="main" data-label="解答：ゼロと後者に対応させる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 64</span></p>
+<article class="slide" id="03_inductivetypes-ofn-exercise" data-kind="main" data-label="練習：Nat の場合分けで MyNat に戻す" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="62" data-exercise="62"><li><span class="step" data-step="0">（発展）上で書いた <code>toN : MyNat → Nat</code> の逆向きの関数 <code>ofN : Nat → MyNat</code> を書き、<code>#eval toN (ofN 3)</code> の値を予想してから確かめよ。（<code>ofN</code> では <code>Nat</code> の項を <code>match n with | 0 =&gt; … | k + 1 =&gt; …</code> で場合分けできる。<code>| k + 1</code> は <code>| .succ k</code> と同じ「後続の自然数」の場合で、 <code>k</code> は一つ前の自然数を表す。したがって <code>ofN k</code> は元の入力より小さい数への再帰である。これは方程式 <code>n = k + 1</code> を解く操作ではなく、<code>Nat</code> の構成子による場合分けである。この書き方はここが初出である。また、<strong>すべての</strong> <code>n</code> で往復が恒等になることの証明には数学的帰納法が要る。<code>04_Exists.lean</code> のあとで戻ってくるとよい。）</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-ofn-answer" data-kind="main" data-label="解答：ゼロと後者に対応させる" data-section="Intro1.inductive-types" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 62</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> ofN : Nat → MyNat := <span class="kw">fun</span> n =&gt;
   <span class="kw">match</span> n <span class="kw">with</span>
   | 0     =&gt; .zero
@@ -690,7 +709,7 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <span class="kw">#check</span> MyPoint.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">MyPoint.x : MyPoint → Nat</span></code></pre>
 <p><span class="step" data-step="3">帰納型の項を構成子に応じて場合分けするには <code>match</code> を使う——構成子が1つなら、場合分けが1ケースになるだけで、原理は <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>と変わらない。</span></p></article>
-<article class="slide" id="03_inductivetypes-structure-benefits" data-kind="main" data-label="structure が生成するもの" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が <code>structure</code> である。つまり structure は <code>inductive</code> の<strong>特別な場合</strong>であり、 <code>inductive</code> と同じく、新しい型を定義するやり方の1つである。 structure では、構成子の各引数に名前を付けて宣言する。この名前付きの成分を<strong>フィールド</strong>（field）と呼ぶ。利点は2つ:</span></p>
+<article class="slide" id="03_inductivetypes-structure-benefits" data-kind="main" data-label="structure が生成するもの" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が <code>structure</code> である。つまり structure は <code>inductive</code> の<strong>構成子を1つだけ持つ特別な場合</strong>であり、 <code>inductive</code> と同じく、新しい型を定義するやり方の1つである。 structure では、構成子の各引数に名前を付けて宣言する。この名前付きの成分を<strong>フィールド</strong>（field）と呼ぶ。利点は2つ:</span></p>
 <ul><li data-step="1" class="step"><strong>フィールドに名前を付けられる</strong>（その名前がそのまま取り出し関数になる）</li><li data-step="1" class="step">構成子 <code>mk</code> と取り出し関数が<strong>自動で定義される</strong>（自分で書かなくてよい）</li></ul></article>
 <article class="slide" id="03_inductivetypes-point-structure" data-kind="main" data-label="Point の宣言と構成子" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">structure</span> Point : <span class="sort">Type</span> <span class="kw">where</span>
   x : Nat
@@ -702,12 +721,20 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> Point.mk</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">Point.mk (x y : Nat) : Point</span></code></pre></article>
 <article class="slide" id="03_inductivetypes-anonymous-constructor" data-kind="main" data-label="⟨ ⟩ と .mk の略記" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">自動定義された構成子。矢印形式に読み替えれば <code>Nat → Nat → Point</code>。期待される型が <code>Point</code> と分かる位置では、<code>⟨1, 2⟩</code> とも書ける。これは<strong>匿名構成子記法</strong>という組み込みの構文で、期待される型から構成子を決める（これも<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の「上から伝える」仕組みである）。この場合は <code>Point.mk 1 2</code> と解釈される。 <code>+</code> のように記法宣言で関数名に結び付けるものとは異なり、型に応じて構成子を選ぶ仕組みである。 structure 専用ではなく、構成子が1つの帰納型でも使える。</span></p></article>
-<article class="slide" id="03_inductivetypes-dot-constructor" data-kind="main" data-label="期待される型から .mk を補う" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">期待される型が <code>Point</code> と分かる位置では、<code>Point.mk</code> を <code>.mk</code> とも書ける。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>の <code>.red</code> と同じく、期待される型から名前の接頭辞を補う。例えば次の宣言では、<code>: Point</code> がその手がかりになる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointFromDot : Point := .mk 1 2
+<article class="slide" id="03_inductivetypes-dot-constructor" data-kind="main" data-label="期待される型から .mk を補う" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">期待される型が <code>Point</code> と分かる位置では、<code>Point.mk</code> を <code>.mk</code> とも書ける。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>の <code>.red</code> と同じく、期待される型から名前の接頭辞を補う。例えば次の宣言では、<code>: Point</code> がその手がかりになる:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> (⟨1, 2⟩ : Point)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">{ x := 1, y := 2 } : Point</span></code></pre>
+<p><span class="step" data-step="3">型注釈が <code>Point</code> なので、その構成子 <code>Point.mk</code> を使った項として読まれる。</span></p>
+</div><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> pointFromDot : Point := .mk 1 2
+
+<span class="kw">def</span> pointFromPair : Point := ⟨1, 2⟩
 
 <span class="kw">#check</span> pointFromDot</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">pointFromDot : Point</span></code></pre>
-<p><span class="step" data-step="3">右辺は <code>Point.mk 1 2</code> と解釈され、その型が宣言どおり <code>Point</code> であると確認できた。</span></p></article>
+<pre class="quote"><code><span class="step" data-step="5">pointFromDot : Point</span></code></pre>
+<p><span class="step" data-step="6">右辺は <code>Point.mk 1 2</code> と解釈され、その型が宣言どおり <code>Point</code> であると確認できた。</span></p>
+</div></div></article>
 <article class="slide" id="03_inductivetypes-point-projection" data-kind="main" data-label="フィールドを取り出す関数とドット記法" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> Point.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">Point.x (self : Point) : Nat</span></code></pre>
 <p><span class="step" data-step="2">自動定義された取り出し関数。矢印形式では <code>Point → Nat</code>。</span></p>
@@ -719,9 +746,9 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-product-universal-property" data-kind="main" data-label="直積への写像を成分で指定する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>直積の普遍性を思い出す</h3></div>
 <p><span class="step" data-step="0">集合のアナロジーでは、<code>Point</code> は直積 $\mathrm{Nat} \times \mathrm{Nat}$ である。 <strong>直積の普遍性</strong>を思い出そう。同じ集合 $A$ からの2本の写像$f, g : A \to \mathrm{Nat}$ を与えると、各 $a$ を組 $(f(a), g(a))$ に送る写像$h : A \to \mathrm{Nat} \times \mathrm{Nat}$ がただ1つ定まる。逆に $h$ の各成分を取り出せば、$f$ と $g$ に戻る。</span></p>
 <p><span class="step" data-step="1">Lean では <code>Point.mk</code> が組を作る側、<code>Point.x</code>・<code>Point.y</code> が成分を取り出す側に当たる。次の練習では、この対応をコードにし、具体的な入力で確認しよう。一意性の証明までは求めない。</span></p></article>
-<article class="slide" id="03_inductivetypes-pairat-exercise" data-kind="main" data-label="練習：同じ値から2成分を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="65" data-exercise="65"><li><span class="step" data-step="0">型 <code>A</code> と2本の写像 <code>f g : A → Nat</code> が与えられたとする。$a$ を組 $(f(a), g(a))$ に送る写像 <code>pairAt A f g : A → Point</code> を定めたい。 <code>pairAt (A : Type) (f g : A → Nat) : A → Point</code> を書き、<code>#check pairAt</code> で型を確認せよ。$A = \mathrm{Nat}$、$f(n) = n + 1$、$g(n) = 2n$ として <code>3</code> を渡したときの第1・第2成分を予想し、<code>Point.x</code>・<code>Point.y</code> と <code>#eval</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 65</span></p>
+<article class="slide" id="03_inductivetypes-pairat-exercise" data-kind="main" data-label="練習：同じ値から2成分を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="63" data-exercise="63"><li><span class="step" data-step="0">型 <code>A</code> と2本の写像 <code>f g : A → Nat</code> が与えられたとする。$a$ を組 $(f(a), g(a))$ に送る写像 <code>pairAt A f g : A → Point</code> を定めたい。 <code>pairAt (A : Type) (f g : A → Nat) : A → Point</code> を書き、<code>#check pairAt</code> で型を確認せよ。$A = \mathrm{Nat}$、$f(n) = n + 1$、$g(n) = 2n$ として <code>3</code> を渡したときの第1・第2成分を予想し、<code>Point.x</code>・<code>Point.y</code> と <code>#eval</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 63</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pairAt (A : <span class="sort">Type</span>) (f g : A → Nat) : A → Point :=
   <span class="kw">fun</span> a =&gt; Point.mk (f a) (g a)
 
@@ -732,9 +759,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> Point.y (pairAt Nat (<span class="kw">fun</span> n =&gt; n + 1) (<span class="kw">fun</span> n =&gt; 2 * n) 3)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">6</span></code></pre>
 <p><span class="step" data-step="4">第1成分を取り出すと f(3) = 4、第2成分を取り出すと g(3) = 6 に戻る。</span></p></article>
-<article class="slide" id="03_inductivetypes-move-right-exercise" data-kind="main" data-label="練習：第1座標だけを動かす" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="66" data-exercise="66"><li><span class="step" data-step="0"><code>Point</code> の第1成分だけを1増やす <code>moveRight : Point → Point</code> を書け。成分の取り出しには <code>Point.x</code>・<code>Point.y</code>、作成には <code>Point.mk</code> を使う。 <code>#eval Point.x (moveRight (Point.mk 1 2))</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 66</span></p>
+<article class="slide" id="03_inductivetypes-move-right-exercise" data-kind="main" data-label="練習：第1座標だけを動かす" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="64" data-exercise="64"><li><span class="step" data-step="0"><code>Point</code> の第1成分だけを1増やす <code>moveRight : Point → Point</code> を書け。成分の取り出しには <code>Point.x</code>・<code>Point.y</code>、作成には <code>Point.mk</code> を使う。 <code>#eval Point.x (moveRight (Point.mk 1 2))</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 64</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> moveRight (p : Point) : Point :=
   Point.mk (Point.x p + 1) (Point.y p)
 
@@ -752,25 +778,24 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">2</span></code></pre>
 <p><span class="step" data-step="3"><code>swap</code> で <code>x</code> と <code>y</code> が入れ替わった。ドットを使わずに <code>#eval Point.x (Point.swap (Point.mk 1 2))</code> と書いても、同じ <code>2</code> が返る。このような名前の付け方の一般論——名前空間——は、 <a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.namespaces"><code>05_MathematicalTools.lean</code> 4節</a>で扱う。</span></p></article>
 <article class="slide" id="03_inductivetypes-zero-x-exercise" data-kind="main" data-label="練習：第1座標をゼロにする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="67" data-exercise="67"><li><span class="step" data-step="0"><code>Point.zeroX (p : Point) : Point</code> を定義し、第1成分だけを <code>0</code> にせよ。本体では <code>p.y</code> と <code>.mk</code> の両方を使う。<code>#eval (Point.mk 1 2).zeroX.x</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 67</span></p>
+<ol class="exercise" start="65" data-exercise="65"><li><span class="step" data-step="0"><code>Point.zeroX (p : Point) : Point</code> を定義し、第1成分だけを <code>0</code> にせよ。本体では <code>p.y</code> と <code>.mk</code> の両方を使う。<code>#eval (Point.mk 1 2).zeroX.x</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 65</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Point.zeroX (p : Point) : Point := .mk 0 p.y
 
 <span class="kw">#eval</span> (Point.mk 1 2).zeroX.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">0</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-swap-twice-exercise" data-kind="main" data-label="練習：2回の交換を読む" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="68" data-exercise="68"><li><span class="step" data-step="0"><code>#eval (Point.mk 1 2).swap.swap.x</code> の値を予想してから確かめよ（2回入れ替えると元に戻るはずである）。またこの式を、ドットを使わずフルネームの適用だけで書き直すと何になるか、紙に書いてから <code>#eval</code> で一致を確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 68</span></p>
+<article class="slide" id="03_inductivetypes-swap-twice-exercise" data-kind="main" data-label="練習：2回の交換を読む" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="66" data-exercise="66"><li><span class="step" data-step="0"><code>#eval (Point.mk 1 2).swap.swap.x</code> の値を予想してから確かめよ（2回入れ替えると元に戻るはずである）。またこの式を、ドットを使わずフルネームの適用だけで書き直すと何になるか、紙に書いてから <code>#eval</code> で一致を確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 66</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (Point.mk 1 2).swap.swap.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">1</span></code></pre>
 <p><span class="step" data-step="3">2回入れ替えて元どおり。フルネームでは <code>Point.x (Point.swap (Point.swap (Point.mk 1 2)))</code> である:</span></p>
 <pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> Point.x (Point.swap (Point.swap (Point.mk 1 2)))</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="5">1</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-circle-exercise" data-kind="main" data-label="練習：Point をフィールドに持つ Circle" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="69" data-exercise="69"><li><span class="step" data-step="0">次の structure を定義し、<code>#check</code> で構成子と取り出し関数が自動定義されていることを確かめよ:</span></li></ol>
+<article class="slide" id="03_inductivetypes-circle-exercise" data-kind="main" data-label="練習：Point をフィールドに持つ Circle" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="67" data-exercise="67"><li><span class="step" data-step="0">次の structure を定義し、<code>#check</code> で構成子と取り出し関数が自動定義されていることを確かめよ:</span></li></ol>
 <pre class="quote"><code><span class="step" data-step="1">   structure Circle : Type where
      center : Point
      radius : Nat</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-circle-answer" data-kind="main" data-label="解答：構成子と射影の型" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 69</span></p>
+<article class="slide" id="03_inductivetypes-circle-answer" data-kind="main" data-label="解答：構成子と射影の型" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 67</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">structure</span> Circle : <span class="sort">Type</span> <span class="kw">where</span>
   center : Point
   radius : Nat
@@ -780,16 +805,16 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> Circle.center</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">Circle.center (self : Circle) : Point</span></code></pre>
 <p><span class="step" data-step="4">構成子 <code>mk</code> と、フィールドごとの取り出し関数が自動で定義されている。</span></p></article>
-<article class="slide" id="03_inductivetypes-make-circle-exercise" data-kind="main" data-label="練習：中心と半径から円を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="70" data-exercise="70"><li><span class="step" data-step="0">点 p と自然数 n から、中心が p、半径が n の円を作る写像を、 <code>makeCircle : Point → Nat → Circle</code> として書け。型を <code>#check</code> し、 <code>#eval Circle.radius (makeCircle (Point.mk 1 2) 3)</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 70</span></p>
+<article class="slide" id="03_inductivetypes-make-circle-exercise" data-kind="main" data-label="練習：中心と半径から円を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="68" data-exercise="68"><li><span class="step" data-step="0">点 p と自然数 n から、中心が p、半径が n の円を作る写像を、 <code>makeCircle : Point → Nat → Circle</code> として書け。型を <code>#check</code> し、 <code>#eval Circle.radius (makeCircle (Point.mk 1 2) 3)</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 68</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> makeCircle : Point → Nat → Circle := <span class="kw">fun</span> p n =&gt; Circle.mk p n
 
 <span class="kw">#check</span> makeCircle</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">makeCircle : Point → Nat → Circle</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">#eval</span> Circle.radius (makeCircle (Point.mk 1 2) 3)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">3</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-center-x-exercise" data-kind="main" data-label="練習：円の中心の第1座標" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="71" data-exercise="71"><li><span class="step" data-step="0">円からその中心の第1座標を取り出す写像 <code>centerX : Circle → Nat</code> を書け。型を <code>#check</code> し、<code>#eval centerX (makeCircle (Point.mk 1 2) 3)</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 71</span></p>
+<article class="slide" id="03_inductivetypes-center-x-exercise" data-kind="main" data-label="練習：円の中心の第1座標" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="69" data-exercise="69"><li><span class="step" data-step="0">円からその中心の第1座標を取り出す写像 <code>centerX : Circle → Nat</code> を書け。型を <code>#check</code> し、<code>#eval centerX (makeCircle (Point.mk 1 2) 3)</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 69</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> centerX : Circle → Nat := <span class="kw">fun</span> c =&gt; Point.x (Circle.center c)
 
 <span class="kw">#check</span> centerX</span></code></pre>
@@ -797,21 +822,20 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-center-x-computation" data-kind="main" data-label="円の中心の座標を順に取り出す" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> centerX (makeCircle (Point.mk 1 2) 3)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">1</span></code></pre>
 <p><span class="step" data-step="2">まず <code>Circle</code> 型の項から <code>Point</code> 型の中心を取り出し、次にその第1座標である <code>Nat</code> 型の項を取り出す。関数適用をドットで書けば、本体は <code>c.center.x</code> とも書ける。</span></p></article>
-<article class="slide" id="03_inductivetypes-point-y-exercise" data-kind="main" data-label="練習：射影の2通りの書き方" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="72" data-exercise="72"><li><span class="step" data-step="0"><code>#eval Point.y (Point.mk 1 2)</code> の値を予想してから確かめよ。さらに <code>(Point.mk 1 2).y</code> とも書けることを試し、同じ値が返ることを確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 72</span></p>
+<article class="slide" id="03_inductivetypes-point-y-exercise" data-kind="main" data-label="練習：射影の2通りの書き方" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="70" data-exercise="70"><li><span class="step" data-step="0"><code>#eval Point.y (Point.mk 1 2)</code> の値を予想してから確かめよ。さらに <code>(Point.mk 1 2).y</code> とも書けることを試し、同じ値が返ることを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 70</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> Point.y (Point.mk 1 2)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">2</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">#eval</span> (Point.mk 1 2).y</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">2</span></code></pre>
 <p><span class="step" data-step="5">同じ値。後ろに付けるドットは <code>Point.y (…)</code> の略記である。</span></p></article>
-<article class="slide" id="03_inductivetypes-rectangle-exercise" data-kind="main" data-label="練習：構造体を入れ子にする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="73" data-exercise="73"><li><span class="step" data-step="0">フィールドの型は、自作の structure でもよい。長方形</span></li></ol>
+<article class="slide" id="03_inductivetypes-rectangle-exercise" data-kind="main" data-label="練習：構造体を入れ子にする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="71" data-exercise="71"><li><span class="step" data-step="0">フィールドの型は、自作の structure でもよい。長方形</span></li></ol>
 <pre class="quote"><code><span class="step" data-step="1">   structure Rect : Type where
      corner : Point
      width : Nat
      height : Nat</span></code></pre>
 <p><span class="step" data-step="2">を定義し、<code>def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩</code> が受理されることを確かめよ（<code>⟨ ⟩</code> の入れ子が <code>corner : Point</code> の分である）。<code>#eval r.corner.x</code> の値を予想してから確かめよ。<code>r.corner</code>、<code>r.corner.x</code> の順に型を追うこと。</span></p></article>
-<article class="slide" id="03_inductivetypes-rectangle-answer" data-kind="main" data-label="解答：入れ子の ⟨ ⟩ と射影" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 73</span></p>
+<article class="slide" id="03_inductivetypes-rectangle-answer" data-kind="main" data-label="解答：入れ子の ⟨ ⟩ と射影" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 71</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">structure</span> Rect : <span class="sort">Type</span> <span class="kw">where</span>
   corner : Point
   width : Nat
@@ -822,8 +846,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <span class="kw">#eval</span> r.corner.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">1</span></code></pre>
 <p><span class="step" data-step="2">外側の <code>⟨ ⟩</code> が <code>Rect</code> の3フィールド、内側の <code>⟨1, 2⟩</code> が <code>corner : Point</code> の 2フィールドに当たる。<code>r.corner.x</code> は <code>Point.x (Rect.corner r)</code> の略記である。</span></p></article>
-<article class="slide" id="03_inductivetypes-area-exercise" data-kind="main" data-label="練習：長方形の面積" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="74" data-exercise="74"><li><span class="step" data-step="0">長方形から幅と高さの積を返す写像 <code>rectArea : Rect → Nat</code> を書け。型を <code>#check</code> し、前問の <code>r</code> に対する <code>#eval rectArea r</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 74</span></p>
+<article class="slide" id="03_inductivetypes-area-exercise" data-kind="main" data-label="練習：長方形の面積" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="72" data-exercise="72"><li><span class="step" data-step="0">長方形から幅と高さの積を返す写像 <code>rectArea : Rect → Nat</code> を書け。型を <code>#check</code> し、前問の <code>r</code> に対する <code>#eval rectArea r</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 72</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> rectArea : Rect → Nat := <span class="kw">fun</span> s =&gt; s.width * s.height
 
 <span class="kw">#check</span> rectArea</span></code></pre>
@@ -843,22 +867,15 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> Pair.fst</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">Pair.fst {α β : Type} (self : Pair α β) : α</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-numbered-fields" data-kind="main" data-label="フィールドを番号で指定する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>フィールドを番号で指定する</h3></div>
-<p><span class="step" data-step="0">フィールドは番号でも取れる。<code>p : Pair α β</code> に対して、<code>p.1</code> は <code>p.fst</code>、 <code>p.2</code> は <code>p.snd</code> と同じものである。<code>.1</code>・<code>.2</code> は第1・第2フィールドを指定する書き方で、名前を覚えていなくても位置で取り出せる。 <code>Point</code> でも <code>(Point.mk 1 2).1</code> は <code>(Point.mk 1 2).x</code> と同じ。型は <code>Nat</code>、値は <code>1</code> のはずである:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (Point.mk 1 2).1</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">1</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-second-field" data-kind="main" data-label="第2フィールドと直積としての解釈" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">次は <code>Pair Nat Bool</code> の第2フィールドなので、型は <code>Bool</code>、値は <code>true</code> のはずである:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (Pair.mk 1 true).2</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">true</span></code></pre>
-<p><span class="step" data-step="3">集合のアナロジーでは、<code>Point</code> は直積 $\mathrm{Nat} \times \mathrm{Nat}$、<code>Pair α β</code> は直積 $\alpha \times \beta$ である。つまり structure は「<strong>直積の各成分に名前を付けたもの</strong>」と思ってよい。実際、標準ライブラリの <code>×</code> 自身が <code>fst</code>/<code>snd</code> という2フィールドの structure（名前は <code>Prod</code>）として定義されている。</span></p></article>
+<article class="slide" id="03_inductivetypes-structures-as-products" data-kind="main" data-label="直積の組と二つの射影" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">集合のアナロジーでは、<code>Point</code> は直積 $\mathrm{Nat} \times \mathrm{Nat}$、<code>Pair α β</code> は直積 $\alpha \times \beta$ である。 <code>p : Pair α β</code> は、<code>p.fst : α</code> と <code>p.snd : β</code> の二つを組にしたものであり、逆に <code>a : α</code> と <code>b : β</code> から <code>Pair.mk a b</code> を作れる。集合の直積で、組 $(a,b)$ を作り、二つの射影で $a$ と $b$ を取り出すことに対応する。つまり structure は「<strong>直積の各成分に名前を付けたもの</strong>」と思ってよい。実際、標準ライブラリの <code>×</code> 自身が <code>fst</code>/<code>snd</code> という2フィールドの structure（名前は <code>Prod</code>）として定義されている。</span></p></article>
 <article class="slide" id="03_inductivetypes-infer-pair-exercise" data-kind="main" data-label="練習：2つの型パラメータを推測する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="75" data-exercise="75"><li><span class="step" data-step="0"><code>#check Pair.mk true 0</code> の表示を予想してから確かめよ（<code>α</code>・<code>β</code> は何に決まるか）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 75</span></p>
+<ol class="exercise" start="73" data-exercise="73"><li><span class="step" data-step="0"><code>#check Pair.mk true 0</code> の表示を予想してから確かめよ（<code>α</code>・<code>β</code> は何に決まるか）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 73</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Pair.mk true 0</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">{ fst := true, snd := 0 } : Pair Bool Nat</span></code></pre>
 <p><span class="step" data-step="3">第1引数 <code>true</code> から <code>α = Bool</code>、第2引数 <code>0</code> から <code>β = Nat</code> に決まる。</span></p></article>
-<article class="slide" id="03_inductivetypes-currying-exercise" data-kind="main" data-label="練習：組を受け取る形とカリー化" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="76" data-exercise="76"><li><span class="step" data-step="0">（発展）<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の「カリー化」の正体を自分で書く。組を受け取る関数を「1つずつ受け取る」形に直す <code>curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat</code> と、その逆向き <code>uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat</code> を書け。 <code>#check curryP</code>・<code>#check uncurryP</code> で型を確認し、 <code>#eval curryP (fun p =&gt; p.fst + p.snd) 3 4</code> の値を予想してから確かめよ。</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-currying-answer" data-kind="main" data-label="解答：curryP と uncurryP" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 76</span></p>
+<article class="slide" id="03_inductivetypes-currying-exercise" data-kind="main" data-label="練習：組を受け取る形とカリー化" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="74" data-exercise="74"><li><span class="step" data-step="0">（発展）<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の「カリー化」の正体を自分で書く。組を受け取る関数を「1つずつ受け取る」形に直す <code>curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat</code> と、その逆向き <code>uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat</code> を書け。 <code>#check curryP</code>・<code>#check uncurryP</code> で型を確認し、 <code>#eval curryP (fun p =&gt; p.fst + p.snd) 3 4</code> の値を予想してから確かめよ。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-currying-answer" data-kind="main" data-label="解答：curryP と uncurryP" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 74</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> curryP (F : Pair Nat Nat → Nat) : Nat → Nat → Nat := <span class="kw">fun</span> a b =&gt; F ⟨a, b⟩
 
 <span class="kw">def</span> uncurryP (G : Nat → Nat → Nat) : Pair Nat Nat → Nat := <span class="kw">fun</span> p =&gt; G p.fst p.snd
@@ -870,10 +887,14 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-currying-computation" data-kind="main" data-label="カリー化した関数を計算する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> curryP (<span class="kw">fun</span> p =&gt; p.fst + p.snd) 3 4</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">7</span></code></pre>
 <p><span class="step" data-step="2"><code>curryP</code> は「1つずつ受け取って、組にしてから <code>F</code> に渡す」、<code>uncurryP</code> は「組を受け取って、成分にばらしてから <code>G</code> に渡す」。<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の「2引数関数の正体は 1引数関数の入れ子」という話の、行き来を自分で書いたことになる。</span></p></article>
+<article class="slide" id="03_inductivetypes-sum-and-product" data-kind="main" data-label="すべての添字について選ぶ直積・一つを選ぶ直和" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>族の直積と直和では、何を選ぶのか</h3></div>
+<p><span class="step" data-step="0">同じ集合族 $B(a)$ から、直積と直和を考えられる。違いは、要素を1つ指定するために <strong>すべての添字について選ぶのか、一つの添字を選ぶのか</strong>にある。</span></p>
+<p><span class="step" data-step="1"><strong>族の直積</strong> $\prod_{a \in A} B(a)$ の要素は、各 $a \in A$ に対して$f(a) \in B(a)$ を一つずつ選ぶ関数 $f$ である。これが <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> の4節</a>で見た依存関数である。</span></p>
+<p><span class="step" data-step="2"><strong>族の直和</strong> $\bigsqcup_{a \in A} B(a)$ の要素は、添字 $a \in A$ を一つ選び、$b \in B(a)$ を一つ添えた組 $(a,b)$ である。次に、型を一つ選び、その型の項を一つ添えた組を、structure で表してみる。</span></p></article>
 <article class="slide" id="03_inductivetypes-dependent-fields" data-kind="main" data-label="群や位相空間をデータの組として見る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>フィールドは前のフィールドに依存してよい</h3></div>
 <p><span class="step" data-step="0">今度は、「どの集合を選ぶかで、その上に載せる構造の集まりも変わる」という状況を考えよう。サイズの問題をいったん脇に置くと、群を1つ指定することは、集合 $X$ と、その上の群構造を1つ指定することである。集合 $X$ ごとにその上の群構造全体を $\mathrm{Grp}(X)$ と書けば、群全体は<strong>集合族の直和</strong> $\bigsqcup_{X} \mathrm{Grp}(X)$ として捉えられ、個々の群がその要素に当たる。ここで群構造には、演算・単位元・逆元と、それらが満たす公理を含めている。同様に、位相空間を1つ指定することも、集合 $X$ とその上の位相を1つ指定することである。</span></p></article>
 <article class="slide" id="03_inductivetypes-dependent-sum" data-kind="main" data-label="選んだ添字に応じたデータを添える" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">一般に、族の直和 $\bigsqcup_{a \in A} B(a)$ の要素は、「$a$ を1つ選び、それに応じた $B(a)$ の要素を1つ添える」という組である。</span></p>
-<p><span class="step" data-step="1">族 $B(a)$ が $a$ によらない定数 $B$ のときは、$\bigsqcup_{a \in A} B = A \times B$ となる。つまり、これまでの依存しないフィールドによる直積も、族の直和の特別な場合である。</span></p>
+<p><span class="step" data-step="1">族 $B(a)$ が $a$ によらない定数 $B$ のときは、$\bigsqcup_{a \in A} B = A \times B$ となる。つまり、これまでの依存しないフィールドによる直積も、族の直和の構成子を1つだけ持つ特別な場合である。</span></p>
 <p><span class="step" data-step="2">structure でも、<strong>後のフィールドの型を、前のフィールドに依存させる</strong>ことで、この形のデータを表せる。証明をフィールドに持たせる実例は <code>04_Exists.lean</code> で読み、ここでは単純な<strong>点付き集合</strong>——集合と、その要素を1つ選んだ組——を例にしよう。</span></p></article>
 <article class="slide" id="03_inductivetypes-pointed-type" data-kind="main" data-label="PointedType：型とその項を組にする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.terms-types"><code>01_TypesAndTerms.lean</code> 1節</a>で見たとおり型も項だから、フィールドの値として<strong>型そのもの</strong>を持たせ、次のフィールドの型をその値で決める、ということができる:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">structure</span> PointedType : <span class="sort">Type</span> 1 <span class="kw">where</span>
@@ -898,26 +919,26 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-dependent-constructor-check" data-kind="main" data-label="2つの構成子の型を比較する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">構成子の引数を順に読むと、まず <code>carrier : Type</code> を受け取り、次に<strong>その <code>carrier</code> 型の</strong> <code>point</code> を受け取る。型を確かめよう:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> MyPointedType.mk</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">MyPointedType.mk (carrier : Type) (point : carrier) : MyPointedType</span></code></pre>
-<p><span class="step" data-step="3"><code>PointedType.mk</code> と同じ形で、最後の行き先だけが <code>MyPointedType</code> になっている。別の名前で宣言したので <code>PointedType</code> と同一の型ではないが、持つデータは同じ形である。 <code>inductive</code> で書いた側では成分を取り出す関数を <code>match</code> で書くのに対し、 <code>structure</code> では <code>PointedType.carrier</code>・<code>PointedType.point</code> が自動生成される。</span></p></article>
+<p><span class="step" data-step="3">この構成子も<strong>依存関数</strong>である。最初に受け取る <code>carrier</code> によって、次の引数 <code>point</code> の型が変わる。</span></p>
+<p><span class="step" data-step="4"><code>PointedType.mk</code> と同じ形で、最後の行き先だけが <code>MyPointedType</code> になっている。別の名前で宣言したので <code>PointedType</code> と同一の型ではないが、持つデータは同じ形である。 <code>inductive</code> で書いた側では成分を取り出す関数を <code>match</code> で書くのに対し、 <code>structure</code> では <code>PointedType.carrier</code>・<code>PointedType.point</code> が自動生成される。</span></p></article>
 <article class="slide" id="03_inductivetypes-pointed-bool-exercise" data-kind="main" data-label="練習：依存する引数を部分適用する" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="77" data-exercise="77"><li><span class="step" data-step="0"><code>def pointedBool : PointedType := ⟨Bool, true⟩</code> が受理されることを確かめよ。また <code>#check PointedType.mk Nat</code> の表示を予想してから確かめよ（第1引数を渡すと、第2引数の型が決まる）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 77</span></p>
+<ol class="exercise" start="75" data-exercise="75"><li><span class="step" data-step="0"><code>def pointedBool : PointedType := ⟨Bool, true⟩</code> が受理されることを確かめよ。また <code>#check PointedType.mk Nat</code> の表示を予想してから確かめよ（第1引数を渡すと、第2引数の型が決まる）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 75</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointedBool : PointedType := ⟨Bool, true⟩
 
 <span class="kw">#check</span> PointedType.mk Nat</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">PointedType.mk Nat : Nat → PointedType</span></code></pre>
 <p><span class="step" data-step="3">第1引数に <code>Nat</code> を渡した瞬間、残りの引数の型が <code>Nat</code> に決まる——依存関数の部分適用である。</span></p></article>
-<article class="slide" id="03_inductivetypes-attach-nat-exercise" data-kind="main" data-label="練習：自然数を点付き集合にする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習（書く）</h3></div>
-<ol class="exercise" start="78" data-exercise="78"><li><span class="step" data-step="0">自然数 n を点付き集合 (Nat, n) に送る写像 <code>attachNat : Nat → PointedType</code> を書け。型を <code>#check</code> し、<code>#reduce (attachNat 3).point</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 78</span></p>
+<article class="slide" id="03_inductivetypes-attach-nat-exercise" data-kind="main" data-label="練習：自然数を点付き集合にする" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="76" data-exercise="76"><li><span class="step" data-step="0">自然数 n を点付き集合 (Nat, n) に送る写像 <code>attachNat : Nat → PointedType</code> を書け。型を <code>#check</code> し、<code>#reduce (attachNat 3).point</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 76</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> attachNat : Nat → PointedType := <span class="kw">fun</span> n =&gt; ⟨Nat, n⟩
 
 <span class="kw">#check</span> attachNat</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">attachNat : Nat → PointedType</span></code></pre>
 <pre class="lean"><code><span class="step" data-step="3">#reduce (attachNat 3).point</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">3</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-base-type-exercise" data-kind="main" data-label="練習：台となる型を取り出す" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="79" data-exercise="79"><li><span class="step" data-step="0">点付き集合 (A, a) から台となる型 A を取り出す写像 <code>baseType : PointedType → Type</code> を書け。型を <code>#check</code> し、<code>#reduce (types := true) baseType pointedNat</code> と <code>#reduce (types := true) baseType pointedBool</code> の表示を予想して確かめよ。ここで <code>(types := true)</code> は、型そのものも計算して表示させる指定である。通常の <code>#reduce</code> は型の計算を省くので、今回はこの指定を付ける。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 79</span></p>
+<article class="slide" id="03_inductivetypes-base-type-exercise" data-kind="main" data-label="練習：台となる型を取り出す" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="77" data-exercise="77"><li><span class="step" data-step="0">点付き集合 (A, a) から台となる型 A を取り出す写像 <code>baseType : PointedType → Type</code> を書け。型を <code>#check</code> し、<code>#reduce (types := true) baseType pointedNat</code> と <code>#reduce (types := true) baseType pointedBool</code> の表示を予想して確かめよ。ここで <code>(types := true)</code> は、型そのものも計算して表示させる指定である。通常の <code>#reduce</code> は型の計算を省くので、今回はこの指定を付ける。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 77</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> baseType : PointedType → <span class="sort">Type</span> := <span class="kw">fun</span> p =&gt; p.carrier
 
 <span class="kw">#check</span> baseType</span></code></pre>
@@ -927,8 +948,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="lean"><code><span class="step" data-step="2">#reduce (types := true) baseType pointedBool</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">Bool</span></code></pre>
 <p><span class="step" data-step="4">結果は型だが、<code>Type</code> の項を返すという意味では、これも通常の関数である。 <code>(types := true)</code> を付けたので、型を返す式も計算され、<code>Nat</code>・<code>Bool</code> と表示された。</span></p></article>
-<article class="slide" id="03_inductivetypes-map-pointed-exercise" data-kind="main" data-label="練習：台を変えずに基点を移す" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="80" data-exercise="80"><li><span class="step" data-step="0">点付き集合 $(A, a)$ と写像 $f : A \to A$ から、点付き集合 $(A, f(a))$ を作る関数 <code>mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType</code> を書け。型を <code>#check</code> し、<code>#reduce (mapPointed pointedNat Nat.succ).point</code> の値を予想して確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 80</span></p>
+<article class="slide" id="03_inductivetypes-map-pointed-exercise" data-kind="main" data-label="練習：台を変えずに基点を移す" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="78" data-exercise="78"><li><span class="step" data-step="0">点付き集合 $(A, a)$ と写像 $f : A \to A$ から、点付き集合 $(A, f(a))$ を作る関数 <code>mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType</code> を書け。型を <code>#check</code> し、<code>#reduce (mapPointed pointedNat Nat.succ).point</code> の値を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 78</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
   ⟨p.carrier, f p.point⟩
 
@@ -937,46 +958,99 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-map-pointed-computation" data-kind="main" data-label="移した基点の値を確かめる" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0">#reduce (mapPointed pointedNat Nat.succ).point</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">1</span></code></pre>
 <p><span class="step" data-step="2"><code>pointedNat</code> の台は <code>Nat</code>、点は <code>0</code> なので、点を <code>Nat.succ 0</code> に取り替える。</span></p></article>
-<article class="slide" id="03_inductivetypes-sum-and-product" data-kind="main" data-label="すべての添字について選ぶ直積・一つを選ぶ直和" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>族の直積と直和では、何を選ぶのか</h3></div>
-<p><span class="step" data-step="0">同じ集合族 $B(a)$ から、直積と直和を考えられる。違いは、要素を1つ指定するために <strong>すべての添字について選ぶのか、一つの添字を選ぶのか</strong>にある。</span></p>
-<p><span class="step" data-step="1"><strong>族の直積</strong> $\prod_{a \in A} B(a)$ の要素は、各 $a \in A$ に対して$f(a) \in B(a)$ を一つずつ選ぶ関数 $f$ である。これが <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> の4節</a>で見た依存関数である。</span></p>
-<p><span class="step" data-step="2"><strong>族の直和</strong> $\bigsqcup_{a \in A} B(a)$ の要素は、添字 $a \in A$ を一つ選び、$b \in B(a)$ を一つ添えた組 $(a,b)$ である。ここで見た <code>PointedType</code> の項も、型を一つ選び、その型の項を一つ添えた組になっている。</span></p></article>
 <article class="slide" id="03_inductivetypes-make-pair-exercise" data-kind="main" data-label="練習：型と項から組を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="82" data-exercise="82"><li><span class="step" data-step="0">型 α・β とその項 a・b から組を作る <code>makePair (α β : Type) (a : α) (b : β) : Pair α β</code> を書け。 <code>#check makePair Nat Bool 3 true</code> を確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 82</span></p>
+<ol class="exercise" start="80" data-exercise="80"><li><span class="step" data-step="0">型 α・β とその項 a・b から組を作る <code>makePair (α β : Type) (a : α) (b : β) : Pair α β</code> を書け。 <code>#check makePair Nat Bool 3 true</code> を確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 80</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> makePair (α β : <span class="sort">Type</span>) (a : α) (b : β) : Pair α β := Pair.mk a b
 
 <span class="kw">#check</span> makePair Nat Bool 3 true</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">makePair Nat Bool 3 true : Pair Nat Bool</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-swap-at-exercise" data-kind="main" data-label="練習：成分を交換した組を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="83" data-exercise="83"><li><span class="step" data-step="0">同じ引数から成分を交換した組を作る <code>swapAt (α β : Type) (a : α) (b : β) : Pair β α</code> を書け。 <code>#check swapAt Nat Bool</code> で残りの型を確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 83</span></p>
+<article class="slide" id="03_inductivetypes-swap-at-exercise" data-kind="main" data-label="練習：成分を交換した組を作る" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="81" data-exercise="81"><li><span class="step" data-step="0">同じ引数から成分を交換した組を作る <code>swapAt (α β : Type) (a : α) (b : β) : Pair β α</code> を書け。 <code>#check swapAt Nat Bool</code> で残りの型を確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 81</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapAt (α β : <span class="sort">Type</span>) (a : α) (b : β) : Pair β α := Pair.mk b a
 
 <span class="kw">#check</span> swapAt Nat Bool</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">swapAt Nat Bool : Nat → Bool → Pair Bool Nat</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-idat-exercise" data-kind="main" data-label="練習：Signal 上の恒等写像" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="84" data-exercise="84"><li><span class="step" data-step="0"><code>#check idAt Signal</code> の表示を予想せよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 84</span></p>
+<article class="slide" id="03_inductivetypes-idat-exercise" data-kind="main" data-label="練習：Signal 上の恒等写像" data-section="Intro1.structures" data-layout="compact" data-editorial="true"><ol class="exercise" start="82" data-exercise="82"><li><span class="step" data-step="0"><code>#check idAt Signal</code> の表示を予想せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 82</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> idAt Signal</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">idAt Signal : Signal → Signal</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-fin-structure" data-kind="main" data-label="Fin は値と証明の組" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Intro1.subtypes">部分型 — 値と証明の組</h3></div>
+<p><span class="step" data-step="0"><code>01_TypesAndTerms.lean</code> では「<code>n</code> 未満の番号の型」<code>Fin n</code> を使った。後のフィールドの型が前のフィールドに依存するなら、その型が命題でもよい。その場合は、値と、その値についての証明を一緒に持つ。<code>Fin</code> の定義を見よう:</span></p>
+<pre class="quote"><code><span class="step" data-step="1">structure Fin (n : Nat) where
+  val : Nat
+  isLt : val &lt; n</span></code></pre>
+<p><span class="step" data-step="2">値 <code>val</code> と、「その値が <code>n</code> 未満だ」という<strong>証明</strong> <code>isLt</code> の組——依存和の第二成分を命題にしたもの——である。このように、述語で切り出した「値と証明の組」の型を<strong>部分型</strong>と呼ぶ（専用記法 <code>{x // p x}</code> は <code>07_Exercises.lean</code> で使う）。</span></p></article>
+<article class="slide" id="03_inductivetypes-last-fin" data-kind="main" data-label="最後の番号を証明付きで作る" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">中身が分かれば、項も作れる。値が <code>n</code> に依存する依存関数の例として、「<code>Fin (n + 1)</code> の<strong>最後の</strong>番号」を作ってみる:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> last : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> n =&gt; ⟨n, Nat.lt_succ_self n⟩
+
+<span class="kw">#check</span> last</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">last (n : Nat) : Fin (n + 1)</span></code></pre>
+<p><span class="step" data-step="3">値 <code>n</code> に、命題 n &lt; n + 1 の証明（ライブラリの <code>Nat.lt_succ_self n</code>）を添えて組にしている。</span></p></article>
+<article class="slide" id="03_inductivetypes-last-types" data-kind="main" data-label="入力を代入すると型が決まる" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> last 2</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">last 2 : Fin (2 + 1)</span></code></pre>
+<p><span class="step" data-step="2">型の中の <code>n</code> に <code>2</code> が入った。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> last 9</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">last 9 : Fin (9 + 1)</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-first-fin" data-kind="main" data-label="最初の番号を返す依存関数" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">同じ族に沿って、「番号 <code>n</code> を受け取り、<code>Fin (n + 1)</code> の<strong>最初の</strong>番号 0 を返す」関数も書ける:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> first : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> _ =&gt; 0
+
+<span class="kw">#check</span> first</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">first (n : Nat) : Fin (n + 1)</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-first-and-last" data-kind="main" data-label="同じ 0 でも入力ごとに型が異なる" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> first 2</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">first 2 : Fin (2 + 1)</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> first 9</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">first 9 : Fin (9 + 1)</span></code></pre>
+<p><span class="step" data-step="4">値はどれも「0 番」だが、その <code>0</code> の住んでいる型が入力ごとに違う。 <code>0</code> と書けるのは、数字が期待される型に応じて読まれる記法だからである（<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>）。 <code>last</code> と見比べてほしい。<code>first</code> の値は常に 0 番なので証明を書かずに済むが、 <code>last</code> は値 <code>n</code> が型の上限すれすれに依存するぶん、<code>n &lt; n + 1</code> の証明を添える必要があった。</span></p></article>
+<article class="slide" id="03_inductivetypes-last-val-exercise" data-kind="main" data-label="練習：Fin の中身の型" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="83" data-exercise="83"><li><span class="step" data-step="0"><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——上の補足で説明した）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 83</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> (last 4).val</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">↑(last 4) : Nat</span></code></pre>
+<p><span class="step" data-step="3"><code>.val</code> の適用が強制の印 <code>↑</code> で表示される。型は <code>Fin 5</code> の中身の <code>Nat</code>。</span></p></article>
+<article class="slide" id="03_inductivetypes-first-four-exercise" data-kind="main" data-label="練習：first の型と値" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><ol class="exercise" start="84" data-exercise="84"><li><span class="step" data-step="0"><code>#check first 4</code> の表示と、<code>#eval (first 4).val</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 84</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> first 4</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">first 4 : Fin (4 + 1)</span></code></pre>
+<p><span class="step" data-step="3">定義どおり <code>Fin (4 + 1)</code>（計算すれば <code>Fin 5</code>）。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> (first 4).val</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">0</span></code></pre>
+<p><span class="step" data-step="6"><code>first</code> は <code>n</code> によらず <code>0</code> を返す。</span></p></article>
+<article class="slide" id="03_inductivetypes-first-zero-exercise" data-kind="main" data-label="練習：1点の型の唯一の番号" data-section="Intro1.subtypes" data-layout="compact" data-editorial="true"><ol class="exercise" start="85" data-exercise="85"><li><span class="step" data-step="0"><code>#check first 0</code> の表示を予想してから確かめよ（<code>Fin (0 + 1)</code> は1点の型である）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 85</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> first 0</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">first 0 : Fin (0 + 1)</span></code></pre>
+<p><span class="step" data-step="3"><code>Fin (0 + 1)</code>——要素が1つしかない型で、その唯一の要素が <code>first 0</code> である。</span></p></article>
 <article class="slide" id="03_inductivetypes-integrated-exercises" data-kind="main" data-label="集合と写像の仕様を型と項にする" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro1.exercises">3. まとめ練習 — 小さな型つき言語で書く</h2></div>
 <p><span class="step" data-step="0">ここまでの部品——<code>fun</code> と適用、<code>match</code>、<code>inductive</code>、<code>structure</code>、型を引数に取る関数——だけで、Lean は小さな<strong>型つきプログラミング言語</strong>として使える。仕上げに、<strong>集合と写像の言葉で述べた仕様を、Lean の型と項として書く</strong>総合練習を置く。</span></p></article>
 <article class="slide" id="03_inductivetypes-flip-exercise" data-kind="main" data-label="練習：2つの引数を交換する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="85" data-exercise="85"><li><span class="step" data-step="0">写像 $F : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ に対して、$G(a, b) = F(b, a)$ で定まる写像$G : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ を対応させる操作を考える。この対応 $F \mapsto G$ を、カリー化を使って <code>flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat</code> として書け。 <code>#eval flipNat (fun a b =&gt; a - b) 3 10</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 85</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := <span class="kw">fun</span> a b =&gt; F b a
+<ol class="exercise" start="88" data-exercise="88"><li><span class="step" data-step="0">写像 $F : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ に対して、$G(a, b) = F(b, a)$ で定まる写像$G : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$ を対応させる操作を考える。この対応 $F \mapsto G$ を、カリー化を使って <code>flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat</code> として書け。 <code>#eval flipNat (fun a b =&gt; a - b) 3 10</code> の値を予想してから確かめよ。次に、任意の型 <code>A</code> に対して <code>flipAt (A : Type) (F : A → A → A) : A → A → A</code> を書け。一般化した関数を <code>Signal</code> に適用し、 <code>#eval flipAt Signal (fun a _ =&gt; a) Signal.red Signal.green</code> の値を確かめよ。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-flip-nat-answer" data-kind="main" data-label="引数を交換する：Nat で確かめる" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 88</span></p>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat := <span class="kw">fun</span> a b =&gt; F b a
 
 <span class="kw">#eval</span> flipNat (<span class="kw">fun</span> a b =&gt; a - b) 3 10</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">7</span></code></pre>
-<p><span class="step" data-step="3"><code>flipNat F 3 10 = F 10 3 = 10 - 3</code>。</span></p></article>
-<article class="slide" id="03_inductivetypes-iterate-exercise" data-kind="main" data-label="練習：写像を3回繰り返す" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="86" data-exercise="86"><li><span class="step" data-step="0">写像の集合の間の写像 $T : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$T(F) = F \circ F \circ F$、すなわち $T(F)(n) = F(F(F(n)))$ で定める。$T$ を <code>iterate3 (F : Nat → Nat) : Nat → Nat</code> として書け。 <code>#eval iterate3 double 1</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 86</span></p>
+<pre class="quote"><code><span class="step" data-step="1">7</span></code></pre>
+<p><span class="step" data-step="2"><code>flipNat F 3 10 = F 10 3 = 10 - 3</code>。</span></p></article>
+<article class="slide" id="03_inductivetypes-flip-general" data-kind="main" data-label="練習：引数の交換を一般化する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> flipAt (A : <span class="sort">Type</span>) (F : A → A → A) : A → A → A := <span class="kw">fun</span> a b =&gt; F b a</span></code></pre>
+<p><span class="step" data-step="1">自然数についての演算は使っていないので、<code>Nat</code> を任意の型 <code>A</code> に変えても同じ項で書ける。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#eval</span> flipAt Signal (<span class="kw">fun</span> a _ =&gt; a) Signal.red Signal.green</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">Signal.green</span></code></pre>
+<p><span class="step" data-step="4">引数を交換してから元の関数に渡すので、元の第2引数 <code>Signal.green</code> が返る。</span></p></article>
+<article class="slide" id="03_inductivetypes-iterate-exercise" data-kind="main" data-label="練習：写像を3回繰り返す" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="89" data-exercise="89"><li><span class="step" data-step="0">写像の集合の間の写像 $T : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$T(F) = F \circ F \circ F$、すなわち $T(F)(n) = F(F(F(n)))$ で定める。$T$ を <code>iterate3 (F : Nat → Nat) : Nat → Nat</code> として書け。 <code>#eval iterate3 double 1</code> の値を予想してから確かめよ。次に、<code>iterate3At (A : Type) (F : A → A) : A → A</code> として一般化せよ。 <code>#eval iterate3At Signal Signal.next Signal.red</code> では何が返るか、信号の変化を3回たどってから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 89</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> iterate3 (F : Nat → Nat) : Nat → Nat := <span class="kw">fun</span> n =&gt; F (F (F n))
 
 <span class="kw">#eval</span> iterate3 double 1</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">8</span></code></pre>
 <p><span class="step" data-step="3"><code>1 → 2 → 4 → 8</code>。</span></p></article>
-<article class="slide" id="03_inductivetypes-finite-maps-exercise" data-kind="main" data-label="練習：2点集合と3点集合の間の写像" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="87" data-exercise="87"><li><span class="step" data-step="0">2点集合 $B = \{\mathrm{true}, \mathrm{false}\}$ と3点集合 $S = \{\mathrm{red}, \mathrm{yellow}, \mathrm{green}\}$ を考える。写像 $f : B \to S$ を $f(\mathrm{true}) = \mathrm{green}$、$f(\mathrm{false}) = \mathrm{red}$ で定め、写像 $g : S \to B$ を $g(\mathrm{green}) = \mathrm{true}$、$g(\mathrm{red}) = g(\mathrm{yellow}) = \mathrm{false}$ で定める。$B$ を <code>Bool</code>、$S$ を <code>Signal</code> で表し、$f$ と $g$ をそれぞれ <code>boolToSignal : Bool → Signal</code>、<code>signalToBool : Signal → Bool</code> として書け。合成 $g \circ f$ の $\mathrm{true}$ における値を予想し、 <code>#eval signalToBool (boolToSignal true)</code> で確かめよ。</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-finite-maps-answer" data-kind="main" data-label="解答：場合分けと往復の計算" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 87</span></p>
+<article class="slide" id="03_inductivetypes-iterate-general" data-kind="main" data-label="練習：反復を一般化して Signal に使う" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">自然数という型だけを一般化する。3回適用するという項の形は同じである。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> iterate3At (A : <span class="sort">Type</span>) (F : A → A) : A → A := <span class="kw">fun</span> a =&gt; F (F (F a))
+
+<span class="kw">#eval</span> iterate3At Signal Signal.next Signal.red</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Signal.red</span></code></pre>
+<p><span class="step" data-step="3">赤から緑、黄、赤と3回変わり、元の信号に戻る。</span></p></article>
+<article class="slide" id="03_inductivetypes-finite-maps-exercise" data-kind="main" data-label="練習：2点集合と3点集合の間の写像" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="90" data-exercise="90"><li><span class="step" data-step="0">2点集合 $B = \{\mathrm{true}, \mathrm{false}\}$ と3点集合 $S = \{\mathrm{red}, \mathrm{yellow}, \mathrm{green}\}$ を考える。写像 $f : B \to S$ を $f(\mathrm{true}) = \mathrm{green}$、$f(\mathrm{false}) = \mathrm{red}$ で定め、写像 $g : S \to B$ を $g(\mathrm{green}) = \mathrm{true}$、$g(\mathrm{red}) = g(\mathrm{yellow}) = \mathrm{false}$ で定める。$B$ を <code>Bool</code>、$S$ を <code>Signal</code> で表し、$f$ と $g$ をそれぞれ <code>boolToSignal : Bool → Signal</code>、<code>signalToBool : Signal → Bool</code> として書け。合成 $g \circ f$ の $\mathrm{true}$ における値を予想し、 <code>#eval signalToBool (boolToSignal true)</code> で確かめよ。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-finite-maps-answer" data-kind="main" data-label="解答：場合分けと往復の計算" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 90</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> boolToSignal : Bool → Signal := <span class="kw">fun</span> b =&gt;
   <span class="kw">match</span> b <span class="kw">with</span>
   | true  =&gt; .green
@@ -991,14 +1065,14 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <article class="slide" id="03_inductivetypes-finite-maps-round-trip" data-kind="main" data-label="合成を計算し、往復で戻るかを調べる" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> signalToBool (boolToSignal true)</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">true</span></code></pre>
 <p><span class="step" data-step="2"><code>true → .green → true</code> と往復する（<code>false</code> 側も同様に戻る。ただし <code>.yellow</code> から出発すると <code>false → .red</code> となり、往復では戻らない—— 2点の型と3点の型なので、両方向の往復が恒等にはなりようがない）。</span></p></article>
-<article class="slide" id="03_inductivetypes-map-point-exercise" data-kind="main" data-label="練習：両座標に同じ写像を施す" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="88" data-exercise="88"><li><span class="step" data-step="0">写像 $F : \mathbb{N} \to \mathbb{N}$ に対して、写像 $H : \mathbb{N} \times \mathbb{N} \to \mathbb{N} \times \mathbb{N}$ を$H(x, y) = (F(x), F(y))$ で定める。直積 $\mathbb{N} \times \mathbb{N}$ を <code>Point</code> で表し、この対応 $F \mapsto H$ を <code>mapPoint (F : Nat → Nat) (p : Point) : Point</code> として書け。 <code>#eval (mapPoint double (Point.mk 2 3)).y</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 88</span></p>
+<article class="slide" id="03_inductivetypes-map-point-exercise" data-kind="main" data-label="練習：両座標に同じ写像を施す" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="91" data-exercise="91"><li><span class="step" data-step="0">写像 $F : \mathbb{N} \to \mathbb{N}$ に対して、写像 $H : \mathbb{N} \times \mathbb{N} \to \mathbb{N} \times \mathbb{N}$ を$H(x, y) = (F(x), F(y))$ で定める。直積 $\mathbb{N} \times \mathbb{N}$ を <code>Point</code> で表し、この対応 $F \mapsto H$ を <code>mapPoint (F : Nat → Nat) (p : Point) : Point</code> として書け。 <code>#eval (mapPoint double (Point.mk 2 3)).y</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 91</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> mapPoint (F : Nat → Nat) (p : Point) : Point := ⟨F p.x, F p.y⟩
 
 <span class="kw">#eval</span> (mapPoint double (Point.mk 2 3)).y</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">6</span></code></pre></article>
-<article class="slide" id="03_inductivetypes-swap-sum-exercise" data-kind="main" data-label="練習：直和の左右を交換する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="89" data-exercise="89"><li><span class="step" data-step="0">集合 $A, B$ の直和の間の交換写像 $s : A \sqcup B \to B \sqcup A$ を考える。$A$ 側の要素 $a$ は、行き先の $A$ 側、すなわち右側の要素 $a$ に送り、$B$ 側の要素 $b$ は、行き先の $B$ 側、すなわち左側の要素 $b$ に送る。中身は変えず、左右の位置だけを入れ替える写像である。直和を <code>MySum</code> で表し、$A, B$ も引数として受け取る <code>swapMySum (A B : Type) : MySum A B → MySum B A</code> を書け。 <code>#eval fromSum (swapMySum Bool Nat (MySum.inl true))</code> の値を予想してから確かめよ（<code>fromSum : MySum Nat Bool → Nat</code> は<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>で定義した）。</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-swap-sum-answer" data-kind="main" data-label="解答：中身を保って札を交換する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 89</span></p>
+<article class="slide" id="03_inductivetypes-swap-sum-exercise" data-kind="main" data-label="練習：直和の左右を交換する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="92" data-exercise="92"><li><span class="step" data-step="0">集合 $A, B$ の直和の間の交換写像 $s : A \sqcup B \to B \sqcup A$ を考える。$A$ 側の要素 $a$ は、行き先の $A$ 側、すなわち右側の要素 $a$ に送り、$B$ 側の要素 $b$ は、行き先の $B$ 側、すなわち左側の要素 $b$ に送る。中身は変えず、左右の位置だけを入れ替える写像である。直和を <code>MySum</code> で表し、$A, B$ も引数として受け取る <code>swapMySum (A B : Type) : MySum A B → MySum B A</code> を書け。 <code>#eval fromSum (swapMySum Bool Nat (MySum.inl true))</code> の値を予想してから確かめよ（<code>fromSum : MySum Nat Bool → Nat</code> は<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>で定義した）。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-swap-sum-answer" data-kind="main" data-label="解答：中身を保って札を交換する" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 92</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> swapMySum (A B : <span class="sort">Type</span>) : MySum A B → MySum B A := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
   | .inl a =&gt; .inr a
@@ -1007,15 +1081,15 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <span class="kw">#eval</span> fromSum (swapMySum Bool Nat (MySum.inl true))</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">0</span></code></pre>
 <p><span class="step" data-step="2"><code>.inl true : MySum Bool Nat</code> は札を掛け替えると <code>.inr true : MySum Nat Bool</code>。 <code>fromSum</code> は <code>.inr</code> の場合に <code>0</code> を返す。</span></p></article>
-<article class="slide" id="03_inductivetypes-pointedof-exercise" data-kind="main" data-label="練習：点付き集合の一般形" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="90" data-exercise="90"><li><span class="step" data-step="0">各集合 $A$ に対して、その要素 $a$ を点付き集合 $(A, a)$ に送る写像を考える。点付き集合を <code>PointedType</code> で表し、$A$ も引数として受け取る <code>pointedOf (A : Type) (a : A) : PointedType</code> を書け。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures">2節</a>の <code>pointedNat</code> や練習の <code>pointedBool</code> を、どの型とその項からも作れるように一般化したものである。 <code>#check pointedOf Bool true</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 90</span></p>
+<article class="slide" id="03_inductivetypes-pointedof-exercise" data-kind="main" data-label="練習：点付き集合の一般形" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="93" data-exercise="93"><li><span class="step" data-step="0">各集合 $A$ に対して、その要素 $a$ を点付き集合 $(A, a)$ に送る写像を考える。点付き集合を <code>PointedType</code> で表し、$A$ も引数として受け取る <code>pointedOf (A : Type) (a : A) : PointedType</code> を書け。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures">2節</a>の <code>pointedNat</code> や練習の <code>pointedBool</code> を、どの型とその項からも作れるように一般化したものである。 <code>#check pointedOf Bool true</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 93</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointedOf (A : <span class="sort">Type</span>) (a : A) : PointedType := ⟨A, a⟩
 
 <span class="kw">#check</span> pointedOf Bool true</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">pointedOf Bool true : PointedType</span></code></pre>
 <p><span class="step" data-step="3"><code>pointedNat = pointedOf Nat 0</code>、<code>pointedBool = pointedOf Bool true</code> である。</span></p></article>
-<article class="slide" id="03_inductivetypes-iterate-n-exercise" data-kind="main" data-label="練習：反復回数を引数にする" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="91" data-exercise="91"><li><span class="step" data-step="0">（発展）集合 $A$ と写像 $F : A \to A$ に対して、その反復 $F^n : A \to A$ を、$F^0 = \mathrm{id}_A$、$F^{n+1} = F \circ F^n$ と定める。ここで $\mathrm{id}_A$ は $A$ 上の恒等写像である。自然数 $n$ と要素 $a$ を $F^n(a)$ に送る写像 $\mathbb{N} \times A \to A$ を、$A, F$ も引数に取り、 <code>applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A</code> として書け。 <code>n</code> の <code>match</code> は <code>| 0 =&gt; …</code>・<code>| k + 1 =&gt; …</code> の形（<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>の練習の <code>ofN</code> と同じ）。<code>#eval applyN Nat double 3 1</code> の値を予想してから確かめよ。</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-iterate-n-answer" data-kind="main" data-label="解答：自然数についての再帰" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 91</span></p>
+<article class="slide" id="03_inductivetypes-iterate-n-exercise" data-kind="main" data-label="練習：反復回数を引数にする" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="94" data-exercise="94"><li><span class="step" data-step="0">（発展）集合 $A$ と写像 $F : A \to A$ に対して、その反復 $F^n : A \to A$ を、$F^0 = \mathrm{id}_A$、$F^{n+1} = F \circ F^n$ と定める。ここで $\mathrm{id}_A$ は $A$ 上の恒等写像である。自然数 $n$ と要素 $a$ を $F^n(a)$ に送る写像 $\mathbb{N} \times A \to A$ を、$A, F$ も引数に取り、 <code>applyN (A : Type) (F : A → A) (n : Nat) (a : A) : A</code> として書け。 <code>n</code> の <code>match</code> は <code>| 0 =&gt; …</code>・<code>| k + 1 =&gt; …</code> の形（<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types">1節</a>の練習の <code>ofN</code> と同じ）。<code>#eval applyN Nat double 3 1</code> の値を予想してから確かめよ。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-iterate-n-answer" data-kind="main" data-label="解答：自然数についての再帰" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 94</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> applyN (A : <span class="sort">Type</span>) (F : A → A) (n : Nat) (a : A) : A :=
   <span class="kw">match</span> n <span class="kw">with</span>
   | 0     =&gt; a
@@ -1024,8 +1098,8 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <span class="kw">#eval</span> applyN Nat double 3 1</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">8</span></code></pre>
 <p><span class="step" data-step="2"><code>iterate3</code> の一般化。<code>applyN Nat double 3 = iterate3 double</code> である。</span></p></article>
-<article class="slide" id="03_inductivetypes-diagonal-exercise" data-kind="main" data-label="練習：対角写像と型が決める自由度" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="92" data-exercise="92"><li><span class="step" data-step="0">（発展）集合 $A$ の対角写像 $\Delta_A : A \to A \times A$ を、$\Delta_A(a) = (a, a)$ で定める。直積を <code>Pair</code> で表し、どの型 $A$ でも使える <code>diag (A : Type) (a : A) : Pair A A</code> を書け。 <code>#eval (diag Nat 3).fst</code> の値を予想してから確かめよ。 A の項として与えられているのは a だけであることにも注目せよ。 <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の練習（<code>(Nat → Nat) → Nat</code> の項を2つ書く）と比較し、 <strong>型の形によって、書ける項の自由度がどう変わるか</strong>を考えよ。</span></li></ol></article>
-<article class="slide" id="03_inductivetypes-diagonal-answer" data-kind="main" data-label="解答：手持ちの項から組を作る" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 92</span></p>
+<article class="slide" id="03_inductivetypes-diagonal-exercise" data-kind="main" data-label="練習：対角写像と型が決める自由度" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><ol class="exercise" start="95" data-exercise="95"><li><span class="step" data-step="0">（発展）集合 $A$ の対角写像 $\Delta_A : A \to A \times A$ を、$\Delta_A(a) = (a, a)$ で定める。直積を <code>Pair</code> で表し、どの型 $A$ でも使える <code>diag (A : Type) (a : A) : Pair A A</code> を書け。 <code>#eval (diag Nat 3).fst</code> の値を予想してから確かめよ。 A の項として与えられているのは a だけであることにも注目せよ。 <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の練習（<code>(Nat → Nat) → Nat</code> の項を2つ書く）と比較し、 <strong>型の形によって、書ける項の自由度がどう変わるか</strong>を考えよ。</span></li></ol></article>
+<article class="slide" id="03_inductivetypes-diagonal-answer" data-kind="main" data-label="解答：手持ちの項から組を作る" data-section="Intro1.exercises" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 95</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> diag (A : <span class="sort">Type</span>) (a : A) : Pair A A := ⟨a, a⟩
 
 <span class="kw">#eval</span> (diag Nat 3).fst</span></code></pre>

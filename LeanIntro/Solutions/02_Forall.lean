@@ -36,44 +36,33 @@ theorem two_add_three : 2 + 3 = 5 := rfl
 
 -- ✏ 練習 35 の解答
 
-def apply2 {α : Type} : (α → α) → α → α := fun f a => f (f a)
-
-theorem applyTwice {p : Prop} : (p → p) → p → p := fun f h => f (f h)
-
-#check apply2
-
-#check applyTwice
-
-def apply2Binder {α : Type} (f : α → α) (a : α) : α := f (f a)
-
-theorem applyTwiceBinder {p : Prop} (f : p → p) (h : p) : p := f (f h)
-
-#check apply2Binder
-
-#check applyTwiceBinder
+theorem keep_left (P Q : Prop) : P → Q → P :=
+  fun hP _ => hP
 
 -- ✏ 練習 36 の解答
 
-theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r :=
-  fun h hq hp => h hp hq
+theorem use_two (P Q R : Prop)
+    (h : P → Q → R) (hP : P) (hQ : Q) : R :=
+  h hP hQ
 
 -- ✏ 練習 37 の解答
 
-example : Nat → Nat := fun h => h
+section
+variable {α β γ : Type} {f : α → β} {g : β → γ}
+variable (hg : ∀ u v, g u = g v → u = v) (hf : ∀ x y, f x = f y → x = y)
+variable (x y : α) (h : g (f x) = g (f y))
 
-example : (1 = 1) → (1 = 1) := fun h => h
+#check hg (f x) (f y) h
+
+#check hf x y (hg (f x) (f y) h)
+
+end
 
 -- ✏ 練習 38 の解答
-
-#check applyFun double 3
-
--- ✏ 練習 39 の解答
-
--- ✏ 練習 40 の解答
 
 theorem id_injective (α : Type) : Function.Injective (fun x : α => x) :=
   fun x y h => (h : x = y)
 
--- ✏ 練習 41 の解答
+-- ✏ 練習 39 の解答
 
 #check applyForall all_mul_zero 7

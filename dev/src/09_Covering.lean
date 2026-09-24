@@ -108,7 +108,7 @@ theorem Wf.cons_inv {v w : G.V} {e : G.E} {l : List G.E} (h : Wf G v (e :: l) w)
   cases h with
   | cons _ h' => exact ⟨rfl, h'⟩
 
-/-! ### 補足（初読は飛ばしてよい）: 逆転補題を与えておく理由
+/-! ### 補足: 逆転補題を与えておく理由
 
 道 `h : Wf G v (e :: l) w` を `cases h` で分解すると、Lean は添字の等式
 `v = G.init e` を解いて変数 `v` を消そうとする。添字の片方が変数ならこれは解けるが、
@@ -247,7 +247,7 @@ inductive Reduces (G : SGraph) : List G.E → List G.E → Prop
   | trans {l l' l'' : List G.E} :
       Reduces G l l' → Reduces G l' l'' → Reduces G l l''
 
-/-! ### 補足（初読は飛ばしてよい）: 削除だけの関係 `Reduces` を別に立てる理由
+/-! ### 補足: 削除だけの関係 `Reduces` を別に立てる理由
 
 語のホモトピー `Homotopic` は語についての関係で、道であること（隣接条件）は見ていない。
 道の水準で考えると、backtrack の**削除**は道を道に写す（問題13）が、
@@ -743,7 +743,7 @@ theorem transport_bijective {v w : X.V} (γ : PathClass X v w) :
 
 end SGraph.Covering
 
-/-! ### 補足（初読は飛ばしてよい）: 問題24〜26はグラフを使っていない
+/-! ### 補足: 問題24〜26はグラフを使っていない
 
 問題24〜26の証明を振り返ると、グラフであることを直接には一度も使っていない。
 使ったのは、持ち上げが一意に定まること（`liftEnd_eq`）と、道の類の亜群の法則（問題18）だけである。

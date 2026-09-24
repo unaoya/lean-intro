@@ -217,7 +217,7 @@ instance : Add Point where
     4
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: `+` と数値リテラルの登録簿
+/-! ### 補足: `+` と数値リテラルの登録簿
 
 正確に言うと、`+` の読み先は、左右の型が違ってもよいクラス `HAdd` の関数
 `HAdd.hAdd` である。「`Add α` があれば `HAdd α α α` にもなる」という**橋渡しの
@@ -227,7 +227,7 @@ instance : Add Point where
 数字のリテラルにも同じ仕組みがある。数字 `2` は `OfNat.ofNat 2` の略記で、
 クラス `OfNat` の instance が、期待される型ごとに読み方を決めている。
 [`01_TypesAndTerms.lean` 3節](#sec-Intro1.functions)で `2` が `Nat` とも `Int` とも読まれたのも、
-[`04_Exists.lean` 4節](#sec-CH.dependent-sums)の補足で `(5 : Fin 3)` が 3 で割った余りの `2` と
+[`03_InductiveTypes.lean` 2節](#sec-Intro1.subtypes)の補足で `(5 : Fin 3)` が 3 で割った余りの `2` と
 読まれたのも、`Nat`・`Int`・`Fin n` それぞれの `OfNat` の instance がそう実装されているから
 である。「記法はクラスで動く」という、この節の主題の一例である。
 
@@ -360,7 +360,7 @@ instance 登録すると使えるようになる——[1節](#sec-Intro2.classes
 クラスである。次の登録は `γ := Set X`・`α := X` の場合に当たる。
 -/
 
-/-! ### 補足（初読は飛ばしてよい）: `Membership` の宇宙変数と `outParam`
+/-! ### 補足: `Membership` の宇宙変数と `outParam`
 
 表示は宇宙変数付きだが、この教材の範囲ではどれも `Type` と読んでよい
 （[`01_TypesAndTerms.lean` 1節](#sec-Intro1.terms-types)）。`outParam` は instance 探索へのヒントで、
@@ -436,7 +436,7 @@ theorem Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
            (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
 
 2. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [`04_Exists.lean`
-   4節](#sec-CH2.existence)の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
+   1節](#sec-CH2.existence)の述語）。`example : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
 3. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
    `theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat` を書け
    （各点の証明は `True.intro`。束縛子 `_n` の `_` は「使わない」印である）。

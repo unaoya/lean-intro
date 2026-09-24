@@ -13,7 +13,7 @@
 
 #check Type
 
--- ### 補足（初読は飛ばしてよい）: 宇宙の階段
+-- ### 補足: 宇宙の階段
 
 #check Type 1
 
@@ -87,7 +87,7 @@ def double : Nat → Nat := fun n => n + n
 -- 本文の例（コメントアウトしてある。名前が重なるものもある）:
 -- #check double true
 
-/- ✏ 練習（書く）
+/- ✏ 練習
 5. 関数 inc : ℕ → ℕ を inc(n) = n + 1 で定める。これを `fun` を用いて Lean で定義せよ。
    `#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。
 6. 関数 f : ℕ → ℕ を f(n) = 2n + 3 で定める。これを `fun` を用いて Lean で定義せよ
@@ -122,7 +122,7 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 
 #eval plus 3 4
 
-/- ✏ 練習（書く）
+/- ✏ 練習
 11. 関数 addThree : ℕ → ℕ、addThree(n) = 3 + n を、`plus 3 : Nat → Nat` を使って
    Lean で定義せよ。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。
 12. 関数 g : ℕ × ℕ → ℕ、g(a, b) = 2a + 3b を、カリー化して Lean で定義せよ。
@@ -141,7 +141,7 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 -- 本文の例（コメントアウトしてある。名前が重なるものもある）:
 -- def plus : Nat → Nat → Nat := fun a b => a + b
 
-/- ✏ 練習（書く）
+/- ✏ 練習
 13. 先ほどの g(a, b) = 2a + 3b を、binder 形式で2通りに書け。
    `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。
    `#check g'`・`#check g''` の表示と、`#eval g' 2 4`・`#eval g'' 2 4` の値を
@@ -165,7 +165,7 @@ def applyTo21 (F : Nat → Nat) : Nat := F 21
 def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
 #check applyAt
 
-/- ✏ 練習（書く）
+/- ✏ 練習
 14. 写像 twice : Map(ℕ, ℕ) → Map(ℕ, ℕ) を、F ↦ (n ↦ F(F(n))) で定める。
    つまり、F を同じ入力に2回使うのではなく、1回目の結果にもう一度 F を適用する。
    これを Lean で `def twice (F : Nat → Nat) : Nat → Nat := …` と定義せよ。
@@ -293,9 +293,7 @@ def zeroIndex : (n : Nat) → Fin (n + 1) := fun _ => 0
 25. 集合 A の要素 a に対して、集合 B 上の定数写像を対応させる
    `constAt (A B : Type) (a : A) : B → A` を書け。
    `#check constAt Nat Bool 5` と `#eval constAt Nat Bool 5 true` を確かめよ。
--/
 
-/- ✏ 練習
 26. `Tuple 2` を定義で展開すると、どんな型になるか。
    `constTuple 2` の内側の引数と結果の型を答えよ。
 27. n と自然数 a を受け取り、すべての成分が a である n 個組を返す
@@ -312,7 +310,7 @@ def idImplicit {α : Type} (a : α) : α := a
 
 #check idImplicit true
 
--- ### 補足（初読は飛ばしてよい）: ライブラリにもある型の族
+-- ### 補足: ライブラリにもある型の族
 
 #check Vector Nat 3
 

@@ -86,13 +86,12 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p><strong>Lean では命題そのものが型であり、その型の項を作ることが、その命題を証明することである。</strong></p>
 <p>これが納得できれば、話は一気に進む。証明であるべき項の型を検査して、それが元の命題に一致していれば、<strong>証明の正しさを機械的に確かめたことになる</strong>——検査の手段は、<code>01_TypesAndTerms.lean</code> の型検査そのものだからである。ただし、ここで検査されるのは、<strong>すでに Lean の命題として書かれた主張に対する証明</strong>である。数学の主張をどの定義で、どの命題として表すかは、それとは別に人が考える必要がある。</p>
 <h3>命題と証明の書き方</h3>
-<p>命題は <code>Prop</code> という型を持つ項である。そして <code>P : Prop</code> に対する <code>h : P</code> を、命題 <code>P</code> の<strong>証明</strong>と読む。</p>
+<p>命題は <code>Prop</code> という型を持つ項である。そして <code>P : Prop</code> に対する <code>h : P</code> があるとき、<strong><code>h</code> は命題 <code>P</code> の証明だと思う</strong>。</p>
 <pre class="quote"><code>P : Prop    — P は命題
 h : P       — h は P の証明</code></pre>
 <p>命題を型として持つ項に名前を付けるときは、<code>def</code> と同じ配置で <code>theorem</code> を使う:</p>
 <pre class="quote"><code>theorem 名前 (引数) : 命題 := 証明の項</code></pre>
-<p>名前を付けず型と証明の項だけを検査するときは、同じ配置の <code>example : 命題 := 項</code> を使う。命題を受け取る <code>(P Q : Prop)</code> も、先の引数が後の型に現れる依存関数の引数である。各 <code>a : A</code> に対して <code>Q a</code> が命題であるとき、表示に現れる <code>∀ a, Q a</code> は、依存関数型 <code>(a : A) → Q a</code> の表記としても読める。その項は、各 a に命題そのものではなく <strong><code>Q a</code> の証明を返す</strong>関数である。「すべての a について」という意味は、<a href="#sec-CH1.forall-examples">1節</a>で具体的に見る。</p>
-<p>この節の例では、宣言の引数をすべてその場に書く。したがって、まだ <code>section</code> や <code>variable</code> という新しい構文を覚える必要はない。</p>
+<p>名前を付けず型と証明の項だけを検査するときは、同じ配置の <code>example : 命題 := 項</code> を使う。</p>
 <h3>例1: P と「P ならば Q」から Q</h3>
 <p>命題 <code>P</code>、<code>Q</code> について、<code>P</code> と「<code>P</code> ならば <code>Q</code>」を仮定する。これを、<strong><code>P</code> の証明と「<code>P</code> ならば <code>Q</code>」の証明が手元にある</strong>という意味に解釈してみよう。それぞれを <code>hP</code>、<code>hPQ</code> と名付け、これらを組み合わせて <code>Q</code> の証明を作りたい。</p>
 <p>ここで、「<code>P</code> ならば <code>Q</code>」の証明を、<strong><code>P</code> の証明を受け取って <code>Q</code> の証明を返す関数</strong> だと考えてみる。命題を型、証明をその型の項として書けば、次のようになる:</p>
@@ -178,18 +177,18 @@ hPQ : P → Q</code></pre>
 <li><code>a &lt; b</code> は <code>LT.lt a b</code>。比較の方法を与えるインスタンスを受け取る。</li>
 <li><code>a + b</code> は <code>HAdd.hAdd a b</code>。加算の方法を与えるインスタンスを受け取る。</li>
 </ul>
-<p>インスタンスを探して補う仕組みは、<a href="05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 1節</a>で説明する。ここでは等式や不等式が <code>Prop</code> 型の項であることが分かればよい。 <code>Eq</code> の定義そのものは<a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 5節</a>で見る。</p></aside>
+<p>インスタンスを探して補う仕組みは、<a href="05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 1節</a>で説明する。ここでは等式や不等式が <code>Prop</code> 型の項であることが分かればよい。 <code>Eq</code> の定義そのものは<a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 6節</a>で見る。</p></aside>
 <h3>theorem と def</h3>
 <p>命題も型だから、<code>def</code> と同じ配置で「証明という項に名前を付ける」宣言が書ける。型の位置に命題を、<code>:=</code> の右にその証明を書く。このとき <code>def</code> の代わりに <code>theorem</code> を使う。<strong>宣言の形と、右辺の項が指定された型を持つかを検査する仕組みは共通</strong>である。</p>
 <p>ただし、2つの宣言がまったく同じというわけではない。<code>def</code> で定義した項は型の照合に必要なら定義を展開できるが、<code>theorem</code> の証明の本体は、そのように展開して照合する対象にはならない。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 同じ命題の証明は区別しない</h3>
+<aside class="note note--optional"><h3>補足: 同じ命題の証明は区別しない</h3>
 <p>同じ命題 <code>P : Prop</code> の証明 <code>h₁ : P</code> と <code>h₂ : P</code> は、Lean の型検査では同一視される。これを<strong>証明無関連性（proof irrelevance）</strong>という。証明の書き方が同じだという意味ではなく、異なる記述であっても、同じ命題の証明として区別しないという意味である。</p>
-<p>これは <code>theorem</code> で名前を付けたことによる性質ではない。<code>def</code> で名前を付けた証明でも、仮定として受け取った証明でも同じである。また、証明を作らなくてよいという意味でもない。その命題の証明があることは、型の合う項を与えて別途確かめなければならない。証明をデータとして使う際の制約との関係は、<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 8節</a>で見る。</p></aside>
+<p>これは <code>theorem</code> で名前を付けたことによる性質ではない。<code>def</code> で名前を付けた証明でも、仮定として受け取った証明でも同じである。また、証明を作らなくてよいという意味でもない。その命題の証明があることは、型の合う項を与えて別途確かめなければならない。証明をデータとして使う際の制約との関係は、<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 9節</a>で見る。</p></aside>
 <pre class="lean"><code><span class="kw">theorem</span> one_add_one : 1 + 1 = 2 := rfl</code></pre>
 <p>この1行の解剖: <code>one_add_one</code> が<strong>名前</strong>、<code>1 + 1 = 2</code> が<strong>型</strong>（＝命題）、 <code>rfl</code> が<strong>項</strong>（＝証明）である。<code>def 名前 : 型 := 項</code> とまったく同じ配置である。</p>
 <pre class="lean"><code><span class="kw">#check</span> one_add_one</code></pre>
 <pre class="quote"><code>one_add_one : 1 + 1 = 2</code></pre>
-<p><code>rfl</code> は、まずは「両辺が定義から計算して一致する」等式の証明と読めばよい。 <code>1 + 1</code> は計算すると <code>2</code> になるので、この等式には <code>rfl</code> が使える。 <code>rfl</code> の一般的な型と、等式の構成子の仕組みは <a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> の5節</a>で読む。ここでは、例えば <code>1 + 1 = 2</code> と <code>2 = 2</code> が計算で一致することを照合すればよい。</p>
+<p><code>rfl</code> は、まずは「両辺が定義から計算して一致する」等式の証明と読めばよい。 <code>1 + 1</code> は計算すると <code>2</code> になるので、この等式には <code>rfl</code> が使える。 <code>rfl</code> の一般的な型と、等式の構成子の仕組みは <a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> の6節</a>で読む。ここでは、例えば <code>1 + 1 = 2</code> と <code>2 = 2</code> が計算で一致することを照合すればよい。</p>
 <h3>✏ 練習</h3>
 <ol class="exercise" start="32" data-exercise="32">
 <li><code>#check 3 &lt; 5</code> と <code>#check 3 = 5</code> の表示を予想してから確かめよ（偽の命題も命題である、を思い出すこと）。</li>
@@ -219,7 +218,7 @@ error: Not a definitional equality: the left-hand side
   2 + 2
 is not definitionally equal to the right-hand side
   5</code></pre>
-<p><code>Not a definitional equality</code> は「定義的に等しくない」という意味である。定義的等しさと、等式を別の証明で示せることの違いは、 <a href="04_exists.html#sec-CH2.computation"><code>04_Exists.lean</code> の5節</a>の補足「定義的等しさと、等しいことの証明」で説明する。この例の命題は偽だが、一般に <code>rfl</code> が使えないだけで命題が偽だとは判断できない。補足の <code>0 + n = n</code> は、<code>rfl</code> では済まなくても証明できる例である。</p>
+<p><code>Not a definitional equality</code> は「定義的に等しくない」という意味である。定義的等しさと、等式を別の証明で示せることの違いは、 <a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> の6節</a>の補足「定義的等しさと、等しいことの証明」で説明する。この例の命題は偽だが、一般に <code>rfl</code> が使えないだけで命題が偽だとは判断できない。補足の <code>0 + n = n</code> は、<code>rfl</code> では済まなくても証明できる例である。</p>
 </details>
 <h3 id="sec-CH.implication">整理 — 関数型と「ならば」</h3>
 <p>例1・例2では、含意の証明を関数として使い、また <code>fun</code> で作った。ここでは型の世界の関数と命題の世界の含意を横に並べ、同じ字面になることを整理する。</p>
@@ -249,55 +248,22 @@ is not definitionally equal to the right-hand side
 <pre class="quote"><code>applyImp {p q : Prop} (h : p → q) (hp : p) : q</code></pre>
 <p>これも <code>applyFun</code> と同じ形である。読み:「定理（含意の証明 <code>h</code>）に仮定の証明 <code>hp</code> を適用して、結論の証明を得る」——数学の「〜より」の正体である。</p>
 <h3>✏ 練習</h3>
-<p>型側と命題側を<strong>同じ字面</strong>で書けることを、自分の手で確かめる。</p>
 <ol class="exercise" start="35" data-exercise="35">
-<li>「2回適用」を両方の世界で書け: <code>def apply2 {α : Type} : (α → α) → α → α</code> と <code>theorem applyTwice {p : Prop} : (p → p) → p → p</code>。まず <code>fun</code> で引数を受け取る形で書き、次にその引数をコロンの左に移して、 <code>apply2Binder</code>・<code>applyTwiceBinder</code> という名前で binder 形式でも書け。 4つの宣言の型の表示を予想してから <code>#check</code> で確かめよ。表示を矢印形式に読み替えると、書き換えの前後で同じ型になることを説明せよ。</li>
+<li>「<code>P</code> を仮定すれば、<code>Q</code> を仮定しても <code>P</code> が成り立つ」を証明する <code>theorem keep_left (P Q : Prop) : P → Q → P</code> の右辺を書け。</li>
 </ol>
 <details class="sol" data-exercise="35"><summary>解答 35</summary>
-<pre class="lean"><code><span class="kw">def</span> apply2 {α : <span class="sort">Type</span>} : (α → α) → α → α := <span class="kw">fun</span> f a =&gt; f (f a)
-
-<span class="kw">theorem</span> applyTwice {p : <span class="sort">Prop</span>} : (p → p) → p → p := <span class="kw">fun</span> f h =&gt; f (f h)
-
-<span class="kw">#check</span> apply2</code></pre>
-<pre class="quote"><code>apply2 {α : Type} : (α → α) → α → α</code></pre>
-<pre class="lean"><code><span class="kw">#check</span> applyTwice</code></pre>
-<pre class="quote"><code>applyTwice {p : Prop} : (p → p) → p → p</code></pre>
-<p><code>:=</code> の右は同じ字面。型の世界の「関数を2回適用」と、命題の世界の「推論を2回適用」が、同じ項で書ける。</p>
-<p>次に、<code>fun</code> で受け取っていた引数をコロンの左に移し、binder 形式で書く:</p>
-<pre class="lean"><code><span class="kw">def</span> apply2Binder {α : <span class="sort">Type</span>} (f : α → α) (a : α) : α := f (f a)
-
-<span class="kw">theorem</span> applyTwiceBinder {p : <span class="sort">Prop</span>} (f : p → p) (h : p) : p := f (f h)
-
-<span class="kw">#check</span> apply2Binder</code></pre>
-<pre class="quote"><code>apply2Binder {α : Type} (f : α → α) (a : α) : α</code></pre>
-<pre class="lean"><code><span class="kw">#check</span> applyTwiceBinder</code></pre>
-<pre class="quote"><code>applyTwiceBinder {p : Prop} (f : p → p) (h : p) : p</code></pre>
-<p>最後の2つの引数を矢印形式に読み替えれば、それぞれ <code>(α → α) → α → α</code> と <code>(p → p) → p → p</code> になる。宣言の書き方が変わっただけで、型も、受け取った引数から作る項も変わらない。</p>
+<pre class="lean"><code><span class="kw">theorem</span> keep_left (P Q : <span class="sort">Prop</span>) : P → Q → P :=
+  <span class="kw">fun</span> hP _ =&gt; hP</code></pre>
+<p>最初に受け取った <code>hP : P</code> を返す。<code>Q</code> の証明は使わなくてよい。</p>
 </details>
 <ol class="exercise" start="36" data-exercise="36">
-<li>仮定を受け取る順を入れ替える <code>theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r</code> を項で書け。 <code>p</code> と <code>q</code> の証明をどの順に受け取っても、適用するときは関数の入力順に戻す。</li>
+<li><code>h : P → Q → R</code> に <code>P</code> と <code>Q</code> の証明を順に渡して、<code>R</code> の証明を作れ。 <code>theorem use_two (P Q R : Prop) (h : P → Q → R) (hP : P) (hQ : Q) : R</code> の右辺を書け。</li>
 </ol>
 <details class="sol" data-exercise="36"><summary>解答 36</summary>
-<pre class="lean"><code><span class="kw">theorem</span> imp_swap {p q r : <span class="sort">Prop</span>} : (p → q → r) → q → p → r :=
-  <span class="kw">fun</span> h hq hp =&gt; h hp hq</code></pre>
-<p>外側では <code>q</code> の証明、次に <code>p</code> の証明を受け取るが、<code>h</code> はまず <code>p</code>、次に <code>q</code> を要求するので、適用は <code>h hp hq</code> の順になる。</p>
-</details>
-<ol class="exercise" start="37" data-exercise="37">
-<li>同じ字面 <code>fun h =&gt; h</code> が、型側の <code>example : Nat → Nat</code> と命題側の <code>example : (1 = 1) → (1 = 1)</code> の<strong>両方</strong>で通ることを確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="37"><summary>解答 37</summary>
-<pre class="lean"><code><span class="kw">example</span> : Nat → Nat := <span class="kw">fun</span> h =&gt; h
-
-<span class="kw">example</span> : (1 = 1) → (1 = 1) := <span class="kw">fun</span> h =&gt; h</code></pre>
-<p>どちらも通る。恒等関数という同じ項が、型の世界でも命題の世界でも働く。</p>
-</details>
-<ol class="exercise" start="38" data-exercise="38">
-<li><code>#check applyFun double 3</code> の表示を予想してから確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="38"><summary>解答 38</summary>
-<pre class="lean"><code><span class="kw">#check</span> applyFun double 3</code></pre>
-<pre class="quote"><code>applyFun double 3 : Nat</code></pre>
-<p><code>f = double</code>（<code>β = Nat</code>）、<code>a = 3</code> が代入され、結果の型は <code>Nat</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> use_two (P Q R : <span class="sort">Prop</span>)
+    (h : P → Q → R) (hP : P) (hQ : Q) : R :=
+  h hP hQ</code></pre>
+<p><code>h hP : Q → R</code>、さらに <code>h hP hQ : R</code> となる。</p>
 </details>
 <h2 id="sec-CH1.forall-examples">1. 全称と単射の合成</h2>
 <p>単射どうしの合成を例に、対象を任意に取り、その対象についての証明を返す操作を見よう。</p>
@@ -320,7 +286,10 @@ is not definitionally equal to the right-hand side
     ∀ x y, g (f x) = g (f y) → x = y :=
   <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</code></pre>
 <p>「取る」が3連続の <code>fun x y h</code>——<strong>全称も「ならば」も、項では同じ関数</strong>である。そして「〜の単射性<strong>より</strong>」という紙の一語が、適用 <code>hg (f x) (f y) h</code> そのものになる。上の手順で使った<strong>特殊化</strong>（u := f x、v := f y）を、ここでは引数として自分の手で書いている。</p>
-<p>単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— <code>Function.Injective f</code> である。直前の全称と含意の式に名前を付けた略記として読める。これで書き直すと:</p>
+<p>単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— <code>Function.Injective f</code> である。直前の全称と含意の式に名前を付けた略記として読める。まず、この述語自体の型を確かめる。</p>
+<pre class="lean"><code><span class="kw">#check</span> @Function.Injective</code></pre>
+<pre class="quote"><code>@Function.Injective : {α : Sort u_1} → {β : Sort u_2} → (α → β) → Prop</code></pre>
+<p>関数を受け取って命題を返す。<code>Function.Injective f</code> という命題は、 <code>f x = f y</code> の証明から <code>x = y</code> の証明を返す、という条件である。これで書き直すと:</p>
 <pre class="lean"><code><span class="kw">theorem</span> comp_injective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : Function.Injective g) (hf : Function.Injective f) :
     Function.Injective (<span class="kw">fun</span> x =&gt; g (f x)) :=
@@ -331,16 +300,26 @@ is not definitionally equal to the right-hand side
   Function.Injective fun x ↦ g (f x)</code></pre>
 <p>主張が略記で縮んだだけでなく、証明からは特殊化 <code>(f x)</code>・<code>(f y)</code> も消えて <code>hg h</code> だけになった。<code>Function.Injective</code> は点の引数を<strong>暗黙引数</strong> （<code>{ }</code> の変種 <code>⦃ ⦄</code>。ここでは同じものと読んでよい）として宣言しているので、機械が埋めてくれるからである（型注釈 <code>: f x = f y</code> は「f x = f y を得る」という文の写しで、消しても通る）。</p>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="39" data-exercise="39">
-<li>定義を開いた最初の <code>example</code> で、<code>hg (f x) (f y) h</code> と <code>hf x y (hg (f x) (f y) h)</code> の型を内側から順に予想せよ。</li>
+<ol class="exercise" start="37" data-exercise="37">
+<li>定義を開いた最初の <code>example</code> で、<code>hg (f x) (f y) h</code> と <code>hf x y (hg (f x) (f y) h)</code> の型を内側から順に予想し、<code>#check</code> で確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="39"><summary>解答 39</summary>
-<p><code>h : g (f x) = g (f y)</code> を <code>hg</code> に渡すと <code>hg (f x) (f y) h : f x = f y</code>。それを <code>hf</code> に渡すと <code>hf x y (hg (f x) (f y) h) : x = y</code> となる。</p>
+<details class="sol" data-exercise="37"><summary>解答 37</summary>
+<pre class="lean"><code><span class="kw">section</span>
+<span class="kw">variable</span> {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
+<span class="kw">variable</span> (hg : ∀ u v, g u = g v → u = v) (hf : ∀ x y, f x = f y → x = y)
+<span class="kw">variable</span> (x y : α) (h : g (f x) = g (f y))
+
+<span class="kw">#check</span> hg (f x) (f y) h</code></pre>
+<pre class="quote"><code>hg (f x) (f y) h : f x = f y</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> hf x y (hg (f x) (f y) h)</code></pre>
+<pre class="quote"><code>hf x y (hg (f x) (f y) h) : x = y</code></pre>
+<p><code>hg</code> を使って <code>f x = f y</code> の証明を作り、それを <code>hf</code> に渡すと <code>x = y</code> の証明になる。上の <code>section</code> と <code>variable</code> は、この確認に使う仮定をまとめて置いている。</p>
+<pre class="lean"><code><span class="kw">end</span></code></pre>
 </details>
-<ol class="exercise" start="40" data-exercise="40">
+<ol class="exercise" start="38" data-exercise="38">
 <li>恒等関数が単射であることを示す <code>theorem id_injective (α : Type) : Function.Injective (fun x : α =&gt; x)</code> を書け。</li>
 </ol>
-<details class="sol" data-exercise="40"><summary>解答 40</summary>
+<details class="sol" data-exercise="38"><summary>解答 38</summary>
 <pre class="lean"><code><span class="kw">theorem</span> id_injective (α : <span class="sort">Type</span>) : Function.Injective (<span class="kw">fun</span> x : α =&gt; x) :=
   <span class="kw">fun</span> x y h =&gt; (h : x = y)</code></pre>
 <p>恒等関数について仮定される等式は最初から <code>x = y</code> なので、その証明 <code>h</code> をそのまま返せばよい。</p>
@@ -348,6 +327,7 @@ is not definitionally equal to the right-hand side
 <h3 id="sec-CH.dependent-products">整理 — 依存積と「すべての」</h3>
 <p>単射の合成では、対象を任意に取り、仮定の証明に対象を当てはめて使った。この操作を、依存関数の型として整理しよう。</p>
 <p>対象の型を <code>A</code> とし、各 <code>x : A</code> に命題を割り当てる関数 <code>Q : A → Prop</code> を考える。このように、対象を受け取ると命題が決まる関数を<strong>述語</strong>という。「どの <code>x</code> についても <code>Q x</code>」は <code>∀ x, Q x</code> と書く。これを示すには、<code>x</code> を一つ受け取って <code>Q x</code> の証明を返す。つまり、ここでも作る項は <code>fun</code> である。</p>
+<p>各命題 <code>Q x</code> をその証明の型と思うと、全称命題の証明は依存積$\prod_{x \in A} Q(x)$ の要素に対応する。各 <code>x</code> に対して、その行き先 <code>Q x</code> の項、すなわち証明を一つずつ与えるのである。</p>
 <p>小例には等式を使う。<code>a = a</code> のように両辺が同じになる等式の証明は <code>rfl</code> と書く（<a href="#sec-CH.propositions">0節</a>で見たとおりである）。どの自然数も自分自身に等しい:</p>
 <pre class="lean"><code><span class="kw">theorem</span> all_refl : ∀ n : Nat, n = n :=
   <span class="kw">fun</span> n =&gt; (rfl : n = n)
@@ -391,10 +371,10 @@ is not definitionally equal to the right-hand side
 <pre class="quote"><code>all_mul_zero (n : Nat) : IsZero (n * 0)</code></pre>
 <p>証明が <code>fun _ =&gt; rfl</code> で済むのは、<code>IsZero (n * 0)</code> が定義上 <code>n * 0 = 0</code> で、 <code>n * 0</code> が<strong>計算で</strong> <code>0</code> になるからである（<a href="#sec-CH.propositions">0節</a>の <code>1 + 1 = 2</code> と同じ理屈）。</p>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="41" data-exercise="41">
+<ol class="exercise" start="39" data-exercise="39">
 <li><code>#check applyForall all_mul_zero 7</code> の表示を予想してから確かめよ。引数7を渡すと、結果の命題にも7が入ることを説明せよ。</li>
 </ol>
-<details class="sol" data-exercise="41"><summary>解答 41</summary>
+<details class="sol" data-exercise="39"><summary>解答 39</summary>
 <pre class="lean"><code><span class="kw">#check</span> applyForall all_mul_zero 7</code></pre>
 <pre class="quote"><code>applyForall all_mul_zero 7 : IsZero (7 * 0)</code></pre>
 <p><code>∀ n, IsZero (n * 0)</code> に点 <code>7</code> を代入した、特殊化された命題の証明になる。</p>
@@ -420,7 +400,7 @@ is not definitionally equal to the right-hand side
   fun hP =&gt; hQR hP</code></pre>
 <p><code>hQR</code> が要求するのは Q の証明だが、渡した <code>hP</code> は P の証明である。 Lean はこの適用を型の不一致として拒否する。紙の証明で「Q である」という一段を飛ばしたことが、そのまま引数の型の不一致になる。</p>
 <h3>省略を補う処理と、完成した項の検査</h3>
-<p>ソースの記法を展開し、暗黙引数などを補うのが<strong>エラボレータ</strong>である。その後、完成した項が宣言どおりの型を持つかを<strong>カーネル</strong>が検査する。補完の仕組みが賢いことと、出来上がった項が正しいことは、別に確かめられる。詳しい例は <a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の7節</a>で読む。</p>
+<p>ソースの記法を展開し、暗黙引数などを補うのが<strong>エラボレータ</strong>である。その後、完成した項が宣言どおりの型を持つかを<strong>カーネル</strong>が検査する。補完の仕組みが賢いことと、出来上がった項が正しいことは、別に確かめられる。詳しい例は <a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の8節</a>で読む。</p>
 <p>ここまでで、仮定や対象を受け取り、適用で進む証明を読めた。次は <code>03_InductiveTypes.lean</code> で構成子と場合分けを学ぶ。<code>04_Exists.lean</code> では、それを使って存在を含む証明を読み、全射の合成へ進む。</p>
 </main>
 <nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span><a href="03_inductivetypes.html">03_InductiveTypes →</a></span></nav>

@@ -85,7 +85,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <h2>この定理を信じるには何を信じればよいか</h2>
 <p>末尾の定理 <code>Homeomorph.ofContinuousBijective</code> を信じるのに必要なのは、次の3つだけである。</p>
 <ol>
-<li>Lean の<strong>カーネル</strong>が正しいこと。エラボレータやタクティクがどれだけ複雑でも、最後に項を検査するのはカーネルの小さな規則集だけである（<a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の7節</a>）</li>
+<li>Lean の<strong>カーネル</strong>が正しいこと。エラボレータやタクティクがどれだけ複雑でも、最後に項を検査するのはカーネルの小さな規則集だけである（<a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の8節</a>）</li>
 <li>このファイルに書いた<strong>定義</strong>が、意図した数学的概念を写していること</li>
 <li>末尾の <code>#print axioms</code> に表示される3つの公理</li>
 </ol>
@@ -95,10 +95,10 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <p>主要な名前付きの定義・定理の直後に <code>#check 名前</code> を置き、その表示を <code>01_TypesAndTerms.lean</code> と同じ Infoview 風の枠で書き添えてある。 <code>01_TypesAndTerms.lean</code> 以来の読み方——表示を見る前に「いま何がどんな型で手に入るはずか」を<strong>予想</strong>してから確かめる——を、ここでも続けてほしい。</p>
 <p>表示は <code>名前 (x : A) (y : B) : C</code> という「引数の列 : 結果の型」の形をとる。これは関数型 <code>名前 : A → B → C</code> と<strong>同じ型の別表示</strong>である。 <code>def f (n : α) : β := …</code> と <code>def f : α → β := fun n =&gt; …</code> が同じ宣言の2通りの書き方である（<a href="01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>）のと対応して、表示もこの2つの形を行き来する。括弧 <code>( )</code> <code>{ }</code> の違いは <a href="01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> 4節</a>、<code>[ ]</code> は <a href="05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 1節</a>。</p>
 <h2 id="sec-Top.tactics">1. タクティク — 証明のもう1つの書き方</h2>
-<p><code>02_Forall.lean</code>・<code>04_Exists.lean</code> では、証明はすべて項として直接書いた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 <a href="04_exists.html#sec-CH.products"><code>04_Exists.lean</code> 1節</a>の <code>swapAnd</code> をタクティクで書き直してみる。</p>
+<p><code>02_Forall.lean</code>・<code>04_Exists.lean</code> では、証明はすべて項として直接書いた。Lean にはもう1つの流儀があり、 <code>by</code> に続けて、項を組み立てる<strong>命令</strong>（タクティク）の列を書く。 <a href="04_exists.html#sec-CH.products"><code>04_Exists.lean</code> 2節</a>の <code>swapAnd</code> をタクティクで書き直してみる。</p>
 <pre class="lean"><code><span class="kw">theorem</span> swapAnd&#x27; {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">by</span>
   <span class="kw">intro</span> h            <span class="cm">-- `fun h =&gt;` に対応</span>
-  <span class="kw">exact</span> ⟨h.2, h.1⟩   <span class="cm">-- この項をそのまま置く</span>
+  <span class="kw">exact</span> ⟨h.right, h.left⟩   <span class="cm">-- この項をそのまま置く</span>
 
 <span class="kw">#check</span> swapAnd&#x27;</code></pre>
 <pre class="quote"><code>swapAnd&#x27; {p q : Prop} : p ∧ q → q ∧ p</code></pre>
@@ -106,8 +106,8 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <pre class="lean"><code><span class="kw">#print</span> swapAnd&#x27;</code></pre>
 <pre class="quote"><code>theorem swapAnd&#x27; : ∀ {p q : Prop}, p ∧ q → q ∧ p :=
 fun {p q} h ↦ ⟨h.right, h.left⟩</code></pre>
-<p>タクティクが生成した項は、<a href="04_exists.html#sec-CH.products"><code>04_Exists.lean</code> 1節</a>で手書きした <code>swapAnd</code> と同じものである。</p>
-<p>だから<a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> 7節</a>の話はそのまま当てはまる: タクティクで書いた証明も、出来上がった項が型検査を通ることで検証される。</p>
+<p>タクティクが生成した項は、<a href="04_exists.html#sec-CH.products"><code>04_Exists.lean</code> 2節</a>で手書きした <code>swapAnd</code> と同じものである。</p>
+<p>だから<a href="04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> 8節</a>の話はそのまま当てはまる: タクティクで書いた証明も、出来上がった項が型検査を通ることで検証される。</p>
 <p>このファイルは証明が長いので、タクティク主体で書く。出てくるものの早見表:</p>
 <ul>
 <li><code>intro h</code> — 仮定を1つ取り込む（<code>fun h =&gt;</code>）</li>
@@ -129,10 +129,10 @@ fun {p q} h ↦ ⟨h.right, h.left⟩</code></pre>
 <p>初出の箇所にも、それぞれ短い説明を添えてある。</p>
 <p>また、タクティクで書いた証明にはそれぞれ、<strong>同じ命題の項スタイルの証明</strong>を対にして並べる（本文の証明の直後の <code>example</code>）。どちらの流儀でも最終的に同じ型の項に行き着くことの、実地の見比べである。</p>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="135" data-exercise="135">
-<li><a href="04_exists.html#sec-CH.sums"><code>04_Exists.lean</code> 2節</a>の <code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、<code>#print</code> で生成された項を元の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
+<ol class="exercise" start="132" data-exercise="132">
+<li><a href="04_exists.html#sec-CH.sums"><code>04_Exists.lean</code> 3節</a>の <code>swapOr</code> をタクティク（<code>intro</code>・<code>cases</code>・<code>exact</code>）で書き直し、<code>#print</code> で生成された項を元の <code>swapOr</code> と見比べよ。字面は一致しない—— <code>cases</code> は <code>match</code> ではなく <code>Or.casesOn</code> を直接置くからである。 <strong>それでも型は同じ</strong>であり、検査されるのはその型だけである、というのが本節の要点である。</li>
 </ol>
-<details class="sol" data-exercise="135"><summary>解答 135</summary>
+<details class="sol" data-exercise="132"><summary>解答 132</summary>
 <pre class="lean"><code><span class="kw">theorem</span> swapOrTac {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">by</span>
   <span class="kw">intro</span> h
   <span class="kw">cases</span> h <span class="kw">with</span>
@@ -144,10 +144,10 @@ fun {p q} h ↦ ⟨h.right, h.left⟩</code></pre>
 fun {p q} h ↦ Or.casesOn (motive := fun t ↦ h = t → q ∨ p) h (fun hp h ↦ Or.inr hp) (fun hq h ↦ Or.inl hq) (Eq.refl h)</code></pre>
 <p><code>04_Exists.lean</code> の <code>swapOr</code>（<code>match</code> で書いた項）と字面は一致しない——<code>cases</code> は <code>Or.casesOn</code> を直接置くからである。それでも型は同じ <code>p ∨ q → q ∨ p</code> であり、検査されるのはその型だけである。</p>
 </details>
-<ol class="exercise" start="136" data-exercise="136">
+<ol class="exercise" start="133" data-exercise="133">
 <li><code>theorem idTac {p : Prop} : p → p</code> を <code>intro</code>・<code>exact</code> で書き、<code>#print idTac</code> の表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。</li>
 </ol>
-<details class="sol" data-exercise="136"><summary>解答 136</summary>
+<details class="sol" data-exercise="133"><summary>解答 133</summary>
 <pre class="lean"><code><span class="kw">theorem</span> idTac {p : <span class="sort">Prop</span>} : p → p := <span class="kw">by</span>
   <span class="kw">intro</span> h
   <span class="kw">exact</span> h
@@ -182,7 +182,7 @@ fun {p} h ↦ h</code></pre>
 
 <span class="kw">#check</span> (∅ : Set Nat)</code></pre>
 <pre class="quote"><code>∅ : Set Nat</code></pre>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>instance</code> の内部名</h3>
+<aside class="note note--optional"><h3>補足: <code>instance</code> の内部名</h3>
 <p><code>instance</code> は名前のない宣言だが、実際には Lean が自動で命名している。上の3つは <code>Set.instInter</code> のような名前になる（<code>set_option pp.explicit true</code> で項を表示すると中に見える）。 <code>instance memInst : Membership α (Set α) := …</code> と自分で名前を付けてもよい。</p></aside>
 <p>全体集合。どの点も属する集合（つねに <code>True</code> を返す述語）。束縛子を <code>_a</code> としたのは、述語の中で点を使わないから（<code>_</code> は「使わない」印）。</p>
 <pre class="lean"><code><span class="kw">def</span> univ : Set α := {_a | True}
@@ -241,7 +241,7 @@ fun {p} h ↦ h</code></pre>
 <span class="kw">example</span> : (<span class="kw">fun</span> n : Nat =&gt; n + 1) ⁻¹&#x27; {m | m = 3} = {n | n + 1 = 3} := rfl</code></pre>
 <p>括弧を省いた記法は結合の強さに従って読まれる。細かい順位は次の補足で確かめる。</p>
 <aside class="note note--optional">
-<h3>補足（初読は飛ばしてよい）: 記法の結合の強さ</h3>
+<h3>補足: 記法の結合の強さ</h3>
 <p><code>postfix:max</code> や <code>infixl:80</code> の数字は結合の強さで、大きいほど強く結合する。ここまでの記法と標準ライブラリの <code>∩</code>（70）・<code>∪</code>（65）の間には</p>
 <pre class="quote"><code>ᶜ (max)　&gt;　&#x27;&#x27; と ⁻¹&#x27; (80)　&gt;　∩ (70)　&gt;　∪ (65)</code></pre>
 <p>の関係がある。次の等式は「左辺を規則どおりに読むと右辺になる」ことの確認で、両辺が<strong>同じ項</strong>に構文解析されるからこそ <code>rfl</code> で通る。</p>
@@ -258,7 +258,7 @@ fun {p} h ↦ h</code></pre>
 <span class="kw">#check</span> Finite</code></pre>
 <pre class="quote"><code>Set.Finite {α : Type} (s : Set α) : Prop</code></pre>
 <p>結果が <code>Prop</code>。つまりこれは集合の<strong>性質</strong>（集合を受け取って命題を返す述語）。</p>
-<p>空集合は有限。<code>n = 0</code> とし、拾う関数には <code>Fin.elim0</code>（<code>Fin 0</code> は空の型なので、そこからはどこへでも関数が作れる）を渡す。<code>⟨…, …, …⟩</code> は <code>∃</code> を示す形（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 4節</a>）。</p>
+<p>空集合は有限。<code>n = 0</code> とし、拾う関数には <code>Fin.elim0</code>（<code>Fin 0</code> は空の型なので、そこからはどこへでも関数が作れる）を渡す。<code>⟨…, …, …⟩</code> は <code>∃</code> を示す形（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 1節</a>）。</p>
 <pre class="lean"><code><span class="kw">theorem</span> Finite.empty : (∅ : Set α).Finite :=
   ⟨0, Fin.elim0, <span class="kw">fun</span> _ ha =&gt; False.elim ha⟩
 
@@ -285,7 +285,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="quote"><code>Set.compl_compl {α : Type} (s : Set α) : sᶜᶜ = s</code></pre>
 <p>どの集合 <code>s</code> にも適用できる等式。<code>∀ s, …</code> と書くのと <code>(s : Set α)</code> を引数に取るのは同じこと（<a href="02_forall.html#sec-CH.dependent-products"><code>02_Forall.lean</code> 1節</a>: ∀ は依存関数型の記法）。</p>
 <p>2つの合併は「2つだけからなる族」の合併に書き直せる。 <code>{u | u = s ∨ u = t}</code> は要素が <code>s</code> と <code>t</code> の2つ（だけ）の集合族。位相の公理は族の合併の形で書くので、この橋渡しを補題に切り出しておく（位相の節の <code>isOpen_union</code> で使う）。</p>
-<p>証明中の <code>have ⟨u, hu, hau⟩ := ha</code> はここが初出の構文で、「<code>ha</code>（<code>∃</code> の証明）を <strong>分解して名前を付ける</strong>」と読む——<code>match</code>（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 4節</a>）の 1ケース版の略記であり、タクティクとしても項としても同じ形で書ける。分解を伴わない <code>have h : 主張 := 根拠</code>（名前を付けて続きで使う）もこの先で頻用する。<code>h ▸ hau</code> は「等式 <code>h</code> で <code>hau</code> の型を書き換える」記法。</p>
+<p>証明中の <code>have ⟨u, hu, hau⟩ := ha</code> はここが初出の構文で、「<code>ha</code>（<code>∃</code> の証明）を <strong>分解して名前を付ける</strong>」と読む——<code>match</code>（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 1節</a>）の 1ケース版の略記であり、タクティクとしても項としても同じ形で書ける。分解を伴わない <code>have h : 主張 := 根拠</code>（名前を付けて続きで使う）もこの先で頻用する。<code>h ▸ hau</code> は「等式 <code>h</code> で <code>hau</code> の型を書き換える」記法。</p>
 <pre class="lean"><code><span class="kw">theorem</span> union_eq_sUnion (s t : Set α) : s ∪ t = ⋃₀ {u | u = s ∨ u = t} := <span class="kw">by</span>
   <span class="kw">apply</span> ext
   <span class="kw">intro</span> a
@@ -341,25 +341,25 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
     ∀ i, a ∈ W i := <span class="kw">fun</span> n W a h i =&gt;
   <span class="kw">match</span> n <span class="kw">with</span>
   | 0 =&gt; Fin.elim0 i
-  | n + 1 =&gt; Fin.cases h.1 (<span class="kw">fun</span> j =&gt; interFin_mem n (<span class="kw">fun</span> k =&gt; W k.succ) a h.2 j) i
+  | n + 1 =&gt; Fin.cases h.left (<span class="kw">fun</span> j =&gt; interFin_mem n (<span class="kw">fun</span> k =&gt; W k.succ) a h.right j) i
 
 <span class="kw">#check</span> interFin_mem</code></pre>
 <pre class="quote"><code>Set.interFin_mem {α : Type} (n : Nat) (W : Fin n → Set α) (a : α) : a ∈ interFin n W → ∀ (i : Fin n), a ∈ W i</code></pre>
 <p><code>mem_interFin</code> と仮定・結論が入れ替わっている。2つ合わせて同値。</p>
 <pre class="lean"><code><span class="kw">end</span> Set</code></pre>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="137" data-exercise="137">
-<li><code>example : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat)</code> を証明せよ。ヒント: <code>∈</code> と <code>setOf</code> を展開すればゴールは <code>2 &lt; 5</code>、すなわち <code>3 ≤ 5</code>—— <a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 5節</a>の構成子 <code>Nat.le.step</code>・<code>Nat.le.refl</code> で書ける。</li>
+<ol class="exercise" start="134" data-exercise="134">
+<li><code>example : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat)</code> を証明せよ。ヒント: <code>∈</code> と <code>setOf</code> を展開すればゴールは <code>2 &lt; 5</code>、すなわち <code>3 ≤ 5</code>—— <a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 6節</a>の構成子 <code>Nat.le.step</code>・<code>Nat.le.refl</code> で書ける。</li>
 </ol>
-<details class="sol" data-exercise="137"><summary>解答 137</summary>
+<details class="sol" data-exercise="134"><summary>解答 134</summary>
 <pre class="lean"><code><span class="kw">example</span> : (2 : Nat) ∈ ({n | n &lt; 5} : Set Nat) :=
   Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
-<p><code>∈</code> と <code>setOf</code> を展開するとゴールは <code>2 &lt; 5</code>、すなわち <code>2 + 1 ≤ 5</code>。 <code>Nat.le.refl : 3 ≤ 3</code> から <code>step</code> を2回で <code>3 ≤ 5</code> に届く（<a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 5節</a>）。</p>
+<p><code>∈</code> と <code>setOf</code> を展開するとゴールは <code>2 &lt; 5</code>、すなわち <code>2 + 1 ≤ 5</code>。 <code>Nat.le.refl : 3 ≤ 3</code> から <code>step</code> を2回で <code>3 ≤ 5</code> に届く（<a href="04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 6節</a>）。</p>
 </details>
-<ol class="exercise" start="138" data-exercise="138">
+<ol class="exercise" start="135" data-exercise="135">
 <li><code>#print axioms Set.compl_compl</code> の結果を予想してから確かめよ（背理法を使った証明だった）。</li>
 </ol>
-<details class="sol" data-exercise="138"><summary>解答 138</summary>
+<details class="sol" data-exercise="135"><summary>解答 135</summary>
 <pre class="lean"><code><span class="kw">#print</span> axioms Set.compl_compl</code></pre>
 <pre class="quote"><code>&#x27;Set.compl_compl&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
 <p>背理法 <code>Classical.byContradiction</code> を使ったので、<code>Classical.choice</code> への依存が現れる（<code>propext</code>・<code>Quot.sound</code> はその道連れ）。</p>
@@ -376,13 +376,13 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> Function.Bijective</code></pre>
 <pre class="quote"><code>Function.Bijective {α β : Type} (f : α → β) : Prop</code></pre>
 <p>写像の性質（写像を受け取って命題を返す）。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: なぜ <code>∧</code> でなく <code>structure</code> なのか</h3>
-<p><code>Function.Injective f ∧ Function.Surjective f</code> と束ねても内容は同じだが、ここでは <code>structure</code> にする。取り出しが <code>hbij.1</code> ではなく <code>hbij.injective</code> と書けて、読み手に意図が伝わる。フィールドごとに docstring を付けられ、フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、という利点もある。</p></aside>
+<aside class="note note--optional"><h3>補足: なぜ <code>∧</code> でなく <code>structure</code> なのか</h3>
+<p><code>Function.Injective f ∧ Function.Surjective f</code> と束ねても内容は同じだが、ここでは <code>structure</code> にする。<code>hbij.injective</code>、<code>hbij.surjective</code> のように、性質の名前で取り出せるので、読み手に意図が伝わる。フィールドごとに docstring を付けられ、フィールドが増えたり順序が変わったりしても使う側の記述が壊れにくい、という利点もある。</p></aside>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="139" data-exercise="139">
+<ol class="exercise" start="136" data-exercise="136">
 <li>恒等写像が全単射であること <code>example : Function.Bijective (fun n : Nat =&gt; n)</code> を証明せよ（<code>injective</code> は仮定をそのまま返し、<code>surjective</code> は証人 <code>b</code> と <code>rfl</code>）。</li>
 </ol>
-<details class="sol" data-exercise="139"><summary>解答 139</summary>
+<details class="sol" data-exercise="136"><summary>解答 136</summary>
 <pre class="lean"><code><span class="kw">example</span> : Function.Bijective (<span class="kw">fun</span> n : Nat =&gt; n) :=
   ⟨<span class="kw">fun</span> _ _ h =&gt; h, <span class="kw">fun</span> b =&gt; ⟨b, rfl⟩⟩</code></pre>
 <p>単射性: 仮定 <code>h : a₁ = a₂</code> がそのままゴール（恒等写像なので送り先の等式＝元の等式）。先頭の <code>fun _ _</code> は2点 <code>a₁ a₂</code> のぶんの束縛である。全射性: 点 <code>b</code> への証人は <code>b</code> 自身、根拠は <code>rfl</code>。</p>
@@ -414,7 +414,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> TopologicalSpace</code></pre>
 <pre class="quote"><code>TopologicalSpace (X : Type) : Type</code></pre>
 <p>クラスも「型を受け取って型を返す関数」。<code>TopologicalSpace X</code> は「<code>X</code> 上の位相全体の型」で、その項1つが位相1つに当たる。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 開集合系を「集合の集合」と見る</h3>
+<aside class="note note--optional"><h3>補足: 開集合系を「集合の集合」と見る</h3>
 <p>主フィールドの型 <code>Set X → Prop</code> は <code>Set (Set X)</code> と同じもの——つまり <code>IsOpen</code> は「部分集合の集まり」P(P(X)) の元である。「開集合系を指定する」という日常の言い方が、そのまま型に写っている。</p></aside>
 <pre class="lean"><code><span class="cm">-- `export` で `TopologicalSpace.IsOpen` などを接頭辞なしの `IsOpen` で書けるようにする</span>
 <span class="kw">export</span> TopologicalSpace (IsOpen isOpen_univ isOpen_inter isOpen_sUnion)
@@ -438,7 +438,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> isOpen_empty</code></pre>
 <pre class="quote"><code>isOpen_empty {X : Type} [TopologicalSpace X] : IsOpen ∅</code></pre>
 <p><code>[TopologicalSpace X]</code> がインスタンス引数として表示に現れる。結論の <code>IsOpen ∅</code> がどの位相の話かは、この引数が決めている。</p>
-<p>同じ証明を項で直接書くと、次のようになる。<code>have h : … := …;</code> の並びがタクティクの <code>have</code> に、<code>h ▸ e</code> が <code>rw [← h]; exact e</code> に対応する（<code>▸</code> は等式 <code>h</code> で <code>e</code> の型を書き換える演算子。<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 8節</a>）。</p>
+<p>同じ証明を項で直接書くと、次のようになる。<code>have h : … := …;</code> の並びがタクティクの <code>have</code> に、<code>h ▸ e</code> が <code>rw [← h]; exact e</code> に対応する（<code>▸</code> は等式 <code>h</code> で <code>e</code> の型を書き換える演算子。<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 9節</a>）。</p>
 <pre class="lean"><code><span class="kw">example</span> : IsOpen (∅ : Set X) :=
   <span class="kw">have</span> h : (⋃₀ (∅ : Set (Set X))) = (∅ : Set X) :=
     Set.ext <span class="kw">fun</span> _ =&gt; ⟨<span class="kw">fun</span> ⟨_, hs, _⟩ =&gt; False.elim hs, <span class="kw">fun</span> ha =&gt; False.elim ha⟩
@@ -494,10 +494,10 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <pre class="quote"><code>discrete (X : Type) : TopologicalSpace X</code></pre>
 <p>型を受け取って<strong>位相そのもの</strong>（<code>TopologicalSpace X</code> の項）を返す関数。</p>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="140" data-exercise="140">
+<ol class="exercise" start="137" data-exercise="137">
 <li><code>example : (discrete Nat).IsOpen {n | n = 0}</code> を証明せよ（離散位相では、どの部分集合の開性も <code>True</code>——証明は <code>trivial</code>）。</li>
 </ol>
-<details class="sol" data-exercise="140"><summary>解答 140</summary>
+<details class="sol" data-exercise="137"><summary>解答 137</summary>
 <pre class="lean"><code><span class="kw">example</span> : (discrete Nat).IsOpen {n | n = 0} := trivial</code></pre>
 <p>離散位相の <code>IsOpen</code> は定義上どの集合でも <code>True</code>。証明は構成子 <code>trivial</code>。</p>
 </details>
@@ -529,10 +529,10 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
   {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) : Continuous fun x ↦ g (f x)</code></pre>
 <p>空間3つぶんのインスタンス引数が並ぶ。明示引数は証明 <code>hg</code> <code>hf</code> の2つで、先に適用される <code>f</code> の連続性が<strong>後ろ</strong>に来る（合成の記法 <code>g ∘ f</code> と同じ順）。</p>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="141" data-exercise="141">
+<ol class="exercise" start="138" data-exercise="138">
 <li><code>#check @Continuous</code> の表示を予想してから確かめよ（2つの空間の位相が、どの種類の括弧で並ぶか）。</li>
 </ol>
-<details class="sol" data-exercise="141"><summary>解答 141</summary>
+<details class="sol" data-exercise="138"><summary>解答 138</summary>
 <pre class="lean"><code><span class="kw">#check</span> @Continuous</code></pre>
 <pre class="quote"><code>@Continuous : {X : Type} → [TopologicalSpace X] → {Y : Type} → [TopologicalSpace Y] → (X → Y) → Prop</code></pre>
 <p><code>@</code> 付きの表示では、暗黙引数も含めた引数の列が <code>→</code> でつながった 1本の関数型として見える。2つの空間の位相は、どちらも角括弧 <code>[TopologicalSpace X]</code>・<code>[TopologicalSpace Y]</code>——インスタンス引数——で並ぶ。</p>
@@ -560,7 +560,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">#check</span> IsCompact</code></pre>
 <pre class="quote"><code>IsCompact {X : Type} [TopologicalSpace X] (K : Set X) : Prop</code></pre>
 <p>表示は短いが、定義の中身は上のとおり <code>∀</code> が3つ重なった命題である。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>IsCompact</code> を <code>class</code> にしない理由</h3>
+<aside class="note note--optional"><h3>補足: <code>IsCompact</code> を <code>class</code> にしない理由</h3>
 <p><code>Hausdorff</code> と違って、こちらは <code>class</code> にしない。<code>IsCompact</code> は個々の部分集合ごとの述語で、<code>hK : IsCompact K</code> というふつうの仮定として渡したり、補題の<strong>結論</strong>として新しく作ったりする対象だからである（集合ごとに登録簿へ載せる運用はできない）。空間全体の性質である <code>CompactSpace</code>（下）は <code>Hausdorff</code> と同様 <code>class</code> にする。</p></aside>
 <p>空間そのものがコンパクトであること: 全体集合 <code>univ</code> がコンパクト集合である。 <code>Hausdorff</code> と同じく、命題1つだけの <code>class : Prop</code>。</p>
 <pre class="lean"><code><span class="kw">class</span> CompactSpace (X : <span class="sort">Type</span>) [TopologicalSpace X] : <span class="sort">Prop</span> <span class="kw">where</span>
@@ -576,7 +576,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <li>同じ <code>J</code> が <code>f &#x27;&#x27; K</code> の有限部分被覆を与える（<code>Set.image_subset_biUnion</code>）</li>
 </ol>
 <p>1 と 3 は位相と無関係な、像と逆像についての一般的な補題である。有限性は受け取った <code>J</code> をそのまま使い回すだけなので、<code>Fin n</code> を開ける必要はない。</p>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: <code>lemma</code> という宣言名</h3>
+<aside class="note note--optional"><h3>補足: <code>lemma</code> という宣言名</h3>
 <p>なお mathlib では、細かい補題を <code>theorem</code> の同義語 <code>lemma</code> で宣言する慣例があるが、<code>lemma</code> は core Lean にはない（mathlib がマクロで定義している）。この教材では一貫して <code>theorem</code> を使う。</p></aside>
 <p>像が族で覆われるなら、元の集合は逆像の族で覆われる（方針の 1）。位相と無関係な補題なので、節の変数 <code>X Y</code>（位相つき）ではなく新しい型変数 <code>α β</code> で述べる。</p>
 <pre class="lean"><code><span class="kw">theorem</span> Set.subset_preimage_iUnion {α β : <span class="sort">Type</span>} {f : α → β} {K : Set α} {I : <span class="sort">Type</span>}
@@ -594,7 +594,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <span class="kw">example</span> {α β : <span class="sort">Type</span>} {f : α → β} {K : Set α} {I : <span class="sort">Type</span>}
     {U : I → Set β} (h : f &#x27;&#x27; K ⊆ ⋃ i, U i) : K ⊆ ⋃ i, f ⁻¹&#x27; U i :=
   <span class="kw">fun</span> x hx =&gt; h (f x) ⟨x, hx, rfl⟩</code></pre>
-<p>逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。証明中の <code>have ⟨x, hx, hfx⟩ := …</code> は <code>∃</code>（依存和）の分解（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 4節</a>）。</p>
+<p>逆像の部分族で覆われるなら、像は同じ添字の部分族で覆われる（方針の 3）。証明中の <code>have ⟨x, hx, hfx⟩ := …</code> は <code>∃</code>（依存和）の分解（<a href="04_exists.html#sec-CH.dependent-sums"><code>04_Exists.lean</code> 1節</a>）。</p>
 <pre class="lean"><code><span class="kw">theorem</span> Set.image_subset_biUnion {α β : <span class="sort">Type</span>} {f : α → β} {K : Set α} {I : <span class="sort">Type</span>}
     {J : Set I} {U : I → Set β} (h : K ⊆ ⋃ i ∈ J, f ⁻¹&#x27; U i) : f &#x27;&#x27; K ⊆ ⋃ i ∈ J, U i := <span class="kw">by</span>
   <span class="kw">intro</span> b hb
@@ -633,10 +633,10 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
         (Set.subset_preimage_iUnion hcov) <span class="kw">with</span>
     | ⟨J, hJ, hsub⟩ =&gt; ⟨J, hJ, Set.image_subset_biUnion hsub⟩</code></pre>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="142" data-exercise="142">
+<ol class="exercise" start="139" data-exercise="139">
 <li><code>#print axioms Set.subset_preimage_iUnion</code> の結果を予想してから確かめよ（包含の付け替えだけの証明に、公理は要るだろうか）。</li>
 </ol>
-<details class="sol" data-exercise="142"><summary>解答 142</summary>
+<details class="sol" data-exercise="139"><summary>解答 139</summary>
 <pre class="lean"><code><span class="kw">#print</span> axioms Set.subset_preimage_iUnion</code></pre>
 <pre class="quote"><code>&#x27;Set.subset_preimage_iUnion&#x27; does not depend on any axioms</code></pre>
 <p>包含の付け替えだけの証明なので、公理は1つも要らない。</p>
@@ -660,9 +660,9 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
       <span class="kw">have</span> ⟨W, hW, haW, hWs⟩ := h a ha
       <span class="kw">exact</span> ⟨W, ⟨hW, hWs⟩, haW⟩
     · <span class="kw">intro</span> ⟨W, hW, haW⟩
-      <span class="kw">exact</span> hW.2 a haW
+      <span class="kw">exact</span> hW.right a haW
   <span class="kw">rw</span> [heq]
-  <span class="kw">exact</span> isOpen_sUnion _ <span class="kw">fun</span> _ hW =&gt; hW.1
+  <span class="kw">exact</span> isOpen_sUnion _ <span class="kw">fun</span> _ hW =&gt; hW.left
 
 <span class="kw">#check</span> isOpen_of_nhds</code></pre>
 <pre class="quote"><code>isOpen_of_nhds {X : Type} [TopologicalSpace X] {s : Set X} (h : ∀ (a : X), a ∈ s → ∃ W, IsOpen W ∧ a ∈ W ∧ W ⊆ s) :
@@ -675,8 +675,8 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
       ⟨<span class="kw">fun</span> ha =&gt;
         <span class="kw">match</span> h a ha <span class="kw">with</span>
         | ⟨W, hW, haW, hWs⟩ =&gt; ⟨W, ⟨hW, hWs⟩, haW⟩,
-       <span class="kw">fun</span> ⟨_, hW, haW⟩ =&gt; hW.2 a haW⟩
-  heq ▸ isOpen_sUnion _ <span class="kw">fun</span> _ hW =&gt; hW.1</code></pre>
+       <span class="kw">fun</span> ⟨_, hW, haW⟩ =&gt; hW.right a haW⟩
+  heq ▸ isOpen_sUnion _ <span class="kw">fun</span> _ hW =&gt; hW.left</code></pre>
 <p>「点 <code>y</code> を分離する開集合の組」を名前付きで束ねた structure（<code>Function.Bijective</code> と同じ理由で、<code>∧</code> のネストではなくフィールド名を選ぶ）。<code>left</code> は <code>K</code> を覆う側として使い、<code>right</code> は <code>y</code> を含み、2つは交わらない。フィールドの型が前のフィールドに依存している（<a href="03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>）ことにも注意。</p>
 <p><code>K</code> はどこにも現れない: この structure は「点 <code>y</code> を分離する開集合の組」だけを束ねたもので、<code>K</code> との関係（<code>left</code> たちが <code>K</code> を覆うこと）は使う側の補題で述べる。定義は必要最小限の材料だけを持つのがよい。</p>
 <pre class="lean"><code><span class="kw">structure</span> SeparatingPair (y : Y) <span class="kw">where</span>
@@ -946,7 +946,7 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
       (Set.compl_compl (g ⁻¹&#x27; s)).symm.trans (congrArg (·ᶜ) h1)
     heq ▸ hcl</code></pre>
 <p>目標の定理: コンパクト空間からハウスドルフ空間への連続全単射は同相写像。（<code>#check</code> の表示を見る前に、主定理の型——空間の条件・<code>f</code> の条件・結論——がどんな引数の列になるか、自分で予想してから確かめてほしい。）</p>
-<p><code>where</code> 構文で <code>Homeomorph</code> の6フィールドを埋める。逆写像は、全射性 <code>hbij.surjective</code> の「存在する」から <code>Classical.choose</code> で1つ選んで作る。存在の証明から値を取り出すこの操作が普通の項の構成では許されないこと（<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 8節</a>の「対応のずれ」）の代金が、公理 <code>Classical.choice</code> への依存と <code>noncomputable</code>（この関数は計算はできないが、項としては正当）という印である。</p>
+<p><code>where</code> 構文で <code>Homeomorph</code> の6フィールドを埋める。逆写像は、全射性 <code>hbij.surjective</code> の「存在する」から <code>Classical.choose</code> で1つ選んで作る。存在の証明から値を取り出すこの操作が普通の項の構成では許されないこと（<a href="04_exists.html#sec-CH.prop-elimination"><code>04_Exists.lean</code> 9節</a>の「対応のずれ」）の代金が、公理 <code>Classical.choice</code> への依存と <code>noncomputable</code>（この関数は計算はできないが、項としては正当）という印である。</p>
 <p>最後のフィールドで使う <code>_root_.</code> は「トップレベルの名前」の明示。いま埋めているフィールド自身が <code>continuous_invFun</code> という同名なので、外の定理の方を指すために付けている。</p>
 <pre class="lean"><code><span class="kw">noncomputable</span> <span class="kw">def</span> Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y]
     (f : X → Y) (hf : Continuous f) (hbij : Function.Bijective f) : Homeomorph X Y <span class="kw">where</span>
@@ -980,28 +980,28 @@ propext : (a ∈ s ↔ a ∈ t) → (a ∈ s) = (a ∈ t)</code></pre>
 <p>なお <code>propext</code> は集合を述語として定義したことから、<code>Quot.sound</code> は <code>Set.ext</code> の中の <code>funext</code>（Lean では定理）から来ている。</p>
 <pre class="lean"><code><span class="kw">#print</span> axioms Homeomorph.ofContinuousBijective</code></pre>
 <pre class="quote"><code>&#x27;Homeomorph.ofContinuousBijective&#x27; depends on axioms: [propext, Classical.choice, Quot.sound]</code></pre>
-<aside class="note note--optional"><h3>補足（初読は飛ばしてよい）: 排中律から選択公理への依存経路</h3>
+<aside class="note note--optional"><h3>補足: 排中律から選択公理への依存経路</h3>
 <p><code>by_cases</code> は排中律を使う。Lean では排中律は公理として直接追加されたものではなく、 Diaconescu の定理によって <code>Classical.choice</code> から導かれた<strong>定理</strong>である。したがって <code>by_cases</code> を使った証明の公理一覧にも <code>Classical.choice</code> が現れる。</p></aside>
 <h3>✏ 練習</h3>
-<ol class="exercise" start="143" data-exercise="143">
+<ol class="exercise" start="140" data-exercise="140">
 <li><code>#print axioms isOpen_empty</code> の結果を予想してから確かめよ。 <code>Classical.choice</code> は入るだろうか（合併の公理と <code>Set.ext</code> だけで示した証明だった）。</li>
 </ol>
-<details class="sol" data-exercise="143"><summary>解答 143</summary>
+<details class="sol" data-exercise="140"><summary>解答 140</summary>
 <pre class="lean"><code><span class="kw">#print</span> axioms isOpen_empty</code></pre>
 <pre class="quote"><code>&#x27;isOpen_empty&#x27; depends on axioms: [propext, Quot.sound]</code></pre>
 <p><code>Set.ext</code>（中身は <code>funext</code> と <code>propext</code>）の使用で <code>propext</code> と <code>Quot.sound</code>（<code>funext</code> の道連れ）が入るが、<code>Classical.choice</code> は入らない——背理法なしの証明だったことが、ここからも確認できる。</p>
 </details>
-<ol class="exercise" start="144" data-exercise="144">
+<ol class="exercise" start="141" data-exercise="141">
 <li><code>discrete Bool</code> を使って、<code>TopologicalSpace Bool</code> の項を1つ <code>example</code> で書け。</li>
 </ol>
-<details class="sol" data-exercise="144"><summary>解答 144</summary>
+<details class="sol" data-exercise="141"><summary>解答 141</summary>
 <pre class="lean"><code><span class="kw">example</span> : TopologicalSpace Bool := discrete Bool</code></pre>
 <p><code>discrete</code> は「型を受け取って位相そのものを返す関数」なので、 <code>Bool</code> に適用するだけで項が得られる。</p>
 </details>
-<ol class="exercise" start="145" data-exercise="145">
+<ol class="exercise" start="142" data-exercise="142">
 <li><code>IsCompact.isClosed</code> の型で、「空間がハウスドルフ」という仮定が 3種類の括弧のどれで現れるか予想してから、本文の表示の枠で確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="145"><summary>解答 145</summary>
+<details class="sol" data-exercise="142"><summary>解答 142</summary>
 <p>角括弧（インスタンス引数）で現れる:</p>
 <pre class="quote"><code>IsCompact.isClosed {Y : Type} [TopologicalSpace Y] [Hausdorff Y] {K : Set Y} (hK : IsCompact K) : IsClosed K</code></pre>
 <p>「空間がハウスドルフ」は <code>[Hausdorff Y]</code>。位相と同じく空間に常置される性質なので、登録簿から自動で供給される形になっている。波括弧は型や集合の暗黙引数、丸括弧は明示的に渡す証明 <code>hK</code> である。</p>

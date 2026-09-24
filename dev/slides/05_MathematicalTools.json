@@ -13,8 +13,7 @@
     {
       "at": {
         "section": "Intro2.classes",
-        "tag": "h2",
-        "starts": "1. class と instance"
+        "tag": "h2"
       },
       "id": "class-registration",
       "label": "class は構造を登録して探す仕組み"
@@ -240,8 +239,7 @@
     {
       "at": {
         "section": "Intro2.notation",
-        "tag": "h2",
-        "starts": "2. 記法の自作 — syntax と macro_rules"
+        "tag": "h2"
       },
       "id": "syntax-and-macros",
       "label": "構文を追加し、項への展開を指定する"
@@ -297,8 +295,7 @@
     {
       "at": {
         "section": "Intro2.sets",
-        "tag": "h2",
-        "starts": "3. 集合 — Set を自作する"
+        "tag": "h2"
       },
       "id": "sets-as-predicates",
       "label": "部分集合を述語として作る"
@@ -379,11 +376,10 @@
       "at": {
         "section": "Intro2.sets",
         "tag": "ol",
-        "question": "def evens : Set Nat := {n | IsEven n} と宣言せよ（IsEven は 04_Exists.lean 4節の述語）。exampl",
-        "starts": "def evens : Set Nat := {n | IsEven n} と宣言せよ（I"
+        "starts": "def evens : Set Nat := {n | IsEven n}"
       },
       "id": "evens-exercise",
-      "label": "練習：偶数の集合と所属の証明"
+      "label": "練習：述語から偶数の集合を作る"
     },
     {
       "at": {
@@ -408,8 +404,7 @@
     {
       "at": {
         "section": "Intro2.namespaces",
-        "tag": "h2",
-        "starts": "4. namespace — 名前の接頭辞"
+        "tag": "h2"
       },
       "id": "namespace-geometry",
       "label": "名前空間の内側と外側で同じ項を調べる"

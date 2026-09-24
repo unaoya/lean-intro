@@ -134,9 +134,12 @@ main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
 .slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
 .slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
 .slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
-.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.45; margin-bottom: 8px; }
-.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; }
-.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.45; margin-bottom: 4px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
+.slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
+.slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
+.slide[data-density="dense"] :is(ul, ol), .print-slide[data-density="dense"] .print-content :is(ul, ol) { margin-bottom: 6px; }
 .enhanced .slide[hidden] { display: none; }
 .enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
 .enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
@@ -229,226 +232,83 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   </header>
   <div class="viewport" id="viewport">
     <main id="slides" aria-label="講義本文">
-      <article class="slide" id="04_exists-introduction" data-kind="main" data-label="項の作り方と証明の仕方を合わせる" data-section="04_Exists.intro" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">import</span> «02_Forall»
+      <article class="slide" id="04_exists-introduction" data-kind="main" data-label="存在・論理結合子・等式の証明" data-section="04_Exists.intro" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">import</span> «02_Forall»
 <span class="kw">import</span> «03_InductiveTypes»</span></code></pre>
 <div class="step" data-step="0"><h1>型と命題 II — かつ・または・否定・存在量化</h1></div>
 <p><span class="step" data-step="0"><code>02_Forall.lean</code> では、含意と全称を関数と適用として読んだ。 <code>03_InductiveTypes.lean</code> では、構成子で項を作り、場合分けや射影で使う道具を学んだ。この章で二つを合わせ、かつ・または・矛盾・存在の証明を読む。</span></p>
-<p><span class="step" data-step="1">偶数の和、全射の合成を例に存在の証明を読み、同じ節で依存和との対応を整理する。続いて、等式の証明で使う計算・帰納法と、命題を構成子で作る仕組みを確かめる。最後に全体の対応をまとめ、検査の詳細と、型と命題の対応の限界を見る。</span></p></article>
-<article class="slide" id="04_exists-and-introduction-elimination" data-kind="main" data-label="「かつ」を示すとき・使うとき" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.products">1. 直積型と「かつ」</h2></div>
-<p><span class="step" data-step="0">「p かつ q」から「q かつ p」を示す普通の証明を考えよう。仮定から p と q を取り出し、結論に必要な順にそろえればよい。この二つの動きが、組の射影と構成に対応する。</span></p>
-<p><span class="step" data-step="1"><strong>示すとき</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</span></p>
-<p><span class="step" data-step="2"><strong>使うとき</strong>: <code>.1</code> と <code>.2</code> で取り出す。組からは各成分が取れる。命題の言葉では、<code>p ∧ q</code> からは <code>p</code> も <code>q</code> も示せる。証明項の言葉では、<code>h : p ∧ q</code> から <code>h.1 : p</code> と <code>h.2 : q</code> を作り、それぞれ <code>p</code> の証明・<code>q</code> の証明として使える。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>でフィールドを番号で指定したのと同じ記法である。</span></p></article>
-<article class="slide" id="04_exists-product-and-conjunction" data-kind="main" data-label="型の組と証明の組を作る" data-section="CH.products" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> mkProd {α β : <span class="sort">Type</span>} (a : α) (b : β) : α × β := ⟨a, b⟩
-
-<span class="kw">#check</span> mkProd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">mkProd {α β : Type} (a : α) (b : β) : α × β</span></code></pre>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> mkAnd {p q : <span class="sort">Prop</span>} (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
-
-<span class="kw">#check</span> mkAnd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="3">mkAnd {p q : Prop} (hp : p) (hq : q) : p ∧ q</span></code></pre>
-<p><span class="step" data-step="4"><code>mkProd</code> の <code>×</code> が <code>∧</code> に変わっただけである。</span></p></article>
-<article class="slide" id="04_exists-swap-product" data-kind="main" data-label="組の入れ替えと「かつ」の入れ替え" data-section="CH.products" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: 組を入れ替える。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapProd {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
-
-<span class="kw">#check</span> swapProd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">swapProd {α β : Type} : α × β → β × α</span></code></pre>
-<p><span class="step" data-step="3">命題側: 「かつ」を入れ替える。<code>swapProd</code> と一字一句同じ証明項で書ける。</span></p>
-<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> swapAnd {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> h =&gt; ⟨h.2, h.1⟩
-
-<span class="kw">#check</span> swapAnd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="5">swapAnd {p q : Prop} : p ∧ q → q ∧ p</span></code></pre>
-<p><span class="step" data-step="6"><code>swapProd</code> と重なる。証明項も <code>fun x =&gt; ⟨x.2, x.1⟩</code> で同一だった。</span></p></article>
-<article class="slide" id="04_exists-first-component-exercise" data-kind="main" data-label="練習：左側を取り出す" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="93" data-exercise="93"><li><span class="step" data-step="0"><code>theorem and_left {p q : Prop} : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; {α β : Type} : α × β → α</code> を書き比べよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 93</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> and_left {p q : <span class="sort">Prop</span>} : p ∧ q → p := <span class="kw">fun</span> h =&gt; h.1
-
-<span class="kw">def</span> fst&#x27; {α β : <span class="sort">Type</span>} : α × β → α := <span class="kw">fun</span> x =&gt; x.1</span></code></pre>
-<p><span class="step" data-step="2"><code>∧</code> の証明の組から第1成分を取り出すのと、直積の組から第1成分を取り出すのが、同じ字面 <code>.1</code> で書ける。</span></p></article>
-<article class="slide" id="04_exists-and-associativity-exercise" data-kind="main" data-label="練習：証明の組を組み直す" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="94" data-exercise="94"><li><span class="step" data-step="0"><code>theorem and_assoc&#x27; {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.1</code> <code>.2</code> で書け。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 94</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> and_assoc&#x27; {p q r : <span class="sort">Prop</span>} : (p ∧ q) ∧ r → p ∧ (q ∧ r) :=
-  <span class="kw">fun</span> h =&gt; ⟨h.1.1, ⟨h.1.2, h.2⟩⟩</span></code></pre>
-<p><span class="step" data-step="2">左の入れ子から <code>.1.1</code>・<code>.1.2</code>・<code>.2</code> で3つの証明を取り出し、右の入れ子の形に <code>⟨…⟩</code> で組み直す。</span></p></article>
-<article class="slide" id="04_exists-concrete-and-exercise" data-kind="main" data-label="練習：具体的な等式の証明を組にする" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="95" data-exercise="95"><li><span class="step" data-step="0">具体的な命題でも示し方は同じであることを、 <code>example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code> で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 95</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</span></code></pre>
-<p><span class="step" data-step="2">具体的な命題でも、<code>∧</code> の示し方は「証明を2つ組にする」だけである。</span></p></article>
-<article class="slide" id="04_exists-all-and-exercise" data-kind="main" data-label="練習：各点で2つの証明を組にする" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="96" data-exercise="96"><li><span class="step" data-step="0">各点で二つの証明を組にして、 <code>theorem all_and {α : Type} {Q R : α → Prop} :(∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 96</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> all_and {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
-    (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a :=
-  <span class="kw">fun</span> hq hr a =&gt; ⟨hq a, hr a⟩</span></code></pre>
-<p><span class="step" data-step="2">点 <code>a</code> を任意に取り、2つの一般論をその点で使って組にする。</span></p></article>
-<article class="slide" id="04_exists-or-introduction-elimination" data-kind="main" data-label="「または」を示すとき・使うとき" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.sums">2. 直和型と「または」</h2></div>
-<p><span class="step" data-step="0"><strong>示すとき</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</span></p>
-<p><span class="step" data-step="1"><strong>使うとき</strong>: 場合分け（<code>match</code>）。和の項を使うには、左のときと右のときの両方について行き先を用意する必要がある。「または」を使うときに場合分けするのと同じ。</span></p></article>
-<article class="slide" id="04_exists-sum-and-disjunction" data-kind="main" data-label="左右の片側から項を作る" data-section="CH.sums" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> inlSum {α β : <span class="sort">Type</span>} (a : α) : α ⊕ β := .inl a
-
-<span class="kw">#check</span> inlSum</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">inlSum {α β : Type} (a : α) : α ⊕ β</span></code></pre>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> inlOr {p q : <span class="sort">Prop</span>} (hp : p) : p ∨ q := .inl hp
-
-<span class="kw">#check</span> inlOr</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="3">inlOr {p q : Prop} (hp : p) : p ∨ q</span></code></pre>
-<p><span class="step" data-step="4"><code>inlSum</code> と重なる。</span></p></article>
-<article class="slide" id="04_exists-swap-sum" data-kind="main" data-label="直和の左右を入れ替える" data-section="CH.sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: 和を入れ替える。左なら右へ、右なら左へ。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapSum {α β : <span class="sort">Type</span>} : α ⊕ β → β ⊕ α := <span class="kw">fun</span> x =&gt;
-  <span class="kw">match</span> x <span class="kw">with</span>
-  | .inl a =&gt; .inr a
-  | .inr b =&gt; .inl b
-
-<span class="kw">#check</span> swapSum</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">swapSum {α β : Type} : α ⊕ β → β ⊕ α</span></code></pre></article>
-<article class="slide" id="04_exists-swap-or" data-kind="main" data-label="「または」の左右を入れ替える" data-section="CH.sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> swapOr {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">fun</span> h =&gt;
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | .inl hp =&gt; .inr hp
-  | .inr hq =&gt; .inl hq
-
-<span class="kw">#check</span> swapOr</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">swapOr {p q : Prop} : p ∨ q → q ∨ p</span></code></pre>
-<p><span class="step" data-step="3"><code>swapSum</code> と重なる。</span></p></article>
-<article class="slide" id="04_exists-sum-elimination" data-kind="main" data-label="直和を場合分けで使う" data-section="CH.sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側の「使うとき」を一般の形で書いたもの。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> elimSum {α β γ : <span class="sort">Type</span>} : α ⊕ β → (α → γ) → (β → γ) → γ := <span class="kw">fun</span> x f g =&gt;
-  <span class="kw">match</span> x <span class="kw">with</span>
-  | .inl a =&gt; f a
-  | .inr b =&gt; g b
-
-<span class="kw">#check</span> elimSum</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ</span></code></pre></article>
-<article class="slide" id="04_exists-or-elimination" data-kind="main" data-label="「または」を場合分けで使う" data-section="CH.sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">命題側の「使うとき」。<code>Or.elim</code> と同じもの。字面は上と同じ。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> elimOr {p q r : <span class="sort">Prop</span>} : p ∨ q → (p → r) → (q → r) → r := <span class="kw">fun</span> h f g =&gt;
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | .inl hp =&gt; f hp
-  | .inr hq =&gt; g hq
-
-<span class="kw">#check</span> elimOr</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">elimOr {p q r : Prop} : p ∨ q → (p → r) → (q → r) → r</span></code></pre>
-<p><span class="step" data-step="3"><code>elimSum</code> と重なる。「場合分けで示す」ことの正体が、この型である。</span></p></article>
-<article class="slide" id="04_exists-or-idempotence-exercise" data-kind="main" data-label="練習：どちらの札でも同じ結論" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="97" data-exercise="97"><li><span class="step" data-step="0"><code>theorem or_idem {p : Prop} : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 97</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> or_idem {p : <span class="sort">Prop</span>} : p ∨ p → p := <span class="kw">fun</span> h =&gt;
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | .inl hp =&gt; hp
-  | .inr hp =&gt; hp</span></code></pre>
-<p><span class="step" data-step="2">どちらの札でも中身は <code>p</code> の証明なので、そのまま返す。</span></p></article>
-<article class="slide" id="04_exists-or-map-exercise" data-kind="main" data-label="練習：左の場合にだけ含意を使う" data-section="CH.sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="98" data-exercise="98"><li><span class="step" data-step="0"><code>theorem or_map {p q r : Prop} : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 98</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> or_map {p q r : <span class="sort">Prop</span>} : (p → q) → p ∨ r → q ∨ r := <span class="kw">fun</span> f h =&gt;
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | .inl hp =&gt; .inl (f hp)
-  | .inr hr =&gt; .inr hr</span></code></pre>
-<p><span class="step" data-step="2">左の札のときだけ <code>f</code> を適用し、右の札はそのまま包み直す。</span></p></article>
-<article class="slide" id="04_exists-concrete-or-exercise" data-kind="main" data-label="練習：右側の証明で「または」を示す" data-section="CH.sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="99" data-exercise="99"><li><span class="step" data-step="0"><code>example : (1 = 2) ∨ (2 = 2) := .inr rfl</code> が通ることを確かめよ（左の札が<strong>偽の命題</strong>でも、右から入れる）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 99</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : (1 = 2) ∨ (2 = 2) := .inr rfl</span></code></pre>
-<p><span class="step" data-step="2">通る。<code>∨</code> を示すには片側の証明だけでよいので、左が偽の命題でも構わない。</span></p></article>
-<article class="slide" id="04_exists-empty-types" data-kind="main" data-label="構成子のない型と矛盾" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.empty-types">3. 空の型と「⊥」</h2></div>
-<p><span class="step" data-step="0">項が1つもない型が <code>Empty</code>、証明が1つもない命題が <code>False</code>。</span></p>
-<p><span class="step" data-step="1"><strong>示すとき</strong>: 手段が<strong>ない</strong>。これが空であることの意味そのもので、作り方が用意されていないから項（証明）が存在しない。</span></p>
-<p><span class="step" data-step="2"><strong>使うとき</strong>: 場合分けすべき場合が1つもないので、「もし項が手に入ったなら何でも作れる」という形になる。矛盾からは何でも従う、というのと同じ。</span></p></article>
-<article class="slide" id="04_exists-empty-elimination" data-kind="main" data-label="空の型と矛盾からは何でも従う" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: <code>Empty</code> の項があれば何の型の項でも作れる。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> elimEmpty {α : <span class="sort">Type</span>} : Empty → α := <span class="kw">fun</span> e =&gt; e.elim
-
-<span class="kw">#check</span> elimEmpty</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">elimEmpty {α : Type} : Empty → α</span></code></pre>
-<p><span class="step" data-step="3">命題側: 矛盾からは何でも従う。</span></p>
-<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> elimFalse {p : <span class="sort">Prop</span>} : False → p := <span class="kw">fun</span> h =&gt; h.elim
-
-<span class="kw">#check</span> elimFalse</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="5">elimFalse {p : Prop} : False → p</span></code></pre></article>
-<article class="slide" id="04_exists-negation" data-kind="main" data-label="否定は False への関数" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">否定 <code>¬p</code> は <code>p → False</code> のことなので、実は新しい作り方ではない。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> notIntro {p : <span class="sort">Prop</span>} (h : p → False) : ¬p := h
-
-<span class="kw">#check</span> notIntro</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">notIntro {p : Prop} (h : p → False) : ¬p</span></code></pre></article>
-<article class="slide" id="04_exists-empty-definitions" data-kind="main" data-label="Empty と False の定義" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Prelude での定義 — Prop に住む帰納型</h3></div>
-<p><span class="step" data-step="0">実は <code>Empty</code> も <code>False</code> も、Prelude で帰納型として定義されている:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">inductive Empty : Type
-
-inductive False : Prop</span></code></pre>
-<p><span class="step" data-step="2">どちらも構成子ゼロ——「作り方なし」を宣言そのもので表している。違いは住所だけで、 <code>Empty</code> は <code>Type</code> の住人、<code>False</code> は <code>Prop</code> の住人である。つまり <strong><code>False</code> は「項が作れない＝証明できない」</strong>命題である。このように、 <strong>帰納型は <code>Prop</code> に住む型＝命題も作れる</strong>。<code>Prop</code> の世界では、構成子は「その命題の<strong>証明の作り方</strong>」と読める。</span></p></article>
-<article class="slide" id="04_exists-true-definition" data-kind="main" data-label="True の構成子と Bool との違い" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">一点側の対応物もある。<code>Unit</code>（構成子1つ・引数なしの型、<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>）に対応する命題が <code>True</code> である:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">inductive True : Prop where
-  | intro : True</span></code></pre>
-<p><span class="step" data-step="2">構成子 <code>True.intro</code> がそのまま証明——<strong>「項が作れる＝証明できる」</strong>、 <code>True</code> はいつでも証明できる自明な命題である。そして、構成子が<strong>複数</strong>ある命題の代表が、<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.sums">2節</a>で見た「または」<code>Or</code> だった（<code>inl</code>/<code>inr</code> の2通りの証明の作り方を持つ）。</span></p>
-<p><span class="step" data-step="3">まぎらわしいが、<code>true : Bool</code> と <code>True : Prop</code> は別物なので注意。 <code>true</code> は計算で使う<strong>データ</strong>（<code>Bool</code> は <code>Type</code> の住人）であり、 <code>True</code> は<strong>命題</strong>（<code>Prop</code> の住人）である。</span></p></article>
-<article class="slide" id="04_exists-contradiction-exercise" data-kind="main" data-label="練習：矛盾を作って使う" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="100" data-exercise="100"><li><span class="step" data-step="0"><code>theorem noContra {p q : Prop} : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 100</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> noContra {p q : <span class="sort">Prop</span>} : p → ¬p → q :=
-  <span class="kw">fun</span> hp hnp =&gt; (hnp hp).elim</span></code></pre>
-<p><span class="step" data-step="2"><code>hnp hp : False</code> ができるので、<code>False.elim</code> でどんな命題でも導ける。</span></p></article>
-<article class="slide" id="04_exists-double-negation-exercise" data-kind="main" data-label="練習：二重否定を示す" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="101" data-exercise="101"><li><span class="step" data-step="0"><code>theorem dni {p : Prop} : p → ¬¬p</code> を書け（<code>¬¬p</code> を<strong>示す</strong>向き。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.sets"><code>06_Topology.lean</code> の2節</a> <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 101</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> dni {p : <span class="sort">Prop</span>} : p → ¬¬p := <span class="kw">fun</span> hp hnp =&gt; hnp hp</span></code></pre>
-<p><span class="step" data-step="2"><code>¬¬p</code> は <code>(p → False) → False</code>。<code>hnp : p → False</code> を受け取って <code>hp</code> に適用するだけである。</span></p></article>
-<article class="slide" id="04_exists-double-negation-converse" data-kind="main" data-label="逆向きに必要になる背理法" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">逆向き <code>¬¬p → p</code> は書けない。手持ちは <code>hnn : (p → False) → False</code> だけで、これをどう適用しても出てくるのは <code>False</code> であって、<code>p</code> の証明を<strong>作る</strong> 手段がない。この向きに必要なのが背理法（<code>Classical.byContradiction</code>）で、 <a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.sets"><code>06_Topology.lean</code> 2節</a>の <code>compl_compl</code> がそれを使う。代償（公理への依存）は本文末尾の公理の節のとおり。</span></p></article>
-<article class="slide" id="04_exists-not-false-exercise" data-kind="main" data-label="練習：False の否定は恒等関数" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="102" data-exercise="102"><li><span class="step" data-step="0"><code>example : ¬False := fun h =&gt; h</code> が通ることを確かめよ（<code>¬False</code> は <code>False → False</code>——恒等関数が証明になる）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 102</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : ¬False := <span class="kw">fun</span> h =&gt; h</span></code></pre>
-<p><span class="step" data-step="2"><code>¬False</code> は <code>False → False</code>——恒等関数が証明になる。</span></p></article>
-<article class="slide" id="04_exists-existence-introduction" data-kind="main" data-label="存在を示す：証人と根拠" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.existence">4. 存在と依存和 — 偶数・全射の例から</h2></div>
+<p><span class="step" data-step="1">まず、任意の自然数についての存在の証明と、全射の合成を読む。存在と依存和の対応を整理した後、かつ・または・否定へ進み、偶数の和で道具を組み合わせる。続いて、等式の証明で使う計算・帰納法と、命題を構成子で作る仕組みを確かめる。最後に全体の対応をまとめ、検査の詳細と、型と命題の対応の限界を見る。</span></p></article>
+<article class="slide" id="04_exists-existence-introduction" data-kind="main" data-label="存在の証明を作る" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.existence">1. 存在と依存和 — 偶数・全射の例から</h2></div>
 <p><span class="step" data-step="0">「条件 <code>Q x</code> を満たす <code>x</code> が存在する」は <code>∃ x, Q x</code> と書く。示すときは、実際の候補 <code>a</code> と、その候補が条件を満たす証明 <code>h : Q a</code> を <code>⟨a, h⟩</code> で与える。たとえば、<code>2</code> に等しい自然数は存在する:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> exists_eq_two : ∃ n : Nat, n = 2 :=
   ⟨2, rfl⟩
 
 <span class="kw">#check</span> exists_eq_two</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">exists_eq_two : ∃ n, n = 2</span></code></pre></article>
-<article class="slide" id="04_exists-existence-constructor" data-kind="main" data-label="Exists.intro と証人の扱い" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ここで <code>2</code> が<strong>証人</strong>、<code>rfl</code> が <code>2 = 2</code> の証明である。<code>⟨a, h⟩</code> は組と同じ記法だが、ここでは存在命題の構成子 <code>Exists.intro</code> を書いている。存在証明を一般のデータの組とまったく同じようには扱えない。別の命題を証明するために <code>match</code> で分解できるが、証人を計算用の値としてそのまま射影することはできない。理由は<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">8節</a>で見る。</span></p>
-<p><span class="step" data-step="1"><code>02_Forall.lean</code> で学んだ全称と、いま見た存在を組み合わせよう。</span></p></article>
-<article class="slide" id="04_exists-even-double-proof" data-kind="main" data-label="n + n が偶数である普通の証明" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例1: 任意の自然数 n について、n + n は偶数</h3></div>
+<article class="slide" id="04_exists-existence-constructor" data-kind="main" data-label="証人と根拠を組にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>Exists</code> は命題を作る帰納型で、その構成子 <code>Exists.intro</code> は証人と証明を受け取る。 <code>⟨a, h⟩</code> は、この構成子で証明を作る記法である。</span></p>
+<p><span class="step" data-step="1">ここで <code>2</code> が<strong>証人</strong>、<code>rfl</code> が <code>2 = 2</code> の証明である。<code>⟨a, h⟩</code> は組と同じ記法だが、ここでは存在命題の構成子 <code>Exists.intro</code> を書いている。存在証明を一般のデータの組とまったく同じようには扱えない。別の命題を証明するために <code>match</code> で分解できるが、証人を計算用の値としてそのまま射影することはできない。理由は<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">9節</a>で見る。</span></p>
+<p><span class="step" data-step="2"><code>02_Forall.lean</code> で学んだ全称と、いま見た存在を組み合わせよう。</span></p></article>
+<article class="slide" id="04_exists-even-double-proof" data-kind="main" data-label="任意の n について n+n は偶数" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例1: 任意の自然数 n について、n + n は偶数</h3></div>
 <p><span class="step" data-step="0">偶数の定義から確認する。「m は偶数」とは「半分になる数がある」、すなわち <strong>m = 2k となる k が存在する</strong>ことである。</span></p>
 <p><span class="step" data-step="1"><strong>ふつうの証明</strong>。</span></p>
-<ol><li data-step="2" class="step">自然数 n を任意に取る。</li><li data-step="2" class="step">既知の定理 2n = n + n の左右を入れ替えて、n + n = 2n を得る。</li><li data-step="2" class="step">よって「半分」の証人として n が取れ、n + n は偶数である。∎</li></ol>
-<p><span class="step" data-step="3">（教科書なら「n + n = 2n だから偶数である。∎」と1行で済ませるところを、省略せずに書いた。）</span></p></article>
-<article class="slide" id="04_exists-even-double-formula" data-kind="main" data-label="主張を全称と存在の論理式にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>論理式</strong>。証明の構造が見えたところで、主張そのものも形式の言葉に直しておく。「任意の自然数 n について、n + n は偶数である」は、述語論理の論理式では</span></p>
+<ol><li data-step="2" class="step">自然数 n を任意に取る。</li><li data-step="2" class="step">既知の定理 2n = n + n の左右を入れ替えて、n + n = 2n を得る。</li><li data-step="2" class="step">よって「半分」の証人として n が取れ、n + n は偶数である。∎</li></ol></article>
+<article class="slide" id="04_exists-even-double-formula" data-kind="main" data-label="全称と存在を論理式にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>論理式</strong>。証明の構造が見えたところで、主張そのものも形式の言葉に直しておく。「任意の自然数 n について、n + n は偶数である」は、述語論理の論理式では</span></p>
 <pre class="quote"><code><span class="step" data-step="1">∀n Even(n + n)</span></code></pre>
 <p><span class="step" data-step="2">と書ける。述語 Even を定義まで開けば</span></p>
 <pre class="quote"><code><span class="step" data-step="3">∀n ∃k (n + n = 2k)</span></code></pre>
 <p><span class="step" data-step="4">である。日本語の「任意の…について」「…となる—がある」が、量化子 ∀・∃ に置き換わっただけである。形式化と呼ばれる作業には、この<strong>主張の形式化</strong>と、これから行う<strong>証明の形式化</strong>の2段階がある——主張の側は、論理式で書けたことで論理的な骨格が見えた。Lean ではさらに、変数の型や使う定義を明示する。</span></p></article>
-<article class="slide" id="04_exists-fix-an-arbitrary-number" data-kind="main" data-label="任意の n を固定する" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>。同じ証明を、各段で<strong>何の証明の仕方を使っているか</strong>を名指ししながら読み直す。</span></p>
-<p><span class="step" data-step="1">まず自然数 n を任意に取り、この固定した n について「n + n は偶数」をこれから証明する——<strong>これが全称量化された命題の証明の仕方</strong>である。「任意の自然数 n について」を示すとは、自然数 n を1つ固定して（ただし自然数であること以外は何も仮定せずに）示すことにほかならない。</span></p></article>
-<article class="slide" id="04_exists-choose-a-witness" data-kind="main" data-label="候補を挙げ、条件を満たすことを示す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">n を固定したら、偶数の<strong>定義に戻る</strong>。「m が偶数」とは「ある k が存在して m = 2k となる」ことだった。いまの場合に当てはめると、示すべきは「n + n = 2k となる k が存在する」である。そして<strong>存在量化された命題の証明の仕方</strong>は、(i) 存在するものの<strong>候補</strong>を1つ挙げ、(ii) その候補が実際に求められる性質を満たすことの<strong>証明</strong>を与える——この2つを揃えることである。</span></p>
+<article class="slide" id="04_exists-arbitrary-number" data-kind="main" data-label="任意の n を取り、存在を示す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>。同じ証明を、各段で<strong>何の証明の仕方を使っているか</strong>を名指ししながら読み直す。</span></p>
+<p><span class="step" data-step="1">まず自然数 n を任意に取り、この固定した n について「n + n は偶数」をこれから証明する——<strong>これが全称量化された命題の証明の仕方</strong>である。「任意の自然数 n について」を示すとは、自然数 n を1つ固定して（ただし自然数であること以外は何も仮定せずに）示すことにほかならない。</span></p>
+<p><span class="step" data-step="2">n を固定したら、偶数の<strong>定義に戻る</strong>。「m が偶数」とは「ある k が存在して m = 2k となる」ことだった。いまの場合に当てはめると、示すべきは「n + n = 2k となる k が存在する」である。そして<strong>存在量化された命題の証明の仕方</strong>は、(i) 存在するものの<strong>候補</strong>を1つ挙げ、(ii) その候補が実際に求められる性質を満たすことの<strong>証明</strong>を与える——この2つを<strong>組として</strong>与えることである。</span></p></article>
+<article class="slide" id="04_exists-dependent-proof-pairs" data-kind="main" data-label="各 n に証人と証明を返す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">各 <code>n</code> に対して、証人 <code>k</code> と等式 <code>n + n = 2 * k</code> の証明を組にして返す。集合族の言葉では、$n$ を、$\bigsqcup_{k \in \mathbb{N}} (n+n=2k)$ の要素に送る依存関数に対応する。ここで各等式は、その証明の型として見ている。</span></p>
 <p><span class="step" data-step="1">ここでは候補として k = n を取ればよい。すると満たすべき性質は n + n = 2n となり、これは成り立つので、証明が完成した。——ただし最後の一歩で、 <strong>n + n = 2n を既知の定理として使っている</strong>ことには注意しておく（この「既知」を自分で底までたどるとどうなるかは、下の補足で掘り下げる）。</span></p>
 <p><span class="step" data-step="2">使った頭の動きは3つだけである: <strong>全称の証明</strong>（任意に取って示す）、 <strong>定義に戻る</strong>、<strong>存在の証明</strong>（候補+性質の証明）。</span></p></article>
-<article class="slide" id="04_exists-formula-to-lean" data-kind="main" data-label="論理式から Lean の命題へ" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。これを Lean に持ち込む。02_Forall で学んだ全称と、直前の小例で見た存在を使うと、「任意の自然数 n について」は <code>∀ n : Nat, …</code>、「…となる k が存在する」は <code>∃ k, …</code> と書く。すると主張が、論理式とほぼ字面どおりに対応する形で書ける:</span></p>
+<article class="slide" id="04_exists-even-double-lean" data-kind="main" data-label="論理式を Lean の命題にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。これを Lean に持ち込む。02_Forall で学んだ全称と、直前の小例で見た存在を使うと、「任意の自然数 n について」は <code>∀ n : Nat, …</code>、「…となる k が存在する」は <code>∃ k, …</code> と書く。すると主張が、論理式とほぼ字面どおりに対応する形で書ける:</span></p>
 <pre class="quote"><code><span class="step" data-step="1">論理式:  ∀n ∃k (n + n = 2k)
 Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</span></code></pre>
 <p><span class="step" data-step="2">違いは1つだけ——<strong>束縛変数の走る範囲が型として明示される</strong>（<code>∀ n : Nat</code>）。述語論理では文脈が決めていたものが、Lean では型の仕事になる。 <strong>Lean の命題は、型注釈のついた論理式</strong>と読んでよい。主張の形式化はこれで済んだ。残るは証明の形式化である。</span></p></article>
-<article class="slide" id="04_exists-two-mul" data-kind="main" data-label="必要な等式の向きをそろえる" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">02_Forall で見た <code>theorem</code> の形に当てはめ、コロンの右に命題、<code>:=</code> の右に証明の項を書く。その前に、使う既知の定理の型も確認しておこう:</span></p>
+<article class="slide" id="04_exists-two-mul-type" data-kind="main" data-label="既知の定理 Nat.two_mul の型" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">02_Forall で見た <code>theorem</code> の形に当てはめ、コロンの右に命題、<code>:=</code> の右に証明の項を書く。その前に、使う既知の定理の型も確認しておこう:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Nat.two_mul</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">Nat.two_mul (n : Nat) : 2 * n = n + n</span></code></pre>
-<p><span class="step" data-step="3"><code>Nat.two_mul n</code> は <code>2 * n = n + n</code> の証明である。いま必要な向きとは逆なので、 <code>.symm</code> で等式の左右を入れ替える。 <code>(Nat.two_mul n).symm</code> は <code>Eq.symm (Nat.two_mul n)</code> という関数適用の略記である。証明も項なので、<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の <code>p.swap</code> と同じく、その型を手がかりに関数を見つけて適用できる。</span></p></article>
-<article class="slide" id="04_exists-even-double-term" data-kind="main" data-label="証明の3つの部品を項にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> even_double : ∀ n : Nat, ∃ k, n + n = 2 * k :=
-  <span class="kw">fun</span> n =&gt;                     <span class="cm">-- (1) n を任意に取る</span>
-    ⟨n, (Nat.two_mul n).symm⟩  <span class="cm">-- (3) 証人は n、(2) 根拠は既知の定理の入れ替え</span>
+<pre class="quote"><code><span class="step" data-step="2">Nat.two_mul (n : Nat) : 2 * n = n + n</span></code></pre></article>
+<article class="slide" id="04_exists-equation-and-proof" data-kind="main" data-label="等式と、その証明の型" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0"><code>Nat.two_mul</code> は<strong>依存関数</strong>である。<code>n</code> を渡すと、その <code>n</code> に応じた等式 <code>2 * n = n + n</code> の証明を返す。等式そのものと、その証明の型を区別して見よう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> (2 * 3 = 3 + 3)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">2 * 3 = 3 + 3 : Prop</span></code></pre>
+</div><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> Nat.two_mul 3</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">Nat.two_mul 3 : 2 * 3 = 3 + 3</span></code></pre>
+<p><span class="step" data-step="5">等式は <code>Prop</code> 型の項であり、<code>Nat.two_mul 3</code> はその等式を型として持つ項である。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-equality-symmetry" data-kind="main" data-label="Eq.symm で等式を逆向きにする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">いま必要なのは逆向きの等式なので、対称律を使う。<code>Eq.symm</code> は <code>a = b</code> の証明を受け取り、<code>b = a</code> の証明を返す関数である。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Eq.symm</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Eq.symm.{u} {α : Sort u} {a b : α} (h : a = b) : b = a</span></code></pre>
+<p><span class="step" data-step="3">ここで <code>Sort u</code> は型の宇宙を表す記法で、いまは <code>α</code> を <code>Nat</code> として読む。詳しくは<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.nat-proofs">6節</a>の補足で扱う。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#check</span> Eq.symm (Nat.two_mul 3)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">Eq.symm (Nat.two_mul 3) : 3 + 3 = 2 * 3</span></code></pre>
+<p><span class="step" data-step="6"><code>Eq.symm h</code> は <code>h.symm</code> とも書ける。構造の取り出しと同じドット記法を、証明という項にも使っている。以下では、まず関数名を明記した形で書く。</span></p></article>
+<article class="slide" id="04_exists-even-double-term" data-kind="main" data-label="証人と根拠を返す証明項" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> even_double : ∀ n : Nat, ∃ k, n + n = 2 * k :=
+  <span class="kw">fun</span> n =&gt; ⟨n, Eq.symm (Nat.two_mul n)⟩
 
 <span class="kw">#check</span> even_double</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">even_double (n : Nat) : ∃ k, n + n = 2 * k</span></code></pre></article>
-<article class="slide" id="04_exists-read-even-double" data-kind="main" data-label="項の部品と証明の動きを照合する" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">エラーが出ない＝この項が宣言どおりの型を持つことを機械が確認した、ということである。形式化を意識した版の頭の動きが、そのまま項の部品に写っている:</span></p>
-<ul><li data-step="1" class="step"><code>fun n =&gt;</code> が「n を任意に取る」——全称の証明は、<strong>どの n を渡されても、その n での証明を返す関数</strong>になる（<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の <code>fun</code> そのもの）。</li><li data-step="1" class="step"><code>⟨n, …⟩</code> が「候補と、性質を満たす証明」——存在命題の構成子も <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の組と同じ <code>⟨ ⟩</code> 記法で書ける。この候補のことを以後<strong>証人</strong>と呼ぶ。</li><li data-step="1" class="step"><code>(Nat.two_mul n).symm</code> が「既知の定理を使う」——既知の定理 <code>Nat.two_mul n : 2 * n = n + n</code> は名前のついた完成品の項で、<code>n</code> を渡す <strong>適用</strong>の形で取り出す。<code>.symm</code> は等式の左右を入れ替える道具である。</li></ul>
-<p><span class="step" data-step="2">番号にも注意——ふつうの証明の 1→3→2 の順に部品が並び替わっている。 <strong>散文は発見の順で書かれ、項は命題の形の順で組まれる</strong>のである。</span></p></article>
-<article class="slide" id="04_exists-iseven-definition" data-kind="main" data-label="偶数という述語に名前を付ける" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ところで論理式の側では、述語 Even に名前を付けて ∀n Even(n + n) と <strong>略記</strong>できた。Lean でも同じことができる——述語を<strong>名前のついた定義</strong>にすればよい:</span></p>
+<article class="slide" id="04_exists-even-double-reading" data-kind="main" data-label="証明の各部を読み取る" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">エラーが出ない＝この項が宣言どおりの型を持つことを機械が確認した、ということである。形式化を意識した版の頭の動きが、そのまま項の部品に写っている:</span></p>
+<ul><li data-step="1" class="step"><code>fun n =&gt;</code> が「n を任意に取る」——全称の証明は、<strong>どの n を渡されても、その n での証明を返す関数</strong>になる（<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の <code>fun</code> そのもの）。</li><li data-step="1" class="step"><code>⟨n, …⟩</code> が「候補と、性質を満たす証明」——存在命題の構成子も <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の組と同じ <code>⟨ ⟩</code> 記法で書ける。この候補のことを以後<strong>証人</strong>と呼ぶ。</li><li data-step="1" class="step"><code>Eq.symm (Nat.two_mul n)</code> が「既知の定理を使う」——既知の定理 <code>Nat.two_mul n : 2 * n = n + n</code> は名前のついた完成品の項で、<code>n</code> を渡す <strong>適用</strong>の形で取り出す。<code>.symm</code> は等式の左右を入れ替える道具である。</li></ul></article>
+<article class="slide" id="04_exists-is-even-predicate" data-kind="main" data-label="偶数という述語に名前を付ける" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ところで論理式の側では、述語 Even に名前を付けて ∀n Even(n + n) と <strong>略記</strong>できた。Lean でも同じことができる——述語を<strong>名前のついた定義</strong>にすればよい:</span></p>
 <p><span class="step" data-step="1">偶数であること: 半分になる数が存在する。</span></p>
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k, n = 2 * k
 
 <span class="kw">#check</span> IsEven</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">IsEven (n : Nat) : Prop</span></code></pre></article>
-<article class="slide" id="04_exists-iseven-double" data-kind="main" data-label="定義を開いて同じ証明を使う" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">主張は <code>∀ n : Nat, IsEven (n + n)</code> と略記できて——</span></p>
+<article class="slide" id="04_exists-is-even-double" data-kind="main" data-label="定義を開けば同じ証明になる" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">主張は <code>∀ n : Nat, IsEven (n + n)</code> と略記できて——</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> isEven_double : ∀ n : Nat, IsEven (n + n) :=
-  <span class="kw">fun</span> n =&gt; ⟨n, (Nat.two_mul n).symm⟩
+  <span class="kw">fun</span> n =&gt; ⟨n, Eq.symm (Nat.two_mul n)⟩
 
 <span class="kw">#check</span> isEven_double</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">isEven_double (n : Nat) : IsEven (n + n)</span></code></pre>
 <p><span class="step" data-step="3"><strong>証明の項は一字も変わらない</strong>。<code>IsEven (n + n)</code> と <code>∃ k, n + n = 2 * k</code> が定義上同じであることは、型検査器が<strong>定義を展開して勝手に照合してくれる</strong> からである（<code>Map Nat Nat</code> を計算すると <code>Nat → Nat</code> になったのと同じ）。形式化を意識した版の「<strong>定義に戻る</strong>」に対応する部品が項のどこにもないのは、このためである。以後は略記した <code>IsEven</code> の側を使う。</span></p></article>
-<article class="slide" id="04_exists-existence-elimination" data-kind="main" data-label="存在を使う：証人と根拠に名前を付ける" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>存在するものを使う</h3></div>
+<article class="slide" id="04_exists-existence-elimination" data-kind="main" data-label="存在の証明を使う" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例2: 存在するものを使う</h3></div>
 <p><span class="step" data-step="0">存在を<strong>示す</strong>ときは証人と根拠を <code>⟨a, ha⟩</code> で渡した。存在命題の証明を <strong>使う</strong>ときは、その構成子を <code>match</code> で調べ、証人と根拠に名前を付ける。</span></p>
 <p><span class="step" data-step="1">次の小例では、「<code>Q a</code> ならば <code>R a</code>」がすべての <code>a</code> について成り立つとする。さらに <code>Q a</code> を満たす <code>a</code> が存在するなら、同じ <code>a</code> が <code>R a</code> も満たす:</span></p></article>
-<article class="slide" id="04_exists-exists-map" data-kind="main" data-label="証人を保ち、根拠を移す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> exists_map {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
+<article class="slide" id="04_exists-exists-map-code" data-kind="main" data-label="証人を保ち、根拠を移す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> exists_map {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
     (∀ a, Q a → R a) → (∃ a, Q a) → ∃ a, R a :=
   <span class="kw">fun</span> hqr h =&gt;
     <span class="kw">match</span> h <span class="kw">with</span>
@@ -457,53 +317,22 @@ Lean:    ∀ n : Nat, ∃ k, n + n = 2 * k</span></code></pre>
 <span class="kw">#check</span> exists_map</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">exists_map {α : Type} {Q R : α → Prop} : (∀ (a : α), Q a → R a) → (∃ a, Q a) → ∃ a, R a</span></code></pre>
 <p><span class="step" data-step="2">型を順に追うと、<code>a : α</code>、<code>ha : Q a</code>、<code>hqr a : Q a → R a</code>、したがって <code>hqr a ha : R a</code>。よって <code>⟨a, hqr a ha⟩ : ∃ a, R a</code> となる。 <code>match</code> の枝に入ったあとの型だけを見れば、<code>02_Forall.lean</code> の modus ponens と同じ関数適用である。</span></p></article>
-<article class="slide" id="04_exists-exists-map-types-exercise" data-kind="main" data-label="練習：match の枝で型を追う" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="103" data-exercise="103"><li><span class="step" data-step="0"><code>exists_map</code> の枝の中で、<code>a</code>、<code>ha</code>、<code>hqr a</code>、<code>hqr a ha</code> の型を順に予想せよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 103</span></p>
-<p><span class="step" data-step="1"><code>match</code> の枝では <code>a : α</code>、<code>ha : Q a</code>。したがって <code>hqr a : Q a → R a</code>、<code>hqr a ha : R a</code> となる。</span></p></article>
-<article class="slide" id="04_exists-exists-map-twice-exercise" data-kind="main" data-label="練習：根拠を2段階で移す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><ol class="exercise" start="104" data-exercise="104"><li><span class="step" data-step="0">2段階で根拠を移す <code>theorem exists_map2 {α : Type} {P Q R : α → Prop} :(∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a</code> を書け。証人は変えず、<code>02_Forall.lean</code> の含意の推移を各点で使えばよい。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 104</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> exists_map2 {α : <span class="sort">Type</span>} {P Q R : α → <span class="sort">Prop</span>} :
-    (∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a :=
-  <span class="kw">fun</span> hpq hqr h =&gt;
-    <span class="kw">match</span> h <span class="kw">with</span>
-    | ⟨a, ha⟩ =&gt; ⟨a, hqr a (hpq a ha)⟩</span></code></pre>
-<p><span class="step" data-step="2">存在証明から取り出した証人 <code>a</code> はそのまま使い、根拠だけを <code>P a → Q a → R a</code> と2段階で移している。</span></p></article>
-<article class="slide" id="04_exists-even-add-proof" data-kind="main" data-label="偶数の和：証明の7つの手順" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例2: 偶数と偶数の和は偶数</h3></div>
-<p><span class="step" data-step="0"><strong>ふつうの証明</strong>。</span></p>
-<ol><li data-step="1" class="step">n, m を任意に取り、hn「n は偶数」・hm「m は偶数」を仮定する。</li><li data-step="1" class="step">hn から、n = 2k となる k を取り、この等式を hk と名付ける。</li><li data-step="1" class="step">hm から同様に l を取り、等式を hl と名付ける。</li><li data-step="1" class="step">hk の両辺に右から m を足して、n + m = 2k + m。</li><li data-step="1" class="step">hl の両辺に左から 2k を足して、2k + m = 2k + 2l。</li><li data-step="1" class="step">分配法則より 2k + 2l = 2(k + l)。4〜6 を = のつながりとして読めば n + m = 2(k + l)。</li><li data-step="1" class="step">よって証人 k + l により、n + m は偶数である。∎</li></ol></article>
-<article class="slide" id="04_exists-even-add-formula" data-kind="main" data-label="仮定付きの主張を論理式にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">（教科書なら「n = 2k、m = 2l と書けば n + m = 2k + 2l = 2(k + l)。∎」と 1行で済ませるところである。）</span></p>
-<p><span class="step" data-step="1"><strong>論理式</strong>。主張は</span></p>
-<pre class="quote"><code><span class="step" data-step="2">∀n ∀m (Even(n) → Even(m) → Even(n + m))</span></code></pre>
-<p><span class="step" data-step="3">——n と m の全称量化の内側に、「ならば」（→）が2つ並ぶ形である（Even(n) ∧ Even(m) → … と「かつ」でまとめても同値だが、仮定を1つずつ取るふつうの証明の読みには、→ の並びのほうが対応する）。</span></p></article>
-<article class="slide" id="04_exists-unpack-even-assumptions" data-kind="main" data-label="偶数という仮定から証人を取り出す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>。今度は仮定つきの命題である。「…ならば—」の証明の仕方は、<strong>仮定を取って</strong>（名前を付けて）結論を示すこと——全称のときの「n を取る」と同じ頭の動きである。</span></p>
-<p><span class="step" data-step="1">仮定 hn を<strong>使う</strong>番になったら、また定義に戻る。hn は「n = 2k となる k が存在する」ことの証明である。<strong>存在量化された命題の使い方</strong>は、証明の仕方のちょうど逆で、<strong>存在するものを1つ取り出して名前を付ける</strong>——「k をそういう数とする。以後 hk : n = 2 * k が使える」と宣言する動きである。hm からも同様に l と hl を取り出す。</span></p></article>
-<article class="slide" id="04_exists-build-equality-chain" data-kind="main" data-label="候補の性質を等式の連鎖で示す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すべきは（定義に戻ると）「n + m = 2j となる j の存在」。候補は j = k + l で、満たすべき性質は n + m = 2(k + l) である。この等式は一度には出ないので、 <strong>等式の連鎖</strong>で作る: hk の<strong>両辺に同じ操作 (· + m) を施して</strong> n + m = 2k + m、 hl から同様に 2k + m = 2k + 2l、分配法則（既知の定理）で 2k + 2l = 2(k + l)、最後に<strong>3本の等式をつなぐ</strong>。ふつうの証明で「= を続けて書く」ことの正体は、この「両辺に同じ操作」と「つなぐ」の繰り返しである。</span></p></article>
-<article class="slide" id="04_exists-equality-tools" data-kind="main" data-label="等式に操作を施す道具とつなぐ道具" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。「取り出して名前を付ける」は、<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>の <code>match</code> をパターン <code>⟨k, hk⟩</code> で使えばよい——存在命題の構成子 <code>Exists.intro</code> を調べ、証人と根拠に名前を付けている。「両辺に同じ操作」は <code>congrArg</code>、「つなぐ」は <code>.trans</code> という名前の道具である（<code>(· + m)</code> は <code>fun x =&gt; x + m</code> の略記。 <code>(2 * k + ·)</code> なら <code>fun x =&gt; 2 * k + x</code>）。道具の型を先に挙げておく——以下の照合はこの3つの型と適用規則だけでできる（表示中の <code>Sort u_1</code> は <code>Prop</code> や <code>Type</code>、<code>Type 1</code> などをまとめて扱う宇宙の表記である。いまは自然数についての適用を読むので、<code>α</code> や <code>β</code> に <code>Nat</code> を当てはめて追えばよい。 <code>Sort</code> 自体の読み方は<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.nat-proofs">5節</a>で整理する）:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">@congrArg : ∀ {α : Sort u_1} {β : Sort u_2} {a₁ a₂ : α} (f : α → β),
-            a₁ = a₂ → f a₁ = f a₂
-@Eq.trans : ∀ {α : Sort u_1} {a b c : α}, a = b → b = c → a = c
-Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</span></code></pre></article>
-<article class="slide" id="04_exists-even-add-term" data-kind="main" data-label="存在の分解と等式の連鎖を項にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) :=
-  <span class="kw">match</span> hn, hm <span class="kw">with</span>
-  | ⟨k, hk⟩, ⟨l, hl⟩ =&gt;                     <span class="cm">-- (2)(3) 取り出して名前を付ける</span>
-    ⟨k + l,                                  <span class="cm">-- (7) 証人と、つないだ根拠</span>
-     ((congrArg (· + m) hk).trans            <span class="cm">-- (4) 両辺に (· + m)、(6) つなぐ</span>
-        (congrArg (2 * k + ·) hl)).trans     <span class="cm">-- (5) 両辺に (2 * k + ·)、(6) つなぐ</span>
-        (Nat.mul_add 2 k l).symm⟩            <span class="cm">-- (6) 分配法則（既知の定理）</span>
-
-<span class="kw">#check</span> isEven_add</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m)</span></code></pre></article>
-<article class="slide" id="04_exists-read-even-add" data-kind="main" data-label="仮定と中間の名前が項でどう表れるか" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">仮定 hn・hm が<strong>引数</strong>になっていることに注意——「ならばの証明=仮定を取る」も、項では <code>fun</code> と同じ扱いである（ふつうの証明の (1) は引数の宣言に吸収されている）。主張全体も論理式 ∀n ∀m (… → … → …) の写しである: 定理の引数の列は∀ と → を <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の binder 形式で書いたもので、n・m は値から決まるため暗黙引数 <code>{ }</code> になっている。</span></p>
-<p><span class="step" data-step="1">もう1つ、形式化を意識した版で付けた名前 h1〜h3 は、項では<strong>式の入れ子</strong>に吸収されている——名前は考えの整理のための道具であって、証明の実体は式である。コメントの番号でふつうの証明と対応づけたので、読みにくければ番号の順に内側から組み立て直しながら読むとよい。例1と同じく、<strong>散文は発見の順、項は命題の形の順</strong>である。</span></p></article>
-<article class="slide" id="04_exists-surjective-composition-proof" data-kind="main" data-label="全射の合成：普通の証明と論理式" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例3: 全射どうしの合成は全射</h3></div>
+<article class="slide" id="04_exists-congruence" data-kind="main" data-label="等式の両辺に同じ関数を施す" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>等式に関数を適用する・等式をつなぐ</h3></div>
+<p><span class="step" data-step="0">全射の合成では、<code>ha : f a = b</code> から <code>g (f a) = g b</code> を得て、 <code>hb : g b = c</code> とつなぐ。この二つの操作も、証明を受け取る関数である。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> congrArg</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">congrArg.{u, v} {α : Sort u} {β : Sort v} {a₁ a₂ : α} (f : α → β) (h : a₁ = a₂) : f a₁ = f a₂</span></code></pre>
+<p><span class="step" data-step="3"><code>congrArg g ha</code> は、等式 <code>ha</code> の両辺に同じ関数 <code>g</code> を施した等式の証明になる。</span></p></article>
+<article class="slide" id="04_exists-equality-transitivity" data-kind="main" data-label="二つの等式をつなぐ" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> Eq.trans</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">Eq.trans.{u} {α : Sort u} {a b c : α} (h₁ : a = b) (h₂ : b = c) : a = c</span></code></pre>
+<p><span class="step" data-step="2"><code>Eq.trans h₁ h₂</code> は、<code>a = b</code> と <code>b = c</code> の二つの証明を受け取り、<code>a = c</code> を返す。これも <code>h₁.trans h₂</code> と書ける。以下では、何に何を渡すかが見える形で用いる。</span></p></article>
+<article class="slide" id="04_exists-surjective-composition" data-kind="main" data-label="全射どうしの合成は全射" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>例3: 全射どうしの合成は全射</h3></div>
 <p><span class="step" data-step="0">今度は、写像 f : A → B と g : B → C がともに全射であるとする。その全射性をそれぞれ hf・hg と名付け、合成 g∘f : A → C も全射であることを示そう。</span></p>
 <p><span class="step" data-step="1"><strong>ふつうの証明</strong>。「c を取る。g の全射性より g b = c となる b があり、 f の全射性より f a = b となる a がある。すると g (f a) = g b = c。∎」</span></p>
 <p><span class="step" data-step="2"><strong>論理式</strong>。示すべき結論「合成 $g \circ f$ が全射」は、定義まで開くと</span></p>
 <p><span class="step" data-step="3">$$\forall c\, \exists a\, \bigl(g(f(a)) = c\bigr)$$</span></p>
 <p><span class="step" data-step="4">——例1と同じ「∀ の内側に ∃」の形が、関数の文脈で再登場する。</span></p></article>
-<article class="slide" id="04_exists-surjective-composition-steps" data-kind="main" data-label="全称・存在・等式を組み合わせる" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>（ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射の定義「どの点にも、そこへ送られてくる元がある」に戻ると、hg c は「g b = c となる b の存在」の証明——存在の使い方で b と hb を<strong>取り出す</strong>（上の <code>exists_map</code> と同じ）。hf b からも a と ha を取り出す。示すべきは「g (f a) = c となる a の存在」だから、候補 a と性質の証明を <code>⟨a, …⟩</code> で構成する（例1の前の存在の小例）。性質 g (f a) = c は等式の連鎖で: ha の<strong>両辺に g を施して</strong> g (f a) = g b、 hb と<strong>つなぐ</strong>（例2）。∎</span></p></article>
-<article class="slide" id="04_exists-surjective-composition-term" data-kind="main" data-label="全射の定義を開いて項を書く" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。まず論理式をそのまま型に（仮定も全射の定義を開いた形で書く）:</span></p>
+<article class="slide" id="04_exists-surjective-proof-plan" data-kind="main" data-label="証人を順に取り出して使う" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>（ここまでの動きの総復習である）。 c を任意に取る（全称の証明）。全射の定義「どの点にも、そこへ送られてくる元がある」に戻ると、hg c は「g b = c となる b の存在」の証明——存在の使い方で b と hb を<strong>取り出す</strong>（上の <code>exists_map</code> と同じ）。hf b からも a と ha を取り出す。示すべきは「g (f a) = c となる a の存在」だから、候補 a と性質の証明を <code>⟨a, …⟩</code> で構成する（例1の前の存在の小例）。性質 g (f a) = c は等式の連鎖で: ha の<strong>両辺に g を施して</strong> g (f a) = g b、 hb と<strong>つなぐ</strong>。∎</span></p></article>
+<article class="slide" id="04_exists-surjective-term" data-kind="main" data-label="全射の合成の証明項" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。まず論理式をそのまま型に（仮定も全射の定義を開いた形で書く）:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : ∀ c, ∃ b, g b = c) (hf : ∀ b, ∃ a, f a = b) :
     ∀ c, ∃ a, g (f a) = c :=
@@ -511,8 +340,8 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</span></code></pre>
     <span class="kw">match</span> hg c <span class="kw">with</span>
     | ⟨b, hb⟩ =&gt;
       <span class="kw">match</span> hf b <span class="kw">with</span>
-      | ⟨a, ha⟩ =&gt; ⟨a, (congrArg g ha).trans hb⟩</span></code></pre></article>
-<article class="slide" id="04_exists-surjective-composition-library" data-kind="main" data-label="ライブラリの述語で略記する" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ライブラリの述語 <code>Function.Surjective</code> で略記して書き直すと—— <strong>証明の項は一字も変わらない</strong>（定義上同じ命題だからである。例1と同じ）:</span></p>
+      | ⟨a, ha⟩ =&gt; ⟨a, Eq.trans (congrArg g ha) hb⟩</span></code></pre></article>
+<article class="slide" id="04_exists-surjective-notation" data-kind="main" data-label="Function.Surjective で書く" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ライブラリの述語 <code>Function.Surjective</code> で略記して書き直すと—— <strong>証明の項は一字も変わらない</strong>（定義上同じ命題だからである。例1と同じ）:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> comp_surjective {α β γ : <span class="sort">Type</span>} {f : α → β} {g : β → γ}
     (hg : Function.Surjective g) (hf : Function.Surjective f) :
     Function.Surjective (<span class="kw">fun</span> x =&gt; g (f x)) :=
@@ -520,355 +349,369 @@ Nat.mul_add : ∀ (n m k : Nat), n * (m + k) = n * m + n * k</span></code></pre>
     <span class="kw">match</span> hg c <span class="kw">with</span>
     | ⟨b, hb⟩ =&gt;
       <span class="kw">match</span> hf b <span class="kw">with</span>
-      | ⟨a, ha⟩ =&gt; ⟨a, (congrArg g ha).trans hb⟩
+      | ⟨a, ha⟩ =&gt; ⟨a, Eq.trans (congrArg g ha) hb⟩
 
-</span></code></pre></article>
-<article class="slide" id="04_exists-injective-and-surjective" data-kind="main" data-label="単射と全射の証明を比べる" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> comp_surjective</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">comp_surjective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Surjective g) (hf : Function.Surjective f) :
+<span class="kw">#check</span> comp_surjective</span></code></pre></article>
+<article class="slide" id="04_exists-surjective-check" data-kind="main" data-label="型と入れ子の match の意味" data-section="CH2.existence" data-layout="compact" data-editorial="true"><pre class="quote"><code><span class="step" data-step="0">comp_surjective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Surjective g) (hf : Function.Surjective f) :
   Function.Surjective fun x ↦ g (f x)</span></code></pre>
-<p><span class="step" data-step="2"><a target="_blank" rel="noopener" href="../02_forall.html#sec-CH1.forall-examples"><code>02_Forall.lean</code> の1節</a>の単射の合成と並べると対になっている: 単射は <code>fun</code> と適用だけの世界、全射は存在の構成子と <code>match</code> の世界。そして入れ子の <code>match</code> は、「b を取り出した<strong>あとの世界</strong>で a を取り出す」という証明の依存関係を、形として見せている。</span></p></article>
-<article class="slide" id="04_exists-two-mul-exercise" data-kind="main" data-label="練習：2 * n の偶数性" data-section="CH2.existence" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="105" data-exercise="105"><li><span class="step" data-step="0"><code>theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)</code> を <code>isEven_double</code> にならって書け（証人は <code>n</code>、根拠は <code>rfl</code> で済む——なぜ済むのかも考えること）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 105</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
-  <span class="kw">fun</span> n =&gt; ⟨n, rfl⟩</span></code></pre>
-<p><span class="step" data-step="2">証人は <code>n</code>。示すべき根拠は <code>2 * n = 2 * n</code> そのものなので、<code>rfl</code> で済む（<code>isEven_double</code> では <code>n + n = 2 * n</code> の変形が要ったが、ここでは両辺が字面から一致している）。</span></p></article>
-<article class="slide" id="04_exists-add-two-exercise" data-kind="main" data-label="練習：偶数に2を足した証明" data-section="CH2.existence" data-layout="compact" data-editorial="true"><ol class="exercise" start="106" data-exercise="106"><li><span class="step" data-step="0">「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 106</span></p>
-<p><span class="step" data-step="1"><strong>ふつうの証明</strong>:</span></p>
-<ol><li data-step="2" class="step">仮定 <code>IsEven n</code> を分解し、<code>k</code> と <code>hk : n = 2 * k</code> を得る。</li><li data-step="2" class="step"><code>hk</code> の両辺に右から 2 を足して、<code>n + 2 = 2 * k + 2</code>。</li><li data-step="2" class="step"><code>2 * k + 2 = 2 * (k + 1)</code> は、既知の定理 <code>Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2</code> の対称形。</li><li data-step="2" class="step">2〜3 をつないで <code>n + 2 = 2 * (k + 1)</code>。よって証人 <code>k + 1</code> で偶数である。∎</li></ol>
-<p><span class="step" data-step="3">（1行で書けば「<code>n = 2k</code> と書けると <code>n + 2 = 2k + 2 = 2(k + 1)</code>。∎」である。）</span></p></article>
-<article class="slide" id="04_exists-add-two-formalization" data-kind="main" data-label="偶数に2を足す証明を形式化する" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>論理式</strong>: ∀n (Even(n) → Even(n + 2))。</span></p>
-<p><span class="step" data-step="1"><strong>形式化を意識した版</strong>: 仮定を取る（ならばの証明）。<code>hn</code> は存在文なので、取り出して <code>k</code> と <code>hk</code> に名前を付ける（存在の使い方）。示すべきは（定義に戻ると）「<code>n + 2 = 2j</code> となる <code>j</code> の存在」。候補は <code>j = k + 1</code> で、性質 <code>n + 2 = 2 * (k + 1)</code> は等式の連鎖——<code>hk</code> の両辺に <code>(· + 2)</code> を施し、 <code>Nat.mul_succ</code> の対称形とつなぐ。</span></p></article>
-<article class="slide" id="04_exists-add-two-term" data-kind="main" data-label="証人と等式の連鎖を項にする" data-section="CH2.existence" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
-  <span class="kw">fun</span> _ hn =&gt;
-    <span class="kw">match</span> hn <span class="kw">with</span>
-    | ⟨k, hk⟩ =&gt; ⟨k + 1, (congrArg (· + 2) hk).trans (Nat.mul_succ 2 k).symm⟩</span></code></pre>
-<p><span class="step" data-step="2">本文の例2と同じ部品（<code>match</code> の分解・<code>congrArg</code>・<code>.trans</code>・証人の組）だけで書けている。</span></p></article>
-<article class="slide" id="04_exists-ten-even-exercise" data-kind="main" data-label="練習：具体的な偶数の証人" data-section="CH2.existence" data-layout="compact" data-editorial="true"><ol class="exercise" start="107" data-exercise="107"><li><span class="step" data-step="0"><code>example : IsEven 10 := ⟨5, rfl⟩</code> が通ることを確かめよ（例1の一般論の、具体的な1点での実例である）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 107</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : IsEven 10 := ⟨5, rfl⟩</span></code></pre>
-<p><span class="step" data-step="2">証人 <code>5</code>、根拠は <code>10 = 2 * 5</code>——計算で一致するので <code>rfl</code>。</span></p></article>
-<article class="slide" id="04_exists-dependent-sums" data-kind="main" data-label="存在の例を依存和との対応で整理する" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-CH.dependent-sums">整理 — 依存和と「存在する」</h3></div>
+<p><span class="step" data-step="1"><a target="_blank" rel="noopener" href="../02_forall.html#sec-CH1.forall-examples"><code>02_Forall.lean</code> の1節</a>の単射の合成と並べると対になっている: 単射は <code>fun</code> と適用だけの世界、全射は存在の構成子と <code>match</code> の世界。ここでは二つ目の対象 <code>hf b</code> が一つ目で得る <code>b</code> に依存するため、二つの対象を独立に並べる形の <code>match</code> にはできない。入れ子の <code>match</code> は、「b を取り出した<strong>あとの世界</strong>で a を取り出す」という証明の依存関係を、形として見せている。</span></p></article>
+<article class="slide" id="04_exists-dependent-sums" data-kind="main" data-label="依存和と存在の対応" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-CH.dependent-sums">整理 — 依存和と「存在する」</h3></div>
 <p><span class="step" data-step="0">偶数と全射の例では、<code>∃</code> の証明を <code>⟨証人, 根拠⟩</code> で作り、<code>match</code> で使った。この二つの操作を、型の世界の依存和と並べて整理しよう。</span></p>
-<p><span class="step" data-step="1">直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>（<code>P : α → Type</code>、型の族）。命題側で対応するのが存在量化 <code>∃ a, Q a</code>（<code>Q : α → Prop</code>、命題の族）。</span></p></article>
-<article class="slide" id="04_exists-dependent-sum-use" data-kind="main" data-label="証人と根拠を作り、分解して使う" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>示すとき</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</span></p>
-<p><span class="step" data-step="1"><strong>使うとき</strong>: 組を分解する。型側は <code>.1</code> <code>.2</code> で取り出せる。存在の証明は、別の命題を証明するために <code>match</code> で分解する。データとして第一成分を射影する操作との違いは、<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">8節</a>で詳しく見る。</span></p></article>
-<article class="slide" id="04_exists-sigma-and-exists" data-kind="main" data-label="依存和の組と存在の証明" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> mkSigma {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
+<p><span class="step" data-step="1">直積 <code>α × β</code> を一般化して、第二成分の型が第一成分に依存してよいことにしたのが依存和 <code>(a : α) × P a</code>（<code>P : α → Type</code>、型の族）。命題側で対応するのが存在量化 <code>∃ a, Q a</code>（<code>Q : α → Prop</code>、命題の族）。</span></p>
+<p><span class="step" data-step="2"><strong>示すとき</strong>: <code>⟨a, b⟩</code>。「どの点か」と「その点で成り立つこと」を組にする。存在を示すには、実際に点を1つ挙げて、それが条件を満たすことを言えばよい、というのと同じ。</span></p>
+<p><span class="step" data-step="3"><strong>使うとき</strong>: 組を分解する。型側は <code>.fst</code>・<code>.snd</code> で取り出せる。存在の証明は、別の命題を証明するために <code>match</code> で分解する。データとして第一成分を射影する操作との違いは、<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">9節</a>で詳しく見る。</span></p></article>
+<article class="slide" id="04_exists-mk-sigma-exists" data-kind="main" data-label="証人と根拠を組にする二つの形" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> mkSigma {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (a : α) (b : P a) : (a : α) × P a := ⟨a, b⟩
 
 <span class="kw">#check</span> mkSigma</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">mkSigma {α : Type} {P : α → Type} (a : α) (b : P a) : (a : α) × P a</span></code></pre>
+</div><div class="slide-column">
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> mkExists {α : <span class="sort">Type</span>} {Q : α → <span class="sort">Prop</span>} (a : α) (h : Q a) : ∃ a, Q a := ⟨a, h⟩
 
 <span class="kw">#check</span> mkExists</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="3">mkExists {α : Type} {Q : α → Prop} (a : α) (h : Q a) : ∃ a, Q a</span></code></pre>
-<p><span class="step" data-step="4"><code>mkSigma</code> と重なる。「存在を示すには証人 <code>a</code> と根拠 <code>h</code> を出せばよい」が、そのまま引数の列になっている。</span></p></article>
-<article class="slide" id="04_exists-curry-sigma" data-kind="main" data-label="依存和を受け取る関数をカリー化する" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。</span></p>
+<p><span class="step" data-step="4"><code>mkSigma</code> と重なる。「存在を示すには証人 <code>a</code> と根拠 <code>h</code> を出せばよい」が、そのまま引数の列になっている。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-curry-sigma-exists" data-kind="main" data-label="組を受け取ることと二つの引数" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: 組を受け取る関数は、2引数の関数と同じこと（カリー化）。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> currySigma {α γ : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} : (((a : α) × P a) → γ) → ((a : α) → P a → γ) :=
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> currySigma</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">currySigma {α γ : Type} {P : α → Type} : ((a : α) × P a → γ) → (a : α) → P a → γ</span></code></pre></article>
-<article class="slide" id="04_exists-curry-exists" data-kind="main" data-label="存在命題でも同じカリー化が通る" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">命題側: 「存在するなら <code>r</code>」は「どの点についても、条件を満たすなら <code>r</code>」と同じこと。 <code>currySigma</code> と同じ証明項で書ける。</span></p>
+<article class="slide" id="04_exists-curry-exists" data-kind="main" data-label="存在命題でも同じカリー化" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">命題側: 「存在するなら <code>r</code>」は「どの点についても、条件を満たすなら <code>r</code>」と同じこと。 <code>currySigma</code> と同じ証明項で書ける。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> curryExists {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>} : ((∃ a, Q a) → r) → (∀ a, Q a → r) :=
   <span class="kw">fun</span> f a b =&gt; f ⟨a, b⟩
 
 <span class="kw">#check</span> curryExists</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">curryExists {α : Type} {r : Prop} {Q : α → Prop} : ((∃ a, Q a) → r) → ∀ (a : α), Q a → r</span></code></pre>
 <p><span class="step" data-step="3"><code>currySigma</code> と重なる（カリー化は命題の世界でも同じ形）。</span></p></article>
-<article class="slide" id="04_exists-fin-structure" data-kind="main" data-label="Fin は値と証明の組" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>部分型 — 第二成分が証明の依存和</h3></div>
-<p><span class="step" data-step="0"><code>01_TypesAndTerms.lean</code> では「<code>n</code> 未満の番号の型」<code>Fin n</code> を使った。いま、その中身を開こう。値と証明を組にした次の structure である:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">structure Fin (n : Nat) where
-  val : Nat
-  isLt : val &lt; n</span></code></pre>
-<p><span class="step" data-step="2">値 <code>val</code> と、「その値が <code>n</code> 未満だ」という<strong>証明</strong> <code>isLt</code> の組——依存和の第二成分を命題にしたもの——である。このように、述語で切り出した「値と証明の組」の型を<strong>部分型</strong>と呼ぶ（専用記法 <code>{x // p x}</code> は <code>07_Exercises.lean</code> で使う）。</span></p></article>
-<article class="slide" id="04_exists-last-fin" data-kind="main" data-label="最後の番号を証明付きで作る" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">中身が分かれば、項も作れる。値が <code>n</code> に依存する依存関数の例として、「<code>Fin (n + 1)</code> の<strong>最後の</strong>番号」を作ってみる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> last : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> n =&gt; ⟨n, Nat.lt_succ_self n⟩
+<article class="slide" id="04_exists-zero-exists-exercise" data-kind="main" data-label="練習：存在の証明を確かめる" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="96" data-exercise="96"><li><span class="step" data-step="0"><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 96</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</span></code></pre>
+<p><span class="step" data-step="2">証人 <code>0</code> と、<code>IsZero 0</code> すなわち <code>0 = 0</code> の証明 <code>rfl</code> の組である。</span></p></article>
+<article class="slide" id="04_exists-triple-multiple-exercise" data-kind="main" data-label="練習：n+n+n は3の倍数" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="97" data-exercise="97"><li><span class="step" data-step="0">任意の自然数 <code>n</code> について <code>n + n + n</code> が3の倍数であることを示せ。 <code>theorem triple_multiple : ∀ n : Nat, ∃ k, n + n + n = 3 * k</code> を書け。ヒントとして、<code>Nat.succ_mul 2 n</code> は <code>3 * n = 2 * n + n</code> を与える。 <code>Nat.two_mul n</code> と、上で使った <code>congrArg</code>・<code>Eq.trans</code> を組み合わせよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 97</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> triple_multiple : ∀ n : Nat, ∃ k, n + n + n = 3 * k :=
+  <span class="kw">fun</span> n =&gt; ⟨n, Eq.symm (Eq.trans (Nat.succ_mul 2 n)
+    (congrArg (<span class="kw">fun</span> x =&gt; x + n) (Nat.two_mul n)))⟩</span></code></pre>
+<p><span class="step" data-step="2">証人は <code>n</code>。<code>3 * n = 2 * n + n</code> の右辺を書き換えて <code>n + n + n</code> にし、最後に等式を逆向きにする。</span></p></article>
+<article class="slide" id="04_exists-and-introduction-elimination" data-kind="main" data-label="かつ：二つの証明を作る・取り出す" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.products">2. 直積型と「かつ」</h2></div>
+<p><span class="step" data-step="0">「p かつ q」から「q かつ p」を示す普通の証明を考えよう。仮定から p と q を取り出し、結論に必要な順にそろえればよい。この二つの動きが、組の射影と構成に対応する。</span></p>
+<p><span class="step" data-step="1"><strong>示すとき</strong>: <code>⟨a, b⟩</code> で作る。両方の成分を揃えれば組が作れる。 <code>p</code> の証明と <code>q</code> の証明を揃えれば <code>p ∧ q</code> の証明になる。</span></p>
+<p><span class="step" data-step="2"><strong>使うとき</strong>: <code>.left</code> と <code>.right</code> で取り出す。組からは各成分が取れる。命題の言葉では、<code>p ∧ q</code> からは <code>p</code> も <code>q</code> も示せる。証明項の言葉では、<code>h : p ∧ q</code> から <code>h.left : p</code> と <code>h.right : q</code> を作り、それぞれ <code>p</code> の証明・<code>q</code> の証明として使える。名前の付いたフィールドを取り出す書き方は、structure と同じである。</span></p></article>
+<article class="slide" id="04_exists-make-product-and" data-kind="main" data-label="直積の項と、かつの証明" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> mkProd {α β : <span class="sort">Type</span>} (a : α) (b : β) : α × β := ⟨a, b⟩
 
-<span class="kw">#check</span> last</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">last (n : Nat) : Fin (n + 1)</span></code></pre>
-<p><span class="step" data-step="3">値 <code>n</code> に、命題 n &lt; n + 1 の証明（ライブラリの <code>Nat.lt_succ_self n</code>）を添えて組にしている。</span></p></article>
-<article class="slide" id="04_exists-last-types" data-kind="main" data-label="入力を代入すると型が決まる" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> last 2</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">last 2 : Fin (2 + 1)</span></code></pre>
-<p><span class="step" data-step="2">型の中の <code>n</code> に <code>2</code> が入った。</span></p>
-<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> last 9</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="4">last 9 : Fin (9 + 1)</span></code></pre></article>
-<article class="slide" id="04_exists-first-fin" data-kind="main" data-label="最初の番号を返す依存関数" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">同じ族に沿って、「番号 <code>n</code> を受け取り、<code>Fin (n + 1)</code> の<strong>最初の</strong>番号 0 を返す」関数も書ける:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> first : (n : Nat) → Fin (n + 1) := <span class="kw">fun</span> _ =&gt; 0
+<span class="kw">#check</span> mkProd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">mkProd {α β : Type} (a : α) (b : β) : α × β</span></code></pre>
+</div><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> mkAnd {p q : <span class="sort">Prop</span>} (hp : p) (hq : q) : p ∧ q := ⟨hp, hq⟩
 
-<span class="kw">#check</span> first</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">first (n : Nat) : Fin (n + 1)</span></code></pre></article>
-<article class="slide" id="04_exists-first-and-last" data-kind="main" data-label="同じ 0 でも入力ごとに型が異なる" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> first 2</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">first 2 : Fin (2 + 1)</span></code></pre>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> first 9</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="3">first 9 : Fin (9 + 1)</span></code></pre>
-<p><span class="step" data-step="4">値はどれも「0 番」だが、その <code>0</code> の住んでいる型が入力ごとに違う。 <code>0</code> と書けるのは、数字が期待される型に応じて読まれる記法だからである（<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>）。 <code>last</code> と見比べてほしい。<code>first</code> の値は常に 0 番なので証明を書かずに済むが、 <code>last</code> は値 <code>n</code> が型の上限すれすれに依存するぶん、<code>n &lt; n + 1</code> の証明を添える必要があった。</span></p></article>
-<article class="slide" id="04_exists-exists-left-exercise" data-kind="main" data-label="練習：存在の根拠の左側を取り出す" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="108" data-exercise="108"><li><span class="step" data-step="0"><code>theorem exists_left {α : Type} {Q R : α → Prop} :(∃ a, Q a ∧ R a) → ∃ a, Q a</code> を書け（証人はそのまま使い、根拠の左側だけを取り出す）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 108</span></p>
+<span class="kw">#check</span> mkAnd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">mkAnd {p q : Prop} (hp : p) (hq : q) : p ∧ q</span></code></pre>
+<p><span class="step" data-step="4"><code>mkProd</code> の <code>×</code> が <code>∧</code> に変わっただけである。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-swap-product-and" data-kind="main" data-label="二つの成分を交換する" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">型側: 組を入れ替える。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapProd {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.snd, x.fst⟩
+
+<span class="kw">#check</span> swapProd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">swapProd {α β : Type} : α × β → β × α</span></code></pre>
+</div><div class="slide-column">
+<p><span class="step" data-step="3">命題側: 「かつ」を入れ替える。<code>swapProd</code> と同じように、二つの成分を交換する。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> swapAnd {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> h =&gt; ⟨h.right, h.left⟩
+
+<span class="kw">#check</span> swapAnd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">swapAnd {p q : Prop} : p ∧ q → q ∧ p</span></code></pre>
+<p><span class="step" data-step="6"><code>swapProd</code> と同じ組み立て方であり、使うフィールド名だけが異なる。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-and-left-exercise" data-kind="main" data-label="練習：左の成分を取り出す" data-section="CH.products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="98" data-exercise="98"><li><span class="step" data-step="0"><code>theorem and_left {p q : Prop} : p ∧ q → p</code> と型側の対応物 <code>def fst&#x27; {α β : Type} : α × β → α</code> を書き比べよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 98</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> and_left {p q : <span class="sort">Prop</span>} : p ∧ q → p := <span class="kw">fun</span> h =&gt; h.left
+
+<span class="kw">def</span> fst&#x27; {α β : <span class="sort">Type</span>} : α × β → α := <span class="kw">fun</span> x =&gt; x.fst</span></code></pre>
+<p><span class="step" data-step="2"><code>∧</code> の証明の組から第1成分を取り出すのと、直積の組から第1成分を取り出すのは、どちらも成分名による取り出しである。</span></p></article>
+<article class="slide" id="04_exists-and-associativity-exercise" data-kind="main" data-label="練習：かつの組み替え" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="99" data-exercise="99"><li><span class="step" data-step="0"><code>theorem and_assoc&#x27; {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r)</code> を <code>⟨…⟩</code> と <code>.left</code>・<code>.right</code> で書け。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 99</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> and_assoc&#x27; {p q r : <span class="sort">Prop</span>} : (p ∧ q) ∧ r → p ∧ (q ∧ r) :=
+  <span class="kw">fun</span> h =&gt; ⟨h.left.left, ⟨h.left.right, h.right⟩⟩</span></code></pre>
+<p><span class="step" data-step="2">左の入れ子から <code>.left.left</code>・<code>.left.right</code>・<code>.right</code> で3つの証明を取り出し、右の入れ子の形に <code>⟨…⟩</code> で組み直す。</span></p></article>
+<article class="slide" id="04_exists-concrete-and-exercise" data-kind="main" data-label="練習：具体的な二つの等式" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="100" data-exercise="100"><li><span class="step" data-step="0">具体的な命題でも示し方は同じであることを、 <code>example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 100</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩</span></code></pre>
+<p><span class="step" data-step="2">具体的な命題でも、<code>∧</code> の示し方は「証明を2つ組にする」だけである。</span></p></article>
+<article class="slide" id="04_exists-all-and-exercise" data-kind="main" data-label="練習：各点で二つの証明を組にする" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="101" data-exercise="101"><li><span class="step" data-step="0">各点で二つの証明を組にして、 <code>theorem all_and {α : Type} {Q R : α → Prop} :(∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a</code> を書け。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 101</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> all_and {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
+    (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a :=
+  <span class="kw">fun</span> hq hr a =&gt; ⟨hq a, hr a⟩</span></code></pre>
+<p><span class="step" data-step="2">点 <code>a</code> を任意に取り、2つの一般論をその点で使って組にする。</span></p></article>
+<article class="slide" id="04_exists-exists-left-exercise" data-kind="main" data-label="練習：存在の根拠から左側を取り出す" data-section="CH.products" data-layout="compact" data-editorial="true"><ol class="exercise" start="102" data-exercise="102"><li><span class="step" data-step="0"><code>theorem exists_left {α : Type} {Q R : α → Prop} :(∃ a, Q a ∧ R a) → ∃ a, Q a</code> を書け。証人はそのまま使い、根拠の左側だけを取り出す。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 102</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> exists_left {α : <span class="sort">Type</span>} {Q R : α → <span class="sort">Prop</span>} :
     (∃ a, Q a ∧ R a) → ∃ a, Q a :=
   <span class="kw">fun</span> h =&gt;
     <span class="kw">match</span> h <span class="kw">with</span>
-    | ⟨a, hq, _⟩ =&gt; ⟨a, hq⟩</span></code></pre>
+    | ⟨a, hqr⟩ =&gt; ⟨a, hqr.left⟩</span></code></pre>
 <p><span class="step" data-step="2"><code>∃</code> を分解して証人 <code>a</code> と根拠 <code>Q a ∧ R a</code> を取り出す。証人はそのまま、根拠の左側 <code>hq : Q a</code> だけを包み直す。</span></p></article>
-<article class="slide" id="04_exists-last-val-exercise" data-kind="main" data-label="練習：Fin の中身の型" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="109" data-exercise="109"><li><span class="step" data-step="0"><code>#check (last 4).val</code> の表示を予想してから確かめよ（表示に付く <code>↑</code> は<strong>強制</strong>の印——上の補足で説明した）。</span></li></ol>
+<article class="slide" id="04_exists-or-introduction-elimination" data-kind="main" data-label="または：札を付ける・場合分けする" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.sums">3. 直和型と「または」</h2></div>
+<p><span class="step" data-step="0"><strong>示すとき</strong>: <code>.inl</code> か <code>.inr</code> のどちらかで作る。左右どちらかの成分があればよい。 <code>p</code> の証明があれば <code>p ∨ q</code> が言えるし、<code>q</code> の証明でもよい。</span></p>
+<p><span class="step" data-step="1"><strong>使うとき</strong>: 場合分け（<code>match</code>）。和の項を使うには、左のときと右のときの両方について行き先を用意する必要がある。「または」を使うときに場合分けするのと同じ。</span></p></article>
+<article class="slide" id="04_exists-make-sum-or" data-kind="main" data-label="直和の項と、またはの証明" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> inlSum {α β : <span class="sort">Type</span>} (a : α) : α ⊕ β := .inl a
+
+<span class="kw">#check</span> inlSum</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">inlSum {α β : Type} (a : α) : α ⊕ β</span></code></pre>
+</div><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> inlOr {p q : <span class="sort">Prop</span>} (hp : p) : p ∨ q := .inl hp
+
+<span class="kw">#check</span> inlOr</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">inlOr {p q : Prop} (hp : p) : p ∨ q</span></code></pre>
+<p><span class="step" data-step="4"><code>inlSum</code> と重なる。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-swap-sum-or" data-kind="main" data-label="札を交換する場合分け" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">型側: 和を入れ替える。左なら右へ、右なら左へ。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapSum {α β : <span class="sort">Type</span>} : α ⊕ β → β ⊕ α := <span class="kw">fun</span> x =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | .inl a =&gt; .inr a
+  | .inr b =&gt; .inl b
+
+<span class="kw">#check</span> swapSum</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">swapSum {α β : Type} : α ⊕ β → β ⊕ α</span></code></pre>
+</div><div class="slide-column">
+<p><span class="step" data-step="3">命題側: 「または」を入れ替える。これも同じ形の場合分けで書ける。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> swapOr {p q : <span class="sort">Prop</span>} : p ∨ q → q ∨ p := <span class="kw">fun</span> h =&gt;
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | .inl hp =&gt; .inr hp
+  | .inr hq =&gt; .inl hq
+
+<span class="kw">#check</span> swapOr</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">swapOr {p q : Prop} : p ∨ q → q ∨ p</span></code></pre>
+<p><span class="step" data-step="6"><code>swapSum</code> と重なる。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-eliminate-sum-or" data-kind="main" data-label="両方の場合の行き先を与える" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">型側の「使うとき」を一般の形で書いたもの。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> elimSum {α β γ : <span class="sort">Type</span>} : α ⊕ β → (α → γ) → (β → γ) → γ := <span class="kw">fun</span> x f g =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | .inl a =&gt; f a
+  | .inr b =&gt; g b
+
+<span class="kw">#check</span> elimSum</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">elimSum {α β γ : Type} : α ⊕ β → (α → γ) → (β → γ) → γ</span></code></pre>
+</div><div class="slide-column">
+<p><span class="step" data-step="3">命題側の「使うとき」。<code>Or.elim</code> と同じもの。字面は上と同じ。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> elimOr {p q r : <span class="sort">Prop</span>} : p ∨ q → (p → r) → (q → r) → r := <span class="kw">fun</span> h f g =&gt;
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | .inl hp =&gt; f hp
+  | .inr hq =&gt; g hq
+
+<span class="kw">#check</span> elimOr</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">elimOr {p q r : Prop} : p ∨ q → (p → r) → (q → r) → r</span></code></pre>
+<p><span class="step" data-step="6"><code>elimSum</code> と重なる。「場合分けで示す」ことの正体が、この型である。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-or-idem-exercise" data-kind="main" data-label="練習：どちらも同じ命題" data-section="CH.sums" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="103" data-exercise="103"><li><span class="step" data-step="0"><code>theorem or_idem {p : Prop} : p ∨ p → p</code> を <code>match</code> で書け（どちらの札でも中身は同じ）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 103</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> or_idem {p : <span class="sort">Prop</span>} : p ∨ p → p := <span class="kw">fun</span> h =&gt;
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | .inl hp =&gt; hp
+  | .inr hp =&gt; hp</span></code></pre>
+<p><span class="step" data-step="2">どちらの札でも中身は <code>p</code> の証明なので、そのまま返す。</span></p></article>
+<article class="slide" id="04_exists-or-map-exercise" data-kind="main" data-label="練習：左の場合だけ根拠を移す" data-section="CH.sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="104" data-exercise="104"><li><span class="step" data-step="0"><code>theorem or_map {p q r : Prop} : (p → q) → p ∨ r → q ∨ r</code> を書け（札を見て、左のときだけ関数を適用する）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 104</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> or_map {p q r : <span class="sort">Prop</span>} : (p → q) → p ∨ r → q ∨ r := <span class="kw">fun</span> f h =&gt;
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | .inl hp =&gt; .inl (f hp)
+  | .inr hr =&gt; .inr hr</span></code></pre>
+<p><span class="step" data-step="2">左の札のときだけ <code>f</code> を適用し、右の札はそのまま包み直す。</span></p></article>
+<article class="slide" id="04_exists-concrete-or-exercise" data-kind="main" data-label="練習：片側の証明からまたはを作る" data-section="CH.sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="105" data-exercise="105"><li><span class="step" data-step="0"><code>example : (1 = 2) ∨ (2 = 2) := .inr rfl</code> が通ることを確かめよ（左の札が<strong>偽の命題</strong>でも、右から入れる）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 105</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : (1 = 2) ∨ (2 = 2) := .inr rfl</span></code></pre>
+<p><span class="step" data-step="2">通る。<code>∨</code> を示すには片側の証明だけでよいので、左が偽の命題でも構わない。</span></p></article>
+<article class="slide" id="04_exists-empty-types" data-kind="main" data-label="空の型と矛盾" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.empty-types">4. 空の型と「⊥」</h2></div>
+<p><span class="step" data-step="0">項が1つもない型が <code>Empty</code>、証明が1つもない命題が <code>False</code>。</span></p>
+<p><span class="step" data-step="1"><strong>示すとき</strong>: 手段が<strong>ない</strong>。これが空であることの意味そのもので、作り方が用意されていないから項（証明）が存在しない。</span></p>
+<p><span class="step" data-step="2"><strong>使うとき</strong>: 場合分けすべき場合が1つもないので、「もし項が手に入ったなら何でも作れる」という形になる。矛盾からは何でも従う、というのと同じ。</span></p></article>
+<article class="slide" id="04_exists-empty-elimination" data-kind="main" data-label="項のない型からの関数" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">型側: <code>Empty</code> の項があれば何の型の項でも作れる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> elimEmpty {α : <span class="sort">Type</span>} : Empty → α := <span class="kw">fun</span> e =&gt; e.elim
+
+<span class="kw">#check</span> elimEmpty</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">elimEmpty {α : Type} : Empty → α</span></code></pre>
+</div><div class="slide-column">
+<p><span class="step" data-step="3">命題側: 矛盾からは何でも従う。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">theorem</span> elimFalse {p : <span class="sort">Prop</span>} : False → p := <span class="kw">fun</span> h =&gt; h.elim
+
+<span class="kw">#check</span> elimFalse</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">elimFalse {p : Prop} : False → p</span></code></pre>
+</div></div></article>
+<article class="slide" id="04_exists-negation" data-kind="main" data-label="否定は False を返す関数" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">否定 <code>¬p</code> は <code>p → False</code> のことなので、実は新しい作り方ではない。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> notIntro {p : <span class="sort">Prop</span>} (h : p → False) : ¬p := h
+
+<span class="kw">#check</span> notIntro</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">notIntro {p : Prop} (h : p → False) : ¬p</span></code></pre></article>
+<article class="slide" id="04_exists-true-false" data-kind="main" data-label="作り方のない命題と、自明な命題" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>False と True</h3></div>
+<p><span class="step" data-step="0"><code>False</code> は構成子を持たない帰納型で、<code>Empty</code> に対応する命題である。一方、<code>True</code> は構成子 <code>True.intro</code> を一つ持ち、いつでも証明できる。型の世界で見た「項の作り方」が、命題の世界では「証明の作り方」になっている。 <code>true : Bool</code> はデータ、<code>True : Prop</code> は命題であり、この二つは区別する。</span></p></article>
+<article class="slide" id="04_exists-contradiction-exercise" data-kind="main" data-label="練習：矛盾から結論を得る" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="106" data-exercise="106"><li><span class="step" data-step="0"><code>theorem noContra {p q : Prop} : p → ¬p → q</code> を書け。ヒント: <code>¬p</code> は <code>p → False</code> なので、適用すると <code>False</code> が出る。あとは <code>.elim</code>。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 106</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> noContra {p q : <span class="sort">Prop</span>} : p → ¬p → q :=
+  <span class="kw">fun</span> hp hnp =&gt; (hnp hp).elim</span></code></pre>
+<p><span class="step" data-step="2"><code>hnp hp : False</code> ができるので、<code>False.elim</code> でどんな命題でも導ける。</span></p></article>
+<article class="slide" id="04_exists-double-negation-exercise" data-kind="main" data-label="練習：二重否定" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="107" data-exercise="107"><li><span class="step" data-step="0"><code>theorem dni {p : Prop} : p → ¬¬p</code> を書け（<code>¬¬p</code> を<strong>示す</strong>向き。ほとんど1語で書ける）。書けたら、逆向き <code>¬¬p → p</code> にも挑戦して、<strong>書けない</strong>ことを確かめよ。書き方は <a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.sets"><code>06_Topology.lean</code> の2節</a> <code>compl_compl</code>（<code>Classical.byContradiction</code> を使う）で、その代償（公理への依存）は末尾の公理の節で分かる。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 107</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> dni {p : <span class="sort">Prop</span>} : p → ¬¬p := <span class="kw">fun</span> hp hnp =&gt; hnp hp</span></code></pre>
+<p><span class="step" data-step="2"><code>¬¬p</code> は <code>(p → False) → False</code>。<code>hnp : p → False</code> を受け取って <code>hp</code> に適用するだけである。</span></p>
+<p><span class="step" data-step="3">逆向き <code>¬¬p → p</code> は書けない。手持ちは <code>hnn : (p → False) → False</code> だけで、これをどう適用しても出てくるのは <code>False</code> であって、<code>p</code> の証明を<strong>作る</strong> 手段がない。この向きに必要なのが背理法（<code>Classical.byContradiction</code>）で、 <a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.sets"><code>06_Topology.lean</code> 2節</a>の <code>compl_compl</code> がそれを使う。代償（公理への依存）は本文末尾の公理の節のとおり。</span></p></article>
+<article class="slide" id="04_exists-not-false-exercise" data-kind="main" data-label="練習：False の否定" data-section="CH.empty-types" data-layout="compact" data-editorial="true"><ol class="exercise" start="108" data-exercise="108"><li><span class="step" data-step="0"><code>example : ¬False := fun h =&gt; h</code> が通ることを確かめよ（<code>¬False</code> は <code>False → False</code>——恒等関数が証明になる）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 108</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : ¬False := <span class="kw">fun</span> h =&gt; h</span></code></pre>
+<p><span class="step" data-step="2"><code>¬False</code> は <code>False → False</code>——恒等関数が証明になる。</span></p></article>
+<article class="slide" id="04_exists-even-add-proof" data-kind="main" data-label="偶数と偶数の和は偶数" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.even-add">5. 偶数と偶数の和は偶数</h2></div>
+<p><span class="step" data-step="0"><strong>ふつうの証明</strong>。</span></p>
+<ol><li data-step="1" class="step">n, m を任意に取り、hn「n は偶数」・hm「m は偶数」を仮定する。</li><li data-step="1" class="step">hn から、n = 2k となる k を取り、この等式を hk と名付ける。</li><li data-step="1" class="step">hm から同様に l を取り、等式を hl と名付ける。</li><li data-step="1" class="step">hk の両辺に右から m を足して、n + m = 2k + m。</li><li data-step="1" class="step">hl の両辺に左から 2k を足して、2k + m = 2k + 2l。</li><li data-step="1" class="step">分配法則より 2k + 2l = 2(k + l)。4〜6 を = のつながりとして読めば n + m = 2(k + l)。</li><li data-step="1" class="step">よって証人 k + l により、n + m は偶数である。∎</li></ol></article>
+<article class="slide" id="04_exists-even-add-formula" data-kind="main" data-label="仮定を二つ受け取る命題" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>論理式</strong>。主張は</span></p>
+<pre class="quote"><code><span class="step" data-step="1">∀n ∀m (Even(n) → Even(m) → Even(n + m))</span></code></pre>
+<p><span class="step" data-step="2">——n と m の全称量化の内側に、「ならば」（→）が2つ並ぶ形である（Even(n) ∧ Even(m) → … と「かつ」でまとめても同値だが、仮定を1つずつ取るふつうの証明の読みには、→ の並びのほうが対応する）。</span></p></article>
+<article class="slide" id="04_exists-unpack-even-assumptions" data-kind="main" data-label="偶数の証明を取り出して使う" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>形式化を意識した版</strong>。今度は仮定つきの命題である。「…ならば—」の証明の仕方は、<strong>仮定を取って</strong>（名前を付けて）結論を示すこと——全称のときの「n を取る」と同じ頭の動きである。</span></p>
+<p><span class="step" data-step="1">仮定 hn を<strong>使う</strong>番になったら、また定義に戻る。hn は「n = 2k となる k が存在する」ことの証明である。<strong>存在量化された命題の使い方</strong>は、証明の仕方のちょうど逆で、<strong>存在するものを1つ取り出して名前を付ける</strong>——「k をそういう数とする。以後 hk : n = 2 * k が使える」と宣言する動きである。hm からも同様に l と hl を取り出す。</span></p></article>
+<article class="slide" id="04_exists-build-equality-chain" data-kind="main" data-label="求める証人と等式の連鎖" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すべきは（定義に戻ると）「n + m = 2j となる j の存在」。候補は j = k + l で、満たすべき性質は n + m = 2(k + l) である。この等式は一度には出ないので、 <strong>等式の連鎖</strong>で作る: hk の<strong>両辺に同じ操作 (· + m) を施して</strong> n + m = 2k + m、 hl から同様に 2k + m = 2k + 2l、分配法則（既知の定理）で 2k + 2l = 2(k + l)、最後に<strong>3本の等式をつなぐ</strong>。ふつうの証明で「= を続けて書く」ことの正体は、この「両辺に同じ操作」と「つなぐ」の繰り返しである。</span></p></article>
+<article class="slide" id="04_exists-even-add-tools" data-kind="main" data-label="分配法則と証明の中間項" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>。<code>IsEven n</code> は定義を開けば <code>∃ k, n = 2 * k</code> である。帰納型 <code>Exists</code> の構成子を <code>match</code> で調べると、証人 <code>k</code> と根拠 <code>hk</code> が得られる。もう一方の仮定も同じように、二つ目の <code>match</code> で分解する。</span></p>
+<p><span class="step" data-step="1">等式をつなぐ操作は、全射の合成で使った <code>congrArg</code> と <code>Eq.trans</code> である。追加で使う分配法則の型を確認しよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> Nat.mul_add</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">Nat.mul_add (n m k : Nat) : n * (m + k) = n * m + n * k</span></code></pre>
+<p><span class="step" data-step="4"><code>Nat.mul_add 2 k l</code> の対称形により、<code>2 * k + 2 * l = 2 * (k + l)</code> が得られる。途中の等式に型と名前を付け、何をつないでいるかが見える形で書く。 <code>let h : P := ...</code> は、この式の中で使う項に名前を付ける書き方である。</span></p></article>
+<article class="slide" id="04_exists-even-add-term" data-kind="main" data-label="二つの match と三つの等式" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> isEven_add {n m : Nat} (hn : IsEven n)
+    (hm : IsEven m) : IsEven (n + m) :=
+  <span class="kw">match</span> hn <span class="kw">with</span>
+  | ⟨k, hk⟩ =&gt;
+    <span class="kw">match</span> hm <span class="kw">with</span>
+    | ⟨l, hl⟩ =&gt;
+      <span class="kw">let</span> h1 : n + m = 2 * k + m :=
+        congrArg (<span class="kw">fun</span> x =&gt; x + m) hk
+      <span class="kw">let</span> h2 : 2 * k + m = 2 * k + 2 * l :=
+        congrArg (<span class="kw">fun</span> x =&gt; 2 * k + x) hl
+      <span class="kw">let</span> h3 : 2 * k + 2 * l = 2 * (k + l) :=
+        Eq.symm (Nat.mul_add 2 k l)
+      ⟨k + l, Eq.trans (Eq.trans h1 h2) h3⟩
+
+</span></code></pre></article>
+<article class="slide" id="04_exists-even-add-type" data-kind="main" data-label="証明全体の型を確認する" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> isEven_add</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m)</span></code></pre>
+<p><span class="step" data-step="2">仮定 hn・hm が<strong>引数</strong>になっていることに注意——「ならばの証明=仮定を取る」も、項では <code>fun</code> と同じ扱いである（ふつうの証明の (1) は引数の宣言に吸収されている）。主張全体も論理式 ∀n ∀m (… → … → …) の写しである: 定理の引数の列は∀ と → を <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の binder 形式で書いたもので、n・m は値から決まるため暗黙引数 <code>{ }</code> になっている。</span></p></article>
+<article class="slide" id="04_exists-two-mul-exercise" data-kind="main" data-label="練習：2*n は偶数" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="109" data-exercise="109"><li><span class="step" data-step="0"><code>theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n)</code> を <code>isEven_double</code> にならって書け（証人は <code>n</code>、根拠は <code>rfl</code> で済む——なぜ済むのかも考えること）。</span></li></ol>
 <p class="answer-heading"><span class="step" data-step="1">解答 109</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> (last 4).val</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">↑(last 4) : Nat</span></code></pre>
-<p><span class="step" data-step="3"><code>.val</code> の適用が強制の印 <code>↑</code> で表示される。型は <code>Fin 5</code> の中身の <code>Nat</code>。</span></p></article>
-<article class="slide" id="04_exists-exists-zero-exercise" data-kind="main" data-label="練習：ゼロの存在を示す" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="110" data-exercise="110"><li><span class="step" data-step="0"><code>example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
+  <span class="kw">fun</span> n =&gt; ⟨n, rfl⟩</span></code></pre>
+<p><span class="step" data-step="2">証人は <code>n</code>。示すべき根拠は <code>2 * n = 2 * n</code> そのものなので、<code>rfl</code> で済む（<code>isEven_double</code> では <code>n + n = 2 * n</code> の変形が要ったが、ここでは両辺が字面から一致している）。</span></p></article>
+<article class="slide" id="04_exists-add-two-exercise" data-kind="main" data-label="練習：偶数に2を足す" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><ol class="exercise" start="110" data-exercise="110"><li><span class="step" data-step="0">「n が偶数なら n + 2 も偶数」を、本文と同じ段構え（ふつうの証明 → 論理式 → 形式化を意識した版 → 項）で自分で書け。ヒント: 証人は <code>k + 1</code>。式変形の最後は <code>Nat.mul_succ</code> の対称形が使える。</span></li></ol>
 <p class="answer-heading"><span class="step" data-step="1">解答 110</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : ∃ n : Nat, IsZero n := ⟨0, rfl⟩</span></code></pre>
-<p><span class="step" data-step="2">証人 <code>0</code> と、<code>IsZero 0</code> すなわち <code>0 = 0</code> の証明 <code>rfl</code> の組である。</span></p></article>
-<article class="slide" id="04_exists-first-four-exercise" data-kind="main" data-label="練習：first の型と値" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="111" data-exercise="111"><li><span class="step" data-step="0"><code>#check first 4</code> の表示と、<code>#eval (first 4).val</code> の値を予想してから確かめよ。</span></li></ol>
+<p><span class="step" data-step="1"><strong>ふつうの証明</strong>:</span></p>
+<ol><li data-step="2" class="step">仮定 <code>IsEven n</code> を分解し、<code>k</code> と <code>hk : n = 2 * k</code> を得る。</li><li data-step="2" class="step"><code>hk</code> の両辺に右から 2 を足して、<code>n + 2 = 2 * k + 2</code>。</li><li data-step="2" class="step"><code>2 * k + 2 = 2 * (k + 1)</code> は、既知の定理 <code>Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2</code> の対称形。</li><li data-step="2" class="step">2〜3 をつないで <code>n + 2 = 2 * (k + 1)</code>。よって証人 <code>k + 1</code> で偶数である。∎</li></ol></article>
+<article class="slide" id="04_exists-add-two-formalization" data-kind="main" data-label="仮定と証人を追う" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>論理式</strong>: ∀n (Even(n) → Even(n + 2))。</span></p>
+<p><span class="step" data-step="1"><strong>形式化を意識した版</strong>: 仮定を取る（ならばの証明）。<code>hn</code> は存在文なので、取り出して <code>k</code> と <code>hk</code> に名前を付ける（存在の使い方）。示すべきは（定義に戻ると）「<code>n + 2 = 2j</code> となる <code>j</code> の存在」。候補は <code>j = k + 1</code> で、性質 <code>n + 2 = 2 * (k + 1)</code> は等式の連鎖——<code>hk</code> の両辺に <code>(· + 2)</code> を施し、 <code>Nat.mul_succ</code> の対称形とつなぐ。</span></p></article>
+<article class="slide" id="04_exists-add-two-term" data-kind="main" data-label="証人 k+1 と根拠の項" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><strong>項</strong>:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
+  <span class="kw">fun</span> _ hn =&gt;
+    <span class="kw">match</span> hn <span class="kw">with</span>
+    | ⟨k, hk⟩ =&gt; ⟨k + 1, (congrArg (· + 2) hk).trans (Nat.mul_succ 2 k).symm⟩</span></code></pre>
+<p><span class="step" data-step="2">本文の偶数の和と同じ部品（<code>match</code> の分解・<code>congrArg</code>・<code>.trans</code>・証人の組）だけで書けている。</span></p></article>
+<article class="slide" id="04_exists-ten-even-exercise" data-kind="main" data-label="練習：10 が偶数である証明" data-section="CH2.even-add" data-layout="compact" data-editorial="true"><ol class="exercise" start="111" data-exercise="111"><li><span class="step" data-step="0"><code>example : IsEven 10 := ⟨5, rfl⟩</code> が通ることを確かめよ（例1の一般論の、具体的な1点での実例である）。</span></li></ol>
 <p class="answer-heading"><span class="step" data-step="1">解答 111</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> first 4</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">first 4 : Fin (4 + 1)</span></code></pre>
-<p><span class="step" data-step="3">定義どおり <code>Fin (4 + 1)</code>（計算すれば <code>Fin 5</code>）。</span></p>
-<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> (first 4).val</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="5">0</span></code></pre>
-<p><span class="step" data-step="6"><code>first</code> は <code>n</code> によらず <code>0</code> を返す。</span></p></article>
-<article class="slide" id="04_exists-first-zero-exercise" data-kind="main" data-label="練習：1点の型の唯一の番号" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="112" data-exercise="112"><li><span class="step" data-step="0"><code>#check first 0</code> の表示を予想してから確かめよ（<code>Fin (0 + 1)</code> は1点の型である）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 112</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> first 0</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">first 0 : Fin (0 + 1)</span></code></pre>
-<p><span class="step" data-step="3"><code>Fin (0 + 1)</code>——要素が1つしかない型で、その唯一の要素が <code>first 0</code> である。</span></p></article>
-<article class="slide" id="04_exists-fin-wrap-exercise" data-kind="main" data-label="練習：Fin の数字と剰余" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="113" data-exercise="113"><li><span class="step" data-step="0">（補足の確認）<code>#eval (5 : Fin 4)</code> の表示を予想してから確かめよ（補足の <code>(5 : Fin 3)</code> と同じ仕組みである）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 113</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (5 : Fin 4)</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">1</span></code></pre>
-<p><span class="step" data-step="3">補足の <code>(5 : Fin 3)</code> と同じ仕組みで、<code>5</code> を <code>4</code> で割った余りが入る。</span></p></article>
-<article class="slide" id="04_exists-fin-nat-add-exercise" data-kind="main" data-label="練習：Fin の中身を取り出して足す" data-section="CH.dependent-sums" data-layout="compact" data-editorial="true"><ol class="exercise" start="114" data-exercise="114"><li><span class="step" data-step="0">（補足の確認）<code>#eval (first 5).val + (2 : Fin 3).val</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 114</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (first 5).val + (2 : Fin 3).val</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">2</span></code></pre>
-<p><span class="step" data-step="3"><code>(first 5).val = 0</code>、<code>(2 : Fin 3).val = 2</code> で、和は <code>Nat</code> の <code>2</code>。</span></p></article>
-<article class="slide" id="04_exists-zero-mul-error" data-kind="main" data-label="計算が進まないと rfl は通らない" data-section="CH2.computation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.computation">5. 等式と自然数の証明 — 計算・帰納法・構成子</h2></div>
-<div class="step" data-step="0"><h3>補足（初読は飛ばしてよい）: 対称に見えて <code>rfl</code> が通らない <code>0 * n</code></h3></div>
-<p><span class="step" data-step="0"><code>02_Forall.lean</code> の <code>all_mul_zero</code> と同じ調子で <code>∀ n, IsZero (0 * n)</code> も書きたくなるが、こちらは通らない:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">theorem all_zero_mul : ∀ n : Nat, IsZero (0 * n) := fun n =&gt; rfl
-
-error: Type mismatch
-  rfl
-has type
-  ?m.10 = ?m.10
-but is expected to have type
-  IsZero (0 * n)</span></code></pre></article>
-<article class="slide" id="04_exists-recursion-direction" data-kind="main" data-label="掛け算の再帰する引数と帰納法" data-section="CH2.computation" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">理由は <code>*</code> の定義が<strong>第2引数についての再帰</strong>であること。<code>n * 0</code> は第2引数が <code>0</code> なので計算が1歩で進むが、<code>0 * n</code> は第2引数が<strong>変数のまま</strong> なので計算が止まり、<code>0 * n</code> と <code>0</code> は「計算で一致」しない。数学では対称に見える2つの式が、定義のレベルでは非対称なのである（下の練習の <code>0 * 5</code> が通るのは、<code>5</code> が具体的な数字で計算が最後まで走るから）。</span></p>
-<p><span class="step" data-step="1">変数 <code>n</code> のまま示すには <code>n</code> についての<strong>数学的帰納法</strong>が要る。Lean では帰納法は再帰で書く——実物は <code>06_Topology.lean</code> の <code>mem_interFin</code> などで見る。ライブラリではこの命題（の中身）は <code>Nat.zero_mul</code> として証明済みである。</span></p></article>
-<article class="slide" id="04_exists-concrete-zero-mul-exercise" data-kind="main" data-label="練習：具体的な値なら計算で一致する" data-section="CH2.computation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="115" data-exercise="115"><li><span class="step" data-step="0"><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> と <code>all_mul_zero 5</code> の両方で証明できるか。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 115</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : IsZero (0 * 5) := rfl
-
-<span class="kw">example</span> : IsZero (5 * 0) := rfl
-
-<span class="kw">example</span> : IsZero (5 * 0) := all_mul_zero 5</span></code></pre>
-<p><span class="step" data-step="2">どれも通る。<code>0 * 5</code> も <code>5 * 0</code> も計算で <code>0</code> になるので <code>rfl</code> でよく、後者は一般論 <code>all_mul_zero</code> に点 <code>5</code> を代入しても証明できる。</span></p></article>
-<article class="slide" id="04_exists-constructors-and-proofs" data-kind="main" data-label="等式の例を構成子の仕組みから整理する" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-CH.nat-proofs">整理 — 自然数の命題と構成子</h3></div>
-<p><span class="step" data-step="0">ここまでの等式の例では、計算で両辺が一致すれば <code>rfl</code> で証明できた。その仕組みを、等式 <code>Eq</code> の定義と構成子から整理しよう。さらに順序 <code>Nat.le</code> も見る。 <code>=</code> や <code>≤</code> といった命題を作るもの自体が、<code>03_InductiveTypes.lean</code> の <code>MyNat</code> などと同じく<strong>帰納型として定義されている</strong>。</span></p></article>
-<article class="slide" id="04_exists-eq-definition" data-kind="main" data-label="Eq は構成子1つの帰納型" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>等しさ <code>Eq</code></h3></div>
-<p><span class="step" data-step="0"><code>a = b</code> は <code>Eq a b</code> の記法で、<code>Eq</code> は構成子を1つだけ持つ帰納型である:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">inductive Eq {α : Sort u} : α → α → Prop
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : IsEven 10 := ⟨5, rfl⟩</span></code></pre>
+<p><span class="step" data-step="2">証人 <code>5</code>、根拠は <code>10 = 2 * 5</code>——計算で一致するので <code>rfl</code>。</span></p></article>
+<article class="slide" id="04_exists-equality-examples" data-kind="main" data-label="等式の証明：計算と既知の定理" data-section="CH2.computation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.computation">6. 等式と自然数の証明 — 計算・帰納法・構成子</h2></div>
+<p><span class="step" data-step="0">前の例では、既知の等式の証明を関数として使った。ここでは、等式の証明そのものがどのように作られているかを見る。まず、計算で確かめられる例から始めよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> (n : Nat) : n + 0 = n := rfl</span></code></pre>
+<p><span class="step" data-step="2"><code>n + 0</code> は加算の定義から <code>n</code> に計算できる。このため、同じ項どうしの等式を示す <code>rfl</code> が使える。もう一方の順に足す等式も成り立つが、こちらは既知の定理で示そう。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">example</span> (n : Nat) : 0 + n = n := Nat.zero_add n</span></code></pre>
+<p><span class="step" data-step="4">どちらも等式の証明だが、作り方は違う。<code>rfl</code> を使える仕組みと、計算だけでは済まない場合を支える帰納法の仕組みを、順に整理する。</span></p></article>
+<article class="slide" id="04_exists-equality-definition" data-kind="main" data-label="等式を作る帰納型 Eq" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<div class="step" data-step="0"><h3 id="sec-CH.nat-proofs">整理 — 自然数の命題と構成子</h3></div>
+<p><span class="step" data-step="0">ここまでの等式の例では、計算で両辺が一致すれば <code>rfl</code> で証明できた。その仕組みを、等式 <code>Eq</code> の定義と構成子から整理しよう。さらに順序 <code>Nat.le</code> も見る。 <code>=</code> や <code>≤</code> といった命題を作るもの自体が、<code>03_InductiveTypes.lean</code> の <code>MyNat</code> などと同じく<strong>帰納型として定義されている</strong>。</span></p>
+</div><div class="slide-column">
+<div class="step" data-step="1"><h3>等しさ <code>Eq</code></h3></div>
+<p><span class="step" data-step="1"><code>a = b</code> は <code>Eq a b</code> の記法で、<code>Eq</code> は構成子を1つだけ持つ帰納型である。表示中の <code>Sort u</code> は、<code>Prop</code> や <code>Type</code> などをまとめて扱う型の宇宙の表記である:</span></p>
+<pre class="quote"><code><span class="step" data-step="2">inductive Eq {α : Sort u} : α → α → Prop
   | refl (a : α) : Eq a a</span></code></pre>
-<p><span class="step" data-step="2">構成子 <code>refl</code> が作れるのは、両辺が同じ <code>Eq a a</code> の形の項だけ。「<code>a = a</code> はいつでも証明できて、それが等しさの証明のすべて」というのが、等しさの定義そのものになっている。</span></p></article>
-<article class="slide" id="04_exists-eq-examples" data-kind="main" data-label="rfl で作れる等式と計算での照合" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">example</span> : 0 = 0 := Eq.refl 0
+<p><span class="step" data-step="3">構成子 <code>refl</code> が作れるのは、両辺が同じ <code>Eq a a</code> の形の項だけ。「<code>a = a</code> はいつでも証明できて、それが等しさの証明のすべて」というのが、等しさの定義そのものになっている。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-reflexivity-examples" data-kind="main" data-label="Eq.refl と計算で一致する等式" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">example</span> : 0 = 0 := Eq.refl 0
 <span class="kw">example</span> : 0 = 0 := rfl        <span class="cm">-- 略記。引数の `0` は型 `0 = 0` の側から決まる</span></span></code></pre>
-<p><span class="step" data-step="1">一方 <code>0 = 1</code> という型の項は <code>refl</code> では作れず、実際この型に項は存在しない。証明のない命題は、項のない型 <code>Empty</code>（<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types">3節</a>）と同じ立場にある。</span></p>
+<p><span class="step" data-step="1">一方 <code>0 = 1</code> という型の項は <code>refl</code> では作れず、実際この型に項は存在しない。証明のない命題は、項のない型 <code>Empty</code>（<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types">4節</a>）と同じ立場にある。</span></p>
 <p><span class="step" data-step="2"><a target="_blank" rel="noopener" href="../02_forall.html#sec-CH.propositions"><code>02_Forall.lean</code> の0節</a>で <code>1 + 1 = 2</code> が <code>rfl</code> で証明できたのは、型検査が両辺を <strong>計算してから</strong>比べるからである。<code>1 + 1</code> は計算すると <code>2</code> になるので、 <code>1 + 1 = 2</code> は <code>2 = 2</code> と同じ型であり、<code>refl</code> の射程に入る。</span></p></article>
-<article class="slide" id="04_exists-sort" data-kind="main" data-label="Prop と Type をまとめる Sort" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Prop と Type をまとめて扱う Sort</h3></div>
-<p><span class="step" data-step="0"><code>Sort</code> は、<code>Prop</code> と <code>Type</code>、<code>Type 1</code>、…をまとめて扱うための宇宙の表記である。次の各行は、別々の型の対応ではなく、<strong>同じものの2通りの書き方</strong>を並べている。</span></p>
-<table><thead class="step" data-step="1"><tr><th>これまでの表記</th><th>Sort による表記</th></tr></thead><tbody><tr class="step" data-step="1"><td><code>Prop</code></td><td><code>Sort 0</code></td></tr><tr class="step" data-step="1"><td><code>Type</code>（<code>Type 0</code>）</td><td><code>Sort 1</code></td></tr><tr class="step" data-step="1"><td><code>Type 1</code></td><td><code>Sort 2</code></td></tr><tr class="step" data-step="1"><td><code>Type u</code></td><td><code>Sort (u + 1)</code></td></tr></tbody></table>
-<p><span class="step" data-step="2"><code>α : Sort u</code> と書けば、命題も通常の型も対象にできる。例えば <code>u = 0</code> なら <code>α : Prop</code>、<code>u = 1</code> なら <code>α : Type</code> である。この <code>u</code> は<strong>宇宙のレベル</strong>を表すパラメータで、通常の関数に渡す自然数の引数ではない。具体的に使うときのレベルは、通常 Lean が推測する。</span></p></article>
-<article class="slide" id="04_exists-rfl-type" data-kind="main" data-label="rfl の型を左から読む" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>rfl の型を読む</h3></div>
+<article class="slide" id="04_exists-rfl-type" data-kind="main" data-label="rfl の型を読む" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>rfl の型を読む</h3></div>
 <p><span class="step" data-step="0">等式の反射性は「どんな型の、どんな項 a についても、a = a」である。だから <code>rfl</code> は、型とその項を受け取って <code>a = a</code> の証明を返すはずである。型を確かめよう:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> rfl</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">rfl.{u} {α : Sort u} {a : α} : a = a</span></code></pre>
 <p><span class="step" data-step="3">表示を左から読もう。</span></p>
 <ul><li data-step="4" class="step"><code>.{u}</code> は、宇宙レベルをパラメータとして持つという表示。</li><li data-step="4" class="step"><code>{α : Sort u}</code> は、等式の両辺が属する型を受け取る暗黙引数。</li><li data-step="4" class="step"><code>{a : α}</code> は、その型の項を受け取る暗黙引数。</li><li data-step="4" class="step">最後の <code>a = a</code> は結果の型。つまり、返す項はこの等式の証明である。</li></ul></article>
-<article class="slide" id="04_exists-rfl-inference" data-kind="main" data-label="期待される等式から暗黙引数を決める" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">暗黙引数なので、普通は型や項を明示せず <code>rfl</code> とだけ書き、期待される等式から補ってもらう。 <code>rfl</code> は、等式の構成子を使った証明 <code>Eq.refl a</code> の、引数 <code>a</code> を暗黙にしたものである。先ほどの <code>Eq</code> の定義にあった構成子が、この <code>Eq.refl</code> である。</span></p>
+<article class="slide" id="04_exists-rfl-inference" data-kind="main" data-label="期待される等式から引数を補う" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">暗黙引数なので、普通は型や項を明示せず <code>rfl</code> とだけ書き、期待される等式から補ってもらう。 <code>rfl</code> は、等式の構成子を使った証明 <code>Eq.refl a</code> の、引数 <code>a</code> を暗黙にしたものである。先ほどの <code>Eq</code> の定義にあった構成子が、この <code>Eq.refl</code> である。</span></p>
 <p><span class="step" data-step="1"><code>one_add_one</code> の右辺では、期待される型は <code>1 + 1 = 2</code> だった。 <code>rfl</code> が与える <code>a = a</code> という型を、この期待される型と照合する。 <code>1 + 1</code> と <code>2</code> は計算で一致するので、両方を同じ <code>a</code> として照合でき、受理される。</span></p>
-<p><span class="step" data-step="2">ここで型検査が何をしたかに注意。「項が指定された型を持つか」という <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.definitions"><code>01_TypesAndTerms.lean</code> 2節</a>以来の検査が、そのまま<strong>証明の検査</strong>になっている。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence">4節</a>で行った証明項の検査も、すべてこの見方の繰り返しだった。</span></p></article>
-<article class="slide" id="04_exists-le-definition" data-kind="main" data-label="Nat.le の2つの構成子" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>順序 <code>Nat.le</code></h3></div>
+<p><span class="step" data-step="2">ここで型検査が何をしたかに注意。「項が指定された型を持つか」という <a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.definitions"><code>01_TypesAndTerms.lean</code> 2節</a>以来の検査が、そのまま<strong>証明の検査</strong>になっている。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence">1節</a>で行った証明項の検査も、すべてこの見方の繰り返しだった。</span></p></article>
+<article class="slide" id="04_exists-nat-order" data-kind="main" data-label="自然数の順序も帰納型である" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>順序 <code>Nat.le</code></h3></div>
 <p><span class="step" data-step="0"><code>m ≤ n</code> も帰納型の記法で、こちらは構成子が2つある:</span></p>
 <pre class="quote"><code><span class="step" data-step="1">inductive Nat.le (n : Nat) : Nat → Prop
   | refl : Nat.le n n
   | step {m} : Nat.le n m → Nat.le n (succ m)   -- `succ m` は `m + 1`</span></code></pre>
 <p><span class="step" data-step="2">作り方は「<code>n ≤ n</code>」と「<code>n ≤ m</code> が作れているなら <code>n ≤ m + 1</code> も作れる」の2通り。つまり <code>≤</code> の証明は、<code>refl</code> から出発して <code>step</code> を必要な回数だけ重ねた項である。 <code>zero</code> に <code>succ</code> を重ねて自然数を作るのと、まったく同じ手つきで証明が作れる。</span></p></article>
-<article class="slide" id="04_exists-le-examples" data-kind="main" data-label="step を重ねて証明を作る" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">example</span> : 0 ≤ 0 := Nat.le.refl
+<article class="slide" id="04_exists-nat-order-terms" data-kind="main" data-label="構成子で大小関係の証明を作る" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">example</span> : 0 ≤ 0 := Nat.le.refl
 <span class="kw">example</span> : 0 ≤ 1 := Nat.le.step Nat.le.refl
 <span class="kw">example</span> : 0 ≤ 2 := Nat.le.step (Nat.le.step Nat.le.refl)</span></code></pre>
-<p><span class="step" data-step="1"><code>0 ≤ 2</code> を証明するとは、帰納型 <code>Nat.le</code> の項を構成子から組み立てることに他ならず、出来上がった証明はデータと同じ資格でそこにある。<code>∧</code> <code>∨</code> <code>∃</code> <code>False</code> も同様に帰納型として定義された命題であり（<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.products">1</a>〜<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types">3節</a>、<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.dependent-sums">4節</a>）、示すときに使った <code>⟨_, _⟩</code> や <code>.inl</code> は、それらの構成子だったのである。</span></p></article>
-<article class="slide" id="04_exists-equality-laws" data-kind="main" data-label="等式の法則は帰納型から導かれる" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>等式の法則は公理ではない</h3></div>
+<p><span class="step" data-step="1"><code>0 ≤ 2</code> を証明するとは、帰納型 <code>Nat.le</code> の項を構成子から組み立てることに他ならず、出来上がった証明はデータと同じ資格でそこにある。<code>∧</code> <code>∨</code> <code>∃</code> <code>False</code> も同様に帰納型として定義された命題であり（<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.products">2</a>〜<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types">4節</a>、<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.dependent-sums">1節</a>）、示すときに使った <code>⟨_, _⟩</code> や <code>.inl</code> は、それらの構成子だったのである。</span></p></article>
+<article class="slide" id="04_exists-equality-laws" data-kind="main" data-label="等式の法則は定理として得られる" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>等式の法則は公理ではない</h3></div>
 <p><span class="step" data-step="0">ふつうの述語論理では、等式の反射律や代入原理は論理に組み込まれた<strong>公理</strong>である。 Lean では違う。いま見たとおり <code>Eq</code> はただの帰納型の宣言で、等式に期待される振る舞いは、そこから実際に出てくる:</span></p>
 <ul><li data-step="1" class="step">反射律は構成子 <code>refl</code> そのもの</li><li data-step="1" class="step">代入原理（<code>a = b</code> なら、<code>P a</code> の証明から <code>P b</code> の証明が得られる）は、帰納型の宣言を受理したときに Lean が自動生成する<strong>帰納法原理</strong> <code>Eq.rec</code> そのもの</li><li data-step="1" class="step">対称律・推移律・合同性は、そこから証明される<strong>定理</strong></li></ul></article>
-<article class="slide" id="04_exists-equality-axioms" data-kind="main" data-label="対称律の公理依存を確かめる" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#print</span> axioms Eq.symm</span></code></pre>
+<article class="slide" id="04_exists-equality-axioms" data-kind="main" data-label="等式の定理が依存するもの" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#print</span> axioms Eq.symm</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">&#x27;Eq.symm&#x27; does not depend on any axioms</span></code></pre>
-<p><span class="step" data-step="2">「公理に一切依存していない」という報告——対称律は、帰納型の仕組みだけから <strong>証明された</strong>定理である。</span></p></article>
-<article class="slide" id="04_exists-foundations" data-kind="main" data-label="依存関数型・宇宙・帰納型という土台" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">つまり Lean の基礎にあるのは等式の公理のリストではなく、「（健全性の条件を満たす）帰納型の宣言に対して、構成子・帰納法原理・計算規則を与える」という一般規則のほうである。等式に限らず、この教材に出てくる <code>∧</code> <code>∨</code> <code>∃</code> <code>=</code> <code>≤</code> の論理法則はすべて、依存関数型・宇宙・帰納型という土台から<strong>定義と定理として</strong>出てくる。</span></p>
-<p><span class="step" data-step="1">例外として土台の外から公理を足すこともあるが、この教材の主定理が実際に依存するのは、外延性・選択・商型の健全性にあたる3つだけである。それは <code>06_Topology.lean</code> の末尾で <code>#print axioms</code> により確認する。</span></p></article>
-<article class="slide" id="04_exists-inductive-guarantees" data-kind="main" data-label="「全部」の保証と帰納法原理" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>「全部」と「別々」も出てくる</h3></div>
+<p><span class="step" data-step="2">「公理に一切依存していない」という報告——対称律は、帰納型の仕組みだけから <strong>証明された</strong>定理である。</span></p>
+<p><span class="step" data-step="3">つまり Lean の基礎にあるのは等式の公理のリストではなく、「（健全性の条件を満たす）帰納型の宣言に対して、構成子・帰納法原理・計算規則を与える」という一般規則のほうである。等式に限らず、この教材に出てくる <code>∧</code> <code>∨</code> <code>∃</code> <code>=</code> <code>≤</code> の論理法則はすべて、依存関数型・宇宙・帰納型という土台から<strong>定義と定理として</strong>出てくる。</span></p>
+<p><span class="step" data-step="4">例外として土台の外から公理を足すこともあるが、この教材の主定理が実際に依存するのは、外延性・選択・商型の健全性にあたる3つだけである。それは <code>06_Topology.lean</code> の末尾で <code>#print axioms</code> により確認する。</span></p></article>
+<article class="slide" id="04_exists-recursor-totality" data-kind="main" data-label="各場合からすべての項について示す" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<div class="step" data-step="0"><h3>「全部」と「別々」も出てくる</h3></div>
 <p><span class="step" data-step="0"><a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>で、帰納型の宣言は2つのことを保証すると述べた:構成子で作られたものが項の<strong>全部</strong>であること、そして違う作り方をした項は <strong>別々</strong>であることである。この2つも公理ではなく、同じ一般規則から出てくる。</span></p>
-<p><span class="step" data-step="1">「全部」の保証の正体は、自動生成される帰納法原理そのものである。 <code>rec</code> は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」と言っており、<code>match</code> の場合分けがそれで尽くせるのはこれによる。</span></p></article>
-<article class="slide" id="04_exists-le-exercise" data-kind="main" data-label="練習：step を2回重ねる" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="116" data-exercise="116"><li><span class="step" data-step="0"><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 116</span></p>
+<p><span class="step" data-step="1">「全部」の保証の正体は、自動生成される帰納法原理そのものである。 <code>rec</code> は「各構成子の場合を与えれば、すべての項について定義・証明したことになる」と言っており、<code>match</code> の場合分けがそれで尽くせるのはこれによる。</span></p>
+</div><div class="slide-column">
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> @Signal.rec</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">@Signal.rec : {motive : Signal → Sort u_1} →
+  motive Signal.red → motive Signal.yellow → motive Signal.green → (t : Signal) → motive t</span></code></pre>
+<p><span class="step" data-step="4"><code>motive</code> を命題の族 <code>P : Signal → Prop</code> として読むと、三つの色での証明から <code>∀ t : Signal, P t</code> の証明を返す型になっている。どの色を受け取っても、その色についての証明を返せることが「全部」を表している。</span></p>
+</div></div></article>
+<article class="slide" id="04_exists-order-exercise" data-kind="main" data-label="練習：順序の証明を組み立てる" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="113" data-exercise="113"><li><span class="step" data-step="0"><code>example : 1 ≤ 3</code> を <code>Nat.le</code> の構成子<strong>だけ</strong>で書け（<code>step</code> は何回要るか）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 113</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)</span></code></pre>
 <p><span class="step" data-step="2"><code>Nat.le.refl : 1 ≤ 1</code> から <code>step</code> を2回。<code>1 ≤ 2</code>、<code>1 ≤ 3</code> と1段ずつのぼる。</span></p></article>
-<article class="slide" id="04_exists-myeq-trans-exercise" data-kind="main" data-label="練習：等式の推移を場合分けで示す" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><ol class="exercise" start="117" data-exercise="117"><li><span class="step" data-step="0">（補足の確認）本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 117</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> MyEq.trans {α : <span class="sort">Type</span>} {a b c : α} (h₁ : MyEq a b) (h₂ : MyEq b c) :
-    MyEq a c :=
-  <span class="kw">match</span> h₂ <span class="kw">with</span>
-  | .refl =&gt; h₁</span></code></pre>
-<p><span class="step" data-step="2"><code>h₂</code> を場合分けすると構成子は <code>refl</code> しかなく、その枝では <code>c</code> は <code>b</code> と同じものになる。するとゴールは <code>MyEq a b</code> に変わり、<code>h₁</code> がそのまま合う。</span></p></article>
-<article class="slide" id="04_exists-myeq-bridge-exercise" data-kind="main" data-label="練習：等式から MyEq への橋" data-section="CH.nat-proofs" data-layout="compact" data-editorial="true"><ol class="exercise" start="118" data-exercise="118"><li><span class="step" data-step="0">（補足の確認）逆向きの橋 <code>theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 118</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> MyEq.ofEq {α : <span class="sort">Type</span>} {a b : α} (h : a = b) : MyEq a b :=
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | rfl =&gt; MyEq.refl</span></code></pre>
-<p><span class="step" data-step="2">今度は <code>Eq</code> の側で場合分けする。構成子は <code>rfl</code> しかなく、その枝では <code>b</code> は <code>a</code> と同じものになるので、<code>MyEq a a</code> の構成子 <code>refl</code> を置けばよい。</span></p></article>
-<article class="slide" id="04_exists-proof-actions" data-kind="main" data-label="証明の動きと項の対応表" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.introduction-elimination">6. 示すときと使うときのまとめ</h2></div>
+<article class="slide" id="04_exists-proof-actions" data-kind="main" data-label="証明で使う操作のまとめ" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<div class="step" data-step="0"><h2 id="sec-CH.introduction-elimination">7. 示すときと使うときのまとめ</h2></div>
 <p><span class="step" data-step="0">ここまでの例で使った頭の動きを並べると、次のようになる。</span></p>
-<table><thead class="step" data-step="1"><tr><th>頭の動き</th><th>項での正体</th></tr></thead><tbody><tr class="step" data-step="1"><td>全称を示す: 任意に取る</td><td><code>fun n =&gt; …</code></td></tr><tr class="step" data-step="1"><td>ならばを示す: 仮定を取る</td><td><code>fun h =&gt; …</code>（引数）</td></tr><tr class="step" data-step="1"><td>全称・ならばを使う: 当てはめる</td><td>適用 <code>hg h</code></td></tr><tr class="step" data-step="1"><td>存在を示す: 証人+根拠</td><td><code>⟨w, h⟩</code></td></tr><tr class="step" data-step="1"><td>存在を使う: 取り出して名付ける</td><td><code>match</code> のパターン分解</td></tr><tr class="step" data-step="1"><td>定義に戻る</td><td>（書かない——型検査器が展開する）</td></tr></tbody></table></article>
-<article class="slide" id="04_exists-proof-actions-checking" data-kind="main" data-label="既知の定理・計算・型検査との対応" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><table><tbody><tr class="step" data-step="0"><td>既知の定理を使う</td><td>名前への適用</td></tr><tr class="step" data-step="0"><td>等式の連鎖</td><td><code>congrArg</code>・<code>.trans</code></td></tr><tr class="step" data-step="0"><td>計算で決着</td><td><code>rfl</code></td></tr><tr class="step" data-step="0"><td>「∎」</td><td>型検査が通ること</td></tr></tbody></table></article>
-<article class="slide" id="04_exists-what-checking-establishes" data-kind="main" data-label="主張と証明を与えた後の検査" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">主張を Lean の命題として定め、証明の筋道も与えられたあとなら、散文から項へ進む仕事の多くは、省略されていた引数や中間項を明示することである。各段の「文脈にあるか」「入力の型が合うか」「結果が目標の型か」という照合は、 <strong>項の型検査</strong>にそのまま写る。</span></p>
+<table><thead class="step" data-step="1"><tr><th>頭の動き</th><th>項での正体</th></tr></thead><tbody><tr class="step" data-step="1"><td>全称を示す: 任意に取る</td><td><code>fun n =&gt; …</code></td></tr><tr class="step" data-step="1"><td>ならばを示す: 仮定を取る</td><td><code>fun h =&gt; …</code>（引数）</td></tr><tr class="step" data-step="1"><td>全称・ならばを使う: 当てはめる</td><td>適用 <code>hg h</code></td></tr><tr class="step" data-step="1"><td>存在を示す: 証人+根拠</td><td><code>⟨w, h⟩</code></td></tr><tr class="step" data-step="1"><td>存在を使う: 取り出して名付ける</td><td><code>match</code> のパターン分解</td></tr></tbody></table>
+</div><div class="slide-column">
+<table><thead class="step" data-step="2"><tr><th>頭の動き</th><th>項での正体</th></tr></thead><tbody><tr class="step" data-step="2"><td>定義に戻る</td><td>（書かない——型検査器が展開する）</td></tr><tr class="step" data-step="2"><td>既知の定理を使う</td><td>名前への適用</td></tr><tr class="step" data-step="2"><td>等式の連鎖</td><td><code>congrArg</code>・<code>.trans</code></td></tr><tr class="step" data-step="2"><td>計算で決着</td><td><code>rfl</code></td></tr><tr class="step" data-step="2"><td>「∎」</td><td>型検査が通ること</td></tr></tbody></table>
+</div></div></article>
+<article class="slide" id="04_exists-checking-proof-terms" data-kind="main" data-label="項の型を検査するということ" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">主張を Lean の命題として定め、証明の筋道も与えられたあとなら、散文から項へ進む仕事の多くは、省略されていた引数や中間項を明示することである。各段の「文脈にあるか」「入力の型が合うか」「結果が目標の型か」という照合は、 <strong>項の型検査</strong>にそのまま写る。</span></p>
 <p><span class="step" data-step="1">もちろん、数学の主張にふさわしい定義を選ぶことや、証明を発見することまで型検査が代わってくれるわけではない。ここで分かったのは、主張と証明項が与えられたあと、その証明項が本当に主張の型を持つかは、局所的な規則を積み重ねて機械的に検査できる、ということである。冒頭の主張——命題そのものを型とみなし、その型の項を作ることが証明することである——も、もう奇妙には響かないはずである。</span></p></article>
-<article class="slide" id="04_exists-introduction-elimination-table" data-kind="main" data-label="型と命題の示し方・使い方" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すときの形と使うときの形を並べると、左右で同じ形をしていることが見える。</span></p>
-<table><thead class="step" data-step="1"><tr><th></th><th>型</th><th>命題</th><th>示すとき</th><th>使うとき</th></tr></thead><tbody><tr class="step" data-step="1"><td>関数</td><td><code>α → β</code></td><td><code>p → q</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr><tr class="step" data-step="1"><td>積</td><td><code>α × β</code></td><td><code>p ∧ q</code></td><td><code>⟨a, b⟩</code></td><td><code>.1</code> / <code>.2</code></td></tr><tr class="step" data-step="1"><td>和</td><td><code>α ⊕ β</code></td><td><code>p ∨ q</code></td><td><code>.inl</code> / <code>.inr</code></td><td><code>match</code> で場合分け</td></tr><tr class="step" data-step="1"><td>空</td><td><code>Empty</code></td><td><code>False</code></td><td>なし</td><td><code>.elim</code></td></tr><tr class="step" data-step="1"><td>依存積</td><td><code>(a : α) → P a</code></td><td><code>∀ a, Q a</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr><tr class="step" data-step="1"><td>依存和</td><td><code>(a : α) × P a</code></td><td><code>∃ a, Q a</code></td><td><code>⟨a, b⟩</code></td><td><code>.1</code> / <code>.2</code>（<code>∃</code> は <code>match</code> のみ——<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">8節</a>）</td></tr></tbody></table></article>
-<article class="slide" id="04_exists-curry-howard" data-kind="main" data-label="証明は項の構成である" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すときの列は「その型（命題）を作るのに何が要るか」、使うときの列は「その型（命題）を持っているとき何が言えるか」。上の例で見たとおり、対応する両側は多くの場合まったく同じ字面で書ける。</span></p>
+<article class="slide" id="04_exists-type-proposition-table" data-kind="main" data-label="型と命題の対応表" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すときの形と使うときの形を並べると、左右で同じ形をしていることが見える。</span></p>
+<table><thead class="step" data-step="1"><tr><th></th><th>型</th><th>命題</th><th>示すとき</th><th>使うとき</th></tr></thead><tbody><tr class="step" data-step="1"><td>関数</td><td><code>α → β</code></td><td><code>p → q</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr><tr class="step" data-step="1"><td>積</td><td><code>α × β</code></td><td><code>p ∧ q</code></td><td><code>⟨a, b⟩</code></td><td>成分名で取り出す</td></tr><tr class="step" data-step="1"><td>和</td><td><code>α ⊕ β</code></td><td><code>p ∨ q</code></td><td><code>.inl</code> / <code>.inr</code></td><td><code>match</code> で場合分け</td></tr><tr class="step" data-step="1"><td>空</td><td><code>Empty</code></td><td><code>False</code></td><td>なし</td><td><code>.elim</code></td></tr><tr class="step" data-step="1"><td>依存積</td><td><code>(a : α) → P a</code></td><td><code>∀ a, Q a</code></td><td><code>fun x =&gt; e</code></td><td><code>f a</code></td></tr><tr class="step" data-step="1"><td>依存和</td><td><code>(a : α) × P a</code></td><td><code>∃ a, Q a</code></td><td><code>⟨a, b⟩</code></td><td><code>.fst</code> / <code>.snd</code>（<code>∃</code> は <code>match</code> のみ——<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.prop-elimination">9節</a>）</td></tr></tbody></table></article>
+<article class="slide" id="04_exists-curry-howard" data-kind="main" data-label="型の項を作ることと証明すること" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">示すときの列は「その型（命題）を作るのに何が要るか」、使うときの列は「その型（命題）を持っているとき何が言えるか」。上の例で見たとおり、対応する両側は多くの場合まったく同じ字面で書ける。</span></p>
 <p><span class="step" data-step="1">字面が同じになるのは偶然ではない。証明を書くときにしていることは、関数を書き、組を作り、場合分けをすること——つまり項の構成そのものである。「命題 <code>p</code> を証明する」とは「<code>p</code> を型とみなして、その項を1つ作る」ことであり、この対応が Curry–Howard 対応と呼ばれるものである。</span></p></article>
-<article class="slide" id="04_exists-same-term" data-kind="main" data-label="同じ項がデータにも証明にもなる" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側と命題側で同じ項が通ることの確認。 <code>⟨x.2, x.1⟩</code> という同じ式が、片方では組の入れ替え、もう片方では「かつ」の入れ替えの証明になっている。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩
+<article class="slide" id="04_exists-same-term" data-kind="main" data-label="同じ項を型と命題で使う" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側と命題側で同じ項が通ることの確認。 <code>match</code> で二つを取り出して逆順に組み直す同じ式が、片方では組の入れ替え、もう片方では「かつ」の入れ替えの証明になっている。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> {α β : <span class="sort">Type</span>} : α × β → β × α := <span class="kw">fun</span> x =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | ⟨a, b⟩ =&gt; ⟨b, a⟩
 
-<span class="kw">example</span> {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> x =&gt; ⟨x.2, x.1⟩</span></code></pre></article>
-<article class="slide" id="04_exists-and-to-or-exercise" data-kind="main" data-label="練習：取り出して別の構成子で包む" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="119" data-exercise="119"><li><span class="step" data-step="0">対照表を見ながら、<code>theorem andToOr {p q : Prop} : p ∧ q → p ∨ q</code> の証明項を書け（<code>∧</code> から取り出し、<code>∨</code> を示す形に包む——1行で書ける）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 119</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> andToOr {p q : <span class="sort">Prop</span>} : p ∧ q → p ∨ q := <span class="kw">fun</span> h =&gt; .inl h.1</span></code></pre>
-<p><span class="step" data-step="2"><code>∧</code> から <code>.1</code> で <code>p</code> の証明を取り出し、<code>∨</code> を示す形 <code>.inl</code> で包む。（<code>.2</code> と <code>.inr</code> の組み合わせでもよい。）</span></p></article>
-<article class="slide" id="04_exists-checking-slogan" data-kind="main" data-label="証明検査のスローガンを詳しくする" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH2.checking-details">7. 証明検査の詳説 — エラボレータとカーネル</h2></div>
-<p><span class="step" data-step="0">トップページでは、全体の仕組みを次のようなスローガンで表した。</span></p>
-<ol><li data-step="1" class="step">文字列が項であるかどうかを機械的に判定する。</li><li data-step="1" class="step">項に型が付くかどうかを機械的に判定し、付く場合はその型を計算する。</li></ol>
-<p><span class="step" data-step="2">この見方は、項の型を追いながらコードを読むためには十分である。ただし、実際の Lean の内部では、ここで一括りにした処理がいくつかの段階に分かれている。ここでスローガンをより正確に言い直そう。</span></p></article>
-<article class="slide" id="04_exists-checking-pipeline" data-kind="main" data-label="構文解析・エラボレータ・カーネル" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><pre class="quote"><code><span class="step" data-step="0">ソースコード
-  → 構文解析: 文字列を Lean の構文として読み取る
-  → エラボレータ: 記法を展開し、省略された引数（暗黙引数・インスタンス引数）を
-    埋め、タクティク（`06_Topology.lean` 1節）を実行して、省略のない項を組み立てる
-  → カーネル: 完成した項の型を、小さな規則集だけで検査する</span></code></pre>
-<p><span class="step" data-step="1">したがって、スローガンの「文字列が項であるかを判定する」は、正確には「構文解析のあと、エラボレータがカーネルに渡せる項を組み立てる」という処理である。また「項の型を推測する」は、ソースコードに対するエラボレータの型推論と、完成した項に対するカーネルの型検査をまとめた言い方である。エラボレータの型推論は、<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>で見た2つの向き——部分項の型を下から計算し、期待される型を上から伝える——を組み合わせて行われる。数字 <code>2</code> を <code>Nat</code> と読むか <code>Int</code> と読むかが決まるのも、この段階である。</span></p></article>
-<article class="slide" id="04_exists-kernel-trust" data-kind="main" data-label="項を組み立てる処理と最後の検査" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">賢い処理はすべて前段のエラボレータに、信頼はすべて後段のカーネルにある。この分業のおかげで、前段がどれだけ複雑でも——記法が凝っていても、インスタンス探索が連鎖しても、タクティクが長大でも——<strong>誤った項が組み上がればカーネルが拒否する</strong>。証明の信頼性を支えているのは、エラボレータの賢さではなくカーネルの単純さである。これまで「型検査が暗黙引数を埋める」のように言ってきた箇所も、正確にはエラボレータの仕事である。</span></p></article>
-<article class="slide" id="04_exists-missing-assumption" data-kind="main" data-label="明らかに見える仮定を穴にすると" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この2段構えが仮定の飛ばしをどう捕まえるのかを、数学でよくある誤りで見ておく。 <strong>補題を使うとき、その仮定の確認が甘い</strong>という誤りである。</span></p>
-<p><span class="step" data-step="1">例えば <code>n - 1 + 1 = n</code> は一見明らかに見える。ライブラリには <code>Nat.sub_add_cancel : m ≤ n → n - m + m = n</code> という補題があるから、これを当てて済ませたくなる。仮定 <code>1 ≤ n</code> は「明らか」なので穴 <code>_</code> のままにしておくと:</span></p>
-<pre class="quote"><code><span class="step" data-step="2">example : ∀ n : Nat, n - 1 + 1 = n := fun n =&gt; Nat.sub_add_cancel _
-
-error: don&#x27;t know how to synthesize placeholder for argument `h`
-context:
-n : Nat
-⊢ 1 ≤ n</span></code></pre></article>
-<article class="slide" id="04_exists-counterexample" data-kind="main" data-label="埋まらない穴と n = 0 という反例" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">このエラーを出したのは、2段構えの<strong>前段</strong>——エラボレータ——である。省略された仮定は「未解決のゴール <code>⊢ 1 ≤ n</code>」として露出し、それが埋まらない限り完成した項が組み上がらないので、カーネルに渡る前に止まる。そして実際、この仮定はどうやっても埋められない。自然数の引き算は <code>0 - 1 = 0</code> と切り捨てなので、<code>n = 0</code> がこの主張の反例だからである。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (0 : Nat) - 1 + 1</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">1</span></code></pre>
-<p><span class="step" data-step="3">1 になる。<code>n = 0</code> が反例であることの計算による確認</span></p></article>
-<article class="slide" id="04_exists-checking-assumptions" data-kind="main" data-label="仮定の証明も項として差し出す" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">紙の上では「明らか」の一言で通ってしまう仮定の飛ばしが、 Lean では<strong>埋まらない穴</strong>として必ず現れる。仮定を使うにはその証明を項として差し出すしかない。穴が残ればエラボレータは項を完成させられず、仮にどこかで誤った項が組み上がったとしても、最後はカーネルが受理しない。これが「Lean が受理した＝証明が検証された」と考えてよい理由である。</span></p></article>
-<article class="slide" id="04_exists-holes-as-tools" data-kind="main" data-label="穴の型を見ながら証明を組み立てる" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>穴は書くときの道具にもなる</h3></div>
-<p><span class="step" data-step="0">いまの例では穴が<strong>事故</strong>として現れたが、逆用すると<strong>組み立ての道具</strong>になる。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence">4節</a>の <code>isEven_double</code> を、証明を知らないつもりで書いてみる。まず引数だけ取って、残り全体を穴にする:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">theorem isEven_double : ∀ n : Nat, IsEven (n + n) := fun n =&gt; _
-
-error: don&#x27;t know how to synthesize placeholder
-context:
-n : Nat
-⊢ IsEven (n + n)</span></code></pre></article>
-<article class="slide" id="04_exists-fill-the-witness" data-kind="main" data-label="証人を入れると次の目標が分かる" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">エラボレータが「残っている穴の型」を教えてくれている（<code>⊢</code> の右が、いま作るべきものの型である）。型の頭が <code>∃</code> だから部品は <code>⟨ ⟩</code>——証人だけ埋めて <code>⟨n, _⟩</code> と書けば、報告は <code>⊢ n + n = 2 * n</code> に変わる。<a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence">4節</a>の梯子——ふつうの証明から項まで——は<strong>読む</strong>ための道具立てだったが、<strong>書く</strong>ときは、この機械との対話で同じ梯子を一段ずつ降りていける。</span></p>
-<p><span class="step" data-step="1">なお、型検査が保証するのは「主張したことを証明した」ことまでで、「主張が意図した数学を言えている」ことは保証しない。この点は <code>06_Topology.lean</code> の冒頭で扱う。</span></p></article>
-<article class="slide" id="04_exists-add-sub-cancel-exercise" data-kind="main" data-label="練習：必要な引数を渡して証明する" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="120" data-exercise="120"><li><span class="step" data-step="0"><code>n + 1 - 1 = n</code> は（<code>n - 1 + 1 = n</code> と違って）すべての <code>n</code> で正しい。 <code>#check @Nat.add_sub_cancel</code> でライブラリの補題の形を調べ、これを使って <code>example : ∀ n : Nat, n + 1 - 1 = n</code> を証明せよ。今度は穴が残らないことを確かめること。（表示の <code>∀ (n m : Nat)</code> は丸括弧＝<strong>明示引数</strong>なので、<code>_</code> で省略せず実際の値を渡す必要がある——<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> 4節</a>の括弧の読み分けの復習である。）</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 120</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> @Nat.add_sub_cancel</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">Nat.add_sub_cancel : ∀ (n m : Nat), n + m - m = n</span></code></pre></article>
-<article class="slide" id="04_exists-add-sub-cancel-answer" data-kind="main" data-label="型に合わせて n と 1 を渡す" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">丸括弧＝明示引数なので、使うときは <code>n</code> と <code>m</code> を実際に渡す:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : ∀ n : Nat, n + 1 - 1 = n := <span class="kw">fun</span> n =&gt; Nat.add_sub_cancel n 1</span></code></pre>
-<p><span class="step" data-step="2"><code>m := 1</code> とした <code>n + 1 - 1 = n</code> がちょうどゴールの形で、今度は穴が残らない。</span></p></article>
-<article class="slide" id="04_exists-truncated-subtraction-exercise" data-kind="main" data-label="練習：自然数の引き算の切り捨て" data-section="CH2.checking-details" data-layout="compact" data-editorial="true"><ol class="exercise" start="121" data-exercise="121"><li><span class="step" data-step="0"><code>#eval (3 : Nat) - 5</code> の値を予想してから確かめよ（本文の <code>0 - 1</code> と同じく、自然数の引き算は切り捨てである）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 121</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (3 : Nat) - 5</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">0</span></code></pre>
-<p><span class="step" data-step="3">自然数の引き算は <code>0</code> で切り捨てられる。</span></p></article>
-<article class="slide" id="04_exists-prop-data-difference" data-kind="main" data-label="証明の同一視とデータの区別" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-CH.prop-elimination">8. 対応のずれ</h2></div>
-<p><span class="step" data-step="0">対応は完全ではない。<a target="_blank" rel="noopener" href="../02_forall.html#sec-CH.propositions"><code>02_Forall.lean</code> 0節</a>で見た<strong>証明無関連性</strong>により、同じ命題の証明は、どの証明を選んだかによらず型検査で同一視される。一方、<code>Type</code> 側のデータでは、例えば <code>Bool.true</code> と <code>Bool.false</code> のように項の中身が区別される。この差が、<strong>使うとき</strong>に現れる。</span></p>
-<p><span class="step" data-step="1">依存和からは第一成分を取り出せるが、存在量化からは取り出せない。</span></p></article>
-<article class="slide" id="04_exists-sigma-projections" data-kind="main" data-label="依存和から値と成分を取り出す" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型側: どの点だったかを取り出せる。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> sigmaFst {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : α := s.1
-
-<span class="kw">#check</span> sigmaFst</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">sigmaFst {α : Type} {P : α → Type} (s : (a : α) × P a) : α</span></code></pre>
-<p><span class="step" data-step="3">型側: 第二成分も取り出せる。型が第一成分に依存していることに注意。</span></p>
-<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> sigmaSnd {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : P s.1 := s.2
-
-<span class="kw">#check</span> sigmaSnd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="5">sigmaSnd {α : Type} {P : α → Type} (s : (a : α) × P a) : P s.fst</span></code></pre></article>
-<article class="slide" id="04_exists-exists-projection-error" data-kind="main" data-label="存在証明からデータを射影できない" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="cm">-- 命題側では、これは書けない:</span>
-<span class="cm">--</span>
-<span class="cm">--   def existsFst (h : ∃ a, Q a) : α := h.1</span>
-<span class="cm">--</span>
-<span class="cm">--   error: Invalid projection: Cannot project a value of non-propositional type</span>
-<span class="cm">--     α</span>
-<span class="cm">--   from the expression</span>
-<span class="cm">--     h</span>
-<span class="cm">--   which has propositional type</span>
-<span class="cm">--     ∃ a, Q a</span>
-<span class="cm">--</span>
-</span></code></pre></article>
-<article class="slide" id="04_exists-elimination-exceptions" data-kind="main" data-label="命題へ分解する場合と例外" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="cm">-- 証明から値を取り出せてしまうと、中身を区別しないはずの証明が</span>
-<span class="cm">-- 計算に影響することになってしまう。そこで Lean は、`∃` のように</span>
-<span class="cm">-- <strong>証人という中身</strong>を持つ命題の証明から、命題でないものを取り出すことを</span>
-<span class="cm">-- 許していない。</span></span></code></pre>
-<p><span class="step" data-step="1">ただし例外もある。<code>False</code> や <code>Eq</code> の証明は、命題でない型への分解にも使える。 <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH.empty-types">3節</a>の <code>False.elim</code> や等式によるデータの書き換えは、その例である。</span></p>
-<p><span class="step" data-step="2">結論が命題である限り、分解して使うことはできる。 <code>∃</code> を使うときはこの形になる。</span></p></article>
-<article class="slide" id="04_exists-exists-elimination" data-kind="main" data-label="存在証明を別の命題の証明に使う" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">theorem</span> existsElim {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>} (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
-  <span class="kw">match</span> h <span class="kw">with</span>
-  | ⟨a, ha⟩ =&gt; hr a ha
-
-<span class="kw">#check</span> existsElim</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">existsElim {α : Type} {r : Prop} {Q : α → Prop} (h : ∃ a, Q a) (hr : ∀ (a : α), Q a → r) : r</span></code></pre></article>
-<article class="slide" id="04_exists-or-data-error" data-kind="main" data-label="「または」からデータを取り出せない" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="cm">-- 「または」でも事情は同じ。どちらだったかを `Bool` として取り出そうとすると:</span>
-<span class="cm">--</span>
-<span class="cm">--   def orToBool (h : p ∨ q) : Bool :=</span>
-<span class="cm">--     match h with</span>
-<span class="cm">--     | .inl _ =&gt; true</span>
-<span class="cm">--     | .inr _ =&gt; false</span>
-<span class="cm">--</span>
-<span class="cm">--   error(nested.lean.propRecLargeElim): Tactic `cases` failed with a nested error:</span>
-<span class="cm">--   Tactic `induction` failed: recursor `Or.casesOn` can only eliminate into `Prop`</span>
-<span class="cm">--</span>
-</span></code></pre></article>
-<article class="slide" id="04_exists-or-prop-elimination" data-kind="main" data-label="命題を結論にする場合分け" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="cm">-- と断られる（実際の出力はさらに長く `match` の内部事情まで続くが、</span>
-<span class="cm">-- 要点は `can only eliminate into Prop` の1行である）。</span>
-<span class="cm">-- 「`Prop` にしか落とせない」というのがまさに制限の内容で、</span>
-<span class="cm">-- 2 節の `swapSum` が型側では書けて、`swapOr` が命題側でも書けたのは、</span>
-<span class="cm">-- どちらも行き先が同じ世界（型なら型、命題なら命題）に留まっていたから。</span></span></code></pre>
-<p><span class="step" data-step="1">結論が命題であれば、「または」も場合分けして使える。</span></p>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> orElimToProp {p q r : <span class="sort">Prop</span>} (h : p ∨ q) (f : p → r) (g : q → r) : r := h.elim f g
-
-<span class="kw">#check</span> orElimToProp</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="3">orElimToProp {p q r : Prop} (h : p ∨ q) (f : p → r) (g : q → r) : r</span></code></pre></article>
-<article class="slide" id="04_exists-exists-projection-exercise" data-kind="main" data-label="練習：存在証明の射影エラーを確認する" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="122" data-exercise="122"><li><span class="step" data-step="0">本文の <code>existsFst</code> の例を自分の環境で実際に書いてみて、エラーメッセージを自分の目で確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 122</span></p>
-<p><span class="step" data-step="1">本文のとおり、次のエラーになる:</span></p>
-<pre class="quote"><code><span class="step" data-step="2">def existsFst (h : ∃ a, Q a) : α := h.1
-
-</span></code></pre></article>
-<article class="slide" id="04_exists-exists-projection-error-answer" data-kind="main" data-label="存在証明の射影が拒否される理由" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><pre class="quote"><code><span class="step" data-step="0">error: Invalid projection: Cannot project a value of non-propositional type
-  α
-from the expression
-  h
-which has propositional type
-  ∃ a, Q a</span></code></pre>
-<p><span class="step" data-step="1">「命題の証明から、命題でないもの（ここでは <code>α</code> の項）を取り出すことは許されない」という規則の破れが報告されている。</span></p></article>
-<article class="slide" id="04_exists-closing" data-kind="main" data-label="対応を作り、検査の仕組みを確かめた" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">これで二つの証明編の仕事——対応を作り、検査の正体を見届けること——は終わりである。なお Lean には、証明を<strong>命令の列</strong>で書くもう1つの流儀（タクティク）があり、<code>06_Topology.lean</code> の実戦ではそちらが主体になる。紹介は<a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.tactics"><code>06_Topology.lean</code> 1節</a>で行う。</span></p></article>
+<span class="kw">example</span> {p q : <span class="sort">Prop</span>} : p ∧ q → q ∧ p := <span class="kw">fun</span> x =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | ⟨a, b⟩ =&gt; ⟨b, a⟩</span></code></pre></article>
+<article class="slide" id="04_exists-and-to-or-exercise" data-kind="main" data-label="練習：かつからまたはへ" data-section="CH.introduction-elimination" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="116" data-exercise="116"><li><span class="step" data-step="0">対照表を見ながら、<code>theorem andToOr {p q : Prop} : p ∧ q → p ∨ q</code> の証明項を書け（<code>∧</code> から取り出し、<code>∨</code> を示す形に包む——1行で書ける）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 116</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> andToOr {p q : <span class="sort">Prop</span>} : p ∧ q → p ∨ q := <span class="kw">fun</span> h =&gt; .inl h.left</span></code></pre>
+<p><span class="step" data-step="2"><code>∧</code> から <code>.left</code> で <code>p</code> の証明を取り出し、<code>∨</code> を示す形 <code>.inl</code> で包む。（<code>.right</code> と <code>.inr</code> の組み合わせでもよい。）</span></p></article>
+<article class="slide" id="04_exists-closing" data-kind="main" data-label="数学の記述へ" data-section="CH.prop-elimination" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">これで、型と命題の対応を使い、証明を項として読む道具がそろった。 <code>06_Topology.lean</code> では、証明を命令の列で書くタクティクも使いながら、数学の理論を記述する。紹介は<a target="_blank" rel="noopener" href="../06_topology.html#sec-Top.tactics"><code>06_Topology.lean</code> 1節</a>で行う。</span></p></article>
     </main>
   </div>
   <footer class="navigation">

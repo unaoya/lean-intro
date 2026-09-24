@@ -13,8 +13,7 @@
     {
       "at": {
         "section": "CH.reading-proofs",
-        "tag": "h2",
-        "starts": "0. 命題の証明と「ならば」"
+        "tag": "h2"
       },
       "id": "proofs-as-terms",
       "label": "命題の型を持つ項が証明になる"
@@ -27,15 +26,6 @@
       },
       "id": "proposition-proof-notation",
       "label": "命題・証明・theorem の書き方"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
-        "tag": "p",
-        "starts": "名前を付けず型と証明の項だけを検査するときは、同じ配置の example : 命題 := "
-      },
-      "id": "proof-functions",
-      "label": "証明を返す依存関数"
     },
     {
       "at": {
@@ -259,78 +249,23 @@
         "tag": "h3",
         "starts": "✏ 練習"
       },
-      "id": "twice-exercise",
-      "label": "練習：2回の適用と binder 形式"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "answer": true,
-        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
-        "class": "answer-heading"
-      },
-      "id": "twice-answer",
-      "label": "解答：同じ項で2回適用する"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "answer": true,
-        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
-        "starts": "次に、fun で受け取っていた引数をコロンの左に移し、binder 形式で書く:"
-      },
-      "id": "twice-binders",
-      "label": "解答：引数を宣言の左側へ移す"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "pre",
-        "answer": true,
-        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
-        "starts": "def apply2Binder {α : Type} (f : α → α) (a : ",
-        "part": "#check apply2Binder"
-      },
-      "id": "twice-binders-check",
-      "label": "binder 形式の型を矢印形式に読み替える"
+      "id": "keep-left-exercise",
+      "label": "練習：受け取った証明を返す"
     },
     {
       "at": {
         "section": "CH.implication",
         "tag": "ol",
-        "question": "仮定を受け取る順を入れ替える theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r を項",
-        "starts": "仮定を受け取る順を入れ替える theorem imp_swap {p q r : Prop"
+        "starts": "h : P → Q → R に P と Q の証明を順に渡して、R の証明を作れ。 theorem use_two (P Q R : Prop) (h : P → Q → R) (",
+        "question": "h : P → Q → R に P と Q の証明を順に渡して、R の証明を作れ。 theorem use_two (P Q R : Pro"
       },
-      "id": "swap-exercise",
-      "label": "練習：受け取る順と渡す順"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "ol",
-        "question": "同じ字面 fun h => h が、型側の example : Nat → Nat と命題側の example : (1 = 1) → (1 = 1)",
-        "starts": "同じ字面 fun h => h が、型側の example : Nat → Nat と命題"
-      },
-      "id": "identity-two-worlds",
-      "label": "練習：同じ恒等関数を両方の世界で使う"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "ol",
-        "question": "#check applyFun double 3 の表示を予想してから確かめよ。",
-        "starts": "#check applyFun double 3 の表示を予想してから確かめよ。"
-      },
-      "id": "apply-double",
-      "label": "練習：double への適用結果"
+      "id": "use-two-exercise",
+      "label": "練習：二つの証明を順に渡す"
     },
     {
       "at": {
         "section": "CH1.forall-examples",
-        "tag": "h2",
-        "starts": "1. 全称と単射の合成"
+        "tag": "h2"
       },
       "id": "injective-composition",
       "label": "単射どうしの合成：設定"
@@ -384,6 +319,15 @@
       "at": {
         "section": "CH1.forall-examples",
         "tag": "pre",
+        "starts": "theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Injective g) "
+      },
+      "id": "injective-notation",
+      "label": "単射性の述語で書き直す"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "pre",
         "starts": "theorem comp_injective {α β γ : Type} {f : α ",
         "part": "#check comp_injective"
       },
@@ -398,6 +342,17 @@
       },
       "id": "injective-types-exercise",
       "label": "練習：単射の証明で部分項の型を追う"
+    },
+    {
+      "at": {
+        "section": "CH1.forall-examples",
+        "tag": "pre",
+        "starts": "hg (f x) (f y) h : f x = f y",
+        "answer": true,
+        "question": "定義を開いた最初の example で、hg (f x) (f y) h と hf x y (hg (f x) (f y) h) の型を内側"
+      },
+      "id": "check-injective-results",
+      "label": "単射性を適用した結果"
     },
     {
       "at": {
@@ -493,8 +448,7 @@
     {
       "at": {
         "section": "CH.type-checking",
-        "tag": "h2",
-        "starts": "2. 型検査が証明の検査になる"
+        "tag": "h2"
       },
       "id": "verification-conclusion",
       "label": "型検査が証明検査になる"
@@ -554,18 +508,6 @@
       },
       "before": [
         "#check imp_trans"
-      ]
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "pre",
-        "answer": true,
-        "question": "「2回適用」を両方の世界で書け: def apply2 {α : Type} : (α → α) → α → α と theorem applyTwi",
-        "starts": "def apply2Binder {α : Type} (f : α → α) (a : "
-      },
-      "before": [
-        "#check apply2Binder"
       ]
     },
     {

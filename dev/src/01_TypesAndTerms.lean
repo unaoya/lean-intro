@@ -77,7 +77,7 @@ CALLOUT_START optional
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: 宇宙の階段
+### 補足: 宇宙の階段
 -/
 
 #check Type 1
@@ -168,7 +168,7 @@ CALLOUT_END
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: `Nat` や `Bool` はどこから来たか——Prelude
+### 補足: `Nat` や `Bool` はどこから来たか——Prelude
 
 `import` を1行も書いていないのに `Nat`・`Bool`・`+` が使えるのは、Lean が
 起動時に **Prelude**——標準ライブラリの核——を自動で読み込んでいるからである。
@@ -417,7 +417,7 @@ def double : Nat → Nat := fun n => n + n
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 関数 $\mathrm{inc} : \mathbb{N} \to \mathbb{N}$ を $\mathrm{inc}(n) = n + 1$ で定める。これを `fun` を用いて Lean で定義せよ。
    `#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。
@@ -538,7 +538,7 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 関数 $\mathrm{addThree} : \mathbb{N} \to \mathbb{N}$、$\mathrm{addThree}(n) = 3 + n$ を、`plus 3 : Nat → Nat` を使って
    Lean で定義せよ。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。
@@ -566,7 +566,7 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。
    `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。
@@ -634,7 +634,7 @@ def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 写像 $\mathrm{twice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(n)))$ で定める。
    つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。
@@ -996,7 +996,7 @@ binder 形式を読み替えると `Fin : Nat → Type`。`Fin` 自体は、自�
 
 `Fin n` は、集合 $\{0, 1, \ldots, n-1\}$ に対応する型と思ってよい
 （`Fin 0` には要素がない）。正確には、0 以上 n 未満の値と、その範囲に入る証明を組にする。
-この見方は、[`04_Exists.lean` の4節](#sec-CH.dependent-sums)で部分型（サブタイプ）として説明する。
+この見方は、[`03_InductiveTypes.lean` の2節](#sec-Intro1.subtypes)で部分型（サブタイプ）として説明する。
 -/
 
 def Tuple : Nat → Type := fun n => Fin n → Nat
@@ -1105,14 +1105,10 @@ def zeroIndex : (n : Nat) → Fin (n + 1) := fun _ => 0
 2. 集合 A の要素 a に対して、集合 B 上の定数写像を対応させる
    `constAt (A B : Type) (a : A) : B → A` を書け。
    `#check constAt Nat Bool 5` と `#eval constAt Nat Bool 5 true` を確かめよ。
--/
 
-/-!
-### ✏ 練習
-
-1. `Tuple 2` を定義で展開すると、どんな型になるか。
+3. `Tuple 2` を定義で展開すると、どんな型になるか。
    `constTuple 2` の内側の引数と結果の型を答えよ。
-2. n と自然数 a を受け取り、すべての成分が a である n 個組を返す
+4. n と自然数 a を受け取り、すべての成分が a である n 個組を返す
    `repeatTuple (n : Nat) (a : Nat) : Tuple n` を書け。
 -/
 
@@ -1161,7 +1157,7 @@ CALLOUT_START optional
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: ライブラリにもある型の族
+### 補足: ライブラリにもある型の族
 
 標準環境の `Vector Nat n` は、長さが n と決まった自然数の列の型である。
 `Vector Nat : Nat → Type` は、`Tuple` と同じ形の族である。

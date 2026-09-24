@@ -81,21 +81,11 @@ theorem applyImp {p q : Prop} (h : p → q) (hp : p) : q := h hp
 #check applyImp
 
 /- ✏ 練習
-型側と命題側を**同じ字面**で書けることを、自分の手で確かめる。
-
-35. 「2回適用」を両方の世界で書け:
-   `def apply2 {α : Type} : (α → α) → α → α` と
-   `theorem applyTwice {p : Prop} : (p → p) → p → p`。
-   まず `fun` で引数を受け取る形で書き、次にその引数をコロンの左に移して、
-   `apply2Binder`・`applyTwiceBinder` という名前で binder 形式でも書け。
-   4つの宣言の型の表示を予想してから `#check` で確かめよ。
-   表示を矢印形式に読み替えると、書き換えの前後で同じ型になることを説明せよ。
-36. 仮定を受け取る順を入れ替える
-   `theorem imp_swap {p q r : Prop} : (p → q → r) → q → p → r` を項で書け。
-   `p` と `q` の証明をどの順に受け取っても、適用するときは関数の入力順に戻す。
-37. 同じ字面 `fun h => h` が、型側の `example : Nat → Nat` と命題側の
-   `example : (1 = 1) → (1 = 1)` の**両方**で通ることを確かめよ。
-38. `#check applyFun double 3` の表示を予想してから確かめよ。
+35. 「`P` を仮定すれば、`Q` を仮定しても `P` が成り立つ」を証明する
+   `theorem keep_left (P Q : Prop) : P → Q → P` の右辺を書け。
+36. `h : P → Q → R` に `P` と `Q` の証明を順に渡して、`R` の証明を作れ。
+   `theorem use_two (P Q R : Prop) (h : P → Q → R) (hP : P) (hQ : Q) : R`
+   の右辺を書け。
 -/
 
 -- ## 1. 全称と単射の合成
@@ -107,6 +97,8 @@ example {α β γ : Type} {f : α → β} {g : β → γ}
     ∀ x y, g (f x) = g (f y) → x = y :=
   fun x y h => hf x y (hg (f x) (f y) h)
 
+#check @Function.Injective
+
 theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ}
     (hg : Function.Injective g) (hf : Function.Injective f) :
     Function.Injective (fun x => g (f x)) :=
@@ -115,9 +107,9 @@ theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ}
 #check comp_injective
 
 /- ✏ 練習
-39. 定義を開いた最初の `example` で、`hg (f x) (f y) h` と
-   `hf x y (hg (f x) (f y) h)` の型を内側から順に予想せよ。
-40. 恒等関数が単射であることを示す
+37. 定義を開いた最初の `example` で、`hg (f x) (f y) h` と
+   `hf x y (hg (f x) (f y) h)` の型を内側から順に予想し、`#check` で確かめよ。
+38. 恒等関数が単射であることを示す
    `theorem id_injective (α : Type) : Function.Injective (fun x : α => x)` を書け。
 -/
 
@@ -155,7 +147,7 @@ theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
 #check all_mul_zero
 
 /- ✏ 練習
-41. `#check applyForall all_mul_zero 7` の表示を予想してから確かめよ。
+39. `#check applyForall all_mul_zero 7` の表示を予想してから確かめよ。
    引数7を渡すと、結果の命題にも7が入ることを説明せよ。
 -/
 

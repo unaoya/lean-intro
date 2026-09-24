@@ -134,9 +134,12 @@ main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
 .slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
 .slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
 .slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
-.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.45; margin-bottom: 8px; }
-.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; }
-.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.45; margin-bottom: 4px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
+.slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
+.slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
+.slide[data-density="dense"] :is(ul, ol), .print-slide[data-density="dense"] .print-content :is(ul, ol) { margin-bottom: 6px; }
 .enhanced .slide[hidden] { display: none; }
 .enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
 .enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
@@ -316,8 +319,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <pre class="quote"><code><span class="step" data-step="5">4</span></code></pre></article>
 <article class="slide" id="05_mathematicaltools-pointed-bool-exercise" data-kind="main" data-label="練習：Bool を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
 <p><span class="step" data-step="0">本文で <code>Pointed</code> に対して行った操作を、<strong>二項演算付きの型</strong>（マグマと呼ばれる）で一通り繰り返す。</span></p>
-<ol class="exercise" start="123" data-exercise="123"><li><span class="step" data-step="1">本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>example : Pointed Bool := inferInstance</code> と <code>example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-pointed-bool-answer" data-kind="main" data-label="解答：Bool で道具と定理を使う" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 123</span></p>
+<ol class="exercise" start="120" data-exercise="120"><li><span class="step" data-step="1">本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>example : Pointed Bool := inferInstance</code> と <code>example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-pointed-bool-answer" data-kind="main" data-label="解答：Bool で道具と定理を使う" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 120</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> : Pointed Bool <span class="kw">where</span>
   point := false
 
@@ -325,8 +328,8 @@ Hint: Type class instance resolution failures can be inspected with the
 
 <span class="kw">example</span> : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</span></code></pre>
 <p><span class="step" data-step="1">登録した瞬間から、<code>inferInstance</code> の探索も、汎用関数 <code>pointPair</code> も、一般的な定理 <code>pointPair_fst</code> も、すべて <code>Bool</code> で使えるようになる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-magma-exercise" data-kind="main" data-label="練習：二項演算を持つクラス" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="124" data-exercise="124"><li><span class="step" data-step="0"><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) : Type where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>example : Magma Nat := inferInstance</code> が通ることを確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-magma-answer" data-kind="main" data-label="解答：Magma を宣言して登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 124</span></p>
+<article class="slide" id="05_mathematicaltools-magma-exercise" data-kind="main" data-label="練習：二項演算を持つクラス" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="121" data-exercise="121"><li><span class="step" data-step="0"><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) : Type where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>example : Magma Nat := inferInstance</code> が通ることを確かめよ。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-magma-answer" data-kind="main" data-label="解答：Magma を宣言して登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 121</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">class</span> Magma (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
   op : α → α → α
 
@@ -335,23 +338,23 @@ Hint: Type class instance resolution failures can be inspected with the
 
 <span class="kw">example</span> : Magma Nat := inferInstance</span></code></pre>
 <p><span class="step" data-step="1">手順は <code>Pointed</code> とまったく同じ——クラスを宣言し、<code>instance</code> で登録簿に載せれば、<code>inferInstance</code> が見つける。フィールドが「点」から「二項演算」に変わっただけである。</span></p></article>
-<article class="slide" id="05_mathematicaltools-opself-exercise" data-kind="main" data-label="練習：登録された演算を2回同じ値に適用する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="125" data-exercise="125"><li><span class="step" data-step="0"><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 125</span></p>
+<article class="slide" id="05_mathematicaltools-opself-exercise" data-kind="main" data-label="練習：登録された演算を2回同じ値に適用する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="122" data-exercise="122"><li><span class="step" data-step="0"><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 122</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> opSelf (α : <span class="sort">Type</span>) [Magma α] (a : α) : α := Magma.op a a
 
 <span class="kw">#eval</span> opSelf Nat 3</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">6</span></code></pre>
 <p><span class="step" data-step="3"><code>Nat</code> の登録簿には <code>op := Nat.add</code> を載せたので、<code>opSelf Nat 3 = 3 + 3</code>。</span></p></article>
-<article class="slide" id="05_mathematicaltools-product-magma-exercise" data-kind="main" data-label="練習：積の演算を誘導する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="126" data-exercise="126"><li><span class="step" data-step="0">本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-product-magma-answer" data-kind="main" data-label="解答：成分ごとの演算と探索の連鎖" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 126</span></p>
+<article class="slide" id="05_mathematicaltools-product-magma-exercise" data-kind="main" data-label="練習：積の演算を誘導する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="123" data-exercise="123"><li><span class="step" data-step="0">本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-product-magma-answer" data-kind="main" data-label="解答：成分ごとの演算と探索の連鎖" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 123</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Magma α] [Magma β] : Magma (Pair α β) <span class="kw">where</span>
   op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
 
 <span class="kw">#eval</span> (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">22</span></code></pre>
 <p><span class="step" data-step="2"><code>Magma (Pair Nat Nat)</code> は直接は登録していないが、誘導 instance と <code>Magma Nat</code> の連鎖で見つかる。<code>.snd</code> は <code>2 + 20</code>。</span></p></article>
-<article class="slide" id="05_mathematicaltools-point-mul-exercise" data-kind="main" data-label="練習：Point の掛け算を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="127" data-exercise="127"><li><span class="step" data-step="0"><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 127</span></p>
+<article class="slide" id="05_mathematicaltools-point-mul-exercise" data-kind="main" data-label="練習：Point の掛け算を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="124" data-exercise="124"><li><span class="step" data-step="0"><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 124</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Mul Point <span class="kw">where</span>
   mul p q := ⟨p.x * q.x, p.y * q.y⟩
 
@@ -372,8 +375,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <pre class="quote"><code><span class="step" data-step="2">{ fst := 1, snd := true } : Pair Nat Bool</span></code></pre>
 <p><span class="step" data-step="3">記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。単純な中置・前置の記法には <code>infixl</code> や <code>prefix</code> という略記もある（次節と <code>06_Topology.lean</code> で使用）。</span></p></article>
 <article class="slide" id="05_mathematicaltools-point-notation-exercise" data-kind="main" data-label="練習：Point の記法を自作する" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="128" data-exercise="128"><li><span class="step" data-step="0"><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-point-notation-answer" data-kind="main" data-label="解答：構文と展開先の対応" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 128</span></p>
+<ol class="exercise" start="125" data-exercise="125"><li><span class="step" data-step="0"><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-point-notation-answer" data-kind="main" data-label="解答：構文と展開先の対応" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 125</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">syntax</span> &quot;⟬&quot; term &quot;, &quot; term &quot;⟭&quot; : term
 
 <span class="kw">macro_rules</span>
@@ -382,8 +385,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <span class="kw">#check</span> ⟬1, 2⟭</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">{ x := 1, y := 2 } : Point</span></code></pre>
 <p><span class="step" data-step="2">読む方向だけの記法なので、表示では展開先の構成子の形が見える。</span></p></article>
-<article class="slide" id="05_mathematicaltools-infix-exercise" data-kind="main" data-label="練習：足し算に中置記法を与える" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><ol class="exercise" start="129" data-exercise="129"><li><span class="step" data-step="0"><code>infixl:65 &quot; ⊞ &quot; =&gt; add</code> で、<code>03_InductiveTypes.lean</code> の <code>add</code>（<code>MyNat</code> の足し算）に中置記法を与え、<code>#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 129</span></p>
+<article class="slide" id="05_mathematicaltools-infix-exercise" data-kind="main" data-label="練習：足し算に中置記法を与える" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><ol class="exercise" start="126" data-exercise="126"><li><span class="step" data-step="0"><code>infixl:65 &quot; ⊞ &quot; =&gt; add</code> で、<code>03_InductiveTypes.lean</code> の <code>add</code>（<code>MyNat</code> の足し算）に中置記法を与え、<code>#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 126</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">infixl</span>:65 &quot; ⊞ &quot; =&gt; add
 
 #reduce MyNat.zero.succ ⊞ MyNat.zero.succ</span></code></pre>
@@ -436,29 +439,29 @@ Hint: Type class instance resolution failures can be inspected with the
 <p><span class="step" data-step="3"><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code>——各点で「<code>p → p</code>」を示すだけ（<a target="_blank" rel="noopener" href="../02_forall.html#sec-CH.implication"><code>02_Forall.lean</code> 0節</a>の世界そのもの）である。名前を <code>Set.〜</code> にしたのはドット記法（<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>で見た関数適用の略記）のためで、この命名の仕組みは次節で説明する。</span></p>
 <p><span class="step" data-step="4"><code>06_Topology.lean</code> はこの <code>Set</code> を土台に、<code>∩</code>・<code>∪</code>・補集合・像・逆像・集合族……と道具を足していく。</span></p></article>
 <article class="slide" id="05_mathematicaltools-subset-transitivity-exercise" data-kind="main" data-label="練習：包含の推移律" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="130" data-exercise="130"><li><span class="step" data-step="0">推移律を項で書け（各点で2つの仮定を順に適用する）:</span></li></ol>
+<ol class="exercise" start="127" data-exercise="127"><li><span class="step" data-step="0">推移律を項で書け（各点で2つの仮定を順に適用する）:</span></li></ol>
 <pre class="quote"><code><span class="step" data-step="1">   theorem Set.subset_trans {X : Type} {s t u : Set X}
        (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u</span></code></pre>
-<p class="answer-heading"><span class="step" data-step="2">解答 130</span></p>
+<p class="answer-heading"><span class="step" data-step="2">解答 127</span></p>
 <pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> Set.subset_trans {X : <span class="sort">Type</span>} {s t u : Set X}
     (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u :=
   <span class="kw">fun</span> a ha =&gt; htu a (hst a ha)</span></code></pre>
 <p><span class="step" data-step="3">点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、<code>hst</code> で <code>a ∈ t</code>、続けて <code>htu</code> で <code>a ∈ u</code> を得る——含意の連鎖と同じ形である。</span></p></article>
-<article class="slide" id="05_mathematicaltools-evens-exercise" data-kind="main" data-label="練習：偶数の集合と所属の証明" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="131" data-exercise="131"><li><span class="step" data-step="0"><code>def evens : Set Nat := {n | IsEven n}</code> と宣言せよ（<code>IsEven</code> は <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence"><code>04_Exists.lean</code> 4節</a>の述語）。<code>example : (4 : Nat) ∈ evens := ⟨2, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 131</span></p>
+<article class="slide" id="05_mathematicaltools-evens-exercise" data-kind="main" data-label="練習：述語から偶数の集合を作る" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="128" data-exercise="128"><li><span class="step" data-step="0"><code>def evens : Set Nat := {n | IsEven n}</code> と宣言せよ（<code>IsEven</code> は <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence"><code>04_Exists.lean</code> 1節</a>の述語）。<code>example : (4 : Nat) ∈ evens := ⟨2, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 128</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> evens : Set Nat := {n | IsEven n}
 
 <span class="kw">example</span> : (4 : Nat) ∈ evens := ⟨2, rfl⟩</span></code></pre>
 <p><span class="step" data-step="2"><code>4 ∈ evens</code> は定義を展開すると <code>IsEven 4</code> すなわち <code>∃ k, 4 = 2 * k</code>。証人 <code>2</code> と <code>rfl</code> で作れる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-universal-set-exercise" data-kind="main" data-label="練習：全体集合への包含" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="132" data-exercise="132"><li><span class="step" data-step="0">全体集合 <code>def allNat : Set Nat := {_n | True}</code> を定義し、 <code>theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat</code> を書け（各点の証明は <code>True.intro</code>。束縛子 <code>_n</code> の <code>_</code> は「使わない」印である）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 132</span></p>
+<article class="slide" id="05_mathematicaltools-universal-set-exercise" data-kind="main" data-label="練習：全体集合への包含" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="129" data-exercise="129"><li><span class="step" data-step="0">全体集合 <code>def allNat : Set Nat := {_n | True}</code> を定義し、 <code>theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat</code> を書け（各点の証明は <code>True.intro</code>。束縛子 <code>_n</code> の <code>_</code> は「使わない」印である）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 129</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> allNat : Set Nat := {_n | True}
 
 <span class="kw">theorem</span> subset_allNat : ∀ s : Set Nat, s ⊆ allNat :=
   <span class="kw">fun</span> _s _a _ha =&gt; True.intro</span></code></pre>
 <p><span class="step" data-step="2">どの点でも示すべきは <code>True</code> なので、構成子 <code>True.intro</code> を返すだけ。使わない引数は <code>_</code> 付きの名前にしてある。</span></p></article>
-<article class="slide" id="05_mathematicaltools-odds-exercise" data-kind="main" data-label="練習：奇数の集合と Prop" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="133" data-exercise="133"><li><span class="step" data-step="0"><code>def odds : Set Nat := {n | ¬IsEven n}</code> を宣言し、 <code>#check (3 : Nat) ∈ odds</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 133</span></p>
+<article class="slide" id="05_mathematicaltools-odds-exercise" data-kind="main" data-label="練習：奇数の集合と Prop" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="130" data-exercise="130"><li><span class="step" data-step="0"><code>def odds : Set Nat := {n | ¬IsEven n}</code> を宣言し、 <code>#check (3 : Nat) ∈ odds</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 130</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> odds : Set Nat := {n | ¬IsEven n}
 
 <span class="kw">#check</span> (3 : Nat) ∈ odds</span></code></pre>
@@ -480,8 +483,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <article class="slide" id="05_mathematicaltools-dot-notation-and-export" data-kind="main" data-label="名前空間・ドット記法・export の関係" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>p.x</code> が効くのは、<code>x</code> が<strong>型名と同じ名前空間</strong> <code>Point</code> に置かれているからである。<code>06_Topology.lean</code> では <code>namespace Set</code> の中に集合の関数（<code>Set.ext</code> など）を置いていく——<code>s.ext</code> のようなドット記法が効くのはそのためである。逆に、名前空間の<strong>中</strong>の名前を接頭辞なしで使えるようにする <code>export N (名前)</code> という宣言もある（<code>06_Topology.lean</code> が <code>TopologicalSpace.IsOpen</code> を <code>IsOpen</code> と書くために使っている）。</span></p>
 <p><span class="step" data-step="1">これで <code>06_Topology.lean</code> を読む準備が整った。</span></p></article>
 <article class="slide" id="05_mathematicaltools-namespace-exercise" data-kind="main" data-label="練習：名前空間を開いて宣言を追加する" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="134" data-exercise="134"><li><span class="step" data-step="0"><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-namespace-answer" data-kind="main" data-label="解答：フルネームで参照する" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 134</span></p>
+<ol class="exercise" start="131" data-exercise="131"><li><span class="step" data-step="0"><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-namespace-answer" data-kind="main" data-label="解答：フルネームで参照する" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 131</span></p>
 <pre class="lean"><code><span class="step" data-step="0"><span class="kw">namespace</span> Geometry
 
 <span class="kw">def</span> unitX : Point := ⟨1, 0⟩

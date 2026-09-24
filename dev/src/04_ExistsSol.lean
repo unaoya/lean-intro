@@ -6,22 +6,22 @@ import «04_Exists»
 
 /-! SOL CH.products:1 -/
 
-theorem and_left {p q : Prop} : p ∧ q → p := fun h => h.1
+theorem and_left {p q : Prop} : p ∧ q → p := fun h => h.left
 
-def fst' {α β : Type} : α × β → α := fun x => x.1
+def fst' {α β : Type} : α × β → α := fun x => x.fst
 
 /-!
 `∧` の証明の組から第1成分を取り出すのと、直積の組から第1成分を
-取り出すのが、同じ字面 `.1` で書ける。
+取り出すのは、どちらも成分名による取り出しである。
 -/
 
 /-! SOL CH.products:2 -/
 
 theorem and_assoc' {p q r : Prop} : (p ∧ q) ∧ r → p ∧ (q ∧ r) :=
-  fun h => ⟨h.1.1, ⟨h.1.2, h.2⟩⟩
+  fun h => ⟨h.left.left, ⟨h.left.right, h.right⟩⟩
 
 /-!
-左の入れ子から `.1.1`・`.1.2`・`.2` で3つの証明を取り出し、
+左の入れ子から `.left.left`・`.left.right`・`.right` で3つの証明を取り出し、
 右の入れ子の形に `⟨…⟩` で組み直す。
 -/
 
@@ -33,7 +33,7 @@ example : (1 = 1) ∧ (2 = 2) := ⟨rfl, rfl⟩
 具体的な命題でも、`∧` の示し方は「証明を2つ組にする」だけである。
 -/
 
-/-! SOL CH.products:1 -/
+/-! SOL CH.products:4 -/
 
 theorem all_and {α : Type} {Q R : α → Prop} :
     (∀ a, Q a) → (∀ a, R a) → ∀ a, Q a ∧ R a :=
@@ -105,27 +105,7 @@ example : ¬False := fun h => h
 `¬False` は `False → False`——恒等関数が証明になる。
 -/
 
-/-! SOL CH2.existence:1 -/
-
-/-!
-`match` の枝では `a : α`、`ha : Q a`。したがって
-`hqr a : Q a → R a`、`hqr a ha : R a` となる。
--/
-
-/-! SOL CH2.existence:2 -/
-
-theorem exists_map2 {α : Type} {P Q R : α → Prop} :
-    (∀ a, P a → Q a) → (∀ a, Q a → R a) → (∃ a, P a) → ∃ a, R a :=
-  fun hpq hqr h =>
-    match h with
-    | ⟨a, ha⟩ => ⟨a, hqr a (hpq a ha)⟩
-
-/-!
-存在証明から取り出した証人 `a` はそのまま使い、根拠だけを
-`P a → Q a → R a` と2段階で移している。
--/
-
-/-! SOL CH2.existence:1 -/
+/-! SOL CH2.even-add:1 -/
 
 theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
   fun n => ⟨n, rfl⟩
@@ -136,7 +116,7 @@ theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
 両辺が字面から一致している）。
 -/
 
-/-! SOL CH2.existence:2 -/
+/-! SOL CH2.even-add:2 -/
 
 /-!
 **ふつうの証明**:
@@ -146,8 +126,6 @@ theorem isEven_two_mul : ∀ n : Nat, IsEven (2 * n) :=
 3. `2 * k + 2 = 2 * (k + 1)` は、既知の定理
    `Nat.mul_succ 2 k : 2 * (k + 1) = 2 * k + 2` の対称形。
 4. 2〜3 をつないで `n + 2 = 2 * (k + 1)`。よって証人 `k + 1` で偶数である。∎
-
-（1行で書けば「`n = 2k` と書けると `n + 2 = 2k + 2 = 2(k + 1)`。∎」である。）
 
 **論理式**: ∀n (Even(n) → Even(n + 2))。
 
@@ -166,11 +144,11 @@ theorem isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
     | ⟨k, hk⟩ => ⟨k + 1, (congrArg (· + 2) hk).trans (Nat.mul_succ 2 k).symm⟩
 
 /-!
-本文の例2と同じ部品（`match` の分解・`congrArg`・`.trans`・証人の組）だけで
+本文の偶数の和と同じ部品（`match` の分解・`congrArg`・`.trans`・証人の組）だけで
 書けている。
 -/
 
-/-! SOL CH2.existence:3 -/
+/-! SOL CH2.even-add:3 -/
 
 example : IsEven 10 := ⟨5, rfl⟩
 
@@ -178,30 +156,20 @@ example : IsEven 10 := ⟨5, rfl⟩
 証人 `5`、根拠は `10 = 2 * 5`——計算で一致するので `rfl`。
 -/
 
-/-! SOL CH.dependent-sums:1 -/
+/-! SOL CH.products:5 -/
 
 theorem exists_left {α : Type} {Q R : α → Prop} :
     (∃ a, Q a ∧ R a) → ∃ a, Q a :=
   fun h =>
     match h with
-    | ⟨a, hq, _⟩ => ⟨a, hq⟩
+    | ⟨a, hqr⟩ => ⟨a, hqr.left⟩
 
 /-!
 `∃` を分解して証人 `a` と根拠 `Q a ∧ R a` を取り出す。証人はそのまま、
 根拠の左側 `hq : Q a` だけを包み直す。
 -/
 
-/-! SOL CH.dependent-sums:2 -/
-
-#check (last 4).val
-
-/-!
-    ↑(last 4) : Nat
-
-`.val` の適用が強制の印 `↑` で表示される。型は `Fin 5` の中身の `Nat`。
--/
-
-/-! SOL CH.dependent-sums:3 -/
+/-! SOL CH.dependent-sums:1 -/
 
 example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩
 
@@ -209,55 +177,7 @@ example : ∃ n : Nat, IsZero n := ⟨0, rfl⟩
 証人 `0` と、`IsZero 0` すなわち `0 = 0` の証明 `rfl` の組である。
 -/
 
-/-! SOL CH.dependent-sums:4 -/
-
-#check first 4
-
-/-!
-    first 4 : Fin (4 + 1)
-
-定義どおり `Fin (4 + 1)`（計算すれば `Fin 5`）。
--/
-
-#eval (first 4).val
-
-/-!
-    0
-
-`first` は `n` によらず `0` を返す。
--/
-
-/-! SOL CH.dependent-sums:5 -/
-
-#check first 0
-
-/-!
-    first 0 : Fin (0 + 1)
-
-`Fin (0 + 1)`——要素が1つしかない型で、その唯一の要素が `first 0` である。
--/
-
-/-! SOL CH.dependent-sums:6 -/
-
-#eval (5 : Fin 4)
-
-/-!
-    1
-
-補足の `(5 : Fin 3)` と同じ仕組みで、`5` を `4` で割った余りが入る。
--/
-
-/-! SOL CH.dependent-sums:7 -/
-
-#eval (first 5).val + (2 : Fin 3).val
-
-/-!
-    2
-
-`(first 5).val = 0`、`(2 : Fin 3).val = 2` で、和は `Nat` の `2`。
--/
-
-/-! SOL CH2.computation:1 -/
+/-! SOL CH.nat-proofs:1 -/
 
 example : IsZero (0 * 5) := rfl
 
@@ -303,11 +223,11 @@ theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b :=
 
 /-! SOL CH.introduction-elimination:1 -/
 
-theorem andToOr {p q : Prop} : p ∧ q → p ∨ q := fun h => .inl h.1
+theorem andToOr {p q : Prop} : p ∧ q → p ∨ q := fun h => .inl h.left
 
 /-!
-`∧` から `.1` で `p` の証明を取り出し、`∨` を示す形 `.inl` で包む。
-（`.2` と `.inr` の組み合わせでもよい。）
+`∧` から `.left` で `p` の証明を取り出し、`∨` を示す形 `.inl` で包む。
+（`.right` と `.inr` の組み合わせでもよい。）
 -/
 
 /-! SOL CH2.checking-details:1 -/
@@ -339,17 +259,18 @@ example : ∀ n : Nat, n + 1 - 1 = n := fun n => Nat.add_sub_cancel n 1
 /-! SOL CH.prop-elimination:1 -/
 
 /-!
-本文のとおり、次のエラーになる:
+受理されない。`Exists` の証明を `match` で使っているが、行き先 `α : Type` は命題ではない。
+報告の要点は `can only eliminate into Prop` である。
+本文の `existsElim` は行き先が命題 `r` なので受理される。
+-/
 
-    def existsFst (h : ∃ a, Q a) : α := h.1
+/-! SOL CH.dependent-sums:2 -/
 
-    error: Invalid projection: Cannot project a value of non-propositional type
-      α
-    from the expression
-      h
-    which has propositional type
-      ∃ a, Q a
+theorem triple_multiple : ∀ n : Nat, ∃ k, n + n + n = 3 * k :=
+  fun n => ⟨n, Eq.symm (Eq.trans (Nat.succ_mul 2 n)
+    (congrArg (fun x => x + n) (Nat.two_mul n)))⟩
 
-「命題の証明から、命題でないもの（ここでは `α` の項）を取り出すことは
-許されない」という規則の破れが報告されている。
+/-!
+証人は `n`。`3 * n = 2 * n + n` の右辺を書き換えて `n + n + n` にし、
+最後に等式を逆向きにする。
 -/

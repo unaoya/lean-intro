@@ -13,9 +13,8 @@ import «01_TypesAndTerms»
 /-!
 ## 1. 帰納型（inductive type） {#sec-Intro1.inductive-types}
 
-型を作る部品の1つ目が、帰納型である。帰納型は**構成子（constructor）のリスト**で
+型を作る部品の2つ目が、帰納型である。帰納型は**構成子（constructor）のリスト**で
 型を定義する。構成子とは「その型の項の**作り方**」のことで、
-帰納型の項は、構成子で作られたものが**すべて**である。
 集合のアナロジーで先に言っておくと、帰納型は**集合の直和や集合の直積**にあたるものを
 一挙に作れる部品である（節の中で順に見る）。
 
@@ -91,7 +90,7 @@ CALLOUT_START optional
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: `true` と `.true`、`red` と `.red`
+### 補足: `true` と `.true`、`red` と `.red`
 
 `Bool.true` も `Signal.red` と同じく、帰納型の定義で付けられた構成子の名前である。
 では、[`01_TypesAndTerms.lean` 1節](#sec-Intro1.terms-types)で `Bool.true` を単に `true` と書けたのはなぜか。
@@ -136,6 +135,7 @@ CALLOUT_START optional
 `| Signal.red => ...` または `| .red => ...` と書く。
 -/
 
+
 /-!
 CALLOUT_END
 -/
@@ -149,11 +149,22 @@ Lean が用意する。
 また `Signal.noConfusion` を使えば、異なる構成子で作った項が等しくないことを証明できる。
 個々の主張の証明がすべて完成形で自動生成される、という意味ではなく、
 **証明を組み立てるための道具が用意される**のである。
-詳しい型や使い方は、[`04_Exists.lean` 5節](#sec-CH.nat-proofs)で見る。
+詳しい型や使い方は、[`04_Exists.lean` 6節](#sec-CH.nat-proofs)で見る。
+-/
+
+/-!
+### 02_Forall との接続: 仮定として使う・結論として示す
+
+命題を型と見ると、「作る・使う」という区別は「その命題の証明を仮定として使う」ことと、
+「その命題を結論として、その証明を作る」ことに対応する。
+この見方は [`04_Exists.lean` 7節](#sec-CH.introduction-elimination)で改めて説明する。
 -/
 
 /-!
 ### 項の作り方と使い方
+
+関数型では、`fun` で項を**作り**、引数を渡す**適用**で項を使った。
+帰納型でも、この二つの役割を対にして見よう。
 
 型を読むときには、その型の項の**作り方**と**使い方**を対にして考えよう。
 型を `T` とすると:
@@ -167,14 +178,6 @@ Lean が用意する。
 構成子ごとに、それを受け取ったときに返す項を書く。
 `Signal` なら、3つの構成子それぞれに対応して、返す項を1つずつ書けばよい。
 集合の言葉では、3点集合からの写像を、各点の行き先を指定して定めるのと同じである。
--/
-
-/-!
-### 02_Forall との接続: 仮定として使う・結論として示す
-
-命題を型と見ると、この区別は「その命題の証明を仮定として使う」ことと、
-「その命題を結論として、その証明を作る」ことに対応する。
-この見方は [`04_Exists.lean` 6節](#sec-CH.introduction-elimination)で改めて説明する。
 -/
 
 /-!
@@ -206,20 +209,20 @@ Lean が用意する。
 `fun` で受け取った `s : Signal` を、`match s with` で場合分けする:
 -/
 
-def next : Signal → Signal := fun s =>
+def Signal.next : Signal → Signal := fun s =>
   match s with
   | Signal.red => Signal.green
   | Signal.green => Signal.yellow
   | Signal.yellow => Signal.red
 
-#check next
+#check Signal.next
 
 /-!
-    next : Signal → Signal
+    Signal.next : Signal → Signal
 -/
 
 /-!
-定義した関数を試したい。まず `next Signal.red` という項を読む:
+定義した関数を試したい。まず `Signal.next Signal.red` という項を読む:
 2点確認より型は `Signal`、値は定義の1行目（`Signal.red => Signal.green`）から
 `Signal.green` になるはずである。
 
@@ -227,7 +230,7 @@ def next : Signal → Signal := fun s =>
 構成子の形で表示される:
 -/
 
-#eval next Signal.red
+#eval Signal.next Signal.red
 
 /-!
     Signal.green
@@ -238,11 +241,26 @@ def next : Signal → Signal := fun s =>
 期待される型が `Signal` と分かっている位置では、`Signal.red` を `.red` と省略できる。
 例えば `(.red : Signal)` なら、型注釈から接頭辞 `Signal` が補われる。
 `.yellow`・`.green` も同じである。次の `match` では、場合分けする項の型から
-構成子の接頭辞が分かる。まず練習で試し、そのあと本文でも省略形を使う。
+構成子の接頭辞が分かる。先ほどの関数を、この省略形で書き直そう。
 -/
 
+def nextShort : Signal → Signal := fun s =>
+  match s with
+  | .red => .green
+  | .green => .yellow
+  | .yellow => .red
+
 /-!
-### ✏ 練習（書く）
+これは先ほどの `Signal.next` と同じ場合分けである。対象が `Signal` 型なので、
+枝の `.red` などは `Signal.red` などと読まれる。返す型も `Signal` なので、
+右辺でも同じ省略形を使える。
+-/
+
+
+
+
+/-!
+### ✏ 練習
 
 1. `Signal.red`・`Signal.yellow`・`Signal.green` をそれぞれ `0`・`1`・`2` に
    送る `signalCode : Signal → Nat` を `match` で書け。それぞれの場合に返す項が
@@ -268,7 +286,7 @@ def isRed : Signal → Bool := fun s =>
 ### ✏ 練習
 
 1. `Signal` の「逆回り」`prev : Signal → Signal` を `match` で定義し、
-   `#eval prev (next Signal.red)` の表示を予想してから確かめよ
+   `#eval prev (Signal.next Signal.red)` の表示を予想してから確かめよ
    （`Signal.red` に戻ってくるはずである）。
 2. `isRed` にならって `isGreen : Signal → Bool` を書き、
    `#eval isGreen Signal.red` の値を予想してから確かめよ。
@@ -287,11 +305,11 @@ def isRed : Signal → Bool := fun s =>
 項の作り方がないのだから、`Empty` の項は存在しない。
 （それでも `Empty` **から**の関数は書ける——場合分けすべき場合が1つもないので、
 何も書かずに関数が完成する。空集合からの写像がただ1つあることに当たる。
-[`04_Exists.lean` 3節](#sec-CH.empty-types)の `elimEmpty` で実物を見る。）
+[`04_Exists.lean` 4節](#sec-CH.empty-types)の `elimEmpty` で実物を見る。）
 
 実は同じことが `Prop` の世界でもできて、命題の `True` と `False` は
 帰納型として定義されている。命題の世界の帰納型の話は、このファイルでは
-扱わず [`04_Exists.lean` 3節](#sec-CH.empty-types)でまとめて見る。
+扱わず [`04_Exists.lean` 4節](#sec-CH.empty-types)でまとめて見る。
 
 ### 構成子は引数を取れる
 
@@ -338,20 +356,36 @@ inductive NatOrBool : Type where
 各構成子が**単射であることも証明できる**。`NatOrBool.nat n = NatOrBool.nat m` ならば
 `n = m`、同様に `NatOrBool.bool b = NatOrBool.bool c` ならば `b = c` である。
 この単射性を表す補題 `NatOrBool.nat.inj` と `NatOrBool.bool.inj` は、
-帰納型の宣言に伴って Lean が自動生成する。
+帰納型の宣言に伴って Lean が自動生成する。型と証明の本体を表示してみよう。
 -/
 
-/-!
-### 先取り（04_Exists）: 構成子の単射性を表す補題
+#check NatOrBool.nat.inj
 
-この単射性は、Lean が用意する `NatOrBool.nat.inj` という補題として使える。
-その主張は「`NatOrBool.nat n = NatOrBool.nat m` ならば `n = m`」である。
-同様に、`NatOrBool.bool.inj` は
-「`NatOrBool.bool b = NatOrBool.bool c` ならば `b = c`」という補題である。
-これらの補題は、帰納型の宣言に伴って Lean が用意する。
-異なる構成子を区別する性質と、各構成子の単射性を扱う道具が `NatOrBool.noConfusion` である。
-これらは追加の公理として仮定するのではなく、帰納型の仕組みから得られる。
-証明の読み方は、[`04_Exists.lean` 5節](#sec-CH.nat-proofs)で扱う。
+/-!
+    NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝
+-/
+
+#print NatOrBool.nat.inj
+
+/-!
+    theorem NatOrBool.nat.inj : ∀ {n n_1 : Nat}, NatOrBool.nat n = NatOrBool.nat n_1 → n = n_1 :=
+    fun {n n_1} x => NatOrBool.nat.noConfusion x fun n_eq => n_eq
+
+単射性が仮定として追加されたのではなく、証明の項を持つ補題が作られている。
+`noConfusion` の仕組みは[`04_Exists.lean` 6節](#sec-CH.nat-proofs)の補足で見る。
+-/
+
+#check NatOrBool.bool.inj
+
+/-!
+    NatOrBool.bool.inj {b b✝ : Bool} : NatOrBool.bool b = NatOrBool.bool b✝ → b = b✝
+-/
+
+#print NatOrBool.bool.inj
+
+/-!
+    theorem NatOrBool.bool.inj : ∀ {b b_1 : Bool}, NatOrBool.bool b = NatOrBool.bool b_1 → b = b_1 :=
+    fun {b b_1} x => NatOrBool.bool.noConfusion x fun b_eq => b_eq
 -/
 
 /-!
@@ -381,19 +415,15 @@ def valueOf : NatOrBool → Nat := fun x =>
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 中身の値には触れず、`.nat` の札なら `true`、`.bool` の札なら `false` を
    返す `tagOf : NatOrBool → Bool` を書け。不要な中身には `_` を使える。
    `#eval tagOf (NatOrBool.nat 3)` の値を予想してから確かめよ。
--/
 
-/-!
-### ✏ 練習
-
-1. `#eval valueOf (NatOrBool.bool true)` の値を予想してから確かめよ
+2. `#eval valueOf (NatOrBool.bool true)` の値を予想してから確かめよ
    （どちらの場合に当たるか）。
-2. 「`bool` の札なら中身を、`nat` の札なら `false` を返す」関数
+3. 「`bool` の札なら中身を、`nat` の札なら `false` を返す」関数
    `flagOf : NatOrBool → Bool` を書き、`#eval flagOf (NatOrBool.bool true)` で
    確かめよ。
 -/
@@ -408,7 +438,7 @@ def valueOf : NatOrBool → Nat := fun x =>
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 自然数の組 `(a, b)` を表す型 `NatPair : Type` を `inductive` で定義せよ。
    構成子は `mk` の1つとし、自然数を2つ受け取るものとする。
@@ -417,15 +447,11 @@ def valueOf : NatOrBool → Nat := fun x =>
    `secondNat : NatPair → Nat` を、それぞれ `match` で書け。
    両関数の型を `#check` し、`#eval firstNat (NatPair.mk 3 5)` と
    `#eval secondNat (NatPair.mk 3 5)` の値を予想して確かめよ。
--/
 
-/-!
-### ✏ 練習（書く）
-
-1. 自然数 `n` と真偽値 `flag` の組を表す型 `FlaggedNat : Type` を
+3. 自然数 `n` と真偽値 `flag` の組を表す型 `FlaggedNat : Type` を
    `inductive` で定義せよ。構成子は `mk` の1つとする。
    `#check FlaggedNat.mk` と `#check FlaggedNat.mk 3 true` の表示を予想して確かめよ。
-2. 自然数の成分を返す `numberOf : FlaggedNat → Nat` と、真偽値の成分を返す
+4. 自然数の成分を返す `numberOf : FlaggedNat → Nat` と、真偽値の成分を返す
    `flagOfPair : FlaggedNat → Bool` を `match` で書け。
    両関数の型を `#check` し、`FlaggedNat.mk 3 true` に適用した値を予想して
    `#eval` で確かめよ。
@@ -436,7 +462,7 @@ def valueOf : NatOrBool → Nat := fun x =>
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 次の3種類のデータを表す型 `MixedData : Type` を `inductive` で定義せよ。
    構成子 `pair` は自然数を2つ、`flagged` は自然数と真偽値を受け取り、
@@ -546,7 +572,7 @@ def fromSum : MySum Nat Bool → Nat := fun x =>
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. `MySum Bool Bool` の左右どちらの札からも、中身の `Bool` をそのまま返す
    `mergeBool : MySum Bool Bool → Bool` を書け。
@@ -559,7 +585,7 @@ CALLOUT_START optional
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: 型をパラメータにした取り出し関数
+### 補足: 型をパラメータにした取り出し関数
 
 取り出す側も、パラメータを持たせて一般的に書ける。次の `getLeft` は
 「既定値 `d` を受け取り、左の札なら中身を、右の札なら `d` を返す」関数で、
@@ -625,7 +651,7 @@ inductive MyNat : Type where
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: 集合の方程式としての再帰
+### 補足: 集合の方程式としての再帰
 
 集合のアナロジーでは、`MyNat` は方程式
 
@@ -655,7 +681,7 @@ def add : MyNat → MyNat → MyNat := fun m n =>
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: 再帰が止まることの検査
+### 補足: 再帰が止まることの検査
 
 自分自身を呼ぶ定義は、何でも受理されるわけではない。再帰呼び出しがいつまでも
 続くと、計算が終わらないからである。Lean は受理する前に、再帰呼び出しの引数が
@@ -699,7 +725,7 @@ def add : MyNat → MyNat → MyNat := fun m n =>
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. `isZeroMyNat : MyNat → Bool` を `match` で書き、`.zero` なら `true`、
    `.succ _` なら `false` を返せ。`#eval isZeroMyNat MyNat.zero` と
@@ -789,7 +815,7 @@ def MyPoint.x : MyPoint → Nat := fun p =>
 
 /-!
 この「構成子1つの帰納型＋成分の取り出し関数」をひとまとめに書く構文が
-`structure` である。つまり structure は `inductive` の**特別な場合**であり、
+`structure` である。つまり structure は `inductive` の**構成子を1つだけ持つ特別な場合**であり、
 `inductive` と同じく、新しい型を定義するやり方の1つである。
 structure では、構成子の各引数に名前を付けて宣言する。
 この名前付きの成分を**フィールド**（field）と呼ぶ。利点は2つ:
@@ -830,7 +856,17 @@ structure 専用ではなく、構成子が1つの帰納型でも使える。
 接頭辞を補う。例えば次の宣言では、`: Point` がその手がかりになる:
 -/
 
+#check (⟨1, 2⟩ : Point)
+
+/-!
+    { x := 1, y := 2 } : Point
+
+型注釈が `Point` なので、その構成子 `Point.mk` を使った項として読まれる。
+-/
+
 def pointFromDot : Point := .mk 1 2
+
+def pointFromPair : Point := ⟨1, 2⟩
 
 #check pointFromDot
 
@@ -880,19 +916,15 @@ Lean では `Point.mk` が組を作る側、`Point.x`・`Point.y` が成分を�
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 型 `A` と2本の写像 `f g : A → Nat` が与えられたとする。
    $a$ を組 $(f(a), g(a))$ に送る写像 `pairAt A f g : A → Point` を定めたい。
    `pairAt (A : Type) (f g : A → Nat) : A → Point` を書き、`#check pairAt` で型を確認せよ。
    $A = \mathrm{Nat}$、$f(n) = n + 1$、$g(n) = 2n$ として `3` を渡したときの
    第1・第2成分を予想し、`Point.x`・`Point.y` と `#eval` で確かめよ。
--/
 
-/-!
-### ✏ 練習（書く）
-
-1. `Point` の第1成分だけを1増やす `moveRight : Point → Point` を書け。
+2. `Point` の第1成分だけを1増やす `moveRight : Point → Point` を書け。
    成分の取り出しには `Point.x`・`Point.y`、作成には `Point.mk` を使う。
    `#eval Point.x (moveRight (Point.mk 1 2))` の値を予想して確かめよ。
 -/
@@ -941,31 +973,23 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
    （2回入れ替えると元に戻るはずである）。またこの式を、ドットを使わず
    フルネームの適用だけで書き直すと何になるか、紙に書いてから `#eval` で
    一致を確かめよ。
--/
 
-/-!
-### ✏ 練習
-
-1. 次の structure を定義し、`#check` で構成子と取り出し関数が
+3. 次の structure を定義し、`#check` で構成子と取り出し関数が
    自動定義されていることを確かめよ:
 
        structure Circle : Type where
          center : Point
          radius : Nat
 
-2. 点 p と自然数 n から、中心が p、半径が n の円を作る写像を、
+4. 点 p と自然数 n から、中心が p、半径が n の円を作る写像を、
    `makeCircle : Point → Nat → Circle` として書け。型を `#check` し、
    `#eval Circle.radius (makeCircle (Point.mk 1 2) 3)` の値を予想して確かめよ。
-3. 円からその中心の第1座標を取り出す写像 `centerX : Circle → Nat` を書け。
+5. 円からその中心の第1座標を取り出す写像 `centerX : Circle → Nat` を書け。
    型を `#check` し、`#eval centerX (makeCircle (Point.mk 1 2) 3)` の値を予想して確かめよ。
--/
 
-/-!
-### ✏ 練習
-
-1. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
+6. `#eval Point.y (Point.mk 1 2)` の値を予想してから確かめよ。
    さらに `(Point.mk 1 2).y` とも書けることを試し、同じ値が返ることを確かめよ。
-2. フィールドの型は、自作の structure でもよい。長方形
+7. フィールドの型は、自作の structure でもよい。長方形
 
        structure Rect : Type where
          corner : Point
@@ -975,7 +999,7 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
    を定義し、`def r : Rect := ⟨⟨1, 2⟩, 10, 5⟩` が受理されることを確かめよ
    （`⟨ ⟩` の入れ子が `corner : Point` の分である）。`#eval r.corner.x` の
    値を予想してから確かめよ。`r.corner`、`r.corner.x` の順に型を追うこと。
-3. 長方形から幅と高さの積を返す写像 `rectArea : Rect → Nat` を書け。
+8. 長方形から幅と高さの積を返す写像 `rectArea : Rect → Nat` を書け。
    型を `#check` し、前問の `r` に対する `#eval rectArea r` の値を予想して確かめよ。
 -/
 
@@ -1011,30 +1035,10 @@ structure Pair (α β : Type) : Type where
 -/
 
 /-!
-### フィールドを番号で指定する
-
-フィールドは番号でも取れる。`p : Pair α β` に対して、`p.1` は `p.fst`、
-`p.2` は `p.snd` と同じものである。`.1`・`.2` は第1・第2フィールドを指定する
-書き方で、名前を覚えていなくても位置で取り出せる。
-`Point` でも `(Point.mk 1 2).1` は `(Point.mk 1 2).x` と同じ。型は `Nat`、値は `1` のはずである:
--/
-
-#eval (Point.mk 1 2).1
-
-/-!
-    1
-
-次は `Pair Nat Bool` の第2フィールドなので、型は `Bool`、値は `true` のはずである:
--/
-
-#eval (Pair.mk 1 true).2
-
-/-!
-    true
--/
-
-/-!
 集合のアナロジーでは、`Point` は直積 $\mathrm{Nat} \times \mathrm{Nat}$、`Pair α β` は直積 $\alpha \times \beta$ である。
+`p : Pair α β` は、`p.fst : α` と `p.snd : β` の二つを組にしたものであり、
+逆に `a : α` と `b : β` から `Pair.mk a b` を作れる。
+集合の直積で、組 $(a,b)$ を作り、二つの射影で $a$ と $b$ を取り出すことに対応する。
 つまり structure は「**直積の各成分に名前を付けたもの**」と思ってよい。
 実際、標準ライブラリの `×` 自身が `fst`/`snd` という2フィールドの
 structure（名前は `Prod`）として定義されている。
@@ -1054,7 +1058,7 @@ structure（名前は `Prod`）として定義されている。
 -/
 
 /-!
-### 補足（初読は飛ばしてよい）: 帰納型を直和と直積で見る
+### 補足: 帰納型を直和と直積で見る
 
 前節の直和とここの直積をまとめると、ここまでの非再帰的で、
 構成子の引数の型が互いに依存しない例は、集合の言葉でこう読める:
@@ -1071,7 +1075,22 @@ $$(\text{構成子1の引数たちの直積}) \sqcup (\text{構成子2の引数�
 
 なおアナロジーの注意を1つ。集合と違って、型は**外延（要素の一致）では
 同一視されない**。`Point` と `Pair Nat Nat` は「中身」は同じだが別の型である
-（この話は [`04_Exists.lean` 4節](#sec-CH.dependent-sums)の `Fin` の補足でも再登場する）。
+（この話は [2節](#sec-Intro1.subtypes)の `Fin` の補足でも再登場する）。
+-/
+
+/-!
+### 族の直積と直和では、何を選ぶのか
+
+同じ集合族 $B(a)$ から、直積と直和を考えられる。違いは、要素を1つ指定するために
+**すべての添字について選ぶのか、一つの添字を選ぶのか**にある。
+
+**族の直積** $\prod_{a \in A} B(a)$ の要素は、各 $a \in A$ に対して
+$f(a) \in B(a)$ を一つずつ選ぶ関数 $f$ である。
+これが [`01_TypesAndTerms.lean` の4節](#sec-Intro1.dependent-functions)で見た依存関数である。
+
+**族の直和** $\bigsqcup_{a \in A} B(a)$ の要素は、添字 $a \in A$ を一つ選び、
+$b \in B(a)$ を一つ添えた組 $(a,b)$ である。
+次に、型を一つ選び、その型の項を一つ添えた組を、structure で表してみる。
 -/
 
 /-!
@@ -1088,7 +1107,7 @@ $$(\text{構成子1の引数たちの直積}) \sqcup (\text{構成子2の引数�
 「$a$ を1つ選び、それに応じた $B(a)$ の要素を1つ添える」という組である。
 
 族 $B(a)$ が $a$ によらない定数 $B$ のときは、$\bigsqcup_{a \in A} B = A \times B$ となる。
-つまり、これまでの依存しないフィールドによる直積も、族の直和の特別な場合である。
+つまり、これまでの依存しないフィールドによる直積も、族の直和の構成子を1つだけ持つ特別な場合である。
 
 structure でも、**後のフィールドの型を、前のフィールドに依存させる**ことで、
 この形のデータを表せる。証明をフィールドに持たせる実例は `04_Exists.lean` で読み、
@@ -1160,6 +1179,9 @@ inductive MyPointedType : Type 1 where
 /-!
     MyPointedType.mk (carrier : Type) (point : carrier) : MyPointedType
 
+この構成子も**依存関数**である。最初に受け取る `carrier` によって、
+次の引数 `point` の型が変わる。
+
 `PointedType.mk` と同じ形で、最後の行き先だけが `MyPointedType` になっている。
 別の名前で宣言したので `PointedType` と同一の型ではないが、持つデータは同じ形である。
 `inductive` で書いた側では成分を取り出す関数を `match` で書くのに対し、
@@ -1172,19 +1194,15 @@ inductive MyPointedType : Type 1 where
 1. `def pointedBool : PointedType := ⟨Bool, true⟩` が受理されることを確かめよ。
    また `#check PointedType.mk Nat` の表示を予想してから確かめよ
    （第1引数を渡すと、第2引数の型が決まる）。
--/
 
-/-!
-### ✏ 練習（書く）
-
-1. 自然数 n を点付き集合 (Nat, n) に送る写像 `attachNat : Nat → PointedType` を書け。
+2. 自然数 n を点付き集合 (Nat, n) に送る写像 `attachNat : Nat → PointedType` を書け。
    型を `#check` し、`#reduce (attachNat 3).point` の値を予想して確かめよ。
-2. 点付き集合 (A, a) から台となる型 A を取り出す写像 `baseType : PointedType → Type` を書け。
+3. 点付き集合 (A, a) から台となる型 A を取り出す写像 `baseType : PointedType → Type` を書け。
    型を `#check` し、`#reduce (types := true) baseType pointedNat` と
    `#reduce (types := true) baseType pointedBool` の表示を予想して確かめよ。
    ここで `(types := true)` は、型そのものも計算して表示させる指定である。
    通常の `#reduce` は型の計算を省くので、今回はこの指定を付ける。
-3. 点付き集合 $(A, a)$ と写像 $f : A \to A$ から、点付き集合 $(A, f(a))$ を作る関数
+4. 点付き集合 $(A, a)$ と写像 $f : A \to A$ から、点付き集合 $(A, f(a))$ を作る関数
    `mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType` を書け。
    型を `#check` し、`#reduce (mapPointed pointedNat Nat.succ).point` の値を予想して確かめよ。
 -/
@@ -1211,7 +1229,7 @@ CALLOUT_START optional
 -/
 
 /-!
-### ✏ 練習（書く）
+### ✏ 練習
 
 1. 点付き集合 (A, a) から点 a を取り出す関数 `getPoint (p : PointedType) : p.carrier` を書け。
    `#check getPoint` の表示を予想して確かめ、結果の型が引数に依存している箇所を指摘せよ。
@@ -1220,30 +1238,6 @@ CALLOUT_START optional
 
 /-!
 CALLOUT_END
--/
-
-/-!
-### 先取り（04_Exists）: 証明をフィールドに持つ構造
-
-この「後の成分が前の成分に依存する組」の一般論は、[`04_Exists.lean` の4節](#sec-CH.dependent-sums)（依存和）で
-扱う。特に、第二成分を**命題の証明**にしたもの（部分型）はそこで主役になり、
-`06_Topology.lean` でも「分離データの束」`SeparatingPair` として活躍する。
-群の公理などを証明としてフィールドに持たせることも、この仕組みでできる。
--/
-
-/-!
-### 族の直積と直和では、何を選ぶのか
-
-同じ集合族 $B(a)$ から、直積と直和を考えられる。違いは、要素を1つ指定するために
-**すべての添字について選ぶのか、一つの添字を選ぶのか**にある。
-
-**族の直積** $\prod_{a \in A} B(a)$ の要素は、各 $a \in A$ に対して
-$f(a) \in B(a)$ を一つずつ選ぶ関数 $f$ である。
-これが [`01_TypesAndTerms.lean` の4節](#sec-Intro1.dependent-functions)で見た依存関数である。
-
-**族の直和** $\bigsqcup_{a \in A} B(a)$ の要素は、添字 $a \in A$ を一つ選び、
-$b \in B(a)$ を一つ添えた組 $(a,b)$ である。
-ここで見た `PointedType` の項も、型を一つ選び、その型の項を一つ添えた組になっている。
 -/
 
 /-!
@@ -1257,6 +1251,182 @@ $b \in B(a)$ を一つ添えた組 $(a,b)$ である。
    `#check swapAt Nat Bool` で残りの型を確かめよ。
 3. `#check idAt Signal` の表示を予想せよ。
 -/
+
+/-!
+### 部分型 — 値と証明の組 {#sec-Intro1.subtypes}
+
+`01_TypesAndTerms.lean` では「`n` 未満の番号の型」`Fin n` を使った。
+後のフィールドの型が前のフィールドに依存するなら、その型が命題でもよい。
+その場合は、値と、その値についての証明を一緒に持つ。`Fin` の定義を見よう:
+
+    structure Fin (n : Nat) where
+      val : Nat
+      isLt : val < n
+
+値 `val` と、「その値が `n` 未満だ」という**証明** `isLt` の組——
+依存和の第二成分を命題にしたもの——である。このように、述語で切り出した
+「値と証明の組」の型を**部分型**と呼ぶ（専用記法 `{x // p x}` は
+`07_Exercises.lean` で使う）。
+
+中身が分かれば、項も作れる。値が `n` に依存する依存関数の例として、
+「`Fin (n + 1)` の**最後の**番号」を作ってみる:
+-/
+
+def last : (n : Nat) → Fin (n + 1) := fun n => ⟨n, Nat.lt_succ_self n⟩
+
+#check last
+
+/-!
+    last (n : Nat) : Fin (n + 1)
+
+値 `n` に、命題 n < n + 1 の証明（ライブラリの `Nat.lt_succ_self n`）を
+添えて組にしている。
+-/
+
+#check last 2
+
+/-!
+    last 2 : Fin (2 + 1)
+
+型の中の `n` に `2` が入った。
+-/
+
+#check last 9
+
+/-!
+    last 9 : Fin (9 + 1)
+-/
+
+/-!
+同じ族に沿って、「番号 `n` を受け取り、`Fin (n + 1)` の**最初の**番号 0 を返す」関数も書ける:
+-/
+
+def first : (n : Nat) → Fin (n + 1) := fun _ => 0
+
+#check first
+
+/-!
+    first (n : Nat) : Fin (n + 1)
+-/
+
+#check first 2
+
+/-!
+    first 2 : Fin (2 + 1)
+-/
+
+#check first 9
+
+/-!
+    first 9 : Fin (9 + 1)
+
+値はどれも「0 番」だが、その `0` の住んでいる型が入力ごとに違う。
+`0` と書けるのは、数字が期待される型に応じて読まれる記法だからである
+（[`01_TypesAndTerms.lean` 3節](#sec-Intro1.functions)）。
+`last` と見比べてほしい。`first` の値は常に 0 番なので証明を書かずに済むが、
+`last` は値 `n` が型の上限すれすれに依存するぶん、`n < n + 1` の証明を添える必要があった。
+-/
+
+/-! CALLOUT_START optional -/
+/-! ### 補足: では `2 : Fin 3` なのか？
+
+「`Fin 3` は 3 未満の番号の型」と聞くと、集合 $\{0, 1, 2\} \subset \mathbb{N}$ を思い浮かべて、
+「自然数 `2` はそのまま `Fin 3` の項でもあるのか」と考えたくなる。そうではない。
+`Fin 3` の項は、上で見たとおり値と証明の組であり、`Nat` の項とは**別の型の項**である。
+集合のように、`Fin 3` が `Nat` の部分集合として含まれているわけではない。
+
+まぎらわしいことに、`(2 : Fin 3)` という書き方自体は通る:
+-/
+
+#check (2 : Nat)
+
+/-!
+    2 : Nat
+-/
+
+#check (2 : Fin 3)
+
+/-!
+    2 : Fin 3
+-/
+
+/-!
+これは数字 `2` が**記法**であり、期待される型に応じて別々の項に読まれるからである
+（[`01_TypesAndTerms.lean` 3節](#sec-Intro1.functions)の `2 : Int` と同じ仕組み）。
+`(2 : Nat)` は自然数の項、`(2 : Fin 3)` は `Fin 3` の「2 番」の項で、
+**同じ字面の、別の項**なのである。所属を判定しているのではない証拠に、
+`(5 : Fin 3)` すら通り、3 で割った**余り**として読まれる:
+-/
+
+#eval (5 : Fin 3)
+
+/-!
+    2
+
+`2` になった。リテラルをどう読むかは、`Fin` 用に用意された読み方で決まる
+（その仕組みは [`05_MathematicalTools.lean` 1節](#sec-Intro2.classes)の補足で見る）。
+
+`.val` は「番号を自然数として取り出す」関数（`Fin n → Nat`）である:
+-/
+
+#eval (2 : Fin 3).val
+
+/-!
+    2
+-/
+
+/-!
+2つの `2` を等号で結ぼうとすると、面白いことが起きる:
+-/
+
+#check (2 : Nat) = (2 : Fin 3)
+
+/-!
+    2 = ↑2 : Prop
+-/
+
+/-!
+型エラーにはならないが、右辺に `↑` が付いた。これは**強制**（coercion）の印で、
+Lean が `Fin 3 → Nat` の写像（`.val`）を自動で挟み、
+「`Nat` の世界に持ち上げてから比べる」形に読み替えている。
+逆向きはそうはいかない。`Fin 3` を引数に取る関数を用意して、`(2 : Nat)` を
+渡してみると:
+
+    def useFin (x : Fin 3) : Fin 3 := x
+    #check useFin (2 : Nat)
+
+    error: Application type mismatch: The argument
+      2
+    has type
+      Nat
+    but is expected to have type
+      Fin 3
+    in the application
+      useFin 2
+
+`Nat → Fin 3` の向きには「3 未満に収まっているか」の確認が要るので、
+自動では埋められない。まとめると、`Fin 3` と `Nat` の関係は
+「部分集合と全体」ではなく、**写像 `.val` で結ばれた別々の型**である。
+-/
+/-! CALLOUT_END -/
+
+/-!
+### ✏ 練習
+
+1. `#check (last 4).val` の表示を予想してから確かめよ
+   （表示に付く `↑` は**強制**の印——上の補足で説明した）。
+2. `#check first 4` の表示と、`#eval (first 4).val` の値を予想してから確かめよ。
+3. `#check first 0` の表示を予想してから確かめよ（`Fin (0 + 1)` は1点の型である）。
+-/
+
+/-! CALLOUT_START optional -/
+/-!
+### ✏ 練習
+
+4. （補足の確認）`#eval (5 : Fin 4)` の表示を予想してから確かめよ。
+5. （補足の確認）`#eval (first 5).val + (2 : Fin 3).val` の値を予想してから確かめよ。
+-/
+/-! CALLOUT_END -/
 
 /-!
 ## 3. まとめ練習 — 小さな型つき言語で書く {#sec-Intro1.exercises}
@@ -1275,10 +1445,16 @@ $b \in B(a)$ を一つ添えた組 $(a,b)$ である。
    この対応 $F \mapsto G$ を、カリー化を使って
    `flipNat (F : Nat → Nat → Nat) : Nat → Nat → Nat` として書け。
    `#eval flipNat (fun a b => a - b) 3 10` の値を予想してから確かめよ。
+   次に、任意の型 `A` に対して `flipAt (A : Type) (F : A → A → A) : A → A → A` を書け。
+   一般化した関数を `Signal` に適用し、
+   `#eval flipAt Signal (fun a _ => a) Signal.red Signal.green` の値を確かめよ。
 2. 写像の集合の間の写像 $T : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、
    $T(F) = F \circ F \circ F$、すなわち $T(F)(n) = F(F(F(n)))$ で定める。
    $T$ を `iterate3 (F : Nat → Nat) : Nat → Nat` として書け。
    `#eval iterate3 double 1` の値を予想してから確かめよ。
+   次に、`iterate3At (A : Type) (F : A → A) : A → A` として一般化せよ。
+   `#eval iterate3At Signal Signal.next Signal.red` では何が返るか、
+   信号の変化を3回たどってから確かめよ。
 3. 2点集合 $B = \{\mathrm{true}, \mathrm{false}\}$ と3点集合 $S = \{\mathrm{red}, \mathrm{yellow}, \mathrm{green}\}$ を考える。
    写像 $f : B \to S$ を $f(\mathrm{true}) = \mathrm{green}$、$f(\mathrm{false}) = \mathrm{red}$ で定め、
    写像 $g : S \to B$ を $g(\mathrm{green}) = \mathrm{true}$、$g(\mathrm{red}) = g(\mathrm{yellow}) = \mathrm{false}$ で定める。
