@@ -54,6 +54,8 @@ mathlib を使わず、Lean 4 の標準ライブラリだけで、位相空間�
 | 発展演習 — Ascoli の定理 | `09_Ascoli.lean` |
 | 発展演習 — 実数版 Arzelà–Ascoli の定理 | `10_AscoliReal.lean` |
 | 発展演習 — グラフの被覆と基本群 | `11_Covering.lean` |
+| 発展演習 — 位相空間の被覆 | `12_CoveringSpace.lean` |
+| 発展演習 — 基本亜群と円周 | `13_FundamentalGroupoid.lean` |
 
 ### 教材が更新されたとき
 

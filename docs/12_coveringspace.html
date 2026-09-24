@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>発展演習: 位相空間の被覆</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
+}
+
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+<nav><span><a href="11_covering.html">← 11_Covering</a></span><a href="index.html">目次</a><span><a href="13_fundamentalgroupoid.html">13_FundamentalGroupoid →</a></span></nav>
+<main>
+<pre class="lean"><code><span class="kw">import</span> «07_ExercisesSol»
+<span class="kw">import</span> «08_RealSol»</code></pre>
+<h1>発展演習: 位相空間の被覆</h1>
+<p><code>08_Real.lean</code> と <code>11_Covering.lean</code> のあとに読む演習問題集。 <code>11_Covering.lean</code> でグラフの上に組み立てた被覆の理論を、位相空間の上で組み立て直す。この章の目標は<strong>ホモトピーの持ち上げ定理</strong>（問題19）で、続く <code>13_FundamentalGroupoid.lean</code> でこれを使って円周の基本群が整数の群と同型であることを示す。</p>
+<h2>グラフ版との違い</h2>
+<p>グラフ版では、道の持ち上げがリストの長さの帰納法一発で済んだ。位相空間では、道は区間 $[0, 1]$ からの連続写像なので、ここに解析が要る。この章の仕事は、ほぼすべてこの一点に集まっている。</p>
+<ol>
+<li>区間を細かく切って、各小片の像が均等被覆近傍に収まるようにする（区間のコンパクト性とルベーグ数の補題。<code>08_Real.lean</code> Part G）</li>
+<li>小片ごとに持ち上げて、つなぐ（貼り合わせ補題）</li>
+<li>つないだものが連続であることを示す</li>
+</ol>
+<p>この章では、区間を 2 等分していく帰納法をとる。長さ $2^{-n}$ の区間ごとに像が小さければ、区間の前半と後半を別々に持ち上げ、$t = 1/2$ で貼り合わせればよい（問題15）。</p>
+<h2>前提</h2>
+<ul>
+<li>実数は <code>08_Real.lean</code> の完備順序体 <code>R</code>、単位区間 $[0, 1]$ はその部分空間である</li>
+<li>部分空間・積の位相は <code>07_Exercises.lean</code> Part 6 のものを使う。そこではどれも「射影をすべて連続にする最も粗い位相」として上から定義されていた。この章は、その上で具体的な議論ができる形の補題（Part A）から始める</li>
+<li>前の章は解答ファイル（<code>07_ExercisesSol.lean</code>・<code>08_RealSol.lean</code>）を import する。前の章の問題が解けていなくても、この章は使える</li>
+</ul>
+<h2>構成</h2>
+<ul>
+<li>Part A: 部分空間と積</li>
+<li>Part B: 閉集合と貼り合わせ</li>
+<li>Part C: 単位区間</li>
+<li>Part D: 被覆と局所的な持ち上げ</li>
+<li>Part E: 持ち上げ定理</li>
+</ul>
+<p>山場は Part D の局所的な持ち上げ（問題15）と、Part E のホモトピーの持ち上げ（問題19）である。</p>
+<h2>進め方</h2>
+<p><code>sorry</code> を自分の証明で置き換える。解答は <code>12_CoveringSpaceSol.lean</code> にある。与えてある宣言（<code>sorry</code> のないもの）も、問題を解くときに使ってよい。</p>
+<pre class="lean"><code><span class="kw">namespace</span> CovSpace</code></pre>
+<h2>Part A: 部分空間と積</h2>
+<p><code>07_Exercises.lean</code> Part 6 の部分空間・積の位相は、始位相——「射影をすべて連続にする最も粗い位相」——として上から定義されていた。この定義は、連続写像の判定（普遍性）には便利だが、開集合が具体的にどんな形をしているかは定義から読めない。この Part では、以後の議論に要る具体的な事実を取り出す。</p>
+<ul>
+<li>部分空間への写像・部分空間からの写像の連続性（07 の問題33・35 の特殊化として与える）</li>
+<li><strong>連続性の局所性</strong>（問題2）: 各点に、そこへの制限が連続になる開近傍があれば連続</li>
+<li><strong>積の開集合は、各点のまわりに開集合の直積 <code>U × V</code> を含む</strong>（問題4）</li>
+</ul>
+<p>問題4 は <code>07_Exercises.lean</code> の問題36 と同じ発想で示す。「各点のまわりに開集合の直積を含む集合」の全体が位相をなすこと（問題3）を示し、それを「始位相は最も粗い」（07 の問題33(2)）に使う。</p>
+<pre class="lean"><code><span class="kw">section</span>
+
+
+<span class="kw">variable</span> {X Y Z : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [tZ : TopologicalSpace Z]</code></pre>
+<h3>部分空間</h3>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_subtype_val {p : X → <span class="sort">Prop</span>} : Continuous (Subtype.val : Subtype p → X) :=
+  continuous_fromInitial (Y := <span class="kw">fun</span> _ : Unit =&gt; X) (<span class="kw">fun</span> _ =&gt; tX)
+    (<span class="kw">fun</span> _ =&gt; Subtype.val) ()
+
+<span class="kw">theorem</span> continuous_subtype_mk {p : X → <span class="sort">Prop</span>} {f : Z → X} (hf : Continuous f)
+    (h : ∀ z, p (f z)) : Continuous (<span class="kw">fun</span> z =&gt; (⟨f z, h z⟩ : Subtype p)) :=
+  (continuous_toInitial_iff (Y := <span class="kw">fun</span> _ : Unit =&gt; X) (<span class="kw">fun</span> _ =&gt; tX)
+    (<span class="kw">fun</span> _ =&gt; Subtype.val) tZ _).mpr <span class="kw">fun</span> _ =&gt; hf
+
+<span class="kw">theorem</span> continuous_restrict {p : X → <span class="sort">Prop</span>} {f : X → Y} (hf : Continuous f) :
+    Continuous (<span class="kw">fun</span> a : Subtype p =&gt; f a.1) :=
+  Continuous.comp hf continuous_subtype_val</code></pre>
+<p>問題1: 開集合への制限で開な集合は、全体でも開であることを示せ。</p>
+<p>ヒント: <code>07_Exercises.lean</code> の問題36（<code>isOpen_subtype_iff</code>）で <code>s = Subtype.val ⁻¹&#x27; u</code> と書き、問題の集合が <code>W ∩ u</code> に等しいことを示す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isOpen_of_subtype_open {W : Set X} (hW : IsOpen W) {s : Set (Subtype W)}
+    (hs : IsOpen s) : IsOpen {x | ∃ h : x ∈ W, (⟨x, h⟩ : Subtype W) ∈ s} :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題2: <strong>連続性は局所的</strong>: 各点に、そこへの制限が連続になる開近傍があれば連続であることを示せ。</p>
+<p>ヒント: <code>06_Topology.lean</code> の <code>isOpen_of_nhds</code> を使う。点 <code>x</code> の開近傍 <code>W</code> について、制限の逆像を問題1で全体の開集合に持ち上げる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_of_locally {f : X → Y}
+    (h : ∀ x, ∃ W : Set X, IsOpen W ∧ x ∈ W ∧ Continuous (<span class="kw">fun</span> a : Subtype W =&gt; f a.1)) :
+    Continuous f :=
+  <span class="sorry">sorry</span></code></pre>
+<h3>積</h3>
+<pre class="lean"><code><span class="kw">section</span> Prod
+
+<span class="kw">variable</span> {A B C : <span class="sort">Type</span>} [tA : TopologicalSpace A] [tB : TopologicalSpace B] [tC : TopologicalSpace C]
+
+<span class="kw">theorem</span> continuous_fst : Continuous (@Prod.fst A B) :=
+  continuous_fromInitial (Y := <span class="kw">fun</span> b =&gt; cond b A B)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; tA | false =&gt; tB)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd) true
+
+<span class="kw">theorem</span> continuous_snd : Continuous (@Prod.snd A B) :=
+  continuous_fromInitial (Y := <span class="kw">fun</span> b =&gt; cond b A B)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; tA | false =&gt; tB)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd) false
+
+<span class="kw">theorem</span> continuous_prod_mk {f : C → A} {g : C → B} (hf : Continuous f) (hg : Continuous g) :
+    Continuous (<span class="kw">fun</span> z =&gt; (f z, g z)) :=
+  (continuous_toInitial_iff (Y := <span class="kw">fun</span> b =&gt; cond b A B)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; tA | false =&gt; tB)
+    (<span class="kw">fun</span> b =&gt; <span class="kw">match</span> b <span class="kw">with</span> | true =&gt; Prod.fst | false =&gt; Prod.snd) tC _).mpr <span class="kw">fun</span> b =&gt;
+    <span class="kw">match</span> b <span class="kw">with</span>
+    | true =&gt; hf
+    | false =&gt; hg
+
+<span class="kw">end</span> Prod</code></pre>
+<p>問題3: 開集合の直積を含む集合の全体は位相をなすことを示せ。</p>
+<p>ヒント: 共通部分では直積 <code>U₁ ∩ U₂</code>・<code>V₁ ∩ V₂</code> を取る。合併では、点が属する 1 つの集合の直積をそのまま使う。</p>
+<pre class="lean"><code>@[reducible] <span class="kw">def</span> rectTop : TopologicalSpace (X × Y) <span class="kw">where</span>
+  IsOpen W := ∀ p ∈ W, ∃ U V, IsOpen U ∧ IsOpen V ∧ p.1 ∈ U ∧ p.2 ∈ V ∧
+    ∀ q : X × Y, q.1 ∈ U → q.2 ∈ V → q ∈ W
+  isOpen_univ := <span class="sorry">sorry</span>
+  isOpen_inter := <span class="sorry">sorry</span>
+  isOpen_sUnion := <span class="sorry">sorry</span></code></pre>
+<p>問題4: （発展）<strong>積の開集合は、各点のまわりに開集合の直積を含む</strong>ことを示せ。</p>
+<p>ヒント: 2 つの射影が問題3の位相に関して連続であることを示し、<code>07_Exercises.lean</code> の <code>initial_coarsest</code>（問題33(2)）に渡す。型推論の都合で、位相は <code>(t&#x27; := @rectTop X Y tX tY)</code> と明示する。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_rect {W : Set (X × Y)} (hW : IsOpen W) {p : X × Y} (hp : p ∈ W) :
+    ∃ U V, IsOpen U ∧ IsOpen V ∧ p.1 ∈ U ∧ p.2 ∈ V ∧ ∀ q : X × Y, q.1 ∈ U → q.2 ∈ V → q ∈ W :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span></code></pre>
+<h2>Part B: 閉集合と貼り合わせ</h2>
+<p>区間を半分ずつ使ってつないだ写像の連続性は、<strong>貼り合わせ補題</strong>（問題8）で示す。空間が 2 つの閉集合 <code>A</code>・<code>B</code> で覆われていれば、写像の連続性は、<code>A</code> と <code>B</code> への制限の連続性に帰着する。証明は閉集合の言葉で書く: 閉集合の逆像を <code>A</code> 側と <code>B</code> 側に分け、それぞれが閉であることを示す。</p>
+<pre class="lean"><code><span class="kw">section</span>
+
+<span class="kw">open</span> CompleteOrderedField
+
+<span class="kw">variable</span> {X Y Z : <span class="sort">Type</span>} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [tZ : TopologicalSpace Z]
+
+<span class="kw">theorem</span> isClosed_inter {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∩ t) := <span class="kw">by</span>
+  <span class="kw">have</span> e : (s ∩ t)ᶜ = sᶜ ∪ tᶜ := <span class="kw">by</span>
+    <span class="kw">apply</span> Set.ext; <span class="kw">intro</span> x
+    <span class="kw">constructor</span>
+    · <span class="kw">intro</span> h
+      <span class="kw">by_cases</span> hs&#x27; : x ∈ s
+      · <span class="kw">exact</span> .inr <span class="kw">fun</span> ht&#x27; =&gt; h ⟨hs&#x27;, ht&#x27;⟩
+      · <span class="kw">exact</span> .inl hs&#x27;
+    · <span class="kw">intro</span> h ⟨h1, h2⟩
+      rcases h <span class="kw">with</span> h | h
+      · <span class="kw">exact</span> h h1
+      · <span class="kw">exact</span> h h2
+  <span class="kw">show</span> IsOpen (s ∩ t)ᶜ
+  <span class="kw">rw</span> [e]; <span class="kw">exact</span> isOpen_union hs ht</code></pre>
+<p>問題5: 2 つの閉集合の合併は閉であることを示せ。</p>
+<p>ヒント: 合併の補集合は補集合の共通部分。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isClosed_union {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∪ t) :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題6: 閉集合の逆像が閉なら連続であることを示せ。</p>
+<p>ヒント: 開集合 <code>s</code> について <code>sᶜ</code> は閉（<code>Set.compl_compl</code>）。<code>f ⁻¹&#x27; s = (f ⁻¹&#x27; sᶜ)ᶜ</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_of_closed {f : X → Y} (h : ∀ s, IsClosed s → IsClosed (f ⁻¹&#x27; s)) :
+    Continuous f :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> isClosed_preimage {f : X → Y} (hf : Continuous f) {s : Set Y} (hs : IsClosed s) :
+    IsClosed (f ⁻¹&#x27; s) := hf _ hs</code></pre>
+<p>問題7: 閉集合の部分空間で閉な集合は、全体でも閉であることを示せ。</p>
+<p>ヒント: <code>isOpen_subtype_iff</code> を補集合に使い、問題の集合を <code>A ∩ uᶜ</code> と書き直す。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isClosed_of_subtype_closed {A : Set X} (hA : IsClosed A) {s : Set (Subtype A)}
+    (hs : IsClosed s) : IsClosed {x | ∃ h : x ∈ A, (⟨x, h⟩ : Subtype A) ∈ s} :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題8: <strong>貼り合わせ補題</strong>: 2 つの閉集合で覆われた空間上の写像は、それぞれへの制限が連続なら連続であることを示せ。</p>
+<p>ヒント: 問題6を使う。閉集合の逆像を <code>A</code> 側と <code>B</code> 側の合併に分け、問題7と問題5。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_of_closed_cover {A B : Set X} (hA : IsClosed A) (hB : IsClosed B)
+    (hcov : ∀ x, x ∈ A ∨ x ∈ B) {f : X → Y}
+    (hfA : Continuous (<span class="kw">fun</span> a : Subtype A =&gt; f a.1)) (hfB : Continuous (<span class="kw">fun</span> a : Subtype B =&gt; f a.1)) :
+    Continuous f :=
+  <span class="sorry">sorry</span></code></pre>
+<h3>実数の閉集合</h3>
+<p>貼り合わせでは、区間を <code>t ≤ 1/2</code> と <code>1/2 ≤ t</code> の 2 つの閉集合に分ける。</p>
+<pre class="lean"><code><span class="kw">variable</span> {R : <span class="sort">Type</span>} [CompleteOrderedField R]</code></pre>
+<p>問題9: 半直線 <code>{x | x ≤ c}</code> は閉であることを示せ。</p>
+<p>ヒント: 補集合の点 <code>x</code>（<code>c &lt; x</code>）のまわりには、半径 <code>x - c</code> の近傍が収まる。<code>abs_lt</code> を使う。</p>
+<pre class="lean"><code><span class="kw">theorem</span> isClosed_le_const (c : R) : IsClosed ({x | x ≤ c} : Set R) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> isClosed_ge_const (c : R) : IsClosed ({x | c ≤ x} : Set R) := <span class="kw">by</span>
+  <span class="kw">intro</span> x hx
+  <span class="kw">have</span> hx&#x27; : x &lt; c := not_le.mp hx
+  <span class="kw">refine</span> ⟨c - x, sub_pos.mpr hx&#x27;, <span class="kw">fun</span> y hy hyc =&gt; ?_⟩
+  <span class="kw">have</span> h1 := add_lt_add_right (abs_lt.mp hy).2 x
+  <span class="kw">rw</span> [sub_add_cancel, sub_add_cancel] at h1
+  <span class="kw">exact</span> not_le.mpr h1 hyc
+
+<span class="kw">end</span></code></pre>
+<h2>Part C: 単位区間</h2>
+<p>単位区間 <code>UI R</code> は、<code>R</code> の部分集合 <code>[0, 1]</code> を部分型にしたもの（位相は部分空間位相）である。 2 等分の帰納法のために、前半・後半への縮小 <code>halfL t = t / 2</code>・<code>halfR t = (t + 1) / 2</code> と、$2^{-n}$ を表す <code>halfPow n</code> を用意する。問題12 は、<code>08_Real.lean</code> のアルキメデス性から出る。</p>
+<pre class="lean"><code><span class="kw">section</span>
+
+<span class="kw">open</span> CompleteOrderedField
+
+<span class="kw">variable</span> {R : <span class="sort">Type</span>} [CompleteOrderedField R]</code></pre>
+<p>単位区間 <code>[0, 1]</code>（実数の部分空間）。</p>
+<pre class="lean"><code>abbrev UI (R : <span class="sort">Type</span>) [CompleteOrderedField R] : <span class="sort">Type</span> := Subtype (<span class="kw">fun</span> t : R =&gt; t ∈ Icc (0 : R) 1)
+
+<span class="kw">theorem</span> zero_le_one&#x27; : (0 : R) ≤ 1 := le_of_lt zero_lt_one
+
+<span class="kw">theorem</span> le_of_eq&#x27; {a b : R} (h : a = b) : a ≤ b := h ▸ le_refl a
+
+<span class="kw">def</span> ui0 : UI R := ⟨0, le_refl 0, zero_le_one&#x27;⟩
+<span class="kw">def</span> ui1 : UI R := ⟨1, zero_le_one&#x27;, le_refl 1⟩
+
+<span class="kw">theorem</span> UI.ext {s t : UI R} (h : s.1 = t.1) : s = t := <span class="kw">by</span>
+  <span class="kw">cases</span> s; <span class="kw">cases</span> t; <span class="kw">cases</span> h; rfl</code></pre>
+<h3>半分と 2 倍の計算</h3>
+<pre class="lean"><code><span class="kw">theorem</span> div_two_le_div_two {a b : R} (h : a ≤ b) : a / 2 ≤ b / 2 :=
+  mul_le_mul_of_nonneg_right h (le_of_lt (inv_pos zero_lt_two))
+
+<span class="kw">theorem</span> zero_div_two : (0 : R) / 2 = 0 := zero_mul _
+
+<span class="kw">theorem</span> two_div_two : (2 : R) / 2 = 1 := mul_inv_cancel 2 two_ne_zero
+
+<span class="kw">theorem</span> two_mul_div_two (t : R) : 2 * t / 2 = t := <span class="kw">by</span>
+  <span class="kw">rw</span> [mul_comm]; <span class="kw">exact</span> mul_div_cancel two_ne_zero
+
+<span class="kw">theorem</span> two_mul_half : (2 : R) * (1 / 2) = 1 := mul_div_cancel_left 1 two_ne_zero
+
+<span class="kw">theorem</span> half_nonneg&#x27; : (0 : R) ≤ 1 / 2 := le_of_lt (half_pos zero_lt_one)
+
+<span class="kw">theorem</span> half_le_one : (1 : R) / 2 ≤ 1 := le_of_lt (half_lt_self zero_lt_one)
+
+<span class="kw">theorem</span> add_div_two (a b : R) : (a + b) / 2 = a / 2 + b / 2 := add_mul a b _
+
+<span class="kw">theorem</span> sub_div_two (a b : R) : (a - b) / 2 = a / 2 - b / 2 := sub_mul a b _
+
+<span class="kw">theorem</span> abs_div_two (a : R) : abs (a / 2) = abs a / 2 := <span class="kw">by</span>
+  <span class="kw">rw</span> [div_def, abs_mul, abs_of_nonneg (le_of_lt (inv_pos zero_lt_two))]; rfl
+
+<span class="kw">theorem</span> two_mul_le_two_mul {a b : R} (h : a ≤ b) : 2 * a ≤ 2 * b :=
+  mul_le_mul_of_nonneg_left h (le_of_lt zero_lt_two)
+
+<span class="kw">theorem</span> two_mul_one : (2 : R) * 1 = 2 := mul_one 2</code></pre>
+<p><code>t / 2 ∈ [0, 1]</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> halfL (t : UI R) : UI R :=
+  ⟨t.1 / 2, le_trans _ _ _ (le_of_eq&#x27; zero_div_two.symm) (div_two_le_div_two t.2.1),
+    le_trans _ _ _ (div_two_le_div_two t.2.2) half_le_one⟩</code></pre>
+<p><code>(t + 1) / 2 ∈ [0, 1]</code>。</p>
+<pre class="lean"><code><span class="kw">def</span> halfR (t : UI R) : UI R :=
+  ⟨(t.1 + 1) / 2,
+    le_trans _ _ _ half_nonneg&#x27; (<span class="kw">by</span>
+      <span class="kw">have</span> := div_two_le_div_two (add_le_add_right t.2.1 1)
+      rwa [zero_add] at this),
+    <span class="kw">by</span>
+      <span class="kw">have</span> := div_two_le_div_two (add_le_add_right t.2.2 1)
+      rwa [← two_def, two_div_two] at this⟩
+
+<span class="kw">theorem</span> halfL_one : halfL (ui1 : UI R) = halfR ui0 := UI.ext (<span class="kw">by</span> <span class="kw">show</span> (1 : R) / 2 = (0 + 1) / 2; <span class="kw">rw</span> [zero_add])
+
+<span class="kw">theorem</span> halfL_zero : halfL (ui0 : UI R) = ui0 := UI.ext zero_div_two</code></pre>
+<p>問題10: <code>t ↦ t / 2</code> は連続であることを示せ。</p>
+<p>ヒント: <code>continuous_subtype_mk</code> と、<code>08_Real.lean</code> の <code>continuous_mul</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_halfL : Continuous (halfL : UI R → UI R) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">theorem</span> continuous_halfR : Continuous (halfR : UI R → UI R) :=
+  continuous_subtype_mk (continuous_mul (continuous_add continuous_subtype_val (continuous_const _))
+    (continuous_const _)) _
+
+<span class="kw">theorem</span> two_mul_mem {t : R} (h0 : 0 ≤ t) (h1 : t ≤ 1 / 2) : 2 * t ∈ Icc (0 : R) 1 :=
+  ⟨<span class="kw">by</span> <span class="kw">have</span> := two_mul_le_two_mul h0; rwa [mul_zero] at this,
+   <span class="kw">by</span> <span class="kw">have</span> := two_mul_le_two_mul h1; rwa [two_mul_half] at this⟩
+
+<span class="kw">theorem</span> two_mul_sub_one_mem {t : R} (h0 : 1 / 2 ≤ t) (h1 : t ≤ 1) : 2 * t - 1 ∈ Icc (0 : R) 1 := <span class="kw">by</span>
+  <span class="kw">refine</span> ⟨sub_nonneg.mpr ?_, ?_⟩
+  · <span class="kw">have</span> := two_mul_le_two_mul h0; rwa [two_mul_half] at this
+  · <span class="kw">have</span> := add_le_add_right (two_mul_le_two_mul h1) (-1)
+    <span class="kw">rw</span> [two_mul_one, two_def, add_assoc, add_neg_cancel, add_zero] at this
+    <span class="kw">exact</span> this</code></pre>
+<h3>2 のべき</h3>
+<p><code>2⁻ⁿ</code>。</p>
+<pre class="lean"><code><span class="kw">noncomputable</span> <span class="kw">def</span> halfPow : Nat → R
+  | 0 =&gt; 1
+  | n + 1 =&gt; halfPow n / 2
+
+<span class="kw">theorem</span> halfPow_pos : ∀ n : Nat, (0 : R) &lt; halfPow n
+  | 0 =&gt; zero_lt_one
+  | n + 1 =&gt; half_pos (halfPow_pos n)
+
+<span class="kw">theorem</span> halfPow_le_one : ∀ n : Nat, (halfPow n : R) ≤ 1
+  | 0 =&gt; le_refl 1
+  | n + 1 =&gt; le_trans _ _ _ (le_of_lt (half_lt_self (halfPow_pos n))) (halfPow_le_one n)</code></pre>
+<p>問題11: <code>n · 2⁻ⁿ ≤ 1</code> を示せ。</p>
+<p>ヒント: <code>n</code> の帰納法。<code>(n + 1) · 2⁻⁽ⁿ⁺¹⁾ = (n · 2⁻ⁿ + 2⁻ⁿ) / 2 ≤ (1 + 1) / 2</code>（<code>halfPow_le_one</code>）。</p>
+<pre class="lean"><code><span class="kw">theorem</span> natCast_mul_halfPow_le : ∀ n : Nat, natCast n * (halfPow n : R) ≤ 1 :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題12: 十分大きい <code>n</code> で <code>2⁻ⁿ &lt; δ</code> となることを示せ。</p>
+<p>ヒント: <code>08_Real.lean</code> のアルキメデス性で <code>δ⁻¹ &lt; n</code> となる <code>n</code> を取ると <code>1 &lt; n · δ</code>。問題11と比べる。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_halfPow_lt {δ : R} (hδ : 0 &lt; δ) : ∃ n : Nat, (halfPow n : R) &lt; δ :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span></code></pre>
+<h2>Part D: 被覆と局所的な持ち上げ</h2>
+<p>開集合 <code>U</code> が <code>p : E → X</code> で<strong>均等に被覆される</strong>（<code>EvenlyCovered</code>）とは、<code>p⁻¹ U</code> が互いに交わらない開集合（シート）<code>V i</code> に分かれ、各シートが <code>p</code> で <code>U</code> と同相に写ることである。同相であることは、逆写像 <code>s i</code> を与え、<code>U</code> の上で連続であることで表す。<strong>被覆</strong>（<code>CoveringMap</code>）は、連続写像であって、底のどの点にも均等に被覆される開近傍があるもの。<code>11_Covering.lean</code> の <code>Covering</code> や <code>06_Topology.lean</code> の <code>Homeomorph</code> と同じく、写像と性質を束ねた structure にする。</p>
+<p>この Part の中心は<strong>局所的な持ち上げ</strong>（問題15）である。<code>F : Y × [0,1] → X</code> と、<code>F(·, 0)</code> の持ち上げ <code>F0</code> が与えられ、<code>y₀</code> の近傍 <code>N</code> の上で「長さ $2^{-n}$ の区間ごとに像が均等被覆近傍に収まる」とする。このとき <code>y₀</code> のより小さい近傍の上に、<code>F</code> の連続な持ち上げがある。証明は <code>n</code> の帰納法で、 <code>n = 0</code>（像が 1 つの均等被覆近傍に収まる場合）は問題14、<code>n + 1</code> は区間の前半と後半に分けて帰納法の仮定を 2 回使い、<code>t = 1/2</code> で貼り合わせる。</p>
+<aside class="note note--optional"><h3>補足: 逆写像を <code>X</code> 全体の関数として持つ理由</h3>
+<p>シートの逆写像 <code>s i</code> は、本来は <code>U</code> から <code>V i</code> への写像である。ここでは <code>s i : X → E</code> と <code>X</code> 全体の関数として持ち、<code>U</code> の外での値は使わない（連続性も <code>U</code> への制限で述べる）。こうすると、<code>s i (F q)</code> のような合成を書くたびに「<code>F q ∈ U</code> の証明」を添えずに済む。部分型を使うのは、連続性を述べるところだけになる。</p></aside>
+<pre class="lean"><code><span class="kw">section</span>
+
+<span class="kw">open</span> CompleteOrderedField</code></pre>
+<p>問題13: 定数写像は連続であることを示せ。</p>
+<p>ヒント: 逆像は、値が <code>s</code> に入るかどうかで <code>univ</code> か <code>∅</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> continuous_const_map {A B : <span class="sort">Type</span>} [TopologicalSpace A] [TopologicalSpace B] (b : B) :
+    Continuous (<span class="kw">fun</span> _ : A =&gt; b) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">variable</span> {R : <span class="sort">Type</span>} [CompleteOrderedField R]
+<span class="kw">variable</span> {E X : <span class="sort">Type</span>} [tE : TopologicalSpace E] [tX : TopologicalSpace X]</code></pre>
+<p>開集合 <code>U</code> が <code>p</code> で<strong>均等に被覆される</strong>: <code>p ⁻¹&#x27; U</code> は互いに交わらない開集合（シート）<code>V i</code> に分かれ、各シートは <code>p</code> で <code>U</code> と同相に写る。<code>s i</code> はその逆写像（<code>U</code> の上だけで意味を持つ）。</p>
+<pre class="lean"><code><span class="kw">def</span> EvenlyCovered (p : E → X) (U : Set X) : <span class="sort">Prop</span> :=
+  ∃ (ι : <span class="sort">Type</span>) (V : ι → Set E) (s : ι → X → E),
+    (∀ i, IsOpen (V i)) ∧
+    (∀ e, p e ∈ U → ∃ i, e ∈ V i) ∧
+    (∀ i j e, e ∈ V i → e ∈ V j → i = j) ∧
+    (∀ i x, x ∈ U → s i x ∈ V i ∧ p (s i x) = x) ∧
+    (∀ i e, e ∈ V i → s i (p e) = e) ∧
+    (∀ i, Continuous (<span class="kw">fun</span> x : Subtype U =&gt; s i x.1))</code></pre>
+<p><strong>被覆</strong>: 連続写像であって、底のどの点にも均等に被覆される開近傍があるもの。</p>
+<pre class="lean"><code><span class="kw">structure</span> CoveringMap (E X : <span class="sort">Type</span>) [TopologicalSpace E] [TopologicalSpace X] <span class="kw">where</span>
+  toFun : E → X
+  continuous_toFun : Continuous toFun
+  evenly : ∀ x, ∃ U, IsOpen U ∧ x ∈ U ∧ EvenlyCovered toFun U
+
+<span class="kw">theorem</span> sub_halfR (a b : R) : (a + 1) / 2 - (b + 1) / 2 = (a - b) / 2 := <span class="kw">by</span>
+  <span class="kw">rw</span> [← sub_div_two, add_sub_add_right]</code></pre>
+<p>問題14: 局所的な持ち上げの基底: 像が 1 つの均等被覆近傍に収まるなら、シートの逆写像を合成すればよいことを示せ。</p>
+<p>ヒント: <code>hsmall</code> を <code>τ = 0</code> に使うと、<code>N × [0,1]</code> 全体の像が 1 つの <code>U</code> に収まる。 <code>F0 y₀</code> を含むシート <code>V i</code> を取り、<code>N&#x27;</code> を「<code>N</code> の点で <code>F0</code> の値が <code>V i</code> に入るもの」（問題1で開）、 <code>G := s i ∘ F</code> とする。</p>
+<pre class="lean"><code><span class="kw">theorem</span> lift_local_zero (p : CoveringMap E X) (Y : <span class="sort">Type</span>) [TopologicalSpace Y]
+    (F : Y × UI R → X) (hF : Continuous F) (N : Set Y) (hN : IsOpen N)
+    (F0 : Y → E) (hF0 : Continuous (<span class="kw">fun</span> y : Subtype N =&gt; F0 y.1))
+    (h0 : ∀ y ∈ N, p.toFun (F0 y) = F (y, ui0))
+    (hsmall : ∀ τ : UI R, ∃ U, EvenlyCovered p.toFun U ∧
+      ∀ y ∈ N, ∀ t : UI R, abs (t.1 - τ.1) ≤ 1 → F (y, t) ∈ U)
+    (y0 : Y) (hy0 : y0 ∈ N) : ∃ N&#x27; : Set Y, IsOpen N&#x27; ∧ y0 ∈ N&#x27; ∧ N&#x27; ⊆ N ∧ ∃ G : Y × UI R → E,
+      (∀ y ∈ N&#x27;, ∀ t, p.toFun (G (y, t)) = F (y, t)) ∧ (∀ y ∈ N&#x27;, G (y, ui0) = F0 y) ∧
+      Continuous (<span class="kw">fun</span> q : Subtype (<span class="kw">fun</span> q : Y × UI R =&gt; q.1 ∈ N&#x27;) =&gt; G q.1) :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題15: （発展）<strong>局所的な持ち上げ</strong>（2 等分の帰納法）。<code>y₀</code> の近傍 <code>N</code> の上で、長さ <code>2⁻ⁿ</code> の区間ごとに <code>F</code> の像が均等被覆近傍に収まるなら、<code>y₀</code> のより小さい近傍の上に連続な持ち上げがあることを示せ。</p>
+<p>ヒント: <code>n</code> についての再帰。<code>0</code> は問題14。<code>n + 1</code> では <code>F₁(y, t) = F(y, t/2)</code>・<code>F₂(y, t) = F(y, (t+1)/2)</code> とし、 <code>F₁</code> を <code>F0</code> から、<code>F₂</code> を <code>F₁</code> の持ち上げの終点 <code>G₁(·, 1)</code> から持ち上げる（長さの条件は縮小で半分になる）。最後に <code>t ≤ 1/2</code> と <code>1/2 ≤ t</code> の 2 つの閉集合で貼り合わせる（問題8・問題9）。<code>t = 1/2</code> で両者が一致することに注意。 <code>if</code> による場合分けのために、証明の冒頭で <code>classical</code> とする。</p>
+<pre class="lean"><code><span class="kw">theorem</span> lift_local (p : CoveringMap E X) : ∀ (n : Nat) (Y : <span class="sort">Type</span>) [TopologicalSpace Y]
+    (F : Y × UI R → X), Continuous F → ∀ (N : Set Y), IsOpen N →
+    ∀ (F0 : Y → E), Continuous (<span class="kw">fun</span> y : Subtype N =&gt; F0 y.1) →
+    (∀ y ∈ N, p.toFun (F0 y) = F (y, ui0)) →
+    (∀ τ : UI R, ∃ U, EvenlyCovered p.toFun U ∧
+      ∀ y ∈ N, ∀ t : UI R, abs (t.1 - τ.1) ≤ halfPow n → F (y, t) ∈ U) →
+    ∀ y0 ∈ N, ∃ N&#x27; : Set Y, IsOpen N&#x27; ∧ y0 ∈ N&#x27; ∧ N&#x27; ⊆ N ∧ ∃ G : Y × UI R → E,
+      (∀ y ∈ N&#x27;, ∀ t, p.toFun (G (y, t)) = F (y, t)) ∧ (∀ y ∈ N&#x27;, G (y, ui0) = F0 y) ∧
+      Continuous (<span class="kw">fun</span> q : Subtype (<span class="kw">fun</span> q : Y × UI R =&gt; q.1 ∈ N&#x27;) =&gt; G q.1) :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span></code></pre>
+<h2>Part E: 持ち上げ定理</h2>
+<p>Part D の局所的な持ち上げから、3 つの定理を出す。</p>
+<ul>
+<li><strong>小ささの条件</strong>（問題16）: 各点 <code>y₀</code> のある近傍と <code>n</code> について、Part D の仮定が成り立つ。区間のコンパクト性とルベーグ数から出る</li>
+<li><strong>道の持ち上げの一意性</strong>（問題17）: 区間の連結性（<code>08_Real.lean</code> の <code>Icc_connected</code>）から出る</li>
+<li><strong>ホモトピーの持ち上げ</strong>（問題19）と、その特別な場合（<code>Y</code> が 1 点）の<strong>道の持ち上げ</strong>（問題18）</li>
+</ul>
+<p>問題19 では、持ち上げ <code>G</code> を点ごとに定義する: 各 <code>y</code> について、道 <code>t ↦ F(y, t)</code> を <code>F0 y</code> から持ち上げた道の値を <code>G(y, t)</code> とする。連続性は局所的に示す（問題2）。各点のまわりでは、Part D の局所的な持ち上げが連続で、一意性（問題17）によって <code>G</code> と一致するからである。</p>
+<pre class="lean"><code><span class="kw">section</span>
+
+<span class="kw">open</span> CompleteOrderedField
+
+<span class="kw">variable</span> {R : <span class="sort">Type</span>} [CompleteOrderedField R]
+<span class="kw">variable</span> {E X : <span class="sort">Type</span>} [tE : TopologicalSpace E] [tX : TopologicalSpace X]</code></pre>
+<p>問題16: （発展）小ささの条件: <code>y₀</code> のある近傍と <code>n</code> について、長さ <code>2⁻ⁿ</code> の区間ごとに像が均等被覆近傍に収まることを示せ。</p>
+<p>ヒント: 各 <code>t</code> で <code>F(y₀, t)</code> の均等被覆近傍 <code>U</code> の逆像に問題4を使い、<code>N_t × J_t</code> を取る（<code>J_t</code> は区間の開集合なので、<code>isOpen_subtype_iff</code> で <code>R</code> の開集合 <code>O_t</code> に直す）。区間のコンパクト性（<code>isCompact_Icc</code>）で有限個の <code>t</code> に減らし、<code>N</code> をそれらの <code>N_t</code> の共通部分（<code>Set.interFin</code>）とする。 <code>δ</code> はルベーグ数（<code>lebesgue</code>）、<code>n</code> は問題12で取る。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_small (p : CoveringMap E X) {Y : <span class="sort">Type</span>} [tY : TopologicalSpace Y]
+    (F : Y × UI R → X) (hF : Continuous F) (y0 : Y) :
+    ∃ N : Set Y, IsOpen N ∧ y0 ∈ N ∧ ∃ n : Nat, ∀ τ : UI R, ∃ U, EvenlyCovered p.toFun U ∧
+      ∀ y ∈ N, ∀ t : UI R, abs (t.1 - τ.1) ≤ halfPow n → F (y, t) ∈ U :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題17: <strong>道の持ち上げの一意性</strong>: 同じ道の 2 つの持ち上げは、始点が一致すれば一致することを示せ。</p>
+<p>ヒント: <code>{t | f t = g t}</code> と <code>{t | f t ≠ g t}</code> がともに開であることを示し、<code>Icc_connected</code> を使う。前者では、<code>f t</code> を含むシート <code>V i</code> を取ると、<code>f</code> と <code>g</code> がともに <code>V i</code> に入る近傍で <code>f = s i ∘ p ∘ f = s i ∘ p ∘ g = g</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> lift_unique (p : CoveringMap E X) {f g : UI R → E} (hf : Continuous f) (hg : Continuous g)
+    (hfg : ∀ t, p.toFun (f t) = p.toFun (g t)) (h0 : f ui0 = g ui0) : f = g :=
+  <span class="sorry">sorry</span></code></pre>
+<p>1 点の空間の位相（開集合はすべて）。</p>
+<pre class="lean"><code><span class="kw">instance</span> instTopUnit : TopologicalSpace Unit <span class="kw">where</span>
+  IsOpen _ := True
+  isOpen_univ := trivial
+  isOpen_inter _ _ _ _ := trivial
+  isOpen_sUnion _ _ := trivial</code></pre>
+<p>問題18: <strong>道の持ち上げの存在</strong>: 始点の持ち上げを決めれば、道は持ち上がることを示せ。</p>
+<p>ヒント: <code>Y</code> を 1 点の空間 <code>Unit</code> として、問題16・15。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_lift_path (p : CoveringMap E X) (γ : UI R → X) (hγ : Continuous γ) (e0 : E)
+    (he : p.toFun e0 = γ ui0) :
+    ∃ γ&#x27; : UI R → E, Continuous γ&#x27; ∧ (∀ t, p.toFun (γ&#x27; t) = γ t) ∧ γ&#x27; ui0 = e0 :=
+  <span class="sorry">sorry</span></code></pre>
+<p>問題19: <strong>ホモトピーの持ち上げ</strong>: <code>F : Y × [0,1] → X</code> と <code>F(·, 0)</code> の連続な持ち上げから、<code>F</code> 全体の連続な持ち上げが得られることを示せ。</p>
+<p>ヒント: 各 <code>y</code> で道 <code>t ↦ F(y, t)</code> の持ち上げ（問題18）を選び、<code>G(y, t)</code> をその値とする。連続性は問題2で局所的に示す:点 <code>(y₀, t₀)</code> で問題16・15から <code>N&#x27; × [0,1]</code> 上の連続な持ち上げ <code>G&#x27;</code> を取ると、<code>y ∈ N&#x27;</code> では問題17により <code>G(y, ·) = G&#x27;(y, ·)</code>。</p>
+<pre class="lean"><code><span class="kw">theorem</span> exists_lift_homotopy (p : CoveringMap E X) {Y : <span class="sort">Type</span>} [tY : TopologicalSpace Y]
+    (F : Y × UI R → X) (hF : Continuous F) (F0 : Y → E) (hF0 : Continuous F0)
+    (h0 : ∀ y, p.toFun (F0 y) = F (y, ui0)) :
+    ∃ G : Y × UI R → E, Continuous G ∧ (∀ q, p.toFun (G q) = F q) ∧ ∀ y, G (y, ui0) = F0 y :=
+  <span class="sorry">sorry</span>
+
+<span class="kw">end</span>
+
+<span class="kw">end</span> CovSpace</code></pre>
+<p>解答（<code>12_CoveringSpaceSol.lean</code>）では、ホモトピーの持ち上げが依存する公理は <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の 3 つだけである。問題を解き終えたら、次の出力に <code>sorryAx</code> が残っていないことを確かめよ。</p>
+<pre class="lean"><code><span class="kw">#print</span> axioms CovSpace.exists_lift_homotopy</code></pre>
+</main>
+<nav><span><a href="11_covering.html">← 11_Covering</a></span><a href="index.html">目次</a><span><a href="13_fundamentalgroupoid.html">13_FundamentalGroupoid →</a></span></nav>
+</body>
+</html>

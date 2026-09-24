@@ -32,7 +32,7 @@ SRC = ROOT / "src"
 OUT = REPO / "docs"
 
 # 章構成（表示順）。*Sol（解答）は単独ページとしては公開しない。
-CHAPTERS = ["01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools", "06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"]
+CHAPTERS = ["01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools", "06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering", "12_CoveringSpace", "13_FundamentalGroupoid"]
 
 # 公開済み URL は本文のコピーではなく、新しい章への転送ページとして残す。
 LEGACY_CHAPTERS = {
@@ -46,11 +46,11 @@ LEGACY_CHAPTERS = {
 }
 
 # 通読版には含めるが、講義スライド（HTML・PDF）は作らない章。
-SLIDE_EXCLUDED_CHAPTERS = {"06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"}
+SLIDE_EXCLUDED_CHAPTERS = {"06_Topology", "07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering", "12_CoveringSpace", "13_FundamentalGroupoid"}
 
 # ✏ 練習に折りたたみで埋め込む解答ファイル（`/-! SOL 固定ラベル:問題番号 -/` 区切り）。
 # 問題と解答の数・節内の順序が合わなければ生成をエラーで止める。
-SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering")}
+SOL_FILES = {name: name + "Sol" for name in CHAPTERS if name not in ("07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering", "12_CoveringSpace", "13_FundamentalGroupoid")}
 
 SITE_TITLE = "はじめての Lean"
 SITE_CONCEPT = (
@@ -624,6 +624,8 @@ ROLES = {
     "09_Ascoli": "演習（sorry を自分で埋める）",
     "10_AscoliReal": "演習（sorry を自分で埋める）",
     "11_Covering": "演習（sorry を自分で埋める）",
+    "12_CoveringSpace": "演習（sorry を自分で埋める）",
+    "13_FundamentalGroupoid": "演習（sorry を自分で埋める）",
 }
 
 
@@ -636,7 +638,7 @@ def chapter_links_html(titles: dict, chapters, href, *, group_exercises=False) -
     out = ["<ol>"]
     exercises_added = False
     for name in chapters:
-        if group_exercises and name in {"07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering"}:
+        if group_exercises and name in {"07_Exercises", "08_Real", "09_Ascoli", "10_AscoliReal", "11_Covering", "12_CoveringSpace", "13_FundamentalGroupoid"}:
             if not exercises_added:
                 out.append(f'<li><a href="{href(name)}">発展演習</a></li>')
                 exercises_added = True

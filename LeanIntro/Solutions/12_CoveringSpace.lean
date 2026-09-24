@@ -1,20 +1,19 @@
-import «07_ExercisesSol»
-import «08_RealSol»
+-- 解答（解説は Web 版のテキストで読む）。dev/tools/student.py が自動生成する。
 
-/-! # 発展演習: 位相空間の被覆（解答）
+import LeanIntro.Solutions.«07_Exercises»
+import LeanIntro.Solutions.«08_Real»
 
-`12_CoveringSpace.lean` の全問題の解答。主張は問題ファイルと一字一句同じにしてある。
--/
+-- # 発展演習: 位相空間の被覆（解答）
 
 namespace CovSpace
-/-! ## 部分空間と積 -/
+
+-- ## 部分空間と積
 
 section
 
-
 variable {X Y Z : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [tZ : TopologicalSpace Z]
 
-/-! ### 部分空間 -/
+-- ### 部分空間
 
 theorem continuous_subtype_val {p : X → Prop} : Continuous (Subtype.val : Subtype p → X) :=
   continuous_fromInitial (Y := fun _ : Unit => X) (fun _ => tX)
@@ -29,7 +28,6 @@ theorem continuous_restrict {p : X → Prop} {f : X → Y} (hf : Continuous f) :
     Continuous (fun a : Subtype p => f a.1) :=
   Continuous.comp hf continuous_subtype_val
 
-/-- 問題1: 開集合への制限で開な集合は、全体でも開。 -/
 theorem isOpen_of_subtype_open {W : Set X} (hW : IsOpen W) {s : Set (Subtype W)}
     (hs : IsOpen s) : IsOpen {x | ∃ h : x ∈ W, (⟨x, h⟩ : Subtype W) ∈ s} := by
   obtain ⟨u, hu, rfl⟩ := isOpen_subtype_iff.mp hs
@@ -40,7 +38,6 @@ theorem isOpen_of_subtype_open {W : Set X} (hW : IsOpen W) {s : Set (Subtype W)}
   rw [this]
   exact isOpen_inter _ _ hW hu
 
-/-- 問題2: **連続性は局所的**: 各点に、そこへの制限が連続になる開近傍があれば連続。 -/
 theorem continuous_of_locally {f : X → Y}
     (h : ∀ x, ∃ W : Set X, IsOpen W ∧ x ∈ W ∧ Continuous (fun a : Subtype W => f a.1)) :
     Continuous f := by
@@ -51,7 +48,7 @@ theorem continuous_of_locally {f : X → Y}
   refine ⟨{y | ∃ h : y ∈ W, (⟨y, h⟩ : Subtype W) ∈ (fun a : Subtype W => f a.1) ⁻¹' s},
     isOpen_of_subtype_open hW (hf s hs), ⟨hxW, hx⟩, fun y ⟨_, hy⟩ => hy⟩
 
-/-! ### 積 -/
+-- ### 積
 
 section Prod
 
@@ -78,7 +75,6 @@ theorem continuous_prod_mk {f : C → A} {g : C → B} (hf : Continuous f) (hg :
 
 end Prod
 
-/-- 問題3: 開集合の直積を含む集合の全体は位相をなす。 -/
 @[reducible] def rectTop : TopologicalSpace (X × Y) where
   IsOpen W := ∀ p ∈ W, ∃ U V, IsOpen U ∧ IsOpen V ∧ p.1 ∈ U ∧ p.2 ∈ V ∧
     ∀ q : X × Y, q.1 ∈ U → q.2 ∈ V → q ∈ W
@@ -95,7 +91,6 @@ end Prod
     obtain ⟨U, V, hU, hV, h1, h2, hs⟩ := hS s hsS p hps
     exact ⟨U, V, hU, hV, h1, h2, fun q hq hq' => ⟨s, hsS, hs q hq hq'⟩⟩
 
-/-- 問題4: （発展）**積の開集合は、各点のまわりに開集合の直積を含む**。 -/
 theorem exists_rect {W : Set (X × Y)} (hW : IsOpen W) {p : X × Y} (hp : p ∈ W) :
     ∃ U V, IsOpen U ∧ IsOpen V ∧ p.1 ∈ U ∧ p.2 ∈ V ∧ ∀ q : X × Y, q.1 ∈ U → q.2 ∈ V → q ∈ W := by
   have h1 : @Continuous (X × Y) rectTop X tX Prod.fst := fun s hs q hq =>
@@ -109,8 +104,7 @@ theorem exists_rect {W : Set (X × Y)} (hW : IsOpen W) {p : X × Y} (hp : p ∈ 
 
 end
 
-
-/-! ## 閉集合と貼り合わせ -/
+-- ## 閉集合と貼り合わせ
 
 section
 
@@ -133,7 +127,6 @@ theorem isClosed_inter {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) : IsClo
   show IsOpen (s ∩ t)ᶜ
   rw [e]; exact isOpen_union hs ht
 
-/-- 問題5: 2 つの閉集合の合併は閉。 -/
 theorem isClosed_union {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∪ t) := by
   have e : (s ∪ t)ᶜ = sᶜ ∩ tᶜ := by
     apply Set.ext; intro x
@@ -142,7 +135,6 @@ theorem isClosed_union {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) : IsClo
   show IsOpen (s ∪ t)ᶜ
   rw [e]; exact isOpen_inter _ _ hs ht
 
-/-- 問題6: 閉集合の逆像が閉なら連続。 -/
 theorem continuous_of_closed {f : X → Y} (h : ∀ s, IsClosed s → IsClosed (f ⁻¹' s)) :
     Continuous f := by
   intro s hs
@@ -158,7 +150,6 @@ theorem continuous_of_closed {f : X → Y} (h : ∀ s, IsClosed s → IsClosed (
 theorem isClosed_preimage {f : X → Y} (hf : Continuous f) {s : Set Y} (hs : IsClosed s) :
     IsClosed (f ⁻¹' s) := hf _ hs
 
-/-- 問題7: 閉集合の部分空間で閉な集合は、全体でも閉。 -/
 theorem isClosed_of_subtype_closed {A : Set X} (hA : IsClosed A) {s : Set (Subtype A)}
     (hs : IsClosed s) : IsClosed {x | ∃ h : x ∈ A, (⟨x, h⟩ : Subtype A) ∈ s} := by
   obtain ⟨u, hu, hsu⟩ := isOpen_subtype_iff.mp hs
@@ -178,7 +169,6 @@ theorem isClosed_of_subtype_closed {A : Set X} (hA : IsClosed A) {s : Set (Subty
   show IsOpen uᶜᶜ
   rw [Set.compl_compl]; exact hu
 
-/-- 問題8: **貼り合わせ補題**: 2 つの閉集合で覆われた空間上の写像は、それぞれへの制限が連続なら連続。 -/
 theorem continuous_of_closed_cover {A B : Set X} (hA : IsClosed A) (hB : IsClosed B)
     (hcov : ∀ x, x ∈ A ∨ x ∈ B) {f : X → Y}
     (hfA : Continuous (fun a : Subtype A => f a.1)) (hfB : Continuous (fun a : Subtype B => f a.1)) :
@@ -199,11 +189,10 @@ theorem continuous_of_closed_cover {A B : Set X} (hA : IsClosed A) (hB : IsClose
   exact isClosed_union (isClosed_of_subtype_closed hA (hfA _ hs))
     (isClosed_of_subtype_closed hB (hfB _ hs))
 
-/-! ## 実数の閉集合 -/
+-- ## 実数の閉集合
 
 variable {R : Type} [CompleteOrderedField R]
 
-/-- 問題9: 半直線 `{x | x ≤ c}` は閉。 -/
 theorem isClosed_le_const (c : R) : IsClosed ({x | x ≤ c} : Set R) := by
   intro x hx
   have hx' : c < x := not_le.mp hx
@@ -222,8 +211,7 @@ theorem isClosed_ge_const (c : R) : IsClosed ({x | c ≤ x} : Set R) := by
 
 end
 
-
-/-! ## 単位区間 -/
+-- ## 単位区間
 
 section
 
@@ -231,7 +219,6 @@ open CompleteOrderedField
 
 variable {R : Type} [CompleteOrderedField R]
 
-/-- 単位区間 `[0, 1]`（実数の部分空間）。 -/
 abbrev UI (R : Type) [CompleteOrderedField R] : Type := Subtype (fun t : R => t ∈ Icc (0 : R) 1)
 
 theorem zero_le_one' : (0 : R) ≤ 1 := le_of_lt zero_lt_one
@@ -244,7 +231,7 @@ def ui1 : UI R := ⟨1, zero_le_one', le_refl 1⟩
 theorem UI.ext {s t : UI R} (h : s.1 = t.1) : s = t := by
   cases s; cases t; cases h; rfl
 
-/-! ### 半分と 2 倍の計算 -/
+-- ### 半分と 2 倍の計算
 
 theorem div_two_le_div_two {a b : R} (h : a ≤ b) : a / 2 ≤ b / 2 :=
   mul_le_mul_of_nonneg_right h (le_of_lt (inv_pos zero_lt_two))
@@ -274,12 +261,10 @@ theorem two_mul_le_two_mul {a b : R} (h : a ≤ b) : 2 * a ≤ 2 * b :=
 
 theorem two_mul_one : (2 : R) * 1 = 2 := mul_one 2
 
-/-- `t / 2 ∈ [0, 1]`。 -/
 def halfL (t : UI R) : UI R :=
   ⟨t.1 / 2, le_trans _ _ _ (le_of_eq' zero_div_two.symm) (div_two_le_div_two t.2.1),
     le_trans _ _ _ (div_two_le_div_two t.2.2) half_le_one⟩
 
-/-- `(t + 1) / 2 ∈ [0, 1]`。 -/
 def halfR (t : UI R) : UI R :=
   ⟨(t.1 + 1) / 2,
     le_trans _ _ _ half_nonneg' (by
@@ -293,7 +278,6 @@ theorem halfL_one : halfL (ui1 : UI R) = halfR ui0 := UI.ext (by show (1 : R) / 
 
 theorem halfL_zero : halfL (ui0 : UI R) = ui0 := UI.ext zero_div_two
 
-/-- 問題10: `t ↦ t / 2` は連続。 -/
 theorem continuous_halfL : Continuous (halfL : UI R → UI R) :=
   continuous_subtype_mk (continuous_mul continuous_subtype_val (continuous_const _)) _
 
@@ -312,9 +296,8 @@ theorem two_mul_sub_one_mem {t : R} (h0 : 1 / 2 ≤ t) (h1 : t ≤ 1) : 2 * t - 
     rw [two_mul_one, two_def, add_assoc, add_neg_cancel, add_zero] at this
     exact this
 
-/-! ### 2 のべき -/
+-- ### 2 のべき
 
-/-- `2⁻ⁿ`。 -/
 noncomputable def halfPow : Nat → R
   | 0 => 1
   | n + 1 => halfPow n / 2
@@ -327,7 +310,6 @@ theorem halfPow_le_one : ∀ n : Nat, (halfPow n : R) ≤ 1
   | 0 => le_refl 1
   | n + 1 => le_trans _ _ _ (le_of_lt (half_lt_self (halfPow_pos n))) (halfPow_le_one n)
 
-/-- 問題11: `n · 2⁻ⁿ ≤ 1`。 -/
 theorem natCast_mul_halfPow_le : ∀ n : Nat, natCast n * (halfPow n : R) ≤ 1
   | 0 => by rw [natCast_zero, zero_mul]; exact zero_le_one'
   | n + 1 => by
@@ -338,7 +320,6 @@ theorem natCast_mul_halfPow_le : ∀ n : Nat, natCast n * (halfPow n : R) ≤ 1
       have h2 := div_two_le_div_two h
       rwa [two_div_two] at h2
 
-/-- 問題12: 十分大きい `n` で `2⁻ⁿ < δ`。 -/
 theorem exists_halfPow_lt {δ : R} (hδ : 0 < δ) : ∃ n : Nat, (halfPow n : R) < δ := by
   obtain ⟨n, hn⟩ := exists_nat_gt δ⁻¹
   refine ⟨n, not_le.mp fun h => ?_⟩
@@ -350,14 +331,12 @@ theorem exists_halfPow_lt {δ : R} (hδ : 0 < δ) : ∃ n : Nat, (halfPow n : R)
 
 end
 
-
-/-! ## 被覆と局所的な持ち上げ -/
+-- ## 被覆と局所的な持ち上げ
 
 section
 
 open CompleteOrderedField
 
-/-- 問題13: 定数写像は連続。 -/
 theorem continuous_const_map {A B : Type} [TopologicalSpace A] [TopologicalSpace B] (b : B) :
     Continuous (fun _ : A => b) := by
   intro s _
@@ -370,8 +349,6 @@ theorem continuous_const_map {A B : Type} [TopologicalSpace A] [TopologicalSpace
 variable {R : Type} [CompleteOrderedField R]
 variable {E X : Type} [tE : TopologicalSpace E] [tX : TopologicalSpace X]
 
-/-- 開集合 `U` が `p` で**均等に被覆される**: `p ⁻¹' U` は互いに交わらない開集合（シート）`V i` に
-分かれ、各シートは `p` で `U` と同相に写る。`s i` はその逆写像（`U` の上だけで意味を持つ）。 -/
 def EvenlyCovered (p : E → X) (U : Set X) : Prop :=
   ∃ (ι : Type) (V : ι → Set E) (s : ι → X → E),
     (∀ i, IsOpen (V i)) ∧
@@ -381,7 +358,6 @@ def EvenlyCovered (p : E → X) (U : Set X) : Prop :=
     (∀ i e, e ∈ V i → s i (p e) = e) ∧
     (∀ i, Continuous (fun x : Subtype U => s i x.1))
 
-/-- **被覆**: 連続写像であって、底のどの点にも均等に被覆される開近傍があるもの。 -/
 structure CoveringMap (E X : Type) [TopologicalSpace E] [TopologicalSpace X] where
   toFun : E → X
   continuous_toFun : Continuous toFun
@@ -390,7 +366,6 @@ structure CoveringMap (E X : Type) [TopologicalSpace E] [TopologicalSpace X] whe
 theorem sub_halfR (a b : R) : (a + 1) / 2 - (b + 1) / 2 = (a - b) / 2 := by
   rw [← sub_div_two, add_sub_add_right]
 
-/-- 問題14: 局所的な持ち上げの基底: 像が 1 つの均等被覆近傍に収まるなら、シートの逆写像を合成すればよい。 -/
 theorem lift_local_zero (p : CoveringMap E X) (Y : Type) [TopologicalSpace Y]
     (F : Y × UI R → X) (hF : Continuous F) (N : Set Y) (hN : IsOpen N)
     (F0 : Y → E) (hF0 : Continuous (fun y : Subtype N => F0 y.1))
@@ -419,7 +394,6 @@ theorem lift_local_zero (p : CoveringMap E X) (Y : Type) [TopologicalSpace Y]
   · exact (hscont i).comp (continuous_subtype_mk (hF.comp continuous_subtype_val)
       (fun q => hFU q.1.1 q.2.1 q.1.2))
 
-/-- 問題15: （発展）**局所的な持ち上げ**（2 等分の帰納法）。 -/
 theorem lift_local (p : CoveringMap E X) : ∀ (n : Nat) (Y : Type) [TopologicalSpace Y]
     (F : Y × UI R → X), Continuous F → ∀ (N : Set Y), IsOpen N →
     ∀ (F0 : Y → E), Continuous (fun y : Subtype N => F0 y.1) →
@@ -527,8 +501,7 @@ theorem lift_local (p : CoveringMap E X) : ∀ (n : Nat) (Y : Type) [Topological
 
 end
 
-
-/-! ## 持ち上げ定理 -/
+-- ## 持ち上げ定理
 
 section
 
@@ -537,7 +510,6 @@ open CompleteOrderedField
 variable {R : Type} [CompleteOrderedField R]
 variable {E X : Type} [tE : TopologicalSpace E] [tX : TopologicalSpace X]
 
-/-- 問題16: （発展）小ささの条件: `y₀` のある近傍と `n` について、長さ `2⁻ⁿ` の区間ごとに像が均等被覆近傍に収まる。 -/
 theorem exists_small (p : CoveringMap E X) {Y : Type} [tY : TopologicalSpace Y]
     (F : Y × UI R → X) (hF : Continuous F) (y0 : Y) :
     ∃ N : Set Y, IsOpen N ∧ y0 ∈ N ∧ ∃ n : Nat, ∀ τ : UI R, ∃ U, EvenlyCovered p.toFun U ∧
@@ -571,7 +543,6 @@ theorem exists_small (p : CoveringMap E X) {Y : Type} [tY : TopologicalSpace Y]
   refine ⟨(c (f k)).1, (hc (f k)).1, fun y hy t ht => ?_⟩
   exact (hc (f k)).2.2.2.2.2 y (Set.interFin_mem m _ y hy k) t (hk t.1 (lt_of_le_of_lt ht hn))
 
-/-- 問題17: **道の持ち上げの一意性**: 同じ道の 2 つの持ち上げは、始点が一致すれば一致する。 -/
 theorem lift_unique (p : CoveringMap E X) {f g : UI R → E} (hf : Continuous f) (hg : Continuous g)
     (hfg : ∀ t, p.toFun (f t) = p.toFun (g t)) (h0 : f ui0 = g ui0) : f = g := by
   have hA : IsOpen ({t | f t = g t} : Set (UI R)) := by
@@ -614,14 +585,12 @@ theorem lift_unique (p : CoveringMap E X) {f g : UI R → E} (hf : Continuous f)
   funext t
   exact (memA t).mpr (hall t.1 t.2)
 
-/-- 1 点の空間の位相（開集合はすべて）。 -/
 instance instTopUnit : TopologicalSpace Unit where
   IsOpen _ := True
   isOpen_univ := trivial
   isOpen_inter _ _ _ _ := trivial
   isOpen_sUnion _ _ := trivial
 
-/-- 問題18: **道の持ち上げの存在**: 始点の持ち上げを決めれば、道は持ち上がる。 -/
 theorem exists_lift_path (p : CoveringMap E X) (γ : UI R → X) (hγ : Continuous γ) (e0 : E)
     (he : p.toFun e0 = γ ui0) :
     ∃ γ' : UI R → E, Continuous γ' ∧ (∀ t, p.toFun (γ' t) = γ t) ∧ γ' ui0 = e0 := by
@@ -634,7 +603,6 @@ theorem exists_lift_path (p : CoveringMap E X) (γ : UI R → X) (hγ : Continuo
   exact hGc.comp (continuous_subtype_mk
     (continuous_prod_mk (continuous_const_map ()) continuous_id) (fun _ => hy'))
 
-/-- 問題19: **ホモトピーの持ち上げ**: `F : Y × [0,1] → X` と `F(·, 0)` の連続な持ち上げから、`F` 全体の連続な持ち上げが得られる。 -/
 theorem exists_lift_homotopy (p : CoveringMap E X) {Y : Type} [tY : TopologicalSpace Y]
     (F : Y × UI R → X) (hF : Continuous F) (F0 : Y → E) (hF0 : Continuous F0)
     (h0 : ∀ y, p.toFun (F0 y) = F (y, ui0)) :
