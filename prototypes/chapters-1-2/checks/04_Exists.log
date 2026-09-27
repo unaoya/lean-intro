@@ -1,0 +1,2 @@
+Nat.two_mul (n : Nat) : 2 * n = n + n
+Nat.mul_add (n m k : Nat) : n * (m + k) = n * m + n * k

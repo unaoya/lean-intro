@@ -1,0 +1,239 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "id": "opening",
+      "label": "証明を構成子で作り、match で使う",
+      "at": {
+        "tag": "pre",
+        "starts": "import «02_Forall»\nimport «03_InductiveTypes»"
+      }
+    },
+    {
+      "id": "exists",
+      "label": "存在の証明は証人と根拠をまとめる",
+      "at": {
+        "tag": "h2",
+        "starts": "1. 存在の証明と全射の合成"
+      }
+    },
+    {
+      "id": "even-definition",
+      "label": "全称量化の内側で存在を示す",
+      "at": {
+        "tag": "h3",
+        "starts": "任意の自然数の二倍は偶数"
+      }
+    },
+    {
+      "id": "even-double",
+      "label": "証人を決めてから根拠の型を読む",
+      "at": {
+        "tag": "h3",
+        "starts": "n + n の場合に必要な等式"
+      }
+    },
+    {
+      "id": "surjective-math",
+      "label": "全射の合成：数学の証明",
+      "at": {
+        "tag": "h3",
+        "starts": "全射どうしの合成は全射"
+      }
+    },
+    {
+      "id": "surjective-assumptions",
+      "label": "仮定と結論を型で書く",
+      "at": {
+        "tag": "h3",
+        "starts": "全射性という保証に名前を付ける"
+      }
+    },
+    {
+      "id": "exists-match",
+      "label": "存在の証明を使うときは match",
+      "at": {
+        "tag": "h3",
+        "starts": "存在の証明から、証人と根拠を使う"
+      }
+    },
+    {
+      "id": "surjective-term",
+      "label": "全射の合成：証明の項",
+      "at": {
+        "tag": "h3",
+        "starts": "二つの存在を使って、結論の存在を作る"
+      }
+    },
+    {
+      "id": "surjective-checking",
+      "label": "全射の合成：本体の型検査",
+      "at": {
+        "tag": "h3",
+        "starts": "最後の構成子に何を渡したか"
+      }
+    },
+    {
+      "id": "forall-exists-summary",
+      "label": "全称・存在を、示すときと使うときで整理",
+      "at": {
+        "tag": "h3",
+        "starts": "全称量化と存在量化の二つの向き"
+      }
+    },
+    {
+      "id": "right-inverse-exercise",
+      "label": "練習：右逆があれば全射",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "$f:A\\to B$ が右逆 $g:B\\to A$ を持つ、すなわち hfg : ∀ b : B, f (g b) = b があるとする。"
+      }
+    },
+    {
+      "id": "and",
+      "label": "かつ：二つの証明をまとめる",
+      "at": {
+        "tag": "h2",
+        "starts": "2. かつ — 全単射の合成"
+      }
+    },
+    {
+      "id": "bijective-math",
+      "label": "全単射の合成：既にある証明を組み合わせる",
+      "at": {
+        "tag": "h3",
+        "starts": "全単射どうしの合成は全単射"
+      }
+    },
+    {
+      "id": "bijective-term",
+      "label": "かつを使って、かつを作る",
+      "at": {
+        "tag": "h3",
+        "starts": "全単射の合成の証明項"
+      }
+    },
+    {
+      "id": "or",
+      "label": "または：どちらかの証明から作る",
+      "at": {
+        "tag": "h2",
+        "starts": "3. または — 二つの場合を扱う"
+      }
+    },
+    {
+      "id": "or-term",
+      "label": "場合ごとに結論の構成子を選ぶ",
+      "at": {
+        "tag": "h3",
+        "starts": "またはの証明を match で使う"
+      }
+    },
+    {
+      "id": "false",
+      "label": "False と否定",
+      "at": {
+        "tag": "h2",
+        "starts": "4. 否定 — 等しいと仮定して矛盾を作る"
+      }
+    },
+    {
+      "id": "injective-ne",
+      "label": "単射は異なる対象を異なる対象へ送る",
+      "at": {
+        "tag": "h3",
+        "starts": "単射性と否定を組み合わせる"
+      }
+    },
+    {
+      "id": "constructors-ne",
+      "label": "異なる構成子が等しくないことを使う",
+      "at": {
+        "tag": "h3",
+        "starts": "帰納型の異なる構成子"
+      }
+    },
+    {
+      "id": "even-add-math",
+      "label": "偶数の和：二つの存在を使う",
+      "at": {
+        "tag": "h2",
+        "starts": "5. 偶数と偶数の和は偶数"
+      }
+    },
+    {
+      "id": "even-add-equalities",
+      "label": "必要な等式を三つにつなぐ",
+      "at": {
+        "tag": "h3",
+        "starts": "算術の部分に必要な型をそろえる"
+      }
+    },
+    {
+      "id": "even-add-helper",
+      "label": "等式の証明を一つの関数にする",
+      "at": {
+        "tag": "h3",
+        "starts": "証明の途中の項にも名前を付ける"
+      }
+    },
+    {
+      "id": "even-add-term",
+      "label": "証人と等式の証明を構成子へ渡す",
+      "at": {
+        "tag": "h3",
+        "starts": "偶数の和の証明を完成させる"
+      }
+    },
+    {
+      "id": "summary",
+      "label": "示すときと使うとき",
+      "at": {
+        "tag": "h2",
+        "starts": "6. 証明を作る・証明を使う"
+      }
+    },
+    {
+      "id": "practice-three-surjective",
+      "label": "練習：三つの全射の合成",
+      "at": {
+        "tag": "h2",
+        "starts": "7. ✏ 練習 — 章末問題"
+      }
+    },
+    {
+      "id": "practice-exists-and",
+      "label": "練習：存在と「かつ」を使う",
+      "at": {
+        "tag": "ol",
+        "starts": "f : A → B、g : A → C と b : B、c : C に対して、"
+      }
+    },
+    {
+      "id": "practice-or",
+      "label": "練習：単射性を場合ごとに使う",
+      "at": {
+        "tag": "ol",
+        "starts": "$f:A\\to B$ を単射とする。f x = f a ∨ f x = f b から x = a ∨ x = b を示せ。"
+      }
+    },
+    {
+      "id": "practice-not",
+      "label": "練習：像が違えばもとも違う",
+      "at": {
+        "tag": "ol",
+        "starts": "任意の写像 $f:A\\to B$ について、f x ≠ f y ならば x ≠ y であることを示せ。"
+      }
+    },
+    {
+      "id": "practice-even",
+      "label": "練習：偶数に2を加える",
+      "at": {
+        "tag": "ol",
+        "starts": "任意の自然数 n について、IsEven n → IsEven (n + 2) を証明せよ。"
+      }
+    }
+  ],
+  "splits": []
+}

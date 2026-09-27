@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>型と項 II — 帰納型 · 改稿試作</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #fcfcfa;
+  --ink: #252c33;
+  --muted: #646e76;
+  --line: #dce1e2;
+  --accent: #235965;
+  --code: #f0f2f1;
+  --output: #edf3f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font-family: "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button {
+  color: inherit; border: 1px solid var(--line); border-radius: 5px;
+  background: transparent; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #edf0ee; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 3px solid #49858e; outline-offset: 4px;
+}
+button:disabled { cursor: default; opacity: .4; }
+button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+.toolbar, .navigation {
+  display: none;
+  align-items: center; justify-content: space-between;
+  font-size: 14px; line-height: 1.5; background: var(--paper); z-index: 2;
+}
+.toolbar { border-bottom: 1px solid var(--line); padding: 14px 30px; gap: 20px; }
+.identity { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.identity > span:first-child { font-weight: 600; }
+.identity a { font-weight: 600; text-decoration: none; color: inherit; }
+#chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
+.chapter { color: var(--muted); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 13px; }
+.tools button { border-color: transparent; padding-inline: 8px; }
+.optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+.optional-control[hidden] { display: none; }
+input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
+.slide, .print-content {
+  font-size: clamp(22px, 2.1vw, 27px); line-height: 1.8;
+  overflow-wrap: anywhere; margin-bottom: 60px;
+}
+.slide h1 { font-size: 1.5em; line-height: 1.5; font-weight: 650; margin: 0 0 36px; }
+.slide h2 { font-size: 1.28em; line-height: 1.5; font-weight: 650; margin: 0 0 28px; }
+.slide h3 { font-size: 1.08em; line-height: 1.65; font-weight: 600; margin: 0 0 24px; }
+.slide p { margin: 0 0 1em; }
+.slide strong { font-weight: 650; }
+.slide a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.slide ul, .slide ol { margin: 0 0 1em; padding-left: 1.6em; }
+.slide li { padding-left: .15em; margin-bottom: .8em; }
+.slide .list-fragment, .print-slide .print-content .list-fragment { margin-bottom: 0; }
+.slide code {
+  font-family: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
+  font-size: .87em; background: var(--code); border-radius: 3px; padding: .08em .12em;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.slide pre {
+  margin: 0 0 22px; padding: 18px 24px; line-height: 1.55;
+  border-left: 3px solid #c5cecd; background: var(--code);
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.1em;
+}
+.slide pre code { padding: 0; font-size: .92em; background: transparent; }
+.slide pre.quote { background: var(--output); border-color: #80a5b0; }
+.slide[data-layout="compact"] p, .print-slide[data-layout="compact"] .print-content p { margin-bottom: 18px; }
+.slide[data-layout="compact"] pre, .print-slide[data-layout="compact"] .print-content pre {
+  margin-bottom: 12px; padding-block: 10px;
+}
+.slide p.answer-heading, .print-slide .print-content p.answer-heading {
+  color: var(--accent); font-size: .8em; line-height: 1.4; margin: 0 0 12px;
+}
+.slide[data-editorial] p, .print-slide[data-editorial] .print-content p { margin-bottom: 14px; line-height: 1.7; }
+.slide[data-editorial] pre, .print-slide[data-editorial] .print-content pre {
+  padding-block: 8px; margin-bottom: 8px;
+}
+.slide[data-editorial] li, .print-slide[data-editorial] .print-content li { margin-bottom: 10px; line-height: 1.7; }
+.slide[data-editorial] h1, .print-slide[data-editorial] .print-content h1 { margin-bottom: 24px; }
+.slide[data-editorial] h2, .print-slide[data-editorial] .print-content h2 { margin-bottom: 20px; }
+.slide[data-editorial] h3, .print-slide[data-editorial] .print-content h3 { margin-bottom: 16px; }
+.slide[data-editorial] p.answer-heading, .print-slide[data-editorial] .print-content p.answer-heading {
+  margin-bottom: 8px; line-height: 1.4;
+}
+.kw { color: #793683; font-weight: 600; }
+.sort { color: #075c8b; }
+.doc { color: #34794f; }
+.cm { color: #68736e; }
+.sorry { color: #a33938; }
+.slide[data-kind="optional"], .slide[data-kind="preview"] {
+  border-left: 3px solid #b3ada0; padding-left: 28px;
+}
+.solution { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: .83em; }
+.solution summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.solution[open] summary { margin-bottom: 18px; }
+.solution pre { margin-top: 18px; }
+.slide details.sol { border-top: 1px solid var(--line); padding: 10px 0; margin-top: 14px; font-size: .8em; }
+.slide details.sol summary { color: var(--accent); cursor: pointer; }
+.slide details.sol[open] summary { margin-bottom: 18px; }
+.slide table { border-collapse: collapse; font-size: .8em; width: 100%; table-layout: fixed; margin-bottom: 20px; }
+.slide th, .slide td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+.slide th { background: var(--code); }
+.enhanced body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+.enhanced .toolbar, .enhanced .navigation { display: flex; }
+.enhanced .viewport { overflow: auto; min-height: 0; scrollbar-gutter: stable; }
+.enhanced .slide { margin-bottom: 0; }
+.enhanced:not(.reading) main {
+  min-height: 100%; display: flex; flex-direction: column; justify-content: safe center;
+  padding-block: 24px;
+}
+.enhanced:not(.reading) .slide { flex: none; display: flow-root; }
+.slide-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; align-items: center; }
+.slide-column { display: flow-root; min-width: 0; }
+.slide .slide-column pre, .print-content .slide-column pre { font-size: 1em; line-height: 1.4; }
+.slide > :last-child, .slide-column > :last-child, .print-body > :last-child { margin-bottom: 0; }
+/* Keep the authored content and type size. Denser pages use less leading and
+   spacing, while short pages keep the normal spacing and center vertically. */
+.slide[data-density] p, .print-slide[data-density] .print-content p {
+  line-height: 1.55; margin-bottom: 10px;
+}
+.slide[data-density] pre, .print-slide[data-density] .print-content pre {
+  line-height: 1.32; padding-block: 6px; margin-bottom: 6px;
+}
+.slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
+.slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
+.slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
+.slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
+.slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
+.slide[data-density="dense"] :is(ul, ol), .print-slide[data-density="dense"] .print-content :is(ul, ol) { margin-bottom: 6px; }
+.enhanced .slide[hidden] { display: none; }
+.enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
+.enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
+  visibility: hidden;
+}
+.navigation { position: relative; padding: 13px 30px 17px; border-top: 1px solid var(--line); gap: 20px; }
+.position { display: flex; gap: 18px; align-items: baseline; font-variant-numeric: tabular-nums; }
+#counter { font-weight: 600; min-width: 58px; }
+#step-count { color: var(--muted); font-size: 12px; min-width: 56px; }
+.hint { font-size: 12px; color: var(--muted); }
+.navigation-buttons { display: flex; gap: 12px; }
+#next { background: var(--accent); color: white; border-color: var(--accent); min-width: 134px; }
+#next:hover { background: #1e4c56; }
+.progress { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; background: #e6e9e7; }
+#progress-fill { height: 100%; background: var(--accent); }
+dialog { width: min(620px, calc(100% - 36px)); max-height: 82dvh; border: 1px solid var(--line); border-radius: 8px; padding: 25px 30px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: rgb(24 35 39 / .35); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { font-size: 23px; margin: 0; }
+.dialog-caption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+#toc-list { padding: 0; list-style: none; }
+#toc-list button { border: 0; width: 100%; text-align: left; padding: 10px 12px; white-space: normal; font-size: 15px; }
+#toc-list button[aria-current="page"] { background: #e7eeed; color: var(--accent); font-weight: 600; }
+#toc-list .toc-number { display: inline-block; width: 32px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.reading .slide { display: block; border-bottom: 1px solid var(--line); padding-bottom: 45px; margin-bottom: 45px; }
+.reading .step[data-unrevealed] { visibility: visible; pointer-events: auto; }
+.reading .slide[hidden] { display: none; }
+.reading .hint { display: none; }
+@media (max-width: 860px) {
+  .slide-columns { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .toolbar { padding: 12px 20px; flex-wrap: wrap; gap: 9px; }
+  .identity { gap: 12px; }
+  .tools { gap: 8px; }
+  main { padding: 30px 30px 40px; }
+  .slide { font-size: 23px; line-height: 1.8; }
+  .navigation { padding-inline: 20px; gap: 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 520px) {
+  .toolbar { padding: 9px 16px; gap: 6px; font-size: 12px; }
+  .identity { width: 100%; justify-content: space-between; }
+  .chapter { font-size: 11px; }
+  .tools { width: 100%; justify-content: space-between; gap: 2px; }
+  .tools button { min-height: 40px; padding: 7px; }
+  .optional-control { min-height: 40px; gap: 2px; }
+  main { padding: 26px 22px 32px; }
+  .slide { font-size: 20px; line-height: 1.85; }
+  .slide h1 { font-size: 1.35em; }
+  .slide pre { padding: 14px 16px; }
+  .navigation { padding: 10px 16px 14px; font-size: 12px; }
+  .position { flex-direction: column; gap: 0; }
+  .navigation-buttons { gap: 7px; }
+  .navigation-buttons button { min-height: 44px; padding: 8px 10px; }
+  #next { min-width: 120px; }
+  .slide[data-kind="optional"], .slide[data-kind="preview"] { padding-left: 16px; }
+}
+@media print {
+  .enhanced:not(.reading) main { display: block; min-height: 0; }
+  .enhanced body { display: block; height: auto; overflow: visible; }
+  .enhanced .toolbar, .enhanced .navigation, dialog, .sr-only { display: none; }
+  .enhanced .viewport { overflow: visible; }
+  main { width: 100%; padding: 0; }
+  .enhanced .slide { display: block !important; break-after: page; font-size: 16pt; margin-bottom: 0; }
+  .enhanced .step[data-unrevealed] { visibility: visible; }
+  .enhanced:not(.include-optional) .slide[data-kind="optional"],
+  .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
+}
+
+/* 推論規則（前提 / 横線 / 結論）。通読版の .rule と同じ組み方 */
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85em; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--ink); padding: .15em .5em 0; }
+</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean · 改稿試作</a><select id="chapter-select" aria-label="章"><option value="index.html">はじめに</option><option value="01_typesandterms.html">第1章</option><option value="02_forall.html">第2章</option><option value="03_inductivetypes.html" selected>第3章</option><option value="04_exists.html">第4章</option></select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control" hidden><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      <article class="slide" id="03_inductivetypes-opening" data-kind="main" data-label="構成子で作り、場合分けで使う" data-section="03_InductiveTypes.intro" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">import</span> «02_Forall»</span></code></pre>
+<div class="step" data-step="0"><h1>型と項 II — 帰納型</h1></div>
+<p><span class="step" data-step="0">第1・2章では、<code>fun</code> で関数を作り、適用でその関数を使った。この章では、<strong>構成子で項を作り、<code>match</code> でその項を使う</strong>という道具を加える。有限集合、直和、直積、集合族の直和を、同じ仕組みで表していこう。</span></p>
+<p><span class="step" data-step="1">自然数のように再帰的に作られる型も扱う。最後に、第2章で使った等式と自然数の不等式を帰納型として読み、証明の項をどのように作り、使うのかを確かめる。</span></p></article>
+<article class="slide" id="03_inductivetypes-signal" data-kind="main" data-label="列挙型：作り方を並べる" data-section="Trial3.constructors" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.constructors">1. 構成子と場合分け</h2></div>
+<p><span class="step" data-step="0"><code>inductive</code> は、新しい型と、その型の項を作る<strong>構成子</strong>を一緒に導入する。まず、三つの色を表す型を定義しよう。構成子の名前は <code>型名.構成子名</code> になる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> Signal : <span class="sort">Type</span> <span class="kw">where</span>
+  | red : Signal
+  | yellow : Signal
+  | green : Signal
+
+<span class="kw">#check</span> Signal.red</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Signal.red : Signal</span></code></pre>
+<p><span class="step" data-step="3">集合の言葉では、三点集合を作ったと思えばよい。三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。後者の証明は否定を扱う第4章で見る。</span></p></article>
+<article class="slide" id="03_inductivetypes-match" data-kind="main" data-label="match 全体も一つの項" data-section="Trial3.constructors" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>match で項を使う</h3></div>
+<p><span class="step" data-step="0"><code>match 対象 with</code> の後に、構成子ごとに <code>| 構成子 =&gt; 返す項</code> を並べる。 <strong><code>match … with …</code> 全体が一つの項</strong>であり、対象に対応する枝の項が結果になる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> <span class="kw">match</span> Signal.red <span class="kw">with</span>
+  | Signal.red =&gt; 0
+  | Signal.yellow =&gt; 1
+  | Signal.green =&gt; 2</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">0</span></code></pre>
+<p><span class="step" data-step="3">ここでは、どの枝でも <code>Nat</code> の項を返しているので、全体の型は <code>Nat</code> である。 <code>match</code>、<code>with</code>、<code>|</code>、<code>=&gt;</code> は、この項を組み立てるための特別な記号である。</span></p></article>
+<article class="slide" id="03_inductivetypes-next" data-kind="main" data-label="fun と match を組み合わせる" data-section="Trial3.constructors" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>関数の本体で場合分けする</h3></div>
+<p><span class="step" data-step="0">関数記法 <code>fun</code> と <code>match</code> を組み合わせ、次の信号を返す関数を書こう。対象 <code>s : Signal</code> を受け取り、その構成子によって返す色を決める。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Signal.next : Signal → Signal := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | Signal.red =&gt; Signal.green
+  | Signal.yellow =&gt; Signal.red
+  | Signal.green =&gt; Signal.yellow
+
+<span class="kw">#eval</span> Signal.next Signal.red</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Signal.green</span></code></pre>
+<p><span class="step" data-step="3"><code>fun</code> が入力を受け取り、その本体の <code>match</code> が値を選ぶ。有限集合からの写像を、各点の行き先を指定して定義するのと同じ形である。</span></p></article>
+<article class="slide" id="03_inductivetypes-signal-exercise" data-kind="main" data-label="練習：場合分けで関数を作る" data-section="Trial3.constructors" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="40" data-exercise="40"><li><span class="step" data-step="0"><code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> をそれぞれ <code>0</code>、<code>1</code>、<code>2</code> に送る <code>signalCode : Signal → Nat</code> を定義せよ。各枝の型を確かめ、<code>signalCode Signal.yellow</code> の値を予想せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 40</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> signalCode : Signal → Nat := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | Signal.red =&gt; 0
+  | Signal.yellow =&gt; 1
+  | Signal.green =&gt; 2</span></code></pre>
+<p><span class="step" data-step="2">各枝で <code>Nat</code> の項を返す。黄色の場合の値は <code>1</code> である。</span></p></article>
+<article class="slide" id="03_inductivetypes-unit-empty" data-kind="main" data-label="構成子が一つの場合と、ない場合" data-section="Trial3.constructors" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>一点の型と空の型</h3></div>
+<p><span class="step" data-step="0">標準の <code>Bool</code> も、構成子 <code>Bool.false</code> と <code>Bool.true</code> を持つ帰納型である。構成子が一つで引数を取らない場合は、一点集合に対応する <code>Unit</code> になる。構成子を一つも持たない場合は、空集合に対応する <code>Empty</code> になる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">inductive Unit : Type where
+  | unit : Unit
+
+inductive Empty : Type</span></code></pre>
+<p><span class="step" data-step="2">空の型にも使い方はある。項を受け取ったとして、場合分けすべき構成子が一つもなければよい。その場合分けを <code>nomatch</code> と書く。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> emptyToNat (e : Empty) : Nat := nomatch e</span></code></pre>
+<p><span class="step" data-step="4">これは <code>Empty</code> の項を作ったのではなく、<code>Empty → Nat</code> という関数を作ったのである。</span></p></article>
+<article class="slide" id="03_inductivetypes-sum" data-kind="main" data-label="引数を持つ構成子と直和" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.sums-products">2. 直和と直積</h2></div>
+<p><span class="step" data-step="0">構成子も関数なので、引数を受け取れる。次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> NatOrBool : <span class="sort">Type</span> <span class="kw">where</span>
+  | nat (n : Nat) : NatOrBool
+  | bool (b : Bool) : NatOrBool
+
+<span class="kw">#check</span> NatOrBool.nat</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">NatOrBool.nat (n : Nat) : NatOrBool</span></code></pre>
+<p><span class="step" data-step="3">構成子 <code>NatOrBool.nat</code> は <code>Nat → NatOrBool</code> という関数である。集合の言葉では、この型は自然数と真偽値の<strong>直和（非交和）</strong>に対応する。</span></p></article>
+<article class="slide" id="03_inductivetypes-sum-match" data-kind="main" data-label="構成子の引数に名前を付けて使う" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>中身を受け取る場合分け</h3></div>
+<p><span class="step" data-step="0"><code>match</code> の枝で <code>NatOrBool.nat n</code> と書くと、その構成子に渡された自然数に <code>n</code> と名前を付けられる。返す項では、その名前を使ってよい。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> valueOf : NatOrBool → Nat := <span class="kw">fun</span> x =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | NatOrBool.nat n =&gt; n
+  | NatOrBool.bool _ =&gt; 0
+
+<span class="kw">#eval</span> valueOf (NatOrBool.nat 7)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">7</span></code></pre>
+<p><span class="step" data-step="3"><code>_</code> は、その引数の中身を使わないことを表す。直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。</span></p></article>
+<article class="slide" id="03_inductivetypes-constructor-injective" data-kind="main" data-label="構成子の単射性も証明できる" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>構成子が違う場合と、同じ場合</h3></div>
+<p><span class="step" data-step="0"><code>NatOrBool.nat n</code> と <code>NatOrBool.bool b</code> が等しくないことも、 <code>NatOrBool.nat n = NatOrBool.nat m</code> から <code>n = m</code> が言えることも、Leanで証明できる。後者を表す補題は、帰納型の宣言に伴って生成される。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> NatOrBool.nat.inj</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝</span></code></pre>
+<p><span class="step" data-step="3">第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。</span></p></article>
+<article class="slide" id="03_inductivetypes-sum-parameters" data-kind="main" data-label="型を受け取って型を作る" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>中身の型をパラメータにする</h3></div>
+<p><span class="step" data-step="0">自然数と真偽値に限定せず、任意の型 <code>A</code> と <code>B</code> の直和を同じように作れる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> MySum (A B : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+  | inl (a : A) : MySum A B
+  | inr (b : B) : MySum A B
+
+<span class="kw">#check</span> MySum.inl</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">MySum.inl {A B : Type} (a : A) : MySum A B</span></code></pre>
+<p><span class="step" data-step="3">型を作る <code>MySum</code> には <code>MySum Nat Bool</code> と二つの型を渡す。構成子の型引数は暗黙引数になっている。例えば <code>(MySum.inl 3 : MySum Nat Bool)</code> では、結果の型注釈から <code>A := Nat</code>、<code>B := Bool</code> が決まる。標準の直和型 <code>A ⊕ B</code> と、その構成子 <code>Sum.inl</code>・<code>Sum.inr</code> も同じ形で使う。</span></p></article>
+<article class="slide" id="03_inductivetypes-product" data-kind="main" data-label="一つの構成子に二つの引数を渡す" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>組も帰納型で作る</h3></div>
+<p><span class="step" data-step="0">今度は、<code>A</code> の項と <code>B</code> の項を<strong>両方</strong>持つ組を作りたい。構成子を一つにし、その構成子に二つの引数を渡す。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> MyPair (A B : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+  | mk (a : A) (b : B) : MyPair A B
+
+<span class="kw">#check</span> (MyPair.mk 3 true : MyPair Nat Bool)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">MyPair.mk 3 true : MyPair Nat Bool</span></code></pre>
+<p><span class="step" data-step="3">直和ではどちらかの構成子を選んだ。直積では、一つの構成子に両方の材料を渡す。型が同じ引数を二つ取る場合も、異なる型の引数を取る場合も、この書き方で扱える。</span></p></article>
+<article class="slide" id="03_inductivetypes-product-match" data-kind="main" data-label="組の成分を取り出す関数" data-section="Trial3.sums-products" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>組を使うときも match</h3></div>
+<p><span class="step" data-step="0">構成子が一つなら、場合分けは一つの枝で済む。第1成分を返す関数を書いてみよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pairFirst {A B : <span class="sort">Type</span>} : MyPair A B → A := <span class="kw">fun</span> p =&gt;
+  <span class="kw">match</span> p <span class="kw">with</span>
+  | MyPair.mk a _ =&gt; a
+
+<span class="kw">#eval</span> pairFirst (MyPair.mk 3 true)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">3</span></code></pre>
+<p><span class="step" data-step="3">標準の直積 <code>A × B</code> も <code>Prod.mk a b</code> で作り、<code>match</code> の <code>Prod.mk a b</code> の枝で使える。例えば次は、二つの成分を交換する関数である。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> swapPair {A B : <span class="sort">Type</span>} : A × B → B × A := <span class="kw">fun</span> p =&gt;
+  <span class="kw">match</span> p <span class="kw">with</span>
+  | Prod.mk a b =&gt; Prod.mk b a</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-dependent-pair" data-kind="main" data-label="集合族の直和を組で表す" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.dependent-pairs">3. 依存する組</h2></div>
+<p><span class="step" data-step="0">集合族 $(B(a))_{a\in A}$ の直和 $\bigsqcup_{a\in A} B(a)$ の要素は、添字 $a$ を一つ選び、さらにその集合の要素 $b\in B(a)$ を一つ選んだ組 $(a,b)$ である。第二成分を選ぶ集合は、第一成分の値によって決まる。</span></p>
+<p><span class="step" data-step="1">第1章で使った <code>Fin n</code> を例にしよう。「自然数 <code>n</code> と、<code>n</code> 未満の番号を一つ選んだ組」を次のように定義できる。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">inductive</span> Numbered : <span class="sort">Type</span> <span class="kw">where</span>
+  | mk (n : Nat) (i : Fin n) : Numbered
+
+<span class="kw">#check</span> Numbered.mk</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">Numbered.mk (n : Nat) (i : Fin n) : Numbered</span></code></pre>
+<p><span class="step" data-step="4">構成子は、<code>n</code> を受け取ってから <strong><code>Fin n</code> 型の</strong>項を受け取る依存関数である。</span></p></article>
+<article class="slide" id="03_inductivetypes-numbered-values" data-kind="main" data-label="第一成分で第二成分の型が決まる" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>依存する組を作る</h3></div>
+<p><span class="step" data-step="0"><code>n := 3</code> を選ぶなら、次に渡す項は <code>Fin 3</code> 型でなければならない。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> numberedThree : Numbered := Numbered.mk 3 (2 : Fin 3)
+<span class="kw">def</span> numberedFive : Numbered := Numbered.mk 5 (4 : Fin 5)
+
+<span class="kw">#check</span> Numbered.mk 3</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Numbered.mk 3 : Fin 3 → Numbered</span></code></pre>
+<p><span class="step" data-step="3">二つの組はどちらも <code>Numbered</code> 型だが、中に持つ番号の型は違う。 <code>Fin 0</code> は空なので、第一成分を <code>0</code> にした組は作れない。ここでは <code>Fin n</code> の内部の定義には立ち入らず、第1章で使った型の族として扱う。</span></p></article>
+<article class="slide" id="03_inductivetypes-numbered-size" data-kind="main" data-label="依存する組から第一成分を取る" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>第一成分を取り出す</h3></div>
+<p><span class="step" data-step="0"><code>Numbered</code> の構成子は一つなので、使うときも一つの枝でよい。まず、大きさを取り出す関数を書く。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Numbered.size : Numbered → Nat := <span class="kw">fun</span> p =&gt;
+  <span class="kw">match</span> p <span class="kw">with</span>
+  | Numbered.mk n _ =&gt; n
+
+<span class="kw">#eval</span> Numbered.size numberedThree</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">3</span></code></pre>
+<p><span class="step" data-step="3">この関数の行き先は固定した <code>Nat</code> である。枝に入ると <code>n : Nat</code> と <code>i : Fin n</code> が使えるが、ここでは <code>n</code> だけを返している。</span></p></article>
+<article class="slide" id="03_inductivetypes-numbered-index" data-kind="main" data-label="第二成分の取り出しは依存関数" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>第二成分の型も入力から決まる</h3></div>
+<p><span class="step" data-step="0">番号を取り出す関数の行き先は、入力された組の大きさで変わる。したがって、その型にも入力 <code>p</code> が現れる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Numbered.index (p : Numbered) : Fin (Numbered.size p) :=
+  <span class="kw">match</span> p <span class="kw">with</span>
+  | Numbered.mk _ i =&gt; i
+
+<span class="kw">#check</span> Numbered.index numberedThree</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">numberedThree.index : Fin numberedThree.size</span></code></pre>
+<p><span class="step" data-step="3"><code>Numbered.mk n i</code> の枝では <code>Numbered.size p</code> が <code>n</code> に計算される。要求される型は <code>Fin n</code> になり、手元の <code>i : Fin n</code> をそのまま返せる。</span></p></article>
+<article class="slide" id="03_inductivetypes-sigma" data-kind="main" data-label="一般の族でも同じ組を作る" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>一般の依存和</h3></div>
+<p><span class="step" data-step="0">任意の型の族 <code>B : A → Type</code> に対しても、同じ構成子を書ける。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> FamilyPair (A : <span class="sort">Type</span>) (B : A → <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+  | mk (a : A) (b : B a) : FamilyPair A B</span></code></pre>
+<p><span class="step" data-step="2">標準の型では、これに対応する依存和を <code>Sigma B</code>、または <code>(a : A) × B a</code> と書き、 <code>Sigma.mk a b</code> で項を作る。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> numberedSigma : (n : Nat) × Fin n := Sigma.mk 3 (2 : Fin 3)
+
+<span class="kw">#check</span> numberedSigma</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">numberedSigma : (n : Nat) × Fin n</span></code></pre>
+<p><span class="step" data-step="5">族が定数なら、第二成分の型は第一成分によらない。普通の直積もこの形の特別な場合である。</span></p></article>
+<article class="slide" id="03_inductivetypes-families-summary" data-kind="main" data-label="依存関数と依存する組を対にする" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>すべての添字で選ぶか、一つの添字を選ぶか</h3></div>
+<p><span class="step" data-step="0">同じ族 <code>B : A → Type</code> に対して、二通りの項の作り方がある。</span></p>
+<table><thead class="step" data-step="1"><tr><th>型</th><th>項を作る</th><th>項を使う</th></tr></thead><tbody><tr class="step" data-step="1"><td>依存関数 <code>(a : A) → B a</code></td><td><code>fun a =&gt; …</code> で、どの <code>a</code> にも答えを用意する</td><td><code>f a</code> と対象を渡す</td></tr><tr class="step" data-step="1"><td>依存和 <code>(a : A) × B a</code></td><td><code>Sigma.mk a b</code> で、一つの <code>a</code> と <code>b : B a</code> をまとめる</td><td><code>match</code> で <code>a</code> と <code>b</code> に名前を付ける</td></tr></tbody></table>
+<p><span class="step" data-step="2">第4章では、型の族を命題の族に置き換えて、全称量化と存在量化の証明を読む。</span></p></article>
+<article class="slide" id="03_inductivetypes-numbered-exercise" data-kind="main" data-label="練習：依存する組を作って使う" data-section="Trial3.dependent-pairs" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="41" data-exercise="41"><li><span class="step" data-step="0"><code>n : Nat</code> から、大きさが <code>n + 1</code> で番号が最後の <code>n</code> である組を返す <code>attachLast : Nat → Numbered</code> を定義せよ。第1章の <code>lastIndex n : Fin (n + 1)</code> を使ってよい。 <code>Numbered.size (attachLast 3)</code> と <code>Numbered.index (attachLast 3)</code> の値も確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 41</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> attachLast : Nat → Numbered := <span class="kw">fun</span> n =&gt;
+  Numbered.mk (n + 1) (lastIndex n)</span></code></pre>
+<p><span class="step" data-step="2">大きさは <code>4</code>、番号は <code>Fin 4</code> の <code>3</code> である。構成子の第一引数に <code>n + 1</code> を渡すと、第二引数に必要な型が <code>Fin (n + 1)</code> と決まる。</span></p></article>
+<article class="slide" id="03_inductivetypes-natural" data-kind="main" data-label="再帰的な型を定義する" data-section="Trial3.recursion" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.recursion">4. 自然数と再帰</h2></div>
+<p><span class="step" data-step="0">構成子の引数に、いま定義している型自身を使える。自然数を、零と「一つ次の数を作る操作」で定義してみよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> MyNat : <span class="sort">Type</span> <span class="kw">where</span>
+  | zero : MyNat
+  | succ : MyNat → MyNat
+
+<span class="kw">#check</span> MyNat.succ (MyNat.succ MyNat.zero)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">MyNat.zero.succ.succ : MyNat</span></code></pre>
+<p><span class="step" data-step="3">表示の <code>MyNat.zero.succ.succ</code> は、<code>MyNat.succ (MyNat.succ MyNat.zero)</code> のことである。この型の項は、<code>zero</code> に <code>succ</code> を有限回重ねて作る。標準の <code>Nat</code> も同じ形で定義されている。</span></p></article>
+<article class="slide" id="03_inductivetypes-addition" data-kind="main" data-label="小さい項に対して再帰する" data-section="Trial3.recursion" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自分より小さい項を使う</h3></div>
+<p><span class="step" data-step="0">加法を、第二引数について場合分けして定義しよう。 <code>succ k</code> の場合は、中に入っていた小さい項 <code>k</code> への加法を使う。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> myAdd : MyNat → MyNat → MyNat := <span class="kw">fun</span> m n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | MyNat.zero =&gt; m
+  | MyNat.succ k =&gt; MyNat.succ (myAdd m k)</span></code></pre>
+<p><span class="step" data-step="2"><code>m + 0 = m</code>、<code>m + (k + 1) = (m + k) + 1</code> を項の作り方として書いている。再帰呼び出しが構造的に小さい項へ進むことをLeanが確かめる。</span></p>
+<pre class="lean"><code><span class="step" data-step="3">#reduce myAdd (MyNat.succ MyNat.zero) (MyNat.succ MyNat.zero)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">MyNat.zero.succ.succ</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-recursion-proof" data-kind="main" data-label="再帰で証明を書くと帰納法になる" data-section="Trial3.recursion" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>各自然数への証明を再帰で作る</h3></div>
+<p><span class="step" data-step="0">同じ再帰を使い、自然数ごとの等式の証明も作れる。標準の <code>Nat</code> で、<code>0 + n = n</code> を証明しよう。</span></p>
+<p><span class="step" data-step="1">零の場合は計算で一致する。<code>k + 1</code> の場合は、<code>0 + k = k</code> の両辺に一つ加えればよい。この「<code>k</code> の場合の証明」が、次のコードの再帰呼び出しである。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> zero_add_by_rec : ∀ n : Nat, 0 + n = n := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | Nat.zero =&gt; rfl
+  | Nat.succ k =&gt; congrArg Nat.succ (zero_add_by_rec k)</span></code></pre>
+<p><span class="step" data-step="3"><code>congrArg</code> が返す型は <code>Nat.succ (0 + k) = Nat.succ k</code>。これは <code>0 + Nat.succ k = Nat.succ k</code> と計算で一致する。 <strong>証明を返す依存関数を再帰で作ることが、数学的帰納法による証明になっている。</strong></span></p></article>
+<article class="slide" id="03_inductivetypes-indexed" data-kind="main" data-label="帰納型で型の族を定義する" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.indexed">5. 等式と自然数の不等式</h2></div>
+<p><span class="step" data-step="0">ここまでは、構成子が <code>Signal</code> や <code>MyNat</code> という一つの型の項を返していた。次は、構成子が<strong>型の族のどの型に項を作るか</strong>にも注目する。</span></p>
+<p><span class="step" data-step="1"><code>Eq a b</code> は、対象 <code>a</code> と <code>b</code> ごとに変わる命題である。 <code>Nat.le n m</code> も、自然数 <code>n</code> と <code>m</code> ごとに変わる命題である。第2章で見た「述語は型の族」という見方で、これらの族を帰納的に定義する。</span></p>
+<p><span class="step" data-step="2">依存する組では、第二引数の型に第一引数が現れた。ここではさらに、構成子の<strong>結果の型</strong>にも、引数として受け取った対象が現れる。</span></p></article>
+<article class="slide" id="03_inductivetypes-eq-definition" data-kind="main" data-label="Eq.refl は族の対角に項を作る" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Eq の構成子を読む</h3></div>
+<p><span class="step" data-step="0"><code>a = b</code> は <code>Eq a b</code> の記法である。型引数を明示すると、定義は次の形になる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">inductive Eq {A : Sort u} : A → A → Prop where
+  | refl (a : A) : Eq a a</span></code></pre>
+<p><span class="step" data-step="2"><code>Sort u</code> は <code>Prop</code> や <code>Type</code> などをまとめて扱う表記で、等式は特定の型に限定されない。唯一の構成子 <code>Eq.refl</code> が直接作るのは、両辺が同じ <code>Eq a a</code> の証明である。</span></p>
+<p><span class="step" data-step="3">第2章の「最小の反射的関係」という見方と結び付けると、構成子は対角に証明を作っている。ただしLeanで等式を使う際には、帰納型の除去の原理に従って項を組み立てる。 <code>rfl</code> と <code>Eq.refl</code> の関係は、第2章で説明したとおりである。</span></p></article>
+<article class="slide" id="03_inductivetypes-eq-symmetry" data-kind="main" data-label="等式を match で使う" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>対称性を自分で証明する</h3></div>
+<p><span class="step" data-step="0"><code>h : a = b</code> を受け取り、<code>b = a</code> の証明を返す関数を作ろう。等式の構成子は <code>Eq.refl</code> の一つなので、その場合を扱う。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> eqSymmByMatch {A : <span class="sort">Sort</span> u} {a b : A} (h : a = b) : b = a :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Eq.refl _ =&gt; Eq.refl a</span></code></pre>
+<p><span class="step" data-step="2">この枝では <code>b</code> が <code>a</code> に特殊化される。返すべき型 <code>b = a</code> も <code>a = a</code> となるので、<code>Eq.refl a</code> を返せる。パターンの <code>_</code> は、この構成子の引数が添字から決まるため、名前を付けずに書いている。</span></p>
+<p><span class="step" data-step="3">単なる構成子の名前の判別だけでなく、<strong>その構成子の結果の型に合わせて、枝の中の型も変わる</strong>。これが、等式の証明を使うときの要点である。</span></p></article>
+<article class="slide" id="03_inductivetypes-eq-transitivity" data-kind="main" data-label="等式をつなぐ関数も match で作る" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>推移性を証明する</h3></div>
+<p><span class="step" data-step="0">次は <code>a = b</code> と <code>b = c</code> の証明を受け取り、<code>a = c</code> の証明を返す。第二の等式について場合分けすればよい。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> eqTransByMatch {A : <span class="sort">Sort</span> u} {a b c : A}
+    (hab : a = b) (hbc : b = c) : a = c :=
+  <span class="kw">match</span> hbc <span class="kw">with</span>
+  | Eq.refl _ =&gt; hab</span></code></pre>
+<p><span class="step" data-step="2">この枝では <code>c</code> が <code>b</code> に特殊化され、結論の型が <code>a = b</code> になる。そこで、すでに持っている <code>hab</code> を返せる。これが第2章で使った <code>Eq.trans</code> に相当する証明である。</span></p></article>
+<article class="slide" id="03_inductivetypes-eq-congruence" data-kind="main" data-label="同じ関数を適用しても等しい" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>congrArg に相当する関数を作る</h3></div>
+<p><span class="step" data-step="0">等しい二つの対象を同じ関数で送ると、結果も等しい。この証明も、等式の構成子による場合分けで作れる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> congrArgByMatch {A : <span class="sort">Sort</span> u} {B : <span class="sort">Sort</span> v}
+    (f : A → B) {a b : A} (h : a = b) : f a = f b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Eq.refl _ =&gt; Eq.refl (f a)</span></code></pre>
+<p><span class="step" data-step="2">枝の中で要求される型は <code>f a = f a</code> になる。対称性・推移性・合同性を新しい仮定として加える必要はなく、等式の帰納型の仕組みから証明できた。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#print</span> axioms eqSymmByMatch</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">&#x27;eqSymmByMatch&#x27; does not depend on any axioms</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-nat-le" data-kind="main" data-label="自然数の順序を帰納的に定義する" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自然数の不等式 Nat.le</h3></div>
+<p><span class="step" data-step="0">自然数の <code>n ≤ m</code> は <code>Nat.le n m</code> の記法である。定義の中心は次の二つの構成子である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">inductive Nat.le (n : Nat) : Nat → Prop where
+  | refl : Nat.le n n
+  | step {m} : Nat.le n m → Nat.le n (Nat.succ m)</span></code></pre>
+<p><span class="step" data-step="2"><code>n</code> を固定すると、<code>Nat.le n</code> は右辺の自然数を添字に持つ命題の族になる。 <code>refl</code> は添字 <code>n</code> のところに証明を作り、<code>step</code> は添字 <code>m</code> の証明から添字 <code>m + 1</code> の証明を作る。</span></p>
+<p><span class="step" data-step="3"><code>Nat.succ m</code> は <code>m + 1</code> に当たる。自然数を <code>zero</code> と <code>succ</code> で作ったのと同じように、不等式の証明を <code>refl</code> と <code>step</code> で作る。</span></p></article>
+<article class="slide" id="03_inductivetypes-le-construct" data-kind="main" data-label="不等式の証明を構成子で組み立てる" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>2 ≤ 4 の証明を作る</h3></div>
+<p><span class="step" data-step="0">まず <code>2 ≤ 2</code> の証明を作り、<code>step</code> を二回使う。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> two_le_two : 2 ≤ 2 := Nat.le.refl
+<span class="kw">def</span> two_le_three : 2 ≤ 3 := Nat.le.step two_le_two
+<span class="kw">def</span> two_le_four : 2 ≤ 4 := Nat.le.step two_le_three</span></code></pre>
+<p><span class="step" data-step="2">このように、証明にも組み立て方がある。使える構成子を並べただけでなく、各適用の入力と結果の型が合っていることを確かめよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> Nat.le.step two_le_four</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">Nat.le.step two_le_four : Nat.le 2 (Nat.succ 4)</span></code></pre></article>
+<article class="slide" id="03_inductivetypes-le-use" data-kind="main" data-label="不等式の証明も再帰で使う" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>両辺に一つ加えても順序は保たれる</h3></div>
+<p><span class="step" data-step="0"><code>n ≤ m</code> の証明から <code>n + 1 ≤ m + 1</code> の証明を作る。 <code>refl</code> の場合は同じ数どうしになり、<code>step</code> の場合は一つ前の証明に戻って考えられる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> succLeSuccByMatch (n m : Nat) (h : n ≤ m) : n + 1 ≤ m + 1 :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Nat.le.refl =&gt; Nat.le.refl
+  | Nat.le.step h&#x27; =&gt; Nat.le.step (succLeSuccByMatch n _ h&#x27;)</span></code></pre>
+<p><span class="step" data-step="2"><code>step</code> の枝では、<code>h&#x27;</code> は <code>n ≤ k</code> の証明、もとの右辺は <code>k + 1</code> である。再帰呼び出しで <code>n + 1 ≤ k + 1</code> を得て、<code>step</code> で右辺をもう一つ増やす。不等式の証明の構造についての帰納法を、そのまま再帰で書いている。</span></p></article>
+<article class="slide" id="03_inductivetypes-le-exercise" data-kind="main" data-label="練習：不等式の証明の型を読む" data-section="Trial3.indexed" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="42" data-exercise="42"><li><span class="step" data-step="0"><code>1 ≤ 3</code> の証明を <code>Nat.le.refl</code> と <code>Nat.le.step</code> だけで作れ。次に、それを <code>succLeSuccByMatch</code> に渡して得られる証明の型を答えよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 42</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> one_le_three : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)
+
+<span class="kw">def</span> two_le_four_again : 2 ≤ 4 := succLeSuccByMatch 1 3 one_le_three</span></code></pre>
+<p><span class="step" data-step="2"><code>1 ≤ 1</code> から二段進む。両辺に一つ加えると、結果の型は <code>2 ≤ 4</code> である。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-prev" data-kind="main" data-label="練習：逆回りの信号" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial3.practice">6. ✏ 練習 — 章末問題</h2></div>
+<p><span class="step" data-step="0">構成子を使って項を作ることと、<code>match</code> で使うことを組み合わせよう。本体を書く前に、受け取る項と返す項の型を確認する。</span></p>
+<ol class="exercise" start="43" data-exercise="43"><li><span class="step" data-step="1"><code>Signal.next</code> と逆向きに色を送る <code>prev : Signal → Signal</code> を書け。 <code>prev (Signal.next Signal.red)</code> の値を確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="2">解答 43</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> prev : Signal → Signal := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | Signal.red =&gt; Signal.yellow
+  | Signal.yellow =&gt; Signal.green
+  | Signal.green =&gt; Signal.red</span></code></pre>
+<p><span class="step" data-step="3">赤を次の色に送ると青、青を逆向きに送ると赤になる。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-swap-sum" data-kind="main" data-label="練習：直和を入れ替える" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="44" data-exercise="44"><li><span class="step" data-step="0"><code>swapSum : MySum A B → MySum B A</code> を定義せよ。左側から来た項は右側へ、右側から来た項は左側へ送ること。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 44</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> swapSum {A B : <span class="sort">Type</span>} : MySum A B → MySum B A := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | MySum.inl a =&gt; MySum.inr a
+  | MySum.inr b =&gt; MySum.inl b</span></code></pre>
+<p><span class="step" data-step="2">例えば左の枝では <code>a : A</code>。行き先 <code>MySum B A</code> では <code>A</code> が右側なので、<code>MySum.inr</code> を使う。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-product" data-kind="main" data-label="練習：二つの関数の値を組にする" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="45" data-exercise="45"><li><span class="step" data-step="0">写像 <code>f : X → A</code> と <code>g : X → B</code> から、<code>x</code> を組 <code>(f x, g x)</code> に送る <code>pairMaps : X → MyPair A B</code> を定義せよ。型 <code>X A B</code> と写像 <code>f g</code> も引数に取ること。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 45</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pairMaps (X A B : <span class="sort">Type</span>) (f : X → A) (g : X → B) : X → MyPair A B :=
+  <span class="kw">fun</span> x =&gt; MyPair.mk (f x) (g x)</span></code></pre>
+<p><span class="step" data-step="2">それぞれ <code>f x : A</code>、<code>g x : B</code> なので、<code>MyPair.mk</code> の二つの引数に渡せる。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-dependent" data-kind="main" data-label="練習：依存関数から依存和への写像" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="46" data-exercise="46"><li><span class="step" data-step="0">族 <code>B : A → Type</code> と依存関数 <code>f : (a : A) → B a</code> がある。各 <code>a</code> に組 <code>(a, f a)</code> を対応させる <code>graphOf</code> を、<code>FamilyPair</code> の構成子で定義せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 46</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> graphOf (A : <span class="sort">Type</span>) (B : A → <span class="sort">Type</span>) (f : (a : A) → B a) :
+    A → FamilyPair A B := <span class="kw">fun</span> a =&gt; FamilyPair.mk a (f a)</span></code></pre>
+<p><span class="step" data-step="2"><code>a</code> を渡した後、構成子の第二引数に必要なのは <code>B a</code> の項である。関数適用で得た <code>f a : B a</code> が、その型を持っている。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-conversion" data-kind="main" data-label="練習：再帰で自然数へ送る" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="47" data-exercise="47"><li><span class="step" data-step="0"><code>MyNat.zero</code> を <code>0</code> に、<code>MyNat.succ k</code> を <code>toNat k + 1</code> に送る <code>toNat : MyNat → Nat</code> を再帰で定義せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 47</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> toNat : MyNat → Nat := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | MyNat.zero =&gt; 0
+  | MyNat.succ k =&gt; toNat k + 1</span></code></pre>
+<p><span class="step" data-step="2">小さい項 <code>k</code> への関数の値を使って、<code>succ k</code> への値を作っている。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-le-add" data-kind="main" data-label="練習：自然数に応じて不等式の証明を作る" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="48" data-exercise="48"><li><span class="step" data-step="0"><code>leAddRight : ∀ n k : Nat, n ≤ n + k</code> を、<code>k</code> に関する再帰で証明せよ。零の場合は <code>Nat.le.refl</code>、次の数の場合は再帰呼び出しと <code>Nat.le.step</code> を使う。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 48</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> leAddRight : ∀ n k : Nat, n ≤ n + k := <span class="kw">fun</span> n k =&gt;
+  <span class="kw">match</span> k <span class="kw">with</span>
+  | Nat.zero =&gt; Nat.le.refl
+  | Nat.succ j =&gt; Nat.le.step (leAddRight n j)</span></code></pre>
+<p><span class="step" data-step="2">次の数の枝では <code>n + Nat.succ j</code> が <code>Nat.succ (n + j)</code> に計算される。そのため、<code>n ≤ n + j</code> の証明に <code>step</code> を適用すればよい。</span></p></article>
+<article class="slide" id="03_inductivetypes-practice-eq" data-kind="main" data-label="練習：等式によって証明を移す" data-section="Trial3.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="49" data-exercise="49"><li><span class="step" data-step="0">自然数 <code>n m</code> と、<code>h : n = m</code>、<code>hn : 0 ≤ n</code> を受け取り、<code>0 ≤ m</code> を返す <code>zeroLeOfEq</code> を定義せよ。<code>h</code> を <code>match</code> で使い、枝の中で要求される型を説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 49</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> zeroLeOfEq (n m : Nat) (h : n = m) (hn : 0 ≤ n) : 0 ≤ m :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Eq.refl _ =&gt; hn</span></code></pre>
+<p><span class="step" data-step="2"><code>Eq.refl</code> の枝では結論が <code>0 ≤ n</code> に特殊化され、<code>hn</code> をそのまま返せる。</span></p></article>
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">第3章</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">型と項 II — 帰納型</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>(() => {
+  'use strict';
+
+  // Measure the complete page, including unrevealed blocks. Font size and
+  // authored page boundaries stay fixed; only line spacing and margins tighten.
+  function fit(frame, content, available) {
+    frame.removeAttribute('data-density');
+    for (const density of ['tight', 'dense']) {
+      if (content.getBoundingClientRect().height <= available + 1) break;
+      frame.dataset.density = density;
+    }
+  }
+
+  function fitPrint() {
+    for (const slide of document.querySelectorAll('.print-slide[data-editorial]')) {
+      const frame = slide.querySelector('.print-content');
+      fit(slide, frame.querySelector('.print-body'), frame.clientHeight);
+    }
+  }
+
+  window.LectureLayout = {fit};
+  if (document.querySelector('.print-deck')) {
+    fitPrint();
+    window.addEventListener('load', fitPrint);
+    window.addEventListener('beforeprint', fitPrint);
+    document.fonts.ready.then(fitPrint);
+  }
+})();
+
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const viewport = $('viewport');
+  const optional = $('optional');
+  let active = slides[0];
+  let step = 0;
+  let reading = false;
+
+  function included() {
+    return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
+  }
+  function steps(slide = active) {
+    const groups = [];
+    for (const fragment of slide.querySelectorAll('.step[data-step]')) {
+      (groups[Number(fragment.dataset.step)] ||= []).push(fragment);
+    }
+    return groups;
+  }
+  function updateHash() {
+    const hash = `#${active.id}/${step + 1}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+  function readHash() {
+    const match = location.hash.match(/^#([a-z0-9_-]+)(?:\/(\d+))?$/);
+    if (!match) return;
+    const target = slides.find(slide => slide.id === match[1]);
+    if (!target) return;
+    active = target;
+    step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
+    if (active.dataset.kind !== 'main') optional.checked = true;
+  }
+  function fitActive() {
+    if (reading) {
+      slides.forEach(slide => slide.removeAttribute('data-density'));
+      return;
+    }
+    const main = $('slides');
+    const style = getComputedStyle(main);
+    const available = viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    window.LectureLayout.fit(active, active, available);
+  }
+  function render({scroll = false, announce = true} = {}) {
+    const visible = included();
+    const index = visible.indexOf(active);
+    root.classList.toggle('include-optional', optional.checked);
+    for (const slide of slides) {
+      slide.hidden = reading ? !visible.includes(slide) : slide !== active;
+      steps(slide).forEach((fragments, i) => {
+        const hidden = !reading && i > (slide === active ? step : 0);
+        for (const fragment of fragments) {
+          fragment.toggleAttribute('data-unrevealed', hidden);
+          fragment.inert = hidden;
+          fragment.setAttribute('aria-hidden', String(hidden));
+        }
+      });
+    }
+    fitActive();
+    $('counter').textContent = `${index + 1} / ${visible.length}`;
+    $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
+    $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
+    $('previous').disabled = reading || (index === 0 && step === 0);
+    $('next').disabled = reading || (index === visible.length - 1 && step === steps().length - 1);
+    $('progress-fill').style.width = `${((index + (step + 1) / steps().length) / visible.length) * 100}%`;
+    $('reading-mode').setAttribute('aria-pressed', String(reading));
+    $('reading-mode').textContent = reading ? '講義に戻る' : '通読';
+    if (announce) $('announcement').textContent = `${index + 1} / ${visible.length}、${active.dataset.label}、表示 ${step + 1} / ${steps().length}`;
+    updateHash();
+    if (scroll) viewport.scrollTop = 0;
+  }
+  function navigate(direction) {
+    if (reading) return;
+    const visible = included();
+    const index = visible.indexOf(active);
+    let changedSlide = false;
+    if (direction > 0) {
+      if (step < steps().length - 1) step++;
+      else if (index < visible.length - 1) {
+        active = visible[index + 1]; step = 0; changedSlide = true;
+      }
+    } else {
+      if (step > 0) step--;
+      else if (index > 0) {
+        active = visible[index - 1]; step = steps().length - 1; changedSlide = true;
+      }
+    }
+    render({scroll: changedSlide});
+    if (!changedSlide && direction > 0) {
+      const fragment = steps()[step][0];
+      const frame = viewport.getBoundingClientRect();
+      const rect = fragment.getBoundingClientRect();
+      if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
+    }
+  }
+  function jump(target) {
+    active = target;
+    step = 0;
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  function showContents() {
+    const list = $('toc-list');
+    list.replaceChildren();
+    included().forEach((slide, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const number = document.createElement('span');
+      number.className = 'toc-number';
+      number.textContent = `${i + 1}`;
+      button.append(number, document.createTextNode(slide.dataset.label));
+      if (slide === active) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => { $('toc').close(); jump(slide); });
+      li.append(button); list.append(li);
+    });
+    $('toc').showModal();
+  }
+  function toggleReading() {
+    if (reading) {
+      const frame = viewport.getBoundingClientRect();
+      active = included().find(slide => slide.getBoundingClientRect().bottom > frame.top + 40) || active;
+      step = 0;
+    }
+    reading = !reading;
+    root.classList.toggle('reading', reading);
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  optional.addEventListener('change', () => {
+    if (!optional.checked && active.dataset.kind !== 'main') {
+      const index = slides.indexOf(active);
+      active = slides.slice(index + 1).find(slide => slide.dataset.kind === 'main') || slides[0];
+      step = 0;
+    }
+    render({scroll: !reading});
+  });
+  $('previous').addEventListener('click', () => navigate(-1));
+  $('next').addEventListener('click', () => navigate(1));
+  $('contents').addEventListener('click', showContents);
+  $('close-toc').addEventListener('click', () => $('toc').close());
+  $('reading-mode').addEventListener('click', toggleReading);
+  $('chapter-select').addEventListener('change', event => { location.href = event.target.value; });
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await root.requestFullscreen();
+    } catch {
+      $('hint').textContent = 'ブラウザの全画面表示をご利用ください';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '全画面解除' : '全画面';
+  });
+  document.addEventListener('keydown', event => {
+    if ($('toc').open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
+    if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
+    if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+      if (reading) return;
+      event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      if (reading) return;
+      event.preventDefault(); navigate(-1);
+    } else if (event.key === 'Home' && !reading) {
+      event.preventDefault(); jump(included()[0]);
+    } else if (event.key === 'End' && !reading) {
+      event.preventDefault(); active = included().at(-1); step = steps().length - 1; render({scroll:true});
+    } else if (event.key.toLowerCase() === 'm') showContents();
+  });
+  window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  window.addEventListener('resize', fitActive);
+  window.addEventListener('load', fitActive);
+  document.fonts.ready.then(fitActive);
+  // Published section links can be opened directly in the slide edition too.
+  const sectionTarget = location.hash.startsWith('#sec-') &&
+    slides.find(slide => slide.dataset.section === location.hash.slice(5));
+  if (sectionTarget) active = sectionTarget;
+  readHash();
+  root.classList.add('enhanced');
+  render({announce: false});
+})();
+</script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 {
   "exercises": {
     "01_TypesAndTerms": 27,
-    "02_Forall": 12
+    "02_Forall": 12,
+    "03_InductiveTypes": 10,
+    "04_Exists": 6
   },
   "slides": {
     "Index": {
@@ -15,6 +17,14 @@
     "02_Forall": {
       "pages": 53,
       "steps": 181
+    },
+    "03_InductiveTypes": {
+      "pages": 38,
+      "steps": 145
+    },
+    "04_Exists": {
+      "pages": 29,
+      "steps": 101
     }
   },
   "canonical_sources_unchanged_during_build": true,

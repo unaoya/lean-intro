@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>型と命題 II — かつ・または・否定・存在量化</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
+}
+
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
+
+.trial-banner{border-left:4px solid #386456;padding:12px 16px;background:#eff6f2;font-size:14px}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+<nav><span><a href="03_inductivetypes.html">← 03_InductiveTypes</a></span><a href="index.html">目次</a><span></span></nav>
+<main>
+<p class="trial-banner">第1〜4章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/04_exists.html">この章のスライド</a> · <a href="../src/04_Exists.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «02_Forall»
+<span class="kw">import</span> «03_InductiveTypes»</code></pre>
+<h1>型と命題 II — かつ・または・否定・存在量化</h1>
+<p>第2章では、全称量化を証明するときに依存関数を作り、仮定として使うときに適用した。第3章では、構成子で項を作り、<code>match</code> で使う仕組みを学んだ。この章では、この二つを組み合わせて数学の証明を読む。</p>
+<p>中心となる例は全射の合成である。証明を数学の言葉で書き、どこで対象や証明を受け取り、どこで新しい証明を作ったかを確かめる。その後、全単射、二つの場合の扱い、否定、偶数の和へ進む。</p>
+<h2 id="sec-Trial4.existence">1. 存在の証明と全射の合成</h2>
+<p>「条件を満たす対象が存在する」と示すには、対象を一つ挙げ、その対象が条件を満たすことを示す。選んだ対象を<strong>証人</strong>という。例えば、自然数で <code>2</code> に等しいものが存在することは、次のように証明できる。</p>
+<pre class="lean"><code><span class="kw">def</span> exists_eq_two : ∃ n : Nat, n = 2 := Exists.intro 2 rfl</code></pre>
+<p><code>∃</code> は <code>\exists</code> で入力する。<code>Exists.intro</code> は存在の証明を作る構成子であり、ここでは証人 <code>2 : Nat</code> と、その性質の証明 <code>rfl : 2 = 2</code> を受け取っている。</p>
+<p>依存する組と同じく、第一の引数に何を選ぶかで、第二の引数に必要な型が決まる。ただし、存在の証明を使う際は、別の命題を証明するために証人と根拠を使う。データの組との詳しい違いは、元原稿から残した補足で扱う。</p>
+<h3>任意の自然数の二倍は偶数</h3>
+<p>自然数 <code>n</code> が偶数であることを、<code>n = 2 * k</code> となる自然数 <code>k</code> が存在することとして定義する。</p>
+<pre class="lean"><code><span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k : Nat, n = 2 * k</code></pre>
+<p>任意の <code>n</code> に対して <code>2 * n</code> は偶数である。証人に <code>n</code> 自身を選べばよい。</p>
+<pre class="lean"><code><span class="kw">def</span> even_two_mul : ∀ n : Nat, IsEven (2 * n) :=
+  <span class="kw">fun</span> n =&gt; Exists.intro n rfl</code></pre>
+<p>外側の <code>fun n =&gt; …</code> は全称量化の証明を作る。本体の <code>Exists.intro n rfl</code> は、受け取った <code>n</code> に対する存在の証明を作る。根拠に必要な型は <code>2 * n = 2 * n</code> なので、<code>rfl</code> が使える。</p>
+<h3>n + n の場合に必要な等式</h3>
+<p><code>n + n</code> が偶数であることも、証人に <code>n</code> を選んで示せる。今度は根拠として <code>n + n = 2 * n</code> の証明が必要である。</p>
+<pre class="lean"><code><span class="kw">#check</span> Nat.two_mul</code></pre>
+<pre class="quote"><code>Nat.two_mul (n : Nat) : 2 * n = n + n</code></pre>
+<pre class="lean"><code><span class="kw">def</span> even_double : ∀ n : Nat, IsEven (n + n) :=
+  <span class="kw">fun</span> n =&gt; Exists.intro n (Eq.symm (Nat.two_mul n))</code></pre>
+<p><code>Nat.two_mul n</code> の等式の向きを <code>Eq.symm</code> で逆にして渡した。構成子を適用するときにも、その引数に要求される型を読む手順は変わらない。この算術の定理を再帰から証明する説明も、補足として残してある。</p>
+<h3>全射どうしの合成は全射</h3>
+<p>$f:A\to B$ と $g:B\to C$ が全射なら、$g\circ f$ も全射である。まず、数学の証明を読もう。</p>
+<p><strong>証明。</strong> $c\in C$ を任意に取る。$g$ の全射性から、$g(b)=c$ となる $b\in B$ を取れる。さらに $f$ の全射性から、$f(a)=b$ となる $a\in A$ を取れる。すると $g(f(a))=g(b)=c$ である。よって、$c$ に送られる元として $a$ を取ればよい。∎</p>
+<p>対象を選ぶ順序に注目しよう。最初に <code>c</code> を受け取り、それから <code>b</code>、さらに <code>a</code> を使っている。二つ目の存在を使う際には、一つ目から得た <code>b</code> が必要である。</p>
+<h3>全射性という保証に名前を付ける</h3>
+<p>全射であるとは、行き先のどの対象にも、それに送られる元があることである。 <code>f</code> と <code>g</code> の全射性の証明を、それぞれ <code>hf</code>、<code>hg</code> と名付ける。</p>
+<pre class="quote"><code>hf : ∀ b : B, ∃ a : A, f a = b
+hg : ∀ c : C, ∃ b : B, g b = c</code></pre>
+<p>結論の型は、次のようになる。</p>
+<pre class="quote"><code>∀ c : C, ∃ a : A, g (f a) = c</code></pre>
+<p>外側の全称量化には <code>fun c =&gt; …</code> で答える。その本体では、証人 <code>a</code> と、<code>g (f a) = c</code> の証明を構成子に渡せばよい。</p>
+<h3>存在の証明から、証人と根拠を使う</h3>
+<p><code>hg</code> に <code>c</code> を適用すると、<code>hg c : ∃ b : B, g b = c</code> が得られる。存在の構成子に応じて <code>match</code> し、証人と根拠に名前を付ける。</p>
+<pre class="quote"><code>match hg c with
+| Exists.intro b hb =&gt; …</code></pre>
+<p>この枝では <code>b : B</code> と <code>hb : g b = c</code> が使える。次に <code>hf b</code> を適用し、その存在の証明を同じように <code>match</code> すると、 <code>a : A</code> と <code>ha : f a = b</code> が使える。</p>
+<p>ここで選んだ <code>a</code> に対して結論の等式を証明し、存在の構成子で包み直す。 <code>match</code> の枝から返すのは、最初に求められた存在命題の証明である。</p>
+<h3>二つの存在を使って、結論の存在を作る</h3>
+<p>数学の証明と同じ順に、関数適用・場合分け・構成子を組み合わせる。</p>
+<pre class="lean"><code><span class="kw">def</span> comp_surjective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
+    (hf : ∀ b : B, ∃ a : A, f a = b)
+    (hg : ∀ c : C, ∃ b : B, g b = c) :
+    ∀ c : C, ∃ a : A, g (f a) = c :=
+  <span class="kw">fun</span> c =&gt;
+    <span class="kw">match</span> hg c <span class="kw">with</span>
+    | Exists.intro b hb =&gt;
+      <span class="kw">match</span> hf b <span class="kw">with</span>
+      | Exists.intro a ha =&gt;
+        Exists.intro a (Eq.trans (congrArg g ha) hb)</code></pre>
+<p><code>hf b</code> は <code>b</code> を取り出した枝の中で使う。そのため <code>match</code> も入れ子になる。</p>
+<h3>最後の構成子に何を渡したか</h3>
+<p>最後の枝では <code>ha : f a = b</code> と <code>hb : g b = c</code> が使える。まず、第2章で学んだ等式の操作の型を追う。</p>
+<pre class="quote"><code>congrArg g ha : g (f a) = g b
+Eq.trans (congrArg g ha) hb : g (f a) = c</code></pre>
+<p>証人を <code>a</code> と決めると、<code>Exists.intro</code> の第二引数に必要なのは <code>g (f a) = c</code> の証明である。いま作った項がその型を持つので、構成子を適用できる。</p>
+<pre class="quote"><code>Exists.intro a (Eq.trans (congrArg g ha) hb) :
+  ∃ a : A, g (f a) = c</code></pre>
+<p>この本体をどの <code>c</code> に対しても返すので、外側の <code>fun</code> が要求された全称命題の証明になる。</p>
+<h3>全称量化と存在量化の二つの向き</h3>
+<p>全射の合成で使った四つの操作を、ここで整理しよう。</p>
+<table>
+<thead><tr><th>命題</th><th>証明するとき</th><th>仮定として使うとき</th></tr></thead>
+<tbody>
+<tr><td>全称量化</td><td><code>fun</code> で、対象ごとの証明を返す依存関数を作る</td><td>対象を渡して関数適用する</td></tr>
+<tr><td>存在量化</td><td><code>Exists.intro</code> に証人と、その性質の証明を渡す</td><td><code>match</code> で証人と根拠に名前を付ける</td></tr>
+</tbody></table>
+<p>全称の証明は、型の族の各型に項を返す依存関数である。存在の証明は、依存和の組と対応する形で、一つの対象とその対象についての証明を構成子でまとめる。</p>
+<p>全称を使うときは「この対象についての保証を取り出す」。存在を使うときは「保証された対象を一つと、その根拠を使って、続きの証明をする」。どちらも、持っている証明の型に応じた使い方である。</p>
+<h3>✏ 練習</h3>
+<ol class="exercise" start="50" data-exercise="50">
+<li>$f:A\to B$ が右逆 $g:B\to A$ を持つ、すなわち <code>hfg : ∀ b : B, f (g b) = b</code> があるとする。 <code>∀ b : B, ∃ a : A, f a = b</code> を証明する関数 <code>surjectiveOfRightInverse</code> を書け。証人には何を選ぶか。</li>
+</ol>
+<details class="sol" data-exercise="50"><summary>解答 50</summary>
+<pre class="lean"><code><span class="kw">def</span> surjectiveOfRightInverse (A B : <span class="sort">Type</span>) (f : A → B) (g : B → A)
+    (hfg : ∀ b : B, f (g b) = b) :
+    ∀ b : B, ∃ a : A, f a = b :=
+  <span class="kw">fun</span> b =&gt; Exists.intro (g b) (hfg b)</code></pre>
+<p><code>b</code> を受け取り、証人に <code>g b</code> を選ぶ。その根拠に要求される型は <code>f (g b) = b</code> であり、<code>hfg b</code> が与える。</p>
+</details>
+<h2 id="sec-Trial4.and">2. かつ — 全単射の合成</h2>
+<p>写像が全単射であるとは、単射であり、かつ全射であることである。この二つを一緒に保証することを、証明の組として表そう。</p>
+<pre class="lean"><code><span class="kw">def</span> IsBijective (A B : <span class="sort">Type</span>) (f : A → B) : <span class="sort">Prop</span> :=
+  (∀ x y : A, f x = f y → x = y) ∧ (∀ b : B, ∃ a : A, f a = b)</code></pre>
+<p><code>∧</code> は <code>\and</code> で入力する。「かつ」の構成子は <code>And.intro</code> で、左側と右側の証明を両方受け取る。</p>
+<p>全単射性を<strong>示す</strong>には、単射性と全射性を示して <code>And.intro</code> に渡す。全単射性を<strong>使う</strong>には、<code>match</code> の <code>And.intro h_inj h_surj</code> の枝で、二つの証明に名前を付ける。</p>
+<h3>全単射どうしの合成は全単射</h3>
+<p><strong>証明。</strong> $f$ と $g$ が全単射なら、どちらも単射なので $g\circ f$ は単射である。また、どちらも全射なので $g\circ f$ は全射である。よって、合成は全単射である。∎</p>
+<p>この証明では、前に証明した単射の合成と全射の合成を使っている。それぞれの証明を作り直す必要はない。必要な仮定を渡して結論の証明を得る。</p>
+<p><code>hf</code> から <code>hfi</code> と <code>hfs</code>、<code>hg</code> から <code>hgi</code> と <code>hgs</code> を取り出す。単射性の合成に <code>hfi</code>・<code>hgi</code> を、全射性の合成に <code>hfs</code>・<code>hgs</code> を渡し、結果を組にする。</p>
+<h3>全単射の合成の証明項</h3>
+<pre class="lean"><code><span class="kw">def</span> comp_bijective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
+    (hf : IsBijective A B f) (hg : IsBijective B C g) :
+    IsBijective A C (<span class="kw">fun</span> x =&gt; g (f x)) :=
+  <span class="kw">match</span> hf <span class="kw">with</span>
+  | And.intro hfi hfs =&gt;
+    <span class="kw">match</span> hg <span class="kw">with</span>
+    | And.intro hgi hgs =&gt;
+      And.intro (comp_injective A B C f g hfi hgi)
+        (comp_surjective A B C f g hfs hgs)</code></pre>
+<p>二つの <code>match</code> で仮定を使い、最後の <code>And.intro</code> で結論を作った。各成分を取り出す関数 <code>And.left hf</code> と <code>And.right hf</code> を使う書き方もある。いずれも、二つの証明が入っているという同じ情報を使っている。</p>
+<h2 id="sec-Trial4.or">3. または — 二つの場合を扱う</h2>
+<p>$x=a$ または $x=b$ なら、$f(x)=f(a)$ または $f(x)=f(b)$ である。これを証明してみよう。<code>∨</code> は「または」で、<code>\or</code> と入力する。</p>
+<p><strong>証明。</strong> $x=a$ の場合、等式の両辺に $f$ を適用して $f(x)=f(a)$ を得る。$x=b$ の場合も同様に $f(x)=f(b)$ を得る。どちらの場合も結論のいずれかが成り立つ。∎</p>
+<p>「または」を<strong>示す</strong>には、左の証明を <code>Or.inl</code> に渡すか、右の証明を <code>Or.inr</code> に渡す。「または」を<strong>使う</strong>には、どちらの構成子で作られた場合にも答えを用意する。第3章の直和を使う場合分けと同じ形である。</p>
+<h3>またはの証明を match で使う</h3>
+<pre class="lean"><code><span class="kw">def</span> imageTwoPoints (A B : <span class="sort">Type</span>) (f : A → B) (x a b : A)
+    (h : x = a ∨ x = b) : f x = f a ∨ f x = f b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Or.inl hxa =&gt; Or.inl (congrArg f hxa)
+  | Or.inr hxb =&gt; Or.inr (congrArg f hxb)</code></pre>
+<p>左の枝では <code>hxa : x = a</code> が使える。 <code>congrArg f hxa : f x = f a</code> を作り、結論の左側の証明として <code>Or.inl</code> に渡す。右の枝では <code>f x = f b</code> の証明を <code>Or.inr</code> に渡す。</p>
+<p><code>match</code> 全体が返す型は、どちらの枝でも同じ <code>f x = f a ∨ f x = f b</code> である。</p>
+<h2 id="sec-Trial4.not">4. 否定 — 等しいと仮定して矛盾を作る</h2>
+<p><code>False</code> は、構成子を持たない命題である。第3章の空の型 <code>Empty</code> に対応する。 <code>False</code> の証明を受け取ったとすると、<code>False.elim</code> で任意の命題の証明を返せる。</p>
+<p><code>¬</code> は <code>\not</code> で入力する。「ある命題ではない」とは、その命題の証明を受け取ったら <code>False</code> の証明を返せる、という型で表す。例えば <code>x ≠ y</code> は <code>x = y → False</code> のことである。</p>
+<p>したがって、否定を<strong>示す</strong>ときも関数を作り、否定を<strong>使う</strong>ときも適用する。新しい否定用の構成子を使うのではなく、第2章の「ならば」の読み方を使っている。</p>
+<h3>単射性と否定を組み合わせる</h3>
+<p><strong>証明。</strong> $f$ を単射とし、$x\ne y$ とする。もし $f(x)=f(y)$ なら、単射性から $x=y$ となって仮定に矛盾する。したがって $f(x)\ne f(y)$ である。∎</p>
+<pre class="lean"><code><span class="kw">def</span> injectivePreservesNe (A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (x y : A) (hne : x ≠ y) : f x ≠ f y :=
+  <span class="kw">fun</span> h =&gt; hne (hf x y h)</code></pre>
+<p>結論の型は <code>f x = f y → False</code> なので、まず <code>h : f x = f y</code> を受け取る。 <code>hf x y h : x = y</code> に <code>hne : x = y → False</code> を適用すると、本体の型が <code>False</code> になる。ここでは二重否定から元の命題を取り出す背理法は使っていない。</p>
+<h3>帰納型の異なる構成子</h3>
+<p>第3章で述べた「異なる構成子は等しくない」という性質も、否定の証明として書ける。 <code>Signal</code> の宣言に伴って生成される <code>Signal.noConfusion</code> を使おう。</p>
+<pre class="lean"><code><span class="kw">def</span> red_ne_green : Signal.red ≠ Signal.green :=
+  <span class="kw">fun</span> h =&gt; Signal.noConfusion h</code></pre>
+<p><code>h : Signal.red = Signal.green</code> を仮定すると、<code>Signal.noConfusion h : False</code> が得られる。この矛盾を返す関数が、不等号 <code>≠</code> の証明になっている。生成された道具の詳しい説明は、元原稿の <code>noConfusion</code> の補足に残してある。</p>
+<h2 id="sec-Trial4.even-add">5. 偶数と偶数の和は偶数</h2>
+<p><strong>証明。</strong> $n,m$ を偶数とする。$n=2k$、$m=2l$ となる自然数 $k,l$ を取れる。すると $n+m=2k+2l=2(k+l)$ だから、$n+m$ は偶数である。∎</p>
+<p>仮定に <code>hn : IsEven n</code>、<code>hm : IsEven m</code> と名前を付ける。それぞれを <code>match</code> で使うと、証人 <code>k</code>、<code>l</code> と、根拠 <code>hk : n = 2 * k</code>、<code>hl : m = 2 * l</code> が使える。</p>
+<p>結論の証人には <code>k + l</code> を選ぶ。その根拠として必要なのは <code>n + m = 2 * (k + l)</code> の証明である。まずこの等式を作り、次に存在の構成子へ渡す、という二段階に分けよう。</p>
+<h3>算術の部分に必要な型をそろえる</h3>
+<p>等式の連鎖を、三つの等式の証明に分ける。</p>
+<pre class="quote"><code>h1 : n + m = 2 * k + m
+h2 : 2 * k + m = 2 * k + 2 * l
+h3 : 2 * k + 2 * l = 2 * (k + l)</code></pre>
+<p><code>h1</code> は <code>hk</code> の両辺に <code>m</code> を足し、<code>h2</code> は <code>hl</code> の両辺に左から <code>2 * k</code> を足して作る。最後は分配法則を使う。</p>
+<pre class="lean"><code><span class="kw">#check</span> Nat.mul_add</code></pre>
+<pre class="quote"><code>Nat.mul_add (n m k : Nat) : n * (m + k) = n * m + n * k</code></pre>
+<p><code>Nat.mul_add 2 k l</code> の向きを <code>Eq.symm</code> で逆にすると、<code>h3</code> に必要な型になる。</p>
+<h3>証明の途中の項にも名前を付ける</h3>
+<p><code>let h : 型 := 項</code> は、この本体の中で使う項に名前を付ける書き方である。</p>
+<pre class="lean"><code><span class="kw">def</span> evenSumEquality (n m k l : Nat) (hk : n = 2 * k) (hl : m = 2 * l) :
+    n + m = 2 * (k + l) :=
+  <span class="kw">let</span> h1 : n + m = 2 * k + m := congrArg (<span class="kw">fun</span> x =&gt; x + m) hk
+  <span class="kw">let</span> h2 : 2 * k + m = 2 * k + 2 * l := congrArg (<span class="kw">fun</span> x =&gt; 2 * k + x) hl
+  <span class="kw">let</span> h3 : 2 * k + 2 * l = 2 * (k + l) := Eq.symm (Nat.mul_add 2 k l)
+  Eq.trans (Eq.trans h1 h2) h3</code></pre>
+<p><code>Eq.trans h1 h2</code> の結果の型は <code>n + m = 2 * k + 2 * l</code>。その右辺と <code>h3</code> の左辺が一致するので、もう一度 <code>Eq.trans</code> を適用できる。</p>
+<h3>偶数の和の証明を完成させる</h3>
+<p>算術の部分を、いま作った関数に任せると、存在の証明を使う形がはっきり見える。</p>
+<pre class="lean"><code><span class="kw">def</span> isEven_add {n m : Nat} (hn : IsEven n) (hm : IsEven m) : IsEven (n + m) :=
+  <span class="kw">match</span> hn <span class="kw">with</span>
+  | Exists.intro k hk =&gt;
+    <span class="kw">match</span> hm <span class="kw">with</span>
+    | Exists.intro l hl =&gt;
+      Exists.intro (k + l) (evenSumEquality n m k l hk hl)</code></pre>
+<p>二つの <code>match</code> で仮定の存在を使い、最後の <code>Exists.intro</code> で結論の存在を作った。構成子の第二引数は、その場で書いた長い項でも、名前の付いた関数を適用した項でもよい。機械が確かめるのは、その項が必要な型を持っているかどうかである。</p>
+<h2 id="sec-Trial4.summary">6. 証明を作る・証明を使う</h2>
+<p>同じ命題でも、結論として証明する場面と、仮定として使う場面とでは操作が違う。</p>
+<table>
+<thead><tr><th>命題の形</th><th>証明するとき</th><th>仮定として使うとき</th></tr></thead>
+<tbody>
+<tr><td>ならば・全称</td><td><code>fun</code> で関数を作る</td><td>証明や対象を適用で渡す</td></tr>
+<tr><td>存在</td><td><code>Exists.intro</code> で証人と根拠をまとめる</td><td><code>match</code> で証人と根拠を使う</td></tr>
+<tr><td>かつ</td><td><code>And.intro</code> で両方の証明をまとめる</td><td><code>match</code> などで両方の証明を使う</td></tr>
+<tr><td>または</td><td><code>Or.inl</code> または <code>Or.inr</code> で作る</td><td><code>match</code> で両方の場合を扱う</td></tr>
+<tr><td>否定</td><td>仮定から <code>False</code> を返す関数を作る</td><td>その仮定の証明を適用して <code>False</code> を得る</td></tr>
+</tbody></table>
+<p>数学の証明で行う操作を、関数・構成子・場合分けで表した。その読み替えを人間が理解し、完成した項の型を機械が検査する、という第2章の見方につながる。</p>
+<h2 id="sec-Trial4.practice">7. ✏ 練習 — 章末問題</h2>
+<p>数学の証明を書き、仮定と結論の型を確かめてから、Leanの項にしよう。</p>
+<ol class="exercise" start="51" data-exercise="51">
+<li>三つの全射 $f:A\to B$、$g:B\to C$、$k:C\to D$ の合成が全射であることを証明せよ。本文の <code>comp_surjective</code> を二回使う解答を書け。各適用に渡す型と写像を明示すること。</li>
+</ol>
+<details class="sol" data-exercise="51"><summary>解答 51</summary>
+<pre class="lean"><code><span class="kw">def</span> threeCompSurjective (A B C D : <span class="sort">Type</span>)
+    (f : A → B) (g : B → C) (k : C → D)
+    (hf : ∀ b, ∃ a, f a = b) (hg : ∀ c, ∃ b, g b = c)
+    (hk : ∀ d, ∃ c, k c = d) :
+    ∀ d, ∃ a, k (g (f a)) = d :=
+  comp_surjective A C D (<span class="kw">fun</span> a =&gt; g (f a)) k
+    (comp_surjective A B C f g hf hg) hk</code></pre>
+<p>内側の適用は <code>A → C</code> の全射性、外側の適用は <code>A → D</code> の全射性を証明する。</p>
+</details>
+<ol class="exercise" start="52" data-exercise="52">
+<li><code>f : A → B</code>、<code>g : A → C</code> と <code>b : B</code>、<code>c : C</code> に対して、 <code>∃ a : A, f a = b ∧ g a = c</code> から <code>∃ a : A, f a = b</code> を証明せよ。二種類の構成子を <code>match</code> で使い、必要な根拠だけを取り出すこと。</li>
+</ol>
+<details class="sol" data-exercise="52"><summary>解答 52</summary>
+<pre class="lean"><code><span class="kw">def</span> existsFirst (A B C : <span class="sort">Type</span>) (f : A → B) (g : A → C) (b : B) (c : C)
+    (h : ∃ a : A, f a = b ∧ g a = c) : ∃ a : A, f a = b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Exists.intro a habc =&gt;
+    <span class="kw">match</span> habc <span class="kw">with</span>
+    | And.intro hab _ =&gt; Exists.intro a hab</code></pre>
+<p>証人 <code>a</code> はそのまま使い、二つの根拠のうち左側の <code>hab : f a = b</code> を渡す。</p>
+</details>
+<ol class="exercise" start="53" data-exercise="53">
+<li>$f:A\to B$ を単射とする。<code>f x = f a ∨ f x = f b</code> から <code>x = a ∨ x = b</code> を示せ。単射性の証明を <code>hf : ∀ x y : A, f x = f y → x = y</code> として受け取ること。</li>
+</ol>
+<details class="sol" data-exercise="53"><summary>解答 53</summary>
+<pre class="lean"><code><span class="kw">def</span> preimageTwoPoints (A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y) (x a b : A)
+    (h : f x = f a ∨ f x = f b) : x = a ∨ x = b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Or.inl hxa =&gt; Or.inl (hf x a hxa)
+  | Or.inr hxb =&gt; Or.inr (hf x b hxb)</code></pre>
+<p>各枝で単射性を適用し、結論の対応する構成子へ証明を渡す。</p>
+</details>
+<ol class="exercise" start="54" data-exercise="54">
+<li>任意の写像 $f:A\to B$ について、<code>f x ≠ f y</code> ならば <code>x ≠ y</code> であることを示せ。単射性は仮定しない。<code>x = y</code> と仮定したとき、<code>congrArg</code> で何が得られるか考えよ。</li>
+</ol>
+<details class="sol" data-exercise="54"><summary>解答 54</summary>
+<pre class="lean"><code><span class="kw">def</span> neOfImageNe (A B : <span class="sort">Type</span>) (f : A → B) (x y : A)
+    (hne : f x ≠ f y) : x ≠ y :=
+  <span class="kw">fun</span> h =&gt; hne (congrArg f h)</code></pre>
+<p><code>h : x = y</code> から <code>congrArg f h : f x = f y</code> が得られ、それを <code>hne</code> に渡すと <code>False</code> が得られる。</p>
+</details>
+<ol class="exercise" start="55" data-exercise="55">
+<li>任意の自然数 <code>n</code> について、<code>IsEven n → IsEven (n + 2)</code> を証明せよ。 <code>2</code> の偶数性を <code>Exists.intro</code> で示し、本文の <code>isEven_add</code> を使うこと。</li>
+</ol>
+<details class="sol" data-exercise="55"><summary>解答 55</summary>
+<pre class="lean"><code><span class="kw">def</span> isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
+  <span class="kw">fun</span> _ hn =&gt; isEven_add hn (Exists.intro 1 rfl)</code></pre>
+<p><code>2 = 2 * 1</code> は計算で一致するので、証人 <code>1</code> と <code>rfl</code> で <code>IsEven 2</code> が示せる。偶数の和についての関数に二つの証明を渡せばよい。</p>
+</details><aside class="note note--optional" id="original-supplements">
+<h2>元原稿から残した補足</h2>
+<p>以下は元原稿の補足・先取りを、そのまま残したものです。補足内の練習番号も元原稿の番号です。本文で後回しにした記法や定義が登場する場合は、各項の「元の文脈で読む」を参照してください。</p>
+<p><a href="reference/04_exists.html#original-note-1">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-1">
+<h3>補足: 「既知」だった 2n = n + n を自分で証明する</h3>
+<p>例1で使った <code>Nat.two_mul</code> を、今度は定義と計算まで自分でたどってみる。</p>
+<p><strong>ふつうの証明</strong>。</p>
+<ol>
+<li>n = 0 のとき: 両辺とも 0。</li>
+<li>n = k + 1 のとき: k での等式 2k = k + k が使えるとする。 2(k + 1) = 2k + 2 = (k + k) + 2 = (k + 1) + (k + 1)。∎</li>
+</ol>
+<p><strong>論理式</strong>。主張は</p>
+<pre class="quote"><code>∀n (2n = n + n)</code></pre>
+<p>——量化子1つと等式だけの、いちばん簡素な形である。今回は述語の略記も要らない。</p>
+<p><strong>形式化を意識した版</strong>。全称の証明の仕方には、「任意に取る」のほかにもう1つ、自然数に固有の方法がある——<strong>帰納法</strong>である: 0 の場合を示し、「k で成り立つ<strong>ならば</strong> k + 1 でも成り立つ」を示す。</p>
+<p>0 の場合、示すべき 2·0 = 0 + 0 は<strong>両辺とも計算すれば 0</strong> になる。計算で一致する等式には、それ以上の証明は要らない。k + 1 の場合のポイントは、 <strong>帰納法の仮定 2k = k + k を「既知の定理」と同じ資格で使ってよい</strong>こと——あとは例2で覚えた等式の連鎖である。</p>
+<p>ただし、連鎖の途中の1歩「(k + 1) + k = (k + k) + 1」が、また別の「既知」（succ_add と呼ばれる事実）を呼んでしまう。信用しないと決めたので、 <strong>これも同じ流儀（帰納法）で証明する</strong>。今度の各段は計算と「両辺に + 1」だけで閉じ、新しい既知はもう現れない——底に着いた。</p>
+<p><strong>項</strong>。帰納法は、<a href="../../../docs/03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>の<strong>再帰</strong> そのものとして書ける。「k での場合の証明」は、自分自身の再帰呼び出しで手に入る（<code>toN</code> の再帰と同じ形である。また、計算で一致する等式の証明は <code>rfl</code> と書く——<a href="../../../docs/02_forall.html#sec-CH.propositions"><code>02_Forall.lean</code> の0節</a>で見た）:</p>
+<pre class="lean"><code><span class="kw">theorem</span> succ_add&#x27; : ∀ (n m : Nat), (n + 1) + m = (n + m) + 1 := <span class="kw">fun</span> n m =&gt;
+  <span class="kw">match</span> m <span class="kw">with</span>
+  | 0     =&gt; rfl                                  <span class="cm">-- 両辺とも計算で n + 1</span>
+  | j + 1 =&gt; congrArg (· + 1) (succ_add&#x27; n j)     <span class="cm">-- 帰納法の仮定は再帰呼び出し</span>
+
+<span class="kw">theorem</span> two_mul_from_scratch : ∀ n : Nat, 2 * n = n + n := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | 0     =&gt; rfl
+  | k + 1 =&gt;
+    (congrArg (· + 2) (two_mul_from_scratch k)).trans <span class="cm">-- 2(k+1) = 2k+2 = (k+k)+2</span>
+      ((congrArg (· + 1) (succ_add&#x27; k k)).symm :
+        (k + k) + 2 = (k + 1) + (k + 1))           <span class="cm">-- 型注釈はふつうの証明の式変形の写し</span>
+
+<span class="kw">#check</span> two_mul_from_scratch</code></pre>
+<pre class="quote"><code>two_mul_from_scratch (n : Nat) : 2 * n = n + n</code></pre>
+<p>どこまで掘っても、現れたのは同じ仕組みで書かれた項だけだった。それを機械に確認させることもできる:</p>
+<pre class="lean"><code><span class="kw">#print</span> axioms two_mul_from_scratch</code></pre>
+<pre class="quote"><code>&#x27;two_mul_from_scratch&#x27; does not depend on any axioms</code></pre>
+<p>例1で「既知」と呼んだものは単なる未検査の信用ではない——<strong>底（定義と計算）まで、すべて検査済みの項</strong>なのである。</p>
+</aside>
+<p><a href="reference/04_exists.html#original-note-2">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-2">
+<h3>補足: Prop と Type をまとめて扱う Sort</h3>
+<p><code>Sort</code> は、<code>Prop</code> と <code>Type</code>、<code>Type 1</code>、…をまとめて扱うための宇宙の表記である。次の各行は、別々の型の対応ではなく、<strong>同じものの2通りの書き方</strong>を並べている。</p>
+<table>
+<thead><tr><th>これまでの表記</th><th>Sort による表記</th></tr></thead>
+<tbody>
+<tr><td><code>Prop</code></td><td><code>Sort 0</code></td></tr>
+<tr><td><code>Type</code>（<code>Type 0</code>）</td><td><code>Sort 1</code></td></tr>
+<tr><td><code>Type 1</code></td><td><code>Sort 2</code></td></tr>
+<tr><td><code>Type u</code></td><td><code>Sort (u + 1)</code></td></tr>
+</tbody></table>
+<p><code>α : Sort u</code> と書けば、命題も通常の型も対象にできる。例えば <code>u = 0</code> なら <code>α : Prop</code>、<code>u = 1</code> なら <code>α : Type</code> である。この <code>u</code> は<strong>宇宙のレベル</strong>を表すパラメータで、通常の関数に渡す自然数の引数ではない。具体的に使うときのレベルは、通常 Lean が推測する。</p>
+</aside>
+<p><a href="reference/04_exists.html#original-note-3">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-3">
+<h3>補足: 対称に見えて <code>rfl</code> が通らない <code>0 * n</code></h3>
+<p><code>02_Forall.lean</code> の <code>all_mul_zero</code> と同じ調子で <code>∀ n, IsZero (0 * n)</code> も書きたくなるが、こちらは通らない:</p>
+<pre class="quote"><code>theorem all_zero_mul : ∀ n : Nat, IsZero (0 * n) := fun n =&gt; rfl
+
+error: Type mismatch
+  rfl
+has type
+  ?m.10 = ?m.10
+but is expected to have type
+  IsZero (0 * n)</code></pre>
+<p>理由は <code>*</code> の定義が<strong>第2引数についての再帰</strong>であること。<code>n * 0</code> は第2引数が <code>0</code> なので計算が1歩で進むが、<code>0 * n</code> は第2引数が<strong>変数のまま</strong> なので計算が止まり、<code>0 * n</code> と <code>0</code> は「計算で一致」しない。数学では対称に見える2つの式が、定義のレベルでは非対称なのである（下の練習の <code>0 * 5</code> が通るのは、<code>5</code> が具体的な数字で計算が最後まで走るから）。</p>
+<p>変数 <code>n</code> のまま示すには <code>n</code> についての<strong>数学的帰納法</strong>が要る。Lean では帰納法は再帰で書く——実物は <code>06_Topology.lean</code> の <code>mem_interFin</code> などで見る。ライブラリではこの命題（の中身）は <code>Nat.zero_mul</code> として証明済みである。</p>
+<h3>✏ 練習</h3>
+<ol class="exercise" start="112" data-original-exercise="112">
+<li><code>example : IsZero (0 * 5) := rfl</code> が通ることを確かめよ。 <code>IsZero (5 * 0)</code> は <code>rfl</code> と <code>all_mul_zero 5</code> の両方で証明できるか。</li>
+</ol>
+<details class="sol" data-original-exercise="112"><summary>解答 112</summary>
+<pre class="lean"><code><span class="kw">example</span> : IsZero (0 * 5) := rfl
+
+<span class="kw">example</span> : IsZero (5 * 0) := rfl
+
+<span class="kw">example</span> : IsZero (5 * 0) := all_mul_zero 5</code></pre>
+<p>どれも通る。<code>0 * 5</code> も <code>5 * 0</code> も計算で <code>0</code> になるので <code>rfl</code> でよく、後者は一般論 <code>all_mul_zero</code> に点 <code>5</code> を代入しても証明できる。</p>
+</details>
+</aside>
+<p><a href="reference/04_exists.html#original-note-4">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-4">
+<h3>補足: 定義的等しさと、等しいことの証明</h3>
+<p>型を照合するとき、Lean は書かれた文字列が一致するかだけを見ているのではない。定義の展開や計算などによって同一視できる項を、<strong>定義的に等しい</strong>という（definitional equality、略して defeq）。 <code>rfl</code> が等式の証明として使えるのは、その両辺が定義的に等しいと照合できるときである。</p>
+<p>定義的に等しいことと、等式の証明を別に与えて等しさを示せることは区別しよう。例えば、次の2つの等式は、どちらも任意の自然数について成り立つ。しかし、<code>rfl</code> がそのまま使えるのは1つ目である:</p>
+<pre class="lean"><code><span class="kw">example</span> (n : Nat) : n + 0 = n := rfl</code></pre>
+<p>自然数の加算は第2引数について再帰的に定義されている。第2引数が <code>0</code> なら計算できるので、<code>n + 0</code> と <code>n</code> は定義的に等しい。一方、<code>0 + n</code> は第2引数 <code>n</code> がまだ決まっていないため、この計算では <code>n</code> まで進まない。したがって、次の証明の右辺を <code>rfl</code> に変えるとエラーになる。ここではライブラリの定理 <code>Nat.zero_add n</code> を使えば証明できる:</p>
+<pre class="lean"><code><span class="kw">example</span> (n : Nat) : 0 + n = n := Nat.zero_add n</code></pre>
+<p>つまり、<strong><code>rfl</code> が使えないことは、その命題が偽であることを意味しない</strong>。 <code>0 + n = n</code> のように、定義的には一致しなくても証明できる等式がある。</p>
+<p>また、「計算で一致する」は定義的等しさの入口の説明であり、規則のすべてではない。例えば関数 <code>fun x =&gt; f x</code> と <code>f</code> の同一視や、<a href="../../../docs/02_forall.html#sec-CH.propositions"><code>02_Forall.lean</code> の0節</a>の証明無関連性も含まれる。後者は、同じ命題の2つの証明の等しさが <code>rfl</code> で示せることに現れる:</p>
+<pre class="lean"><code><span class="kw">example</span> (P : <span class="sort">Prop</span>) (h₁ h₂ : P) : h₁ = h₂ := rfl</code></pre>
+<p>ここでは <code>P</code> 自体を証明したのではない。<code>P</code> の2つの証明を仮定し、その2つが同一視されることを確かめたのである。</p>
+</aside>
+<p><a href="reference/04_exists.html#original-note-5">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-5">
+<h3>補足: 構成子が別々であることと <code>noConfusion</code></h3>
+<p>「別々」には、これも宣言の受理時に自動生成される道具 <code>noConfusion</code> が使える。「違う構成子どうしは等しくない」と「同じ構成子なら中身まで等しい（構成子は単射）」の両方がこれで証明できる。実物を <code>Bool</code> と <code>Nat</code> で見る（<code>a ≠ b</code> は <code>¬(a = b)</code> の記法。初出である）:</p>
+<pre class="lean"><code><span class="kw">example</span> : true ≠ false := <span class="kw">fun</span> h =&gt; Bool.noConfusion h
+
+<span class="kw">example</span> {m n : Nat} (h : Nat.succ m = Nat.succ n) : m = n :=
+  Nat.noConfusion h (<span class="kw">fun</span> h&#x27; =&gt; h&#x27;)
+
+<span class="kw">#print</span> axioms Bool.noConfusion</code></pre>
+<pre class="quote"><code>&#x27;Bool.noConfusion&#x27; does not depend on any axioms</code></pre>
+<p><code>noConfusion</code> 自体も公理には依存していない——帰納型の仕組みから <strong>証明された</strong>定理である。種明かしだけ述べると、「構成子を <code>match</code> で見分けて <code>True</code>／<code>False</code> を割り当てる述語」を作り、<code>Eq.rec</code>（代入原理）で <code>true = false</code> の仮定からゴール <code>False</code> へ運ぶ——どれも既出の道具である。</p>
+</aside>
+<p><a href="reference/04_exists.html#original-note-6">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-6">
+<h3>補足: 等式をもう1つ作る実験</h3>
+<p><code>Eq</code> が特別な組み込みでないことは、実際に作り直してみるとよく分かる。同じ形の帰納型 <code>MyEq</code> を宣言すると、帰納法原理も同じ形で自動生成される。</p>
+<pre class="lean"><code><span class="kw">inductive</span> MyEq {α : <span class="sort">Type</span>} (a : α) : α → <span class="sort">Prop</span> <span class="kw">where</span>
+  | refl : MyEq a a
+
+<span class="kw">#check</span> MyEq</code></pre>
+<pre class="quote"><code>MyEq {α : Type} (a : α) : α → Prop</code></pre>
+<p>対称律は場合分け（<code>match</code>）だけで導ける。構成子は <code>refl</code> の1つ、つまり <code>a</code> と <code>b</code> が同じ場合しかないので、返すべきものも <code>refl</code> で足りる。推移律や代入原理も同様である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm {α : <span class="sort">Type</span>} {a b : α} (h : MyEq a b) : MyEq b a :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | .refl =&gt; .refl
+
+<span class="kw">#check</span> MyEq.symm</code></pre>
+<pre class="quote"><code>MyEq.symm {α : Type} {a b : α} (h : MyEq a b) : MyEq b a</code></pre>
+<h4>なぜこの <code>match</code> が通るのか——添字の単一化</h4>
+<p>（ここはこの補足の中でも特に細かい話である。飛ばして、次の <code>example</code> へ進んでよい。）</p>
+<p>上の証明をよく見ると、不思議なことが起きている。ゴールは <code>MyEq b a</code> なのに、返しているのは <code>.refl</code>——その型は <code>MyEq a a</code> であって、<code>a</code> と <code>b</code> は別の変数のはずである。なぜ型が合うのか。</p>
+<p>鍵は、<code>MyEq</code> の宣言のコロンの<strong>左右</strong>の違いにある。<code>(a : α)</code> は <strong>パラメータ</strong>（どの構成子でも共通・固定）、コロンの右の <code>α → Prop</code> の引数は <strong>添字</strong>（構成子ごとに値を決められる）である。<code>MyEq a</code> は「各 <code>b</code> に命題 <code>MyEq a b</code> を割り当てる族」だが、唯一の構成子 <code>refl</code> は、この族のうち <strong>対角線 <code>MyEq a a</code> にしか項を作らない</strong>。</p>
+<p>ここで <a href="../../../docs/03_inductivetypes.html#sec-Intro1.inductive-types"><code>03_InductiveTypes.lean</code> 1節</a>の原則——帰納型の項は、構成子で作られたものがすべて——を当てはめる。手元には <code>h : MyEq a b</code> という項がある。項はすべて構成子から作られ、構成子は <code>refl</code> だけで、<code>refl</code> が作る項の型は <code>MyEq a a</code>。したがって、<strong><code>MyEq a b</code> に項があるということ自体が、<code>b</code> は実は <code>a</code> だったことを意味する</strong>。</p>
+<p>添字つきの型への <code>match</code> は、この推論を実行している。枝に入るとき、「どの構成子か」の列挙（<code>Signal</code> のときと同じ仕事）に加えて、「その構成子で作られたのなら<strong>添字は何でなければならないか</strong>」の照合（単一化）が走る。 <code>refl</code> の枝の中では <code>b := a</code> と特殊化された世界になり、ゴール <code>MyEq b a</code> は <code>MyEq a a</code> に書き換わる——だから右辺の <code>.refl</code> が受理される。</p>
+<p>このことはコンパイル結果に現れる:</p>
+<pre class="lean"><code><span class="kw">#print</span> MyEq.symm</code></pre>
+<pre class="quote"><code>theorem MyEq.symm : ∀ {α : Type} {a b : α}, MyEq a b → MyEq b a :=
+fun {α} {a b} h ↦
+  match b, h with
+  | .(a), MyEq.refl =&gt; MyEq.refl</code></pre>
+<p>内部では <strong><code>b</code> も一緒にマッチされて</strong>いて、そのパターンが <code>.(a)</code> になっている。この <code>.( )</code> は<strong>強制パターン</strong>——「ここは自由な場合分けではない。<code>h</code> が <code>refl</code> である以上、<code>a</code> であることが強制されている」という印である。</p>
+<p>正体まで降りると、これは自動生成された帰納法原理の仕事である:</p>
+<pre class="lean"><code><span class="kw">#check</span> @MyEq.rec</code></pre>
+<pre class="quote"><code>@MyEq.rec : {α : Type} →
+  {a : α} → {motive : (a_1 : α) → MyEq a a_1 → Sort u_1} → motive a ⋯ → {a_1 : α} → (t : MyEq a a_1) → motive a_1 t</code></pre>
+<p>読み: 「すべての添字 <code>a_1</code> と <code>t : MyEq a a_1</code> について <code>motive a_1 t</code>」を結論するのに、要求される義務は <strong><code>refl</code> の場合の <code>motive a ⋯</code> ただ1つ</strong>である。「<code>refl</code> の場合だけ示せばよい」という形の中に、「そのとき添字は <code>a</code>」がすでに織り込まれている。<code>match</code> を使わず、この帰納法原理を直接使っても書ける:</p>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.symm&#x27; {α : <span class="sort">Type</span>} {a b : α} (h : MyEq a b) : MyEq b a :=
+  MyEq.rec (motive := <span class="kw">fun</span> c _ =&gt; MyEq c a) MyEq.refl h</code></pre>
+<p>まとめると: <code>Signal</code> の <code>match</code> は場合の列挙だけだったが、添字つきの族への <code>match</code> は枝ごとに<strong>添字の情報が増える</strong>（依存パターンマッチと呼ばれる）。「等式で場合分けすると、両辺を同じものとして扱えるようになる」——これこそが <code>Eq</code> の帰納法原理 <code>Eq.rec</code>（代入原理）の中身であり、<a href="../../../docs/06_topology.html#sec-Top.tactics"><code>06_Topology.lean</code> 1節</a>で見る <code>rw</code> が裏でやっていることの正体でもある。</p>
+<p>型検査が両辺を計算してから比べる仕組みも <code>Eq</code> 専用ではないので、 <code>1 + 1 = 2</code> に当たる命題はやはり構成子だけで証明できる。</p>
+<pre class="lean"><code><span class="kw">example</span> : MyEq (1 + 1) 2 := .refl</code></pre>
+<p>しかも、<code>Eq</code> と同値であることを系の中で証明できる。 <code>p ↔ q</code>（同値、<code>\iff</code> と打つ）はここが初出だが、これも「<code>p → q</code> の証明と <code>q → p</code> の証明の組」という2フィールドの structure にすぎず、 <code>⟨→の証明, ←の証明⟩</code> で作れる。両方向とも「相手の等式で場合分けして、自分の構成子を置く」だけである。なお2つ目の <code>match h with | rfl =&gt; …</code> の <code>rfl</code> は、証明項ではなく<strong>パターン</strong>の位置にある——「<code>Eq</code> の唯一の構成子 <code>Eq.refl</code> の場合」を表す書き方である。</p>
+<pre class="lean"><code><span class="kw">theorem</span> myEq_iff_eq {α : <span class="sort">Type</span>} {a b : α} : MyEq a b ↔ a = b :=
+  ⟨<span class="kw">fun</span> h =&gt; <span class="kw">match</span> h <span class="kw">with</span> | .refl =&gt; rfl,
+   <span class="kw">fun</span> h =&gt; <span class="kw">match</span> h <span class="kw">with</span> | rfl =&gt; .refl⟩
+
+<span class="kw">#check</span> myEq_iff_eq</code></pre>
+<pre class="quote"><code>myEq_iff_eq {α : Type} {a b : α} : MyEq a b ↔ a = b</code></pre>
+<p><code>propext : (p ↔ q) → p = q</code>（命題の外延性。<code>06_Topology.lean</code> の3公理の1つ）まで使えば、同値であるにとどまらず、命題として<strong>等しい</strong>ことになる。</p>
+<pre class="lean"><code><span class="kw">example</span> {α : <span class="sort">Type</span>} {a b : α} : MyEq a b = (a = b) := propext myEq_iff_eq</code></pre>
+<p>つまり2つ目の等式を作っても、衝突も分裂も起きず、同じものが増えるだけである。実際 <code>h : MyEq a b</code> を「<code>a = b</code> が証明できた」と解釈しても問題ない——上で示した同値 <code>myEq_iff_eq</code> が、その読み替えの正当化である。 <code>Eq</code> に残る特別さは論理の側にはなく、道具立ての側にある: <code>=</code> という記法や、<code>rw</code>・<code>simp</code> などのタクティク（<a href="../../../docs/06_topology.html#sec-Top.tactics"><code>06_Topology.lean</code> 1節</a>で登場する、証明のもう1つの書き方の道具）は <code>Eq</code> に向けて作られているので、 <code>MyEq</code> では使えない。例えば <code>h : MyEq a b</code> で <code>rw [h]</code> とすると</p>
+<pre class="quote"><code>error: Invalid rewrite argument: Expected an equality or iff proof
+or definition name, but `h` is a proof of
+  MyEq a b</code></pre>
+<p>と断られる。逆に言えば、それだけの違いしかない。</p>
+</aside>
+<p><a href="reference/04_exists.html#original-note-7">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-7">
+<h3>✏ 練習</h3>
+<ol class="exercise" start="114" data-original-exercise="114">
+<li>（補足の確認）本文の <code>MyEq.symm</code> にならって、<code>MyEq.trans</code> を自分で証明せよ（<code>h₂</code> を <code>match</code> で分ければ <code>h₁</code> がそのまま答えになる）。</li>
+</ol>
+<details class="sol" data-original-exercise="114"><summary>解答 114</summary>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.trans {α : <span class="sort">Type</span>} {a b c : α} (h₁ : MyEq a b) (h₂ : MyEq b c) :
+    MyEq a c :=
+  <span class="kw">match</span> h₂ <span class="kw">with</span>
+  | .refl =&gt; h₁</code></pre>
+<p><code>h₂</code> を場合分けすると構成子は <code>refl</code> しかなく、その枝では <code>c</code> は <code>b</code> と同じものになる。するとゴールは <code>MyEq a b</code> に変わり、<code>h₁</code> がそのまま合う。</p>
+</details>
+<ol class="exercise" start="115" data-original-exercise="115">
+<li>（補足の確認）逆向きの橋 <code>theorem MyEq.ofEq {α : Type} {a b : α} (h : a = b) : MyEq a b</code> を <code>match</code> で書け（今度は <code>Eq</code> の側で場合分けして、<code>MyEq</code> の構成子を置く）。</li>
+</ol>
+<details class="sol" data-original-exercise="115"><summary>解答 115</summary>
+<pre class="lean"><code><span class="kw">theorem</span> MyEq.ofEq {α : <span class="sort">Type</span>} {a b : α} (h : a = b) : MyEq a b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | rfl =&gt; MyEq.refl</code></pre>
+<p>今度は <code>Eq</code> の側で場合分けする。構成子は <code>rfl</code> しかなく、その枝では <code>b</code> は <code>a</code> と同じものになるので、<code>MyEq a a</code> の構成子 <code>refl</code> を置けばよい。</p>
+</details>
+</aside>
+<p><a href="reference/04_exists.html#original-note-8">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-8">
+<h2 id="sec-CH2.checking-details">8. 補足: 証明検査 — エラボレータとカーネル</h2>
+<p>ソースコードから証明の検査までは二段階ある。エラボレータは記法を展開し、暗黙引数や型の情報を補って項を組み立てる。カーネルは、その項が指定された型を持つかを検査する。</p>
+<p>例えば <code>Nat.sub_add_cancel</code> は、自然数の引き算で引く数が大きすぎないという仮定を要する。 <code>n - 1 + 1 = n</code> を全自然数で示そうとして仮定を省略すると、その穴が残る:</p>
+<pre class="quote"><code>example : ∀ n : Nat, n - 1 + 1 = n := fun n =&gt; Nat.sub_add_cancel _
+
+error: don&#x27;t know how to synthesize placeholder for argument `h`
+context:
+n : Nat
+⊢ 1 ≤ n</code></pre>
+<p>この例では <code>n = 0</code> が反例なので、穴は埋められない。省略を補って項を完成させることと、完成した項を検査することの役割を区別しよう。また、検査するのは書かれた命題についての証明であり、その命題が意図した数学を表すかは別の確認が要る。</p>
+<h3>✏ 練習</h3>
+<ol class="exercise" start="117" data-original-exercise="117">
+<li><code>#check @Nat.add_sub_cancel</code> で型を確かめ、 <code>example : ∀ n : Nat, n + 1 - 1 = n</code> をこの定理で証明せよ。</li>
+</ol>
+<details class="sol" data-original-exercise="117"><summary>解答 117</summary>
+<pre class="lean"><code><span class="kw">#check</span> @Nat.add_sub_cancel</code></pre>
+<pre class="quote"><code>Nat.add_sub_cancel : ∀ (n m : Nat), n + m - m = n</code></pre>
+<p>丸括弧＝明示引数なので、使うときは <code>n</code> と <code>m</code> を実際に渡す:</p>
+<pre class="lean"><code><span class="kw">example</span> : ∀ n : Nat, n + 1 - 1 = n := <span class="kw">fun</span> n =&gt; Nat.add_sub_cancel n 1</code></pre>
+<p><code>m := 1</code> とした <code>n + 1 - 1 = n</code> がちょうどゴールの形で、今度は穴が残らない。</p>
+</details>
+<ol class="exercise" start="118" data-original-exercise="118">
+<li><code>#eval (3 : Nat) - 5</code> の値を予想してから確かめよ。</li>
+</ol>
+<details class="sol" data-original-exercise="118"><summary>解答 118</summary>
+<pre class="lean"><code><span class="kw">#eval</span> (3 : Nat) - 5</code></pre>
+<pre class="quote"><code>0</code></pre>
+<p>自然数の引き算は <code>0</code> で切り捨てられる。</p>
+</details>
+</aside>
+<p><a href="reference/04_exists.html#original-note-9">元の文脈で読む</a></p>
+<aside class="note note--optional" id="original-note-9">
+<h2 id="sec-CH.prop-elimination">9. 補足: データの組と存在の証明の違い</h2>
+<p>依存和の項はデータなので、成分を名前で取り出せる。</p>
+<pre class="lean"><code><span class="kw">def</span> sigmaFst {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : α := s.fst
+
+<span class="kw">def</span> sigmaSnd {α : <span class="sort">Type</span>} {P : α → <span class="sort">Type</span>} (s : (a : α) × P a) : P s.fst := s.snd</code></pre>
+<p>一方、存在命題の証明は、その証人を計算用の値として取り出すためのデータではない。同じ命題の証明を区別しないという性質と整合するよう、<code>Exists</code> の証明を分解した結果は命題に限られる。</p>
+<pre class="quote"><code>def existsFst {α : Type} {Q : α → Prop} (h : ∃ a, Q a) : α :=
+  match h with
+  | ⟨a, _⟩ =&gt; a</code></pre>
+<p>これは受理されない。結論が命題ならば、本文と同じく証人と根拠を使って証明できる:</p>
+<pre class="lean"><code><span class="kw">theorem</span> existsElim {α : <span class="sort">Type</span>} {r : <span class="sort">Prop</span>} {Q : α → <span class="sort">Prop</span>}
+    (h : ∃ a, Q a) (hr : ∀ a, Q a → r) : r :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | ⟨a, ha⟩ =&gt; hr a ha</code></pre>
+<p>「または」も、命題を示すために場合分けして使える。</p>
+<pre class="lean"><code><span class="kw">theorem</span> orElimToProp {p q r : <span class="sort">Prop</span>} (h : p ∨ q) (f : p → r) (g : q → r) : r :=
+  h.elim f g</code></pre>
+<p>なお、<code>False</code> や <code>Eq</code> には命題以外への除去も許される。 <code>False.elim</code> や等式によるデータの書き換えは、その例である。</p>
+<h3>✏ 練習</h3>
+<ol class="exercise" start="119" data-original-exercise="119">
+<li>上の <code>existsFst</code> を試し、エラーメッセージを確かめよ。</li>
+</ol>
+<details class="sol" data-original-exercise="119"><summary>解答 119</summary>
+<p>受理されない。<code>Exists</code> の証明を <code>match</code> で使っているが、行き先 <code>α : Type</code> は命題ではない。報告の要点は <code>can only eliminate into Prop</code> である。本文の <code>existsElim</code> は行き先が命題 <code>r</code> なので受理される。</p>
+</details>
+</aside>
+</aside>
+</main>
+<nav><span><a href="03_inductivetypes.html">← 03_InductiveTypes</a></span><a href="index.html">目次</a><span></span></nav>
+</body>
+</html>

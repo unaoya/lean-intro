@@ -1,0 +1,313 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "id": "opening",
+      "label": "構成子で作り、場合分けで使う",
+      "at": {
+        "tag": "pre",
+        "starts": "import «02_Forall»"
+      }
+    },
+    {
+      "id": "signal",
+      "label": "列挙型：作り方を並べる",
+      "at": {
+        "tag": "h2",
+        "starts": "1. 構成子と場合分け"
+      }
+    },
+    {
+      "id": "match",
+      "label": "match 全体も一つの項",
+      "at": {
+        "tag": "h3",
+        "starts": "match で項を使う"
+      }
+    },
+    {
+      "id": "next",
+      "label": "fun と match を組み合わせる",
+      "at": {
+        "tag": "h3",
+        "starts": "関数の本体で場合分けする"
+      }
+    },
+    {
+      "id": "signal-exercise",
+      "label": "練習：場合分けで関数を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "Signal.red、Signal.yellow、Signal.green をそれぞれ 0、1、2 に送る"
+      }
+    },
+    {
+      "id": "unit-empty",
+      "label": "構成子が一つの場合と、ない場合",
+      "at": {
+        "tag": "h3",
+        "starts": "一点の型と空の型"
+      }
+    },
+    {
+      "id": "sum",
+      "label": "引数を持つ構成子と直和",
+      "at": {
+        "tag": "h2",
+        "starts": "2. 直和と直積"
+      }
+    },
+    {
+      "id": "sum-match",
+      "label": "構成子の引数に名前を付けて使う",
+      "at": {
+        "tag": "h3",
+        "starts": "中身を受け取る場合分け"
+      }
+    },
+    {
+      "id": "constructor-injective",
+      "label": "構成子の単射性も証明できる",
+      "at": {
+        "tag": "h3",
+        "starts": "構成子が違う場合と、同じ場合"
+      }
+    },
+    {
+      "id": "sum-parameters",
+      "label": "型を受け取って型を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "中身の型をパラメータにする"
+      }
+    },
+    {
+      "id": "product",
+      "label": "一つの構成子に二つの引数を渡す",
+      "at": {
+        "tag": "h3",
+        "starts": "組も帰納型で作る"
+      }
+    },
+    {
+      "id": "product-match",
+      "label": "組の成分を取り出す関数",
+      "at": {
+        "tag": "h3",
+        "starts": "組を使うときも match"
+      }
+    },
+    {
+      "id": "dependent-pair",
+      "label": "集合族の直和を組で表す",
+      "at": {
+        "tag": "h2",
+        "starts": "3. 依存する組"
+      }
+    },
+    {
+      "id": "numbered-values",
+      "label": "第一成分で第二成分の型が決まる",
+      "at": {
+        "tag": "h3",
+        "starts": "依存する組を作る"
+      }
+    },
+    {
+      "id": "numbered-size",
+      "label": "依存する組から第一成分を取る",
+      "at": {
+        "tag": "h3",
+        "starts": "第一成分を取り出す"
+      }
+    },
+    {
+      "id": "numbered-index",
+      "label": "第二成分の取り出しは依存関数",
+      "at": {
+        "tag": "h3",
+        "starts": "第二成分の型も入力から決まる"
+      }
+    },
+    {
+      "id": "sigma",
+      "label": "一般の族でも同じ組を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "一般の依存和"
+      }
+    },
+    {
+      "id": "families-summary",
+      "label": "依存関数と依存する組を対にする",
+      "at": {
+        "tag": "h3",
+        "starts": "すべての添字で選ぶか、一つの添字を選ぶか"
+      }
+    },
+    {
+      "id": "numbered-exercise",
+      "label": "練習：依存する組を作って使う",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "n : Nat から、大きさが n + 1 で番号が最後の n である組を返す"
+      }
+    },
+    {
+      "id": "natural",
+      "label": "再帰的な型を定義する",
+      "at": {
+        "tag": "h2",
+        "starts": "4. 自然数と再帰"
+      }
+    },
+    {
+      "id": "addition",
+      "label": "小さい項に対して再帰する",
+      "at": {
+        "tag": "h3",
+        "starts": "自分より小さい項を使う"
+      }
+    },
+    {
+      "id": "recursion-proof",
+      "label": "再帰で証明を書くと帰納法になる",
+      "at": {
+        "tag": "h3",
+        "starts": "各自然数への証明を再帰で作る"
+      }
+    },
+    {
+      "id": "indexed",
+      "label": "帰納型で型の族を定義する",
+      "at": {
+        "tag": "h2",
+        "starts": "5. 等式と自然数の不等式"
+      }
+    },
+    {
+      "id": "eq-definition",
+      "label": "Eq.refl は族の対角に項を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "Eq の構成子を読む"
+      }
+    },
+    {
+      "id": "eq-symmetry",
+      "label": "等式を match で使う",
+      "at": {
+        "tag": "h3",
+        "starts": "対称性を自分で証明する"
+      }
+    },
+    {
+      "id": "eq-transitivity",
+      "label": "等式をつなぐ関数も match で作る",
+      "at": {
+        "tag": "h3",
+        "starts": "推移性を証明する"
+      }
+    },
+    {
+      "id": "eq-congruence",
+      "label": "同じ関数を適用しても等しい",
+      "at": {
+        "tag": "h3",
+        "starts": "congrArg に相当する関数を作る"
+      }
+    },
+    {
+      "id": "nat-le",
+      "label": "自然数の順序を帰納的に定義する",
+      "at": {
+        "tag": "h3",
+        "starts": "自然数の不等式 Nat.le"
+      }
+    },
+    {
+      "id": "le-construct",
+      "label": "不等式の証明を構成子で組み立てる",
+      "at": {
+        "tag": "h3",
+        "starts": "2 ≤ 4 の証明を作る"
+      }
+    },
+    {
+      "id": "le-use",
+      "label": "不等式の証明も再帰で使う",
+      "at": {
+        "tag": "h3",
+        "starts": "両辺に一つ加えても順序は保たれる"
+      }
+    },
+    {
+      "id": "le-exercise",
+      "label": "練習：不等式の証明の型を読む",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "1 ≤ 3 の証明を Nat.le.refl と Nat.le.step だけで作れ。"
+      }
+    },
+    {
+      "id": "practice-prev",
+      "label": "練習：逆回りの信号",
+      "at": {
+        "tag": "h2",
+        "starts": "6. ✏ 練習 — 章末問題"
+      }
+    },
+    {
+      "id": "practice-swap-sum",
+      "label": "練習：直和を入れ替える",
+      "at": {
+        "tag": "ol",
+        "starts": "swapSum : MySum A B → MySum B A を定義せよ。"
+      }
+    },
+    {
+      "id": "practice-product",
+      "label": "練習：二つの関数の値を組にする",
+      "at": {
+        "tag": "ol",
+        "starts": "写像 f : X → A と g : X → B から、x を組 (f x, g x) に送る"
+      }
+    },
+    {
+      "id": "practice-dependent",
+      "label": "練習：依存関数から依存和への写像",
+      "at": {
+        "tag": "ol",
+        "starts": "族 B : A → Type と依存関数 f : (a : A) → B a がある。"
+      }
+    },
+    {
+      "id": "practice-conversion",
+      "label": "練習：再帰で自然数へ送る",
+      "at": {
+        "tag": "ol",
+        "starts": "MyNat.zero を 0 に、MyNat.succ k を toNat k + 1 に送る"
+      }
+    },
+    {
+      "id": "practice-le-add",
+      "label": "練習：自然数に応じて不等式の証明を作る",
+      "at": {
+        "tag": "ol",
+        "starts": "leAddRight : ∀ n k : Nat, n ≤ n + k を、k に関する再帰で証明せよ。"
+      }
+    },
+    {
+      "id": "practice-eq",
+      "label": "練習：等式によって証明を移す",
+      "at": {
+        "tag": "ol",
+        "starts": "自然数 n m と、h : n = m、hn : 0 ≤ n を受け取り、0 ≤ m を返す"
+      }
+    }
+  ],
+  "splits": []
+}

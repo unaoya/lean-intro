@@ -1,0 +1,8 @@
+{
+  "backup": "/tmp/lean-intro-chapters34-recovery/git-before-repair.tar",
+  "restored_main": "fd611b83c08c19212b7c1c3201aa6ef789189bbc",
+  "object_files_added": 2462,
+  "working_tree_and_index_changed": false,
+  "fsck_exit_code": 0,
+  "fsck_output": ""
+}

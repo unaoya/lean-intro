@@ -1,0 +1,29 @@
+{
+  "all": {
+    "pages": 101,
+    "empty_pages": [],
+    "chapter_starts": [
+      1,
+      2,
+      41,
+      59,
+      81
+    ],
+    "eq_pages": [
+      68,
+      69
+    ],
+    "surjective_pages": [
+      83
+    ],
+    "supplement_pages": [
+      73,
+      90
+    ],
+    "last_exercise_present": true
+  },
+  "slides": {
+    "pages": 882,
+    "empty_pages": []
+  }
+}

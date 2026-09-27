@@ -10,5 +10,13 @@
   "02_Forall": {
     "pages": 53,
     "steps": 181
+  },
+  "03_InductiveTypes": {
+    "pages": 38,
+    "steps": 145
+  },
+  "04_Exists": {
+    "pages": 29,
+    "steps": 101
   }
 }

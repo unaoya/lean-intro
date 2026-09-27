@@ -1,0 +1,18 @@
+Signal.red : Signal
+0
+Signal.green
+NatOrBool.nat (n : Nat) : NatOrBool
+7
+NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝
+MySum.inl {A B : Type} (a : A) : MySum A B
+MyPair.mk 3 true : MyPair Nat Bool
+3
+Numbered.mk (n : Nat) (i : Fin n) : Numbered
+Numbered.mk 3 : Fin 3 → Numbered
+3
+numberedThree.index : Fin numberedThree.size
+numberedSigma : (n : Nat) × Fin n
+MyNat.zero.succ.succ : MyNat
+MyNat.zero.succ.succ
+'eqSymmByMatch' does not depend on any axioms
+Nat.le.step two_le_four : Nat.le 2 (Nat.succ 4)

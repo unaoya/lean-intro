@@ -1,0 +1,102 @@
+{
+  "03_InductiveTypes": {
+    "notes": 9,
+    "records": [
+      {
+        "title": "補足: true と .true、red と .red",
+        "original_html_sha256": "cdbafa35223a015771141dc45f68285335f7fdd4c85e0c03740def551be8b2be",
+        "text_preserved": true
+      },
+      {
+        "title": "先取り（04_Exists）: 「全部」と「別々」を支える道具",
+        "original_html_sha256": "c760005bd23ca38d7a053dc9d131dbfaa4c6e0c4b557d5f731c5d41bc6ba7620",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 型をパラメータにした取り出し関数",
+        "original_html_sha256": "682069b9d6ff1b4e7501f18fd27f6dc9d270f62628e9414201267aefaac859d7",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 集合の方程式としての再帰",
+        "original_html_sha256": "3008d5d622307ebd210231c2103a5361c3584de2b69ec771dc1fa69c18652b51",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 再帰が止まることの検査",
+        "original_html_sha256": "0945575e28e9e283e9b2e6ded404483b99b365d5c46f77d2dd8881e7c591a037",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 帰納型を直和と直積で見る",
+        "original_html_sha256": "9a46a1ba8540a3c9d3ca55dcc22a7a5b6720dc0b852f5da4ac1d2a583e91d03a",
+        "text_preserved": true
+      },
+      {
+        "title": "復習: 取り出す値の型も入力で変わる",
+        "original_html_sha256": "afb6791127cb3217c557bde77fdc6d4425a753d7aca8341f9be0f2b9a22374df",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: では 2 : Fin 3 なのか？",
+        "original_html_sha256": "e13a0492050c5305227f326db8335479c38bd94cd8f358b4cfb0310c1b5310b5",
+        "text_preserved": true
+      },
+      {
+        "title": "✏ 練習",
+        "original_html_sha256": "61997bae51b8ca208db81e1287124534a26f68e9973cf4c08025d6da2295a714",
+        "text_preserved": true
+      }
+    ]
+  },
+  "04_Exists": {
+    "notes": 9,
+    "records": [
+      {
+        "title": "補足: 「既知」だった 2n = n + n を自分で証明する",
+        "original_html_sha256": "28009c71d8786a8978e39a3496afdd199d6574e1886f8c4e99fc7169341e2dbd",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: Prop と Type をまとめて扱う Sort",
+        "original_html_sha256": "515fba85e32d8ca50c2decf625cf1f57f9eeed4d85d91f2850079622dd9c3e69",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 対称に見えて rfl が通らない 0 * n",
+        "original_html_sha256": "022824f7f7eaf74803d436d462a8c9319f66ebea5508d9e9cdba96a70393836a",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 定義的等しさと、等しいことの証明",
+        "original_html_sha256": "af69ae73b2ecd01b9f499f034f0ff4f5e5a6e7a764d5cd764e742123d707f838",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 構成子が別々であることと noConfusion",
+        "original_html_sha256": "5caa233399184036df0b233478f1eeb77e6941c299ae2eff43a234d2045e825e",
+        "text_preserved": true
+      },
+      {
+        "title": "補足: 等式をもう1つ作る実験",
+        "original_html_sha256": "e6d96f4d0f0c63f1d03e178028f35c57b16936ff5d608da5b98829fb2d4c25d0",
+        "text_preserved": true
+      },
+      {
+        "title": "✏ 練習",
+        "original_html_sha256": "1e24319d395e35faff8d9506061085b881f18134640651d58443623220f90bb0",
+        "text_preserved": true
+      },
+      {
+        "title": "8. 補足: 証明検査 — エラボレータとカーネル",
+        "original_html_sha256": "8b7c16f0852609711e52ec7d0c41d20257632292f53ccc8a8215541da9811fd4",
+        "text_preserved": true
+      },
+      {
+        "title": "9. 補足: データの組と存在の証明の違い",
+        "original_html_sha256": "31819638a1e79311ddee83cf20d2e653ad59366d94c33c31ef8bcf295a9314eb",
+        "text_preserved": true
+      }
+    ]
+  }
+}

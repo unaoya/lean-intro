@@ -77,9 +77,9 @@ details.sol[open] > summary { margin-bottom: .4rem; }
   onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
 </head>
 <body>
-<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span></span></nav>
+<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span><a href="03_inductivetypes.html">03_InductiveTypes →</a></span></nav>
 <main>
-<p class="trial-banner">第1・2章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/02_forall.html">この章のスライド</a> · <a href="../src/02_Forall.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «01_TypesAndTerms»</code></pre>
+<p class="trial-banner">第1〜4章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/02_forall.html">この章のスライド</a> · <a href="../src/02_Forall.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «01_TypesAndTerms»</code></pre>
 <h1>型と命題 I — ならばと全称量化</h1>
 <p>この章では、<strong>その命題の証明を与えられたか、証明を書けたか</strong>という視点で数学を読む。命題の真偽を先に判定することや、同じ命題の証明どうしの文面を比べることから、いったん視点を移そう。注目するのは、その主張を支える保証を、実際に与えられたかどうかである。</p>
 <p>ここでいう保証は、その命題の<strong>証明書</strong>だと思えばよい。証明がまだ書けていないということと、その命題が偽であるということは区別する。</p>
@@ -433,6 +433,6 @@ hgf y : g (f y) = y</code></pre>
 <p>比べたい二つの対象は <code>g (f x)</code> と <code>x</code> である。それらに <code>f</code> を適用した結果の等式 <code>f (g (f x)) = f x</code> は、<code>hfg (f x)</code> が与える。この証明を単射性に渡せばよい。等号の書き換えをせず、二つの仮定の適用で証明できる。</p>
 </details>
 </main>
-<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span></span></nav>
+<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span><a href="03_inductivetypes.html">03_InductiveTypes →</a></span></nav>
 </body>
 </html>
