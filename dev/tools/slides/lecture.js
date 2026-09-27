@@ -94,6 +94,15 @@
       if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
     }
   }
+  // Move a whole slide, landing on its last step with every fragment shown.
+  function page(direction) {
+    const visible = included();
+    const target = visible[visible.indexOf(active) + direction];
+    if (!target) return;
+    active = target;
+    step = steps().length - 1;
+    render({scroll: true});
+  }
   function jump(target) {
     active = target;
     step = 0;
@@ -164,6 +173,8 @@
     } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
       if (reading) return;
       event.preventDefault(); navigate(-1);
+    } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !reading) {
+      event.preventDefault(); page(event.key === 'ArrowDown' ? 1 : -1);
     } else if (event.key === 'Home' && !reading) {
       event.preventDefault(); jump(included()[0]);
     } else if (event.key === 'End' && !reading) {
