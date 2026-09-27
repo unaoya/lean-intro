@@ -15,6 +15,8 @@ variable {X Y Z : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [tZ 
 
 -- ### 部分空間
 
+instance instTopSubtypeSet (W : Set X) : TopologicalSpace (Subtype W) := instTopSubtype W
+
 theorem continuous_subtype_val {p : X → Prop} : Continuous (Subtype.val : Subtype p → X) :=
   continuous_fromInitial (Y := fun _ : Unit => X) (fun _ => tX)
     (fun _ => Subtype.val) ()

@@ -1,0 +1,201 @@
+-- はじめての Lean — 02_Forall（ブラウザ版・自動生成）
+-- 先頭には、この章が使う前の章（01_TypesAndTerms）のコードをまとめてあります。
+-- 本章は「ここから本章」の行から始まります（44 行目。Ctrl+G で行番号へ移動できます）。
+-- 書き換えた内容は、このページの URL に入っています。残したいときは URL をブックマークするか、
+-- コードをコピーして保存してください。元に戻すときは、テキストのリンクから開き直します。
+
+-- ════════ 前の章のコード（読まなくてよい） ════════
+-- ─── 01_TypesAndTerms ───
+section
+
+def x : Nat := 2
+
+def y : Nat := x
+
+def double : Nat → Nat := fun n => n + n
+
+def double' (n : Nat) : Nat := n + n
+
+def plus : Nat → Nat → Nat := fun a => fun b => a + b
+
+def addMul (a b c : Nat) : Nat := a + b * c
+
+def applyTo21 (F : Nat → Nat) : Nat := F 21
+
+def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
+
+def Map : Type → Type → Type := fun A B => A → B
+
+def idAt (α : Type) (a : α) : α := a
+
+def Tuple : Nat → Type := fun n => Fin n → Nat
+
+def constTuple : (n : Nat) → Tuple n :=
+  fun n => fun (_i : Fin n) => 7
+
+def zeroIndex : (n : Nat) → Fin (n + 1) := fun _ => 0
+
+def idImplicit {α : Type} (a : α) : α := a
+
+def zeros : (n : Nat) → Vector Nat n := fun n => Vector.replicate n 0
+
+end
+
+-- ════════ ここから本章：02_Forall ════════
+-- # 型と命題 I — ならばと全称量化
+
+-- ## 0. 命題の証明と「ならば」
+
+-- 本文の例（コメントアウトしてある。名前が重なるものもある）:
+-- theorem 名前 (引数) : 命題 := 証明の項
+
+theorem modus_ponens
+    (P Q : Prop)
+    (hP : P)
+    (hPQ : P → Q) :
+    Q :=
+  hPQ hP
+
+#check modus_ponens
+
+/- ✏ 練習
+28. 次の `#check` の結果を予想してから確かめよ。出力の最後が `Q` になるまでを、
+   `P → Q` の入力型と出力型から説明せよ。
+
+       #check fun (P Q : Prop) (hP : P) (hPQ : P → Q) => hPQ hP
+
+29. 引数の順だけを入れ替えた
+   `theorem use_imp (P Q : Prop) (hPQ : P → Q) (hP : P) : Q` の右辺を書け。
+-/
+
+-- ### 例2: 含意の推移
+
+theorem imp_trans
+    (P Q R : Prop)
+    (hPQ : P → Q)
+    (hQR : Q → R) :
+    P → R :=
+  fun hP =>
+    hQR (hPQ hP)
+
+#check imp_trans
+
+/- ✏ 練習
+30. `theorem imp_refl (P : Prop) : P → P` を書け。
+31. `P → Q`、`Q → R`、`R → S` を順に使う
+   `theorem imp_trans3 (P Q R S : Prop) (hPQ : P → Q) (hQR : Q → R)
+   (hRS : R → S) : P → S` を書け。まず最も内側の適用の型から予想すること。
+-/
+
+-- ### theorem と def
+
+theorem one_add_one : 1 + 1 = 2 := rfl
+
+#check one_add_one
+
+/- ✏ 練習
+32. `#check 3 < 5` と `#check 3 = 5` の表示を予想してから確かめよ
+   （偽の命題も命題である、を思い出すこと）。
+33. `theorem two_add_three : 2 + 3 = 5 := rfl` を自分で宣言してみよ。
+34. `theorem oops : 2 + 2 = 5 := rfl` は受理されるか。予想してから試し、
+   エラーメッセージがどの規則の破れを指しているか読み取れ。
+-/
+
+-- ### 整理 — 関数型と「ならば」
+
+def constFun {α β : Type} (b : β) : α → β := fun _ => b
+
+#check constFun
+
+theorem constImp {p q : Prop} (hq : q) : p → q := fun _ => hq
+
+#check constImp
+
+def applyFun {α β : Type} (f : α → β) (a : α) : β := f a
+
+#check applyFun
+
+theorem applyImp {p q : Prop} (h : p → q) (hp : p) : q := h hp
+
+#check applyImp
+
+/- ✏ 練習
+35. 「`P` を仮定すれば、`Q` を仮定しても `P` が成り立つ」を証明する
+   `theorem keep_left (P Q : Prop) : P → Q → P` の右辺を書け。
+36. `h : P → Q → R` に `P` と `Q` の証明を順に渡して、`R` の証明を作れ。
+   `theorem use_two (P Q R : Prop) (h : P → Q → R) (hP : P) (hQ : Q) : R`
+   の右辺を書け。
+-/
+
+-- ## 1. 全称と単射の合成
+
+-- ### 例3: 単射どうしの合成は単射
+
+example {α β γ : Type} {f : α → β} {g : β → γ}
+    (hg : ∀ u v, g u = g v → u = v) (hf : ∀ u v, f u = f v → u = v) :
+    ∀ x y, g (f x) = g (f y) → x = y :=
+  fun x y h => hf x y (hg (f x) (f y) h)
+
+#check @Function.Injective
+
+theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ}
+    (hg : Function.Injective g) (hf : Function.Injective f) :
+    Function.Injective (fun x => g (f x)) :=
+  fun x y h => hf (hg h : f x = f y)
+
+#check comp_injective
+
+/- ✏ 練習
+37. 定義を開いた最初の `example` で、`hg (f x) (f y) h` と
+   `hf x y (hg (f x) (f y) h)` の型を内側から順に予想し、`#check` で確かめよ。
+38. 恒等関数が単射であることを示す
+   `theorem id_injective (α : Type) : Function.Injective (fun x : α => x)` を書け。
+-/
+
+-- ### 整理 — 依存積と「すべての」
+
+theorem all_refl : ∀ n : Nat, n = n :=
+  fun n => (rfl : n = n)
+
+#check all_refl
+
+def mkPi {α : Type} {P : α → Type} (f : (a : α) → P a) : (a : α) → P a := fun a => f a
+
+#check mkPi
+
+theorem mkForall {α : Type} {Q : α → Prop} (h : ∀ a, Q a) : ∀ a, Q a := fun a => h a
+
+#check mkForall
+
+def applyPi {α : Type} {P : α → Type} (f : (a : α) → P a) (a : α) : P a := f a
+
+#check applyPi
+
+theorem applyForall {α : Type} {Q : α → Prop} (h : ∀ a, Q a) (a : α) : Q a := h a
+
+#check applyForall
+
+-- ### 具体例: 述語と全称命題
+
+def IsZero : Nat → Prop := fun n => n = 0
+
+#check IsZero 3
+
+theorem all_mul_zero : ∀ n : Nat, IsZero (n * 0) := fun _ => rfl
+
+#check all_mul_zero
+
+/- ✏ 練習
+39. `#check applyForall all_mul_zero 7` の表示を予想してから確かめよ。
+   引数7を渡すと、結果の命題にも7が入ることを説明せよ。
+-/
+
+-- ## 2. 型検査が証明の検査になる
+
+#print axioms modus_ponens
+
+-- ### 仮定を取り違えると、型が合わなくなる
+
+-- 本文の例（コメントアウトしてある。名前が重なるものもある）:
+-- theorem bad_trans (P Q R : Prop) (hPQ : P → Q) (hQR : Q → R) : P → R :=
+--   fun hP => hQR hP

@@ -77,7 +77,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <body>
 <nav><span><a href="07_exercises.html">← 07_Exercises</a></span><a href="index.html">目次</a><span><a href="09_ascoli.html">09_Ascoli →</a></span></nav>
 <main>
-<pre class="lean"><code><span class="kw">import</span> «06_Topology»</code></pre>
+<p class="lecture-link"><a href="https://live.lean-lang.org/#project=Stable&amp;url=https%3A%2F%2Funaoya.github.io%2Flean-intro%2Fplay%2F08_Real.lean" target="_blank" rel="noopener">この章のコードをブラウザで動かす</a></p><pre class="lean"><code><span class="kw">import</span> «06_Topology»</code></pre>
 <h1>発展演習: 実数</h1>
 <p><code>06_Topology.lean</code> まで読み終えた人のための演習問題集（<code>07_Exercises.lean</code> とは独立に読める）。題材は<strong>実数</strong>で、「実数の公理」から出発して、四則演算と順序の計算規則、絶対値、アルキメデス性、実数の位相と連続関数、そして閉区間のコンパクト性（Heine–Borel）・連結性・ルベーグ数の補題までを証明する。</p>
 <h2>実数を構成せずに仮定する</h2>
@@ -192,8 +192,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">theorem</span> sub_eq_zero {a b : R} : a - b = 0 ↔ a = b := <span class="kw">by</span>
   <span class="kw">constructor</span>
   · <span class="kw">intro</span> h
-    <span class="kw">have</span> h&#x27; := congrArg (· + b) h
-    simp only at h&#x27;
+    <span class="kw">have</span> h&#x27; : a - b + b = 0 + b := congrArg (· + b) h
     <span class="kw">rw</span> [sub_add_cancel, zero_add] at h&#x27;
     <span class="kw">exact</span> h&#x27;
   · <span class="kw">intro</span> h; <span class="kw">rw</span> [h, sub_self]

@@ -726,8 +726,7 @@ theorem evenlyCovered_circle (a : R) :
       (by rw [intCast_sub, add_assoc, sub_def, add_comm (intCast n), ← add_assoc (intCast m),
             add_neg_cancel, zero_add])
     exact hne (by
-      have h3 := congrArg (fun t => t - a) this
-      simp only at h3
+      have h3 : a + intCast n - a = a + intCast m - a := congrArg (fun t => t - a) this
       rw [← e1, ← e2] at h3
       exact h3.symm)
   · -- 逆写像はシートに入り、`p` で戻る
