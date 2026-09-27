@@ -2,5 +2,5 @@
 __pycache__/
 src/*.olean
 src/*.ilean
-checks/*.png
+checks/**/*.png
 tmp/

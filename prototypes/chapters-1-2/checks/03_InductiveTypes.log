@@ -1,9 +1,11 @@
 Signal.red : Signal
 0
 Signal.green
-NatOrBool.nat (n : Nat) : NatOrBool
+TaggedSum.inl (n : Nat) : TaggedSum
+TaggedSum.inr (b : Bool) : TaggedSum
 7
-NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝
+0
+TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝
 MySum.inl {A B : Type} (a : A) : MySum A B
 MyPair.mk 3 true : MyPair Nat Bool
 3

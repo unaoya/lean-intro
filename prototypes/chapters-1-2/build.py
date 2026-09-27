@@ -30,7 +30,7 @@ from supplements import preserve_supplements
 from pdf_export import prepare_pdf_documents
 
 CANONICAL_CHAPTERS = list(book.CHAPTERS)
-CHAPTERS = ['01_TypesAndTerms', '02_Forall', '03_InductiveTypes', '04_Exists']
+CHAPTERS = ['01_TypesAndTerms', '02_Forall', '03_InductiveTypes', '04_Exists', '05_MathematicalTools']
 SRC = HERE / 'src'
 OUT = HERE / 'preview'
 
@@ -115,26 +115,26 @@ for name in CHAPTERS:
     counts[name] = book.exercise_count(segments)
     exercise_start += counts[name]
 
-assert counts == {'01_TypesAndTerms': 27, '02_Forall': 12, '03_InductiveTypes': 10, '04_Exists': 6}, counts
-banner = '<p class="trial-banner">第1〜4章 改稿試作 · <a href="index.html">試作の目次</a></p>'
+assert counts == {'01_TypesAndTerms': 27, '02_Forall': 12, '03_InductiveTypes': 10, '04_Exists': 6, '05_MathematicalTools': 16}, counts
+banner = '<p class="trial-banner">第1〜5章 改稿試作 · <a href="index.html">試作の目次</a></p>'
 css = book.CSS + '\n.trial-banner{border-left:4px solid #386456;padding:12px 16px;background:#eff6f2;font-size:14px}\n'
 for i, name in enumerate(CHAPTERS):
     intro = banner + f'<p><a href="slides/{name.lower()}.html">この章のスライド</a> · <a href="../src/{name}.lean">試作原稿</a></p>'
     (OUT / (name.lower() + '.html')).write_text(book.page(titles[name], intro + bodies[name], book.nav_html(i), css))
 
-index_body = '<h1>第1〜4章 改稿試作</h1><p>関数の項から、構成子と場合分けによる証明へ。</p><ol>'
+index_body = '<h1>第1〜5章 改稿試作</h1><p>関数と証明から、数学を記述する道具へ。</p><ol>'
 for name in CHAPTERS:
     index_body += f'<li><a href="slides/{name.lower()}.html">{html.escape(titles[name])}</a></li>'
 index_body += '</ol><p>段落・コードブロックごとに表示します。矢印キーで進み、M で目次を開けます。</p>'
-index = '<h1>第1〜4章 改稿試作</h1><p>元の原稿をコピーして作った、相談用の改稿です。</p>'
-index += '<p>関数と依存関数、具体的な数学の証明、帰納型、存在量化と論理の組み合わせを順に扱います。</p>'
+index = '<h1>第1〜5章 改稿試作</h1><p>元の原稿をコピーして作った、相談用の改稿です。</p>'
+index += '<p>関数と依存関数、具体的な数学の証明、帰納型、存在量化と論理、構造体・部分型・集合を順に扱います。</p>'
 for i, name in enumerate(CHAPTERS, 1):
     index += f'<h2>第{i}章 · {html.escape(titles[name])}</h2><p><a href="{name.lower()}.html">通読版</a> · <a href="slides/{name.lower()}.html">スライド版</a> · <a href="../src/{name}.lean">試作原稿</a></p>'
 if args.pdf or all((HERE / 'output/pdf' / name).exists() for name in ['all.pdf', 'slides.pdf']):
     index += '<h2>PDF</h2><p><a href="../output/pdf/all.pdf">通読版PDF</a> · <a href="../output/pdf/slides.pdf">スライド版PDF（表示段階ごと）</a></p>'
 index += '<p>第3・4章の元原稿の補足は、各章末の「元原稿から残した補足」で読めます。補足内の練習番号は元原稿の番号です。</p>'
 index += '<p><a href="../PLAN.md">相談で決めた方針</a> · <a href="../README.md">再生成の手順</a></p>'
-(OUT / 'index.html').write_text(book.page('第1〜4章 改稿試作', index))
+(OUT / 'index.html').write_text(book.page('第1〜5章 改稿試作', index))
 
 stats = {}
 if not args.text_only:

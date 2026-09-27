@@ -4,19 +4,23 @@
     "steps": 3
   },
   "01_TypesAndTerms": {
-    "pages": 112,
-    "steps": 452
+    "pages": 114,
+    "steps": 463
   },
   "02_Forall": {
-    "pages": 53,
-    "steps": 181
+    "pages": 55,
+    "steps": 194
   },
   "03_InductiveTypes": {
-    "pages": 38,
-    "steps": 145
+    "pages": 40,
+    "steps": 151
   },
   "04_Exists": {
     "pages": 29,
     "steps": 101
+  },
+  "05_MathematicalTools": {
+    "pages": 56,
+    "steps": 239
   }
 }

@@ -2,11 +2,43 @@
   "failures": [],
   "reports": [
     {
+      "chapter": "index",
+      "reading": {
+        "pairs": 0,
+        "matched": true,
+        "mathRendered": 0,
+        "mathErrors": 0,
+        "brokenLinks": []
+      }
+    },
+    {
+      "chapter": "index",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 0,
+      "pages": 1,
+      "overflow": []
+    },
+    {
+      "chapter": "index",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 0,
+      "pages": 1,
+      "overflow": []
+    },
+    {
       "chapter": "01_typesandterms",
       "reading": {
         "pairs": 27,
         "matched": true,
-        "mathRendered": 101
+        "mathRendered": 102,
+        "mathErrors": 0,
+        "brokenLinks": []
       }
     },
     {
@@ -15,8 +47,8 @@
         "width": 1440,
         "height": 900
       },
-      "mathRendered": 101,
-      "pages": 112,
+      "mathRendered": 102,
+      "pages": 114,
       "overflow": []
     },
     {
@@ -25,8 +57,8 @@
         "width": 1280,
         "height": 800
       },
-      "mathRendered": 101,
-      "pages": 112,
+      "mathRendered": 102,
+      "pages": 114,
       "overflow": []
     },
     {
@@ -34,7 +66,9 @@
       "reading": {
         "pairs": 12,
         "matched": true,
-        "mathRendered": 104
+        "mathRendered": 116,
+        "mathErrors": 0,
+        "brokenLinks": []
       }
     },
     {
@@ -43,8 +77,8 @@
         "width": 1440,
         "height": 900
       },
-      "mathRendered": 100,
-      "pages": 41,
+      "mathRendered": 116,
+      "pages": 55,
       "overflow": []
     },
     {
@@ -53,8 +87,98 @@
         "width": 1280,
         "height": 800
       },
-      "mathRendered": 100,
-      "pages": 41,
+      "mathRendered": 116,
+      "pages": 55,
+      "overflow": []
+    },
+    {
+      "chapter": "03_inductivetypes",
+      "reading": {
+        "pairs": 10,
+        "matched": true,
+        "mathRendered": 13,
+        "mathErrors": 0,
+        "brokenLinks": []
+      }
+    },
+    {
+      "chapter": "03_inductivetypes",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 5,
+      "pages": 40,
+      "overflow": []
+    },
+    {
+      "chapter": "03_inductivetypes",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 5,
+      "pages": 40,
+      "overflow": []
+    },
+    {
+      "chapter": "04_exists",
+      "reading": {
+        "pairs": 6,
+        "matched": true,
+        "mathRendered": 44,
+        "mathErrors": 0,
+        "brokenLinks": []
+      }
+    },
+    {
+      "chapter": "04_exists",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 44,
+      "pages": 29,
+      "overflow": []
+    },
+    {
+      "chapter": "04_exists",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 44,
+      "pages": 29,
+      "overflow": []
+    },
+    {
+      "chapter": "05_mathematicaltools",
+      "reading": {
+        "pairs": 16,
+        "matched": true,
+        "mathRendered": 4,
+        "mathErrors": 0,
+        "brokenLinks": []
+      }
+    },
+    {
+      "chapter": "05_mathematicaltools",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 4,
+      "pages": 56,
+      "overflow": []
+    },
+    {
+      "chapter": "05_mathematicaltools",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 4,
+      "pages": 56,
       "overflow": []
     }
   ]

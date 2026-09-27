@@ -13,6 +13,7 @@ y : Nat
 def x : Nat :=
 2
 double : Nat → Nat
+fun x ↦ true : Nat → Bool
 double 21 : Nat
 42
 double' (n : Nat) : Nat

@@ -37,7 +37,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || runtime);
       if (report[name].closedAnswers) errors.push(name + ': closed answers');
       if (report[name].overflow.length) errors.push(name + ': slide overflow');
     }
-    if (report.all.exercises !== 55 || report.all.originalNotes !== 18) errors.push('all: exercises or notes missing');
+    const expectedExercises = Object.values(JSON.parse(fs.readFileSync(path.join(__dirname, 'build.json'))).exercises).reduce((n, x) => n + x, 0);
+    if (report.all.exercises !== expectedExercises || report.all.originalNotes !== 18) errors.push('all: exercises or notes missing');
     const expected = Object.values(JSON.parse(fs.readFileSync(path.join(__dirname, 'slides.json')))).reduce((n, x) => n + x.steps, 0);
     if (report.slides.slidePages !== expected) errors.push('slides: page count mismatch');
     fs.writeFileSync(path.join(__dirname, 'pdf-layout.json'), JSON.stringify({errors, report}, null, 2) + '\n');

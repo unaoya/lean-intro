@@ -1,29 +1,40 @@
 {
   "all": {
-    "pages": 101,
+    "pages": 128,
     "empty_pages": [],
-    "chapter_starts": [
-      1,
-      2,
-      41,
-      59,
-      81
-    ],
-    "eq_pages": [
-      68,
-      69
-    ],
-    "surjective_pages": [
-      83
-    ],
-    "supplement_pages": [
-      73,
-      90
-    ],
-    "last_exercise_present": true
+    "last_exercise_present": true,
+    "updated_examples_present": true
   },
   "slides": {
-    "pages": 882,
+    "pages": 1151,
     "empty_pages": []
+  },
+  "visual_samples": {
+    "all": [
+      1,
+      10,
+      19,
+      20,
+      46,
+      49,
+      63,
+      64,
+      106,
+      117,
+      128
+    ],
+    "slides": [
+      97,
+      201,
+      208,
+      213,
+      504,
+      518,
+      527,
+      561,
+      689,
+      696,
+      1012
+    ]
   }
 }

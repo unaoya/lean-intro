@@ -1,5 +1,4 @@
-const {chromium}=require(require('path').join(require('os').homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
-const {pathToFileURL, fileURLToPath}=require('url');
+const {chromium}=require('/Users/sugakubunka/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const fs=require('fs');
 const path=require('path');
 (async()=>{
@@ -7,44 +6,27 @@ const path=require('path');
  const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
  const failures=[];
  page.on('pageerror',e=>failures.push(e.message));
- const root=process.env.TRIAL_URL || pathToFileURL(path.resolve(__dirname,'../preview')).href;
- const build=JSON.parse(fs.readFileSync(path.join(__dirname,'build.json')));
- let nextExercise=1;
+ const root=process.env.TRIAL_URL || 'http://127.0.0.1:8772/prototypes/chapters-1-2/preview';
  const reports=[];
- const screenshots=path.join(__dirname,'../tmp/pdfs/browser');
+ const screenshots=path.join(__dirname,'chapter-5');
  fs.mkdirSync(screenshots,{recursive:true});
- for(const module of ['Index', ...Object.keys(build.exercises)]){
-  const chapter=module.toLowerCase();
+ for(const chapter of ['05_mathematicaltools']){
   await page.goto(root+'/'+chapter+'.html',{waitUntil:'networkidle'});
   const reading=await page.evaluate(()=>{
    const xs=[...document.querySelectorAll('ol[data-exercise],details.sol[data-exercise]')];
    const pairs=xs.length/2;
    const matched=xs.every((x,i)=>i%2?x.tagName==='DETAILS'&&x.dataset.exercise===xs[i-1].dataset.exercise:x.tagName==='OL');
-   return {pairs,matched,mathRendered:document.querySelectorAll('.katex').length,mathErrors:document.querySelectorAll('.katex-error').length};
+   return {pairs,matched,mathRendered:document.querySelectorAll('.katex').length};
   });
   if(!reading.matched) failures.push(chapter+': question/answer order');
-  const expected=build.exercises[module] || 0;
+  const expected={count:16,start:56};
+  if(reading.pairs!==expected.count) failures.push(chapter+': exercise count');
   const numbers=await page.locator('ol[data-exercise]').evaluateAll(xs=>xs.map(x=>+x.dataset.exercise));
-  if(reading.pairs!==expected || numbers.join(',')!==Array.from({length:expected},(_,i)=>nextExercise+i).join(',')) failures.push(chapter+': exercise sequence');
-  nextExercise+=expected;
-  if(reading.mathErrors) failures.push(chapter+': reading math rendering');
-  if(expected){
-   const first=page.locator('details.sol[data-exercise]').first();
-   await first.locator('summary').click();
-   if(await first.getAttribute('open')===null) failures.push(chapter+': answer toggle');
-  }
-  const links=await page.locator('a[href]').evaluateAll(xs=>xs.map(x=>x.href));
-  const broken=[];
-  for(const href of links){
-   const target=new URL(href);
-   if(target.protocol!=='file:')continue;
-   const filename=fileURLToPath(target);
-   if(!fs.existsSync(filename)){broken.push(href);continue;}
-   const anchor=decodeURIComponent(target.hash.slice(1));
-   if(anchor && filename.endsWith('.html') && !fs.readFileSync(filename,'utf8').includes('id="'+anchor+'"'))broken.push(href);
-  }
-  if(broken.length) failures.push(chapter+': broken links');
-  reading.brokenLinks=broken;
+  if(numbers.join(',')!==Array.from({length:expected.count},(_,i)=>expected.start+i).join(',')) failures.push(chapter+': exercise sequence');
+  if(await page.locator('aside.note').count()!==5) failures.push(chapter+': missing notes');
+  const first=page.locator('details.sol').first();
+  await first.locator('summary').click();
+  if(await first.getAttribute('open')===null) failures.push(chapter+': answer toggle');
   reports.push({chapter,reading});
   await page.goto(root+'/slides/'+chapter+'.html',{waitUntil:'networkidle'});
   await page.evaluate(()=>document.fonts.ready);
@@ -60,7 +42,6 @@ const path=require('path');
   if(!await page.locator('#toc').evaluate(x=>x.open)) failures.push(chapter+': contents');
   await page.locator('#close-toc').click();
   const slides=await page.locator('.slide').evaluateAll(xs=>xs.map(x=>({id:x.id,label:x.dataset.label,steps:Math.max(...[...x.querySelectorAll('[data-step]')].map(y=>+y.dataset.step))+1})));
-  if(slides.length!==build.slides[module].pages || slides.reduce((n,x)=>n+x.steps,0)!==build.slides[module].steps) failures.push(chapter+': slide count');
   for (const size of [{width:1440,height:900},{width:1280,height:800}]){
    await page.setViewportSize(size);
    const overflow=[];
@@ -77,7 +58,7 @@ const path=require('path');
    reports.push({chapter,viewport:size,mathRendered:math,pages:slides.length,overflow});
   }
   await page.setViewportSize({width:1440,height:900});
-  const picks=['checking-example','expected-types','sorry','infoview','check-codomain','composition-term','checking-outer','rfl','eq-symm','sum-type','sum-match','sum-injective','anonymous','instance-search','point-pair-proof','fin-constructor'];
+  const picks=['anonymous','subtype','even-nat','fin-constructor','class','instance-argument','point-pair-proof','membership','practice-circle','practice-pair-magma'];
   for(const suffix of picks){
    const slide=slides.find(x=>x.id.endsWith('-'+suffix));if(!slide)continue;
    await page.evaluate(({id,steps})=>location.hash='#'+id+'/'+steps,slide);
@@ -85,8 +66,8 @@ const path=require('path');
    await page.screenshot({path:path.join(screenshots,chapter+'-'+suffix+'.png')});
   }
  }
- fs.writeFileSync(path.join(__dirname,'browser-audit.json'),JSON.stringify({failures,reports},null,2));
+ fs.writeFileSync(path.join(__dirname,'chapter-5-browser-audit.json'),JSON.stringify({failures,reports},null,2));
  console.log(JSON.stringify({failures,reports},null,2));
  await browser.close();
- if(failures.length)process.exitCode=1;
+ if(failures.length) process.exitCode=1;
 })().catch(e=>{console.error(e);process.exit(1)});

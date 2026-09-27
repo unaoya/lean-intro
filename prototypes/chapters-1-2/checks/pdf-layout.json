@@ -2,37 +2,37 @@
   "errors": [],
   "report": {
     "all": {
-      "math": 274,
+      "math": 279,
       "mathErrors": 0,
       "closedAnswers": 0,
-      "exercises": 55,
+      "exercises": 71,
       "originalNotes": 18,
       "slidePages": 0,
       "overflow": [],
       "lastStages": []
     },
     "slides": {
-      "math": 817,
+      "math": 842,
       "mathErrors": 0,
       "closedAnswers": 0,
-      "exercises": 197,
+      "exercises": 263,
       "originalNotes": 0,
-      "slidePages": 882,
+      "slidePages": 1151,
       "overflow": [],
       "lastStages": [
         {
           "page": 3,
-          "label": "第1〜4章 改稿試作",
+          "label": "第1〜5章 改稿試作",
           "section": "Index.intro",
           "stage": "1 / 1\n表示 3 / 3",
-          "overflow": -154,
+          "overflow": -100,
           "density": "normal"
         },
         {
           "page": 5,
           "label": "型の予想からコードを読む",
           "section": "01_TypesAndTerms.intro",
-          "stage": "1 / 112\n表示 2 / 2",
+          "stage": "1 / 114\n表示 2 / 2",
           "overflow": -55,
           "density": "normal"
         },
@@ -40,7 +40,7 @@
           "page": 7,
           "label": "項と型の大まかなイメージ",
           "section": "Intro1.terms-types",
-          "stage": "2 / 112\n表示 2 / 2",
+          "stage": "2 / 114\n表示 2 / 2",
           "overflow": -217,
           "density": "normal"
         },
@@ -48,15 +48,15 @@
           "page": 11,
           "label": "#check で自然数の型を調べる",
           "section": "Intro1.terms-types",
-          "stage": "3 / 112\n表示 4 / 4",
-          "overflow": -205,
+          "stage": "3 / 114\n表示 4 / 4",
+          "overflow": -28,
           "density": "normal"
         },
         {
           "page": 14,
           "label": "Bool.true の型と名前の読み方",
           "section": "Intro1.terms-types",
-          "stage": "4 / 112\n表示 3 / 3",
+          "stage": "4 / 114\n表示 3 / 3",
           "overflow": -219,
           "density": "normal"
         },
@@ -64,7 +64,7 @@
           "page": 18,
           "label": "型 Nat も Type 型の項である",
           "section": "Intro1.terms-types",
-          "stage": "5 / 112\n表示 4 / 4",
+          "stage": "5 / 114\n表示 4 / 4",
           "overflow": -249,
           "density": "normal"
         },
@@ -72,7 +72,7 @@
           "page": 23,
           "label": "Type の型と、型を項として扱うこと",
           "section": "Intro1.terms-types",
-          "stage": "6 / 112\n表示 5 / 5",
+          "stage": "6 / 114\n表示 5 / 5",
           "overflow": -235,
           "density": "normal"
         },
@@ -80,7 +80,7 @@
           "page": 27,
           "label": "演算で作る項の型",
           "section": "Intro1.terms-types",
-          "stage": "7 / 112\n表示 4 / 4",
+          "stage": "7 / 114\n表示 4 / 4",
           "overflow": -338,
           "density": "normal"
         },
@@ -88,7 +88,7 @@
           "page": 34,
           "label": "真の命題も偽の命題も Prop",
           "section": "Intro1.terms-types",
-          "stage": "8 / 112\n表示 7 / 7",
+          "stage": "8 / 114\n表示 7 / 7",
           "overflow": -58,
           "density": "tight"
         },
@@ -96,7 +96,7 @@
           "page": 35,
           "label": "項の型の検査から証明の検査へ",
           "section": "Intro1.terms-types",
-          "stage": "9 / 112\n表示 1 / 1",
+          "stage": "9 / 114\n表示 1 / 1",
           "overflow": -301,
           "density": "normal"
         },
@@ -104,7 +104,7 @@
           "page": 42,
           "label": "練習：Bool と Type 2 の型",
           "section": "Intro1.terms-types",
-          "stage": "10 / 112\n表示 7 / 7",
+          "stage": "10 / 114\n表示 7 / 7",
           "overflow": -50,
           "density": "normal"
         },
@@ -112,15 +112,15 @@
           "page": 48,
           "label": "def の形と x の定義",
           "section": "Intro1.definitions",
-          "stage": "11 / 112\n表示 6 / 6",
-          "overflow": -10,
-          "density": "normal"
+          "stage": "11 / 114\n表示 6 / 6",
+          "overflow": -6,
+          "density": "tight"
         },
         {
           "page": 51,
           "label": "定義した項を使って y を定義する",
           "section": "Intro1.definitions",
-          "stage": "12 / 112\n表示 3 / 3",
+          "stage": "12 / 114\n表示 3 / 3",
           "overflow": -318,
           "density": "normal"
         },
@@ -128,7 +128,7 @@
           "page": 57,
           "label": "#eval と #print の役割",
           "section": "Intro1.definitions",
-          "stage": "13 / 112\n表示 6 / 6",
+          "stage": "13 / 114\n表示 6 / 6",
           "overflow": -173,
           "density": "normal"
         },
@@ -136,7 +136,7 @@
           "page": 59,
           "label": "型検査・型の計算・読者の推測",
           "section": "Intro1.definitions",
-          "stage": "14 / 112\n表示 2 / 2",
+          "stage": "14 / 114\n表示 2 / 2",
           "overflow": -243,
           "density": "normal"
         },
@@ -144,7 +144,7 @@
           "page": 63,
           "label": "Nat を期待した場所での型エラー",
           "section": "Intro1.definitions",
-          "stage": "15 / 112\n表示 4 / 4",
+          "stage": "15 / 114\n表示 4 / 4",
           "overflow": -98,
           "density": "normal"
         },
@@ -152,7 +152,7 @@
           "page": 66,
           "label": "Lean が読み飛ばすコメント",
           "section": "Intro1.definitions",
-          "stage": "16 / 112\n表示 3 / 3",
+          "stage": "16 / 114\n表示 3 / 3",
           "overflow": -223,
           "density": "normal"
         },
@@ -160,7 +160,7 @@
           "page": 69,
           "label": "宣言に説明を付ける docstring",
           "section": "Intro1.definitions",
-          "stage": "17 / 112\n表示 3 / 3",
+          "stage": "17 / 114\n表示 3 / 3",
           "overflow": -273,
           "density": "normal"
         },
@@ -168,7 +168,7 @@
           "page": 74,
           "label": "練習：定義と #check・#eval",
           "section": "Intro1.definitions",
-          "stage": "18 / 112\n表示 5 / 5",
+          "stage": "18 / 114\n表示 5 / 5",
           "overflow": -44,
           "density": "normal"
         },
@@ -176,7 +176,7 @@
           "page": 77,
           "label": "解答：#print と3つのコマンドの違い",
           "section": "Intro1.definitions",
-          "stage": "19 / 112\n表示 3 / 3",
+          "stage": "19 / 114\n表示 3 / 3",
           "overflow": -357,
           "density": "normal"
         },
@@ -184,7 +184,7 @@
           "page": 79,
           "label": "関数の型 A → B",
           "section": "Intro1.functions",
-          "stage": "20 / 112\n表示 2 / 2",
+          "stage": "20 / 114\n表示 2 / 2",
           "overflow": -68,
           "density": "normal"
         },
@@ -192,7 +192,7 @@
           "page": 81,
           "label": "fun の書き方と型の読み方",
           "section": "Intro1.functions",
-          "stage": "21 / 112\n表示 2 / 2",
+          "stage": "21 / 114\n表示 2 / 2",
           "overflow": -270,
           "density": "normal"
         },
@@ -200,15 +200,15 @@
           "page": 84,
           "label": "引数名・本体・記号の役割",
           "section": "Intro1.functions",
-          "stage": "22 / 112\n表示 3 / 3",
-          "overflow": -184,
+          "stage": "22 / 114\n表示 3 / 3",
+          "overflow": -96,
           "density": "normal"
         },
         {
           "page": 85,
           "label": "関数の項の型を確かめる",
           "section": "Intro1.functions",
-          "stage": "23 / 112\n表示 1 / 1",
+          "stage": "23 / 114\n表示 1 / 1",
           "overflow": -389,
           "density": "normal"
         },
@@ -216,1444 +216,1492 @@
           "page": 89,
           "label": "double の定義と表示された型",
           "section": "Intro1.functions",
-          "stage": "24 / 112\n表示 4 / 4",
-          "overflow": -83,
-          "density": "normal"
-        },
-        {
-          "page": 93,
-          "label": "関数本体の型エラー",
-          "section": "Intro1.functions",
-          "stage": "25 / 112\n表示 4 / 4",
-          "overflow": -98,
-          "density": "normal"
-        },
-        {
-          "page": 94,
-          "label": "関数適用 f x の書き方",
-          "section": "Intro1.functions",
-          "stage": "26 / 112\n表示 1 / 1",
-          "overflow": -196,
+          "stage": "24 / 114\n表示 4 / 4",
+          "overflow": -39,
           "density": "normal"
         },
         {
           "page": 97,
+          "label": "関数本体の型エラー",
+          "section": "Intro1.functions",
+          "stage": "25 / 114\n表示 8 / 8",
+          "overflow": -46,
+          "density": "tight"
+        },
+        {
+          "page": 98,
+          "label": "関数適用 f x の書き方",
+          "section": "Intro1.functions",
+          "stage": "26 / 114\n表示 1 / 1",
+          "overflow": -152,
+          "density": "normal"
+        },
+        {
+          "page": 101,
           "label": "適用で照合する2点",
           "section": "Intro1.functions",
-          "stage": "27 / 112\n表示 3 / 3",
+          "stage": "27 / 114\n表示 3 / 3",
           "overflow": -257,
           "density": "normal"
         },
         {
-          "page": 105,
+          "page": 109,
           "label": "double 21 の型・値と double true の型エラー",
           "section": "Intro1.functions",
-          "stage": "28 / 112\n表示 8 / 8",
+          "stage": "28 / 114\n表示 8 / 8",
           "overflow": -65,
           "density": "normal"
         },
         {
-          "page": 110,
+          "page": 114,
           "label": "練習：n + 1 を返す関数",
           "section": "Intro1.functions",
-          "stage": "29 / 112\n表示 5 / 5",
+          "stage": "29 / 114\n表示 5 / 5",
           "overflow": -44,
-          "density": "normal"
-        },
-        {
-          "page": 113,
-          "label": "引数を宣言の左側に書く",
-          "section": "Intro1.functions",
-          "stage": "30 / 112\n表示 3 / 3",
-          "overflow": -257,
           "density": "normal"
         },
         {
           "page": 117,
-          "label": "binder 形式と矢印形式を読み替える",
+          "label": "引数を宣言の左側に書く",
           "section": "Intro1.functions",
-          "stage": "31 / 112\n表示 4 / 4",
-          "overflow": -80,
+          "stage": "30 / 114\n表示 3 / 3",
+          "overflow": -257,
           "density": "normal"
         },
         {
-          "page": 123,
+          "page": 121,
+          "label": "binder 形式と矢印形式を読み替える",
+          "section": "Intro1.functions",
+          "stage": "31 / 114\n表示 4 / 4",
+          "overflow": -36,
+          "density": "normal"
+        },
+        {
+          "page": 127,
           "label": "練習：inc を binder 形式で書き直す",
           "section": "Intro1.functions",
-          "stage": "32 / 112\n表示 6 / 6",
+          "stage": "32 / 114\n表示 6 / 6",
           "overflow": -46,
           "density": "normal"
         },
         {
-          "page": 126,
+          "page": 130,
           "label": "数学のカリー化とアンカリー化",
           "section": "Intro1.functions",
-          "stage": "33 / 112\n表示 3 / 3",
+          "stage": "33 / 114\n表示 3 / 3",
           "overflow": -148,
-          "density": "normal"
-        },
-        {
-          "page": 131,
-          "label": "plus をカリー化し、矢印を右結合で読む",
-          "section": "Intro1.functions",
-          "stage": "34 / 112\n表示 5 / 5",
-          "overflow": -191,
           "density": "normal"
         },
         {
           "page": 135,
+          "label": "plus をカリー化し、矢印を右結合で読む",
+          "section": "Intro1.functions",
+          "stage": "34 / 114\n表示 5 / 5",
+          "overflow": -191,
+          "density": "normal"
+        },
+        {
+          "page": 139,
           "label": "適用は左結合で読む",
           "section": "Intro1.functions",
-          "stage": "35 / 112\n表示 4 / 4",
-          "overflow": -254,
-          "density": "normal"
-        },
-        {
-          "page": 138,
-          "label": "plus 自体の型",
-          "section": "Intro1.functions",
-          "stage": "36 / 112\n表示 3 / 3",
-          "overflow": -396,
-          "density": "normal"
-        },
-        {
-          "page": 142,
-          "label": "plus 3 の型を推測する",
-          "section": "Intro1.functions",
-          "stage": "37 / 112\n表示 4 / 4",
-          "overflow": -249,
-          "density": "normal"
-        },
-        {
-          "page": 147,
-          "label": "残りの引数を渡して型と値を確かめる",
-          "section": "Intro1.functions",
-          "stage": "38 / 112\n表示 5 / 5",
-          "overflow": -270,
-          "density": "normal"
-        },
-        {
-          "page": 152,
-          "label": "練習：部分適用から関数を定義する",
-          "section": "Intro1.functions",
-          "stage": "39 / 112\n表示 5 / 5",
-          "overflow": 0,
-          "density": "normal"
-        },
-        {
-          "page": 158,
-          "label": "多変数関数を binder 形式で書く",
-          "section": "Intro1.functions",
-          "stage": "40 / 112\n表示 6 / 6",
-          "overflow": -111,
-          "density": "normal"
-        },
-        {
-          "page": 162,
-          "label": "3つの引数と binder 形式",
-          "section": "Intro1.functions",
-          "stage": "41 / 112\n表示 4 / 4",
-          "overflow": -171,
-          "density": "normal"
-        },
-        {
-          "page": 165,
-          "label": "関数を引数として受け取る",
-          "section": "Intro1.functions",
-          "stage": "42 / 112\n表示 3 / 3",
-          "overflow": -213,
-          "density": "normal"
-        },
-        {
-          "page": 168,
-          "label": "applyTo21 double の型と値",
-          "section": "Intro1.functions",
-          "stage": "43 / 112\n表示 3 / 3",
-          "overflow": -307,
-          "density": "normal"
-        },
-        {
-          "page": 172,
-          "label": "型の異なる引数を別々に注釈する",
-          "section": "Intro1.functions",
-          "stage": "44 / 112\n表示 4 / 4",
-          "overflow": -105,
-          "density": "normal"
-        },
-        {
-          "page": 174,
-          "label": "練習：関数を受け取り2回適用する",
-          "section": "Intro1.functions",
-          "stage": "45 / 112\n表示 2 / 2",
-          "overflow": -139,
-          "density": "normal"
-        },
-        {
-          "page": 181,
-          "label": "解答：twice の型・部分適用・計算",
-          "section": "Intro1.functions",
-          "stage": "46 / 112\n表示 7 / 7",
-          "overflow": -100,
-          "density": "normal"
-        },
-        {
-          "page": 185,
-          "label": "型を受け取り関数型を返す Map",
-          "section": "Intro1.functions",
-          "stage": "47 / 112\n表示 4 / 4",
-          "overflow": -22,
-          "density": "normal"
-        },
-        {
-          "page": 189,
-          "label": "練習：Map Nat Bool と double2",
-          "section": "Intro1.functions",
-          "stage": "48 / 112\n表示 4 / 4",
-          "overflow": -57,
-          "density": "normal"
-        },
-        {
-          "page": 192,
-          "label": "解答：Map Nat Nat と Nat → Nat は同じ型",
-          "section": "Intro1.functions",
-          "stage": "49 / 112\n表示 3 / 3",
-          "overflow": -274,
-          "density": "normal"
-        },
-        {
-          "page": 193,
-          "label": "自然数の足し算を2引数の関数として読む",
-          "section": "Intro1.functions",
-          "stage": "50 / 112\n表示 1 / 1",
-          "overflow": -372,
-          "density": "normal"
-        },
-        {
-          "page": 197,
-          "label": "型の求め方：宣言と適用",
-          "section": "Intro1.functions",
-          "stage": "51 / 112\n表示 4 / 4",
-          "overflow": -11,
-          "density": "dense"
-        },
-        {
-          "page": 203,
-          "label": "複合した項を、小さい照合に分ける",
-          "section": "Intro1.functions",
-          "stage": "52 / 112\n表示 6 / 6",
-          "overflow": -3,
-          "density": "dense"
-        },
-        {
-          "page": 208,
-          "label": "期待される型から、関数の本体へ",
-          "section": "Intro1.functions",
-          "stage": "53 / 112\n表示 5 / 5",
-          "overflow": -28,
-          "density": "tight"
-        },
-        {
-          "page": 213,
-          "label": "型注釈と数字の読み方",
-          "section": "Intro1.functions",
-          "stage": "54 / 112\n表示 5 / 5",
-          "overflow": -165,
-          "density": "normal"
-        },
-        {
-          "page": 218,
-          "label": "型の情報を内側へ伝える",
-          "section": "Intro1.functions",
-          "stage": "55 / 112\n表示 5 / 5",
-          "overflow": -103,
-          "density": "normal"
-        },
-        {
-          "page": 221,
-          "label": "関数適用での型エラー",
-          "section": "Intro1.functions",
-          "stage": "56 / 112\n表示 3 / 3",
-          "overflow": -123,
-          "density": "normal"
-        },
-        {
-          "page": 224,
-          "label": "型エラーと未完成の項 sorry",
-          "section": "Intro1.functions",
-          "stage": "57 / 112\n表示 3 / 3",
-          "overflow": -180,
-          "density": "normal"
-        },
-        {
-          "page": 225,
-          "label": "適用の括弧を省略できない理由",
-          "section": "Intro1.functions",
-          "stage": "58 / 112\n表示 1 / 1",
-          "overflow": -433,
-          "density": "normal"
-        },
-        {
-          "page": 227,
-          "label": "集合族の直積の要素としての依存関数",
-          "section": "Intro1.dependent-functions",
-          "stage": "59 / 112\n表示 2 / 2",
-          "overflow": -262,
-          "density": "normal"
-        },
-        {
-          "page": 230,
-          "label": "依存関数を直和への切断として読む",
-          "section": "Intro1.dependent-functions",
-          "stage": "60 / 112\n表示 3 / 3",
-          "overflow": -124,
-          "density": "normal"
-        },
-        {
-          "page": 233,
-          "label": "型の族と、その各型の項を返す関数",
-          "section": "Intro1.dependent-functions",
-          "stage": "61 / 112\n表示 3 / 3",
-          "overflow": -207,
-          "density": "normal"
-        },
-        {
-          "page": 237,
-          "label": "Fin：自然数を添字にする型の族",
-          "section": "Intro1.dependent-functions",
-          "stage": "62 / 112\n表示 4 / 4",
-          "overflow": -100,
-          "density": "normal"
-        },
-        {
-          "page": 241,
-          "label": "Fin (n + 1) の各型から項を返す",
-          "section": "Intro1.dependent-functions",
-          "stage": "63 / 112\n表示 4 / 4",
-          "overflow": -105,
-          "density": "normal"
-        },
-        {
-          "page": 246,
-          "label": "最初の番号を選ぶ依存関数",
-          "section": "Intro1.dependent-functions",
-          "stage": "64 / 112\n表示 5 / 5",
-          "overflow": -8,
-          "density": "normal"
-        },
-        {
-          "page": 254,
-          "label": "同じ0でも、所属する型が異なる",
-          "section": "Intro1.dependent-functions",
-          "stage": "65 / 112\n表示 8 / 8",
-          "overflow": -83,
-          "density": "tight"
-        },
-        {
-          "page": 258,
-          "label": "最後の番号を返す Fin.last",
-          "section": "Intro1.dependent-functions",
-          "stage": "66 / 112\n表示 4 / 4",
-          "overflow": -188,
-          "density": "normal"
-        },
-        {
-          "page": 265,
-          "label": "同じ依存関数型から、異なる項を選ぶ",
-          "section": "Intro1.dependent-functions",
-          "stage": "67 / 112\n表示 7 / 7",
-          "overflow": -65,
-          "density": "tight"
-        },
-        {
-          "page": 271,
-          "label": "番号1を選ぶ依存関数",
-          "section": "Intro1.dependent-functions",
-          "stage": "68 / 112\n表示 6 / 6",
-          "overflow": -22,
-          "density": "tight"
-        },
-        {
-          "page": 276,
-          "label": "各型に恒等関数を割り当てる",
-          "section": "Intro1.dependent-functions",
-          "stage": "69 / 112\n表示 5 / 5",
-          "overflow": -34,
-          "density": "tight"
-        },
-        {
-          "page": 284,
-          "label": "型を渡すと、残りの関数の型が決まる",
-          "section": "Intro1.dependent-functions",
-          "stage": "70 / 112\n表示 8 / 8",
-          "overflow": -83,
-          "density": "tight"
-        },
-        {
-          "page": 287,
-          "label": "依存関数の適用：結果の型に代入する",
-          "section": "Intro1.dependent-functions",
-          "stage": "71 / 112\n表示 3 / 3",
-          "overflow": -154,
-          "density": "normal"
-        },
-        {
-          "page": 291,
-          "label": "練習：恒等関数に関数型を渡す",
-          "section": "Intro1.dependent-functions",
-          "stage": "72 / 112\n表示 4 / 4",
-          "overflow": -145,
-          "density": "normal"
-        },
-        {
-          "page": 294,
-          "label": "恒等関数に渡した double を計算する",
-          "section": "Intro1.dependent-functions",
-          "stage": "73 / 112\n表示 3 / 3",
-          "overflow": -396,
-          "density": "normal"
-        },
-        {
-          "page": 299,
-          "label": "型引数は、なくなったのではない",
-          "section": "Intro1.dependent-functions",
-          "stage": "74 / 112\n表示 5 / 5",
-          "overflow": -54,
-          "density": "dense"
-        },
-        {
-          "page": 305,
-          "label": "明示引数の型から、暗黙引数を補う",
-          "section": "Intro1.dependent-functions",
-          "stage": "75 / 112\n表示 6 / 6",
-          "overflow": -18,
-          "density": "normal"
-        },
-        {
-          "page": 308,
-          "label": "暗黙引数も、こちらから指定できる",
-          "section": "Intro1.dependent-functions",
-          "stage": "76 / 112\n表示 3 / 3",
-          "overflow": -212,
-          "density": "normal"
-        },
-        {
-          "page": 312,
-          "label": "期待される結果の型から、暗黙引数を補う",
-          "section": "Intro1.dependent-functions",
-          "stage": "77 / 112\n表示 4 / 4",
-          "overflow": -110,
-          "density": "normal"
-        },
-        {
-          "page": 316,
-          "label": "手がかりが足りない場合と省略の検査",
-          "section": "Intro1.dependent-functions",
-          "stage": "78 / 112\n表示 4 / 4",
-          "overflow": -40,
-          "density": "tight"
-        },
-        {
-          "page": 323,
-          "label": "章末問題",
-          "section": "Trial1.practice",
-          "stage": "79 / 112\n表示 7 / 7",
-          "overflow": -61,
-          "density": "dense"
-        },
-        {
-          "page": 325,
-          "label": "練習：Nat の項を Bool として定義できるか",
-          "section": "Trial1.basic-practice",
-          "stage": "80 / 112\n表示 2 / 2",
-          "overflow": -244,
-          "density": "normal"
-        },
-        {
-          "page": 330,
-          "label": "解答：宣言された型との照合が失敗する",
-          "section": "Trial1.basic-practice",
-          "stage": "81 / 112\n表示 5 / 5",
-          "overflow": -71,
-          "density": "tight"
-        },
-        {
-          "page": 336,
-          "label": "関数とバインダー形式",
-          "section": "Trial1.function-practice",
-          "stage": "82 / 112\n表示 6 / 6",
-          "overflow": -24,
-          "density": "tight"
-        },
-        {
-          "page": 340,
-          "label": "練習：binder 形式で triple を定義する",
-          "section": "Trial1.function-practice",
-          "stage": "83 / 112\n表示 4 / 4",
-          "overflow": -172,
-          "density": "normal"
-        },
-        {
-          "page": 344,
-          "label": "練習：double を2回適用する",
-          "section": "Trial1.function-practice",
-          "stage": "84 / 112\n表示 4 / 4",
-          "overflow": -295,
-          "density": "normal"
-        },
-        {
-          "page": 350,
-          "label": "練習：f を binder 形式で書き直す",
-          "section": "Trial1.function-practice",
-          "stage": "85 / 112\n表示 6 / 6",
-          "overflow": -46,
-          "density": "normal"
-        },
-        {
-          "page": 353,
-          "label": "多変数関数と高階関数",
-          "section": "Trial1.higher-practice",
-          "stage": "86 / 112\n表示 3 / 3",
-          "overflow": -126,
-          "density": "normal"
-        },
-        {
-          "page": 358,
-          "label": "解答：引数を1つずつ渡した型と値",
-          "section": "Trial1.higher-practice",
-          "stage": "87 / 112\n表示 5 / 5",
-          "overflow": -270,
-          "density": "normal"
-        },
-        {
-          "page": 360,
-          "label": "練習：型が同じ2つの引数の書き方",
-          "section": "Trial1.higher-practice",
-          "stage": "88 / 112\n表示 2 / 2",
+          "stage": "35 / 114\n表示 4 / 4",
           "overflow": -210,
           "density": "normal"
         },
         {
-          "page": 365,
-          "label": "解答：2つの binder 形式の表示と計算",
-          "section": "Trial1.higher-practice",
-          "stage": "89 / 112\n表示 5 / 5",
-          "overflow": -226,
+          "page": 142,
+          "label": "plus 自体の型",
+          "section": "Intro1.functions",
+          "stage": "36 / 114\n表示 3 / 3",
+          "overflow": -396,
           "density": "normal"
         },
         {
-          "page": 369,
-          "label": "2通りの binder 形式の計算結果",
-          "section": "Trial1.higher-practice",
-          "stage": "90 / 112\n表示 4 / 4",
-          "overflow": -328,
-          "density": "normal"
-        },
-        {
-          "page": 371,
-          "label": "練習：関数を3回適用する",
-          "section": "Trial1.higher-practice",
-          "stage": "91 / 112\n表示 2 / 2",
-          "overflow": -288,
-          "density": "normal"
-        },
-        {
-          "page": 378,
-          "label": "解答：thrice double の型と値",
-          "section": "Trial1.higher-practice",
-          "stage": "92 / 112\n表示 7 / 7",
-          "overflow": -144,
-          "density": "normal"
-        },
-        {
-          "page": 382,
-          "label": "練習：Map の部分適用",
-          "section": "Trial1.higher-practice",
-          "stage": "93 / 112\n表示 4 / 4",
-          "overflow": -206,
-          "density": "normal"
-        },
-        {
-          "page": 384,
-          "label": "型の計算と関数の組み合わせ",
-          "section": "Trial1.combined-practice",
-          "stage": "94 / 112\n表示 2 / 2",
-          "overflow": -183,
-          "density": "normal"
-        },
-        {
-          "page": 392,
-          "label": "解答：4つの予測を #check で確かめる",
-          "section": "Trial1.combined-practice",
-          "stage": "95 / 112\n表示 8 / 8",
-          "overflow": -76,
-          "density": "normal"
-        },
-        {
-          "page": 396,
-          "label": "練習：部分適用した関数を渡す",
-          "section": "Trial1.combined-practice",
-          "stage": "96 / 112\n表示 4 / 4",
-          "overflow": -294,
-          "density": "normal"
-        },
-        {
-          "page": 397,
-          "label": "練習：evalAt と shift",
-          "section": "Trial1.combined-practice",
-          "stage": "97 / 112\n表示 1 / 1",
-          "overflow": -329,
-          "density": "normal"
-        },
-        {
-          "page": 401,
-          "label": "解答：関数に指定した値を適用する",
-          "section": "Trial1.combined-practice",
-          "stage": "98 / 112\n表示 4 / 4",
-          "overflow": -213,
-          "density": "normal"
-        },
-        {
-          "page": 406,
-          "label": "解答：入力を1つずらす関数",
-          "section": "Trial1.combined-practice",
-          "stage": "99 / 112\n表示 5 / 5",
-          "overflow": -148,
-          "density": "normal"
-        },
-        {
-          "page": 407,
-          "label": "練習：同じ型で中身の異なる関数",
-          "section": "Trial1.combined-practice",
-          "stage": "100 / 112\n表示 1 / 1",
-          "overflow": -349,
-          "density": "normal"
-        },
-        {
-          "page": 412,
-          "label": "解答：型は仕様を決める",
-          "section": "Trial1.combined-practice",
-          "stage": "101 / 112\n表示 5 / 5",
-          "overflow": -32,
-          "density": "normal"
-        },
-        {
-          "page": 413,
-          "label": "練習：一般の関数の合成",
-          "section": "Trial1.combined-practice",
-          "stage": "102 / 112\n表示 1 / 1",
-          "overflow": -393,
-          "density": "normal"
-        },
-        {
-          "page": 418,
-          "label": "解答：合成の定義・型・計算",
-          "section": "Trial1.combined-practice",
-          "stage": "103 / 112\n表示 5 / 5",
-          "overflow": -116,
-          "density": "normal"
-        },
-        {
-          "page": 419,
-          "label": "練習：evalAt と shift を任意の型へ一般化する",
-          "section": "Trial1.combined-practice",
-          "stage": "104 / 112\n表示 1 / 1",
-          "overflow": -261,
-          "density": "normal"
-        },
-        {
-          "page": 423,
-          "label": "解答：型も引数に取って一般化する",
-          "section": "Trial1.combined-practice",
-          "stage": "105 / 112\n表示 4 / 4",
-          "overflow": -96,
-          "density": "normal"
-        },
-        {
-          "page": 428,
-          "label": "解答：一般化した関数の計算",
-          "section": "Trial1.combined-practice",
-          "stage": "106 / 112\n表示 5 / 5",
-          "overflow": -270,
-          "density": "normal"
-        },
-        {
-          "page": 434,
-          "label": "章末の準備：n 個組を関数で表す",
-          "section": "Trial1.combined-practice",
-          "stage": "107 / 112\n表示 6 / 6",
-          "overflow": -61,
-          "density": "dense"
-        },
-        {
-          "page": 438,
-          "label": "各 n に対して定数の n 個組を作る",
-          "section": "Trial1.combined-practice",
-          "stage": "108 / 112\n表示 4 / 4",
-          "overflow": -44,
-          "density": "normal"
-        },
-        {
-          "page": 443,
-          "label": "Tuple は型を返し、constTuple は項を返す",
-          "section": "Trial1.combined-practice",
-          "stage": "109 / 112\n表示 5 / 5",
-          "overflow": -226,
-          "density": "normal"
-        },
-        {
-          "page": 449,
-          "label": "依存関数の章末問題",
-          "section": "Trial1.dependent-practice",
-          "stage": "110 / 112\n表示 6 / 6",
-          "overflow": -26,
-          "density": "tight"
-        },
-        {
-          "page": 451,
-          "label": "練習：Tuple 2 を展開して読む",
-          "section": "Trial1.dependent-practice",
-          "stage": "111 / 112\n表示 2 / 2",
-          "overflow": -332,
-          "density": "normal"
-        },
-        {
-          "page": 455,
-          "label": "練習：すべての成分が a の n 個組",
-          "section": "Trial1.dependent-practice",
-          "stage": "112 / 112\n表示 4 / 4",
-          "overflow": -128,
-          "density": "normal"
-        },
-        {
-          "page": 457,
-          "label": "証明の保証を与えられたか、という視点",
-          "section": "02_Forall.intro",
-          "stage": "1 / 53\n表示 2 / 2",
-          "overflow": -141,
-          "density": "normal"
-        },
-        {
-          "page": 460,
-          "label": "前提の保証から、結論の保証を作る",
-          "section": "02_Forall.intro",
-          "stage": "2 / 53\n表示 3 / 3",
-          "overflow": -168,
-          "density": "normal"
-        },
-        {
-          "page": 463,
-          "label": "対象ごとに保証を返す依存関数",
-          "section": "02_Forall.intro",
-          "stage": "3 / 53\n表示 3 / 3",
-          "overflow": -79,
-          "density": "normal"
-        },
-        {
-          "page": 466,
-          "label": "人間の理解と、機械の型検査",
-          "section": "02_Forall.intro",
-          "stage": "4 / 53\n表示 3 / 3",
-          "overflow": -35,
-          "density": "normal"
-        },
-        {
-          "page": 469,
-          "label": "単射の合成：まず数学の証明を読む",
-          "section": "Trial2.injective-composition",
-          "stage": "5 / 53\n表示 3 / 3",
-          "overflow": -54,
-          "density": "normal"
-        },
-        {
-          "page": 472,
-          "label": "証明を、受け取りと適用に分ける",
-          "section": "Trial2.injective-composition",
-          "stage": "6 / 53\n表示 3 / 3",
-          "overflow": -212,
-          "density": "normal"
-        },
-        {
-          "page": 476,
-          "label": "仮定の保証に名前を付ける",
-          "section": "Trial2.injective-composition",
-          "stage": "7 / 53\n表示 4 / 4",
-          "overflow": -105,
-          "density": "normal"
-        },
-        {
-          "page": 478,
-          "label": "命題を型、証明を項として読む",
-          "section": "Trial2.injective-composition",
-          "stage": "8 / 53\n表示 2 / 2",
-          "overflow": -270,
-          "density": "normal"
-        },
-        {
-          "page": 484,
-          "label": "単射性の仮定と、示したい結論",
-          "section": "Trial2.injective-composition",
-          "stage": "9 / 53\n表示 6 / 6",
-          "overflow": -28,
-          "density": "normal"
-        },
-        {
-          "page": 488,
-          "label": "証明を一つの関数の項にする",
-          "section": "Trial2.injective-composition",
-          "stage": "10 / 53\n表示 4 / 4",
-          "overflow": -51,
-          "density": "dense"
-        },
-        {
-          "page": 491,
-          "label": "型検査：引数と本体に要求される型",
-          "section": "Trial2.injective-composition",
-          "stage": "11 / 53\n表示 3 / 3",
-          "overflow": -296,
-          "density": "normal"
-        },
-        {
-          "page": 495,
-          "label": "型検査：内側の適用で得られる型",
-          "section": "Trial2.injective-composition",
-          "stage": "12 / 53\n表示 4 / 4",
+          "page": 146,
+          "label": "plus 3 の型を推測する",
+          "section": "Intro1.functions",
+          "stage": "37 / 114\n表示 4 / 4",
           "overflow": -249,
           "density": "normal"
         },
         {
-          "page": 501,
-          "label": "型検査：外側の適用と結論の照合",
-          "section": "Trial2.injective-composition",
-          "stage": "13 / 53\n表示 6 / 6",
+          "page": 151,
+          "label": "残りの引数を渡して型と値を確かめる",
+          "section": "Intro1.functions",
+          "stage": "38 / 114\n表示 5 / 5",
+          "overflow": -270,
+          "density": "normal"
+        },
+        {
+          "page": 156,
+          "label": "練習：部分適用から関数を定義する",
+          "section": "Intro1.functions",
+          "stage": "39 / 114\n表示 5 / 5",
           "overflow": 0,
           "density": "normal"
         },
         {
-          "page": 506,
-          "label": "全称量化は依存関数、「ならば」は関数",
-          "section": "Trial2.injective-composition",
-          "stage": "14 / 53\n表示 5 / 5",
-          "overflow": -91,
+          "page": 162,
+          "label": "多変数関数を binder 形式で書く",
+          "section": "Intro1.functions",
+          "stage": "40 / 114\n表示 6 / 6",
+          "overflow": -23,
           "density": "normal"
         },
         {
-          "page": 509,
-          "label": "練習：単調写像の合成",
-          "section": "Trial2.injective-composition",
-          "stage": "15 / 53\n表示 3 / 3",
-          "overflow": -50,
-          "density": "dense"
-        },
-        {
-          "page": 512,
-          "label": "左キャンセルを、各点で証明する",
-          "section": "Trial2.left-cancellation",
-          "stage": "16 / 53\n表示 3 / 3",
-          "overflow": -98,
+          "page": 166,
+          "label": "3つの引数と binder 形式",
+          "section": "Intro1.functions",
+          "stage": "41 / 114\n表示 4 / 4",
+          "overflow": -171,
           "density": "normal"
         },
         {
-          "page": 514,
-          "label": "対象 t と、その点での保証を渡す",
-          "section": "Trial2.left-cancellation",
-          "stage": "17 / 53\n表示 2 / 2",
-          "overflow": -214,
+          "page": 170,
+          "label": "関数を引数として受け取る",
+          "section": "Intro1.functions",
+          "stage": "42 / 114\n表示 4 / 4",
+          "overflow": -110,
           "density": "normal"
         },
         {
-          "page": 520,
-          "label": "Eq：等式という命題を作る",
-          "section": "Trial2.rfl",
-          "stage": "18 / 53\n表示 6 / 6",
-          "overflow": -31,
-          "density": "dense"
-        },
-        {
-          "page": 524,
-          "label": "Eq.refl：自分自身との等式の保証",
-          "section": "Trial2.rfl",
-          "stage": "19 / 53\n表示 4 / 4",
-          "overflow": -188,
+          "page": 173,
+          "label": "applyTo21 double の型と値",
+          "section": "Intro1.functions",
+          "stage": "43 / 114\n表示 3 / 3",
+          "overflow": -307,
           "density": "normal"
         },
         {
-          "page": 527,
-          "label": "rfl は Eq.refl の対象を暗黙引数にしたもの",
-          "section": "Trial2.rfl",
-          "stage": "20 / 53\n表示 3 / 3",
-          "overflow": -207,
+          "page": 177,
+          "label": "型の異なる引数を別々に注釈する",
+          "section": "Intro1.functions",
+          "stage": "44 / 114\n表示 4 / 4",
+          "overflow": -105,
           "density": "normal"
         },
         {
-          "page": 533,
-          "label": "計算で一致する等式を rfl で示す",
-          "section": "Trial2.rfl",
-          "stage": "21 / 53\n表示 6 / 6",
-          "overflow": -64,
-          "density": "dense"
-        },
-        {
-          "page": 537,
-          "label": "対象を受け取り、その対象の等式を返す",
-          "section": "Trial2.rfl",
-          "stage": "22 / 53\n表示 4 / 4",
-          "overflow": -71,
+          "page": 179,
+          "label": "練習：関数を受け取り2回適用する",
+          "section": "Intro1.functions",
+          "stage": "45 / 114\n表示 2 / 2",
+          "overflow": -139,
           "density": "normal"
         },
         {
-          "page": 540,
-          "label": "反射性を満たす関係と対角集合",
-          "section": "Trial2.rfl",
-          "stage": "23 / 53\n表示 3 / 3",
-          "overflow": -104,
+          "page": 187,
+          "label": "解答：twice の型・部分適用・計算",
+          "section": "Intro1.functions",
+          "stage": "46 / 114\n表示 8 / 8",
+          "overflow": -83,
+          "density": "tight"
+        },
+        {
+          "page": 191,
+          "label": "型を受け取り関数型を返す Map",
+          "section": "Intro1.functions",
+          "stage": "47 / 114\n表示 4 / 4",
+          "overflow": -22,
           "density": "normal"
         },
         {
-          "page": 542,
-          "label": "最小性から等号の性質を読む",
-          "section": "Trial2.rfl",
-          "stage": "24 / 53\n表示 2 / 2",
-          "overflow": -243,
-          "density": "normal"
-        },
-        {
-          "page": 544,
-          "label": "帰納型が等式の証明に与える原理",
-          "section": "Trial2.rfl",
-          "stage": "25 / 53\n表示 2 / 2",
-          "overflow": -182,
-          "density": "normal"
-        },
-        {
-          "page": 547,
-          "label": "Eq.symm：等号を逆向きに使う",
-          "section": "Trial2.rfl",
-          "stage": "26 / 53\n表示 3 / 3",
-          "overflow": -212,
-          "density": "normal"
-        },
-        {
-          "page": 550,
-          "label": "Eq.trans：二つの等号をつなぐ",
-          "section": "Trial2.rfl",
-          "stage": "27 / 53\n表示 3 / 3",
-          "overflow": -173,
-          "density": "normal"
-        },
-        {
-          "page": 553,
-          "label": "congrArg：両辺に同じ関数を適用する",
-          "section": "Trial2.rfl",
-          "stage": "28 / 53\n表示 3 / 3",
-          "overflow": -129,
-          "density": "normal"
-        },
-        {
-          "page": 557,
-          "label": "左逆から単射性へ：数学の証明",
-          "section": "Trial2.left-inverse",
-          "stage": "29 / 53\n表示 4 / 4",
-          "overflow": -21,
-          "density": "normal"
-        },
-        {
-          "page": 560,
-          "label": "三つの道具を左逆の証明に当てはめる",
-          "section": "Trial2.left-inverse",
-          "stage": "30 / 53\n表示 3 / 3",
-          "overflow": -173,
-          "density": "normal"
-        },
-        {
-          "page": 564,
-          "label": "左逆の条件を使って証明の項を作る",
-          "section": "Trial2.left-inverse",
-          "stage": "31 / 53\n表示 4 / 4",
-          "overflow": -27,
-          "density": "dense"
-        },
-        {
-          "page": 567,
-          "label": "証明を考える順序と、型を追う順序",
-          "section": "Trial2.checking",
-          "stage": "32 / 53\n表示 3 / 3",
-          "overflow": -10,
-          "density": "normal"
-        },
-        {
-          "page": 568,
-          "label": "証明の一段を飛ばすと型が合わない",
-          "section": "Trial2.checking",
-          "stage": "33 / 53\n表示 1 / 1",
-          "overflow": -373,
-          "density": "normal"
-        },
-        {
-          "page": 572,
-          "label": "検査している命題と公理を確認する",
-          "section": "Trial2.checking",
-          "stage": "34 / 53\n表示 4 / 4",
-          "overflow": -144,
-          "density": "normal"
-        },
-        {
-          "page": 575,
-          "label": "省略を補う処理と証明の検査",
-          "section": "Trial2.checking",
-          "stage": "35 / 53\n表示 3 / 3",
-          "overflow": -273,
-          "density": "normal"
-        },
-        {
-          "page": 577,
-          "label": "旧版：型検査が証明の検査になる",
-          "section": "Trial2.checking-original",
-          "stage": "36 / 53\n表示 2 / 2",
-          "overflow": -262,
-          "density": "normal"
-        },
-        {
-          "page": 580,
-          "label": "旧版：公理と sorry の監査",
-          "section": "Trial2.checking-original",
-          "stage": "37 / 53\n表示 3 / 3",
+          "page": 195,
+          "label": "練習：Map Nat Bool と double2",
+          "section": "Intro1.functions",
+          "stage": "48 / 114\n表示 4 / 4",
           "overflow": -57,
           "density": "normal"
         },
         {
-          "page": 582,
-          "label": "旧版：意図した主張を検査しているか",
-          "section": "Trial2.checking-original",
-          "stage": "38 / 53\n表示 2 / 2",
-          "overflow": -48,
-          "density": "tight"
-        },
-        {
-          "page": 583,
-          "label": "旧版：理論の解釈について",
-          "section": "Trial2.checking-original",
-          "stage": "39 / 53\n表示 1 / 1",
-          "overflow": -345,
+          "page": 198,
+          "label": "解答：Map Nat Nat と Nat → Nat は同じ型",
+          "section": "Intro1.functions",
+          "stage": "49 / 114\n表示 3 / 3",
+          "overflow": -185,
           "density": "normal"
         },
         {
-          "page": 586,
-          "label": "旧版：仮定の取り違えと型の不一致",
-          "section": "Trial2.checking-original",
-          "stage": "40 / 53\n表示 3 / 3",
+          "page": 199,
+          "label": "自然数の足し算を2引数の関数として読む",
+          "section": "Intro1.functions",
+          "stage": "50 / 114\n表示 1 / 1",
+          "overflow": -372,
+          "density": "normal"
+        },
+        {
+          "page": 201,
+          "label": "型の求め方：宣言と適用",
+          "section": "Intro1.functions",
+          "stage": "51 / 114\n表示 2 / 2",
+          "overflow": -138,
+          "density": "normal"
+        },
+        {
+          "page": 204,
+          "label": "適用の入力型と結果の型",
+          "section": "Intro1.functions",
+          "stage": "52 / 114\n表示 3 / 3",
+          "overflow": -110,
+          "density": "normal"
+        },
+        {
+          "page": 208,
+          "label": "複合した項を、小さい照合に分ける",
+          "section": "Intro1.functions",
+          "stage": "53 / 114\n表示 4 / 4",
+          "overflow": -63,
+          "density": "dense"
+        },
+        {
+          "page": 213,
+          "label": "部分項から全体の型を求める",
+          "section": "Intro1.functions",
+          "stage": "54 / 114\n表示 5 / 5",
+          "overflow": -22,
+          "density": "normal"
+        },
+        {
+          "page": 218,
+          "label": "期待される型から、関数の本体へ",
+          "section": "Intro1.functions",
+          "stage": "55 / 114\n表示 5 / 5",
+          "overflow": -28,
+          "density": "tight"
+        },
+        {
+          "page": 223,
+          "label": "型注釈と数字の読み方",
+          "section": "Intro1.functions",
+          "stage": "56 / 114\n表示 5 / 5",
+          "overflow": -165,
+          "density": "normal"
+        },
+        {
+          "page": 228,
+          "label": "型の情報を内側へ伝える",
+          "section": "Intro1.functions",
+          "stage": "57 / 114\n表示 5 / 5",
+          "overflow": -103,
+          "density": "normal"
+        },
+        {
+          "page": 231,
+          "label": "関数適用での型エラー",
+          "section": "Intro1.functions",
+          "stage": "58 / 114\n表示 3 / 3",
+          "overflow": -123,
+          "density": "normal"
+        },
+        {
+          "page": 234,
+          "label": "型エラーと未完成の項 sorry",
+          "section": "Intro1.functions",
+          "stage": "59 / 114\n表示 3 / 3",
+          "overflow": -91,
+          "density": "normal"
+        },
+        {
+          "page": 235,
+          "label": "適用の括弧を省略できない理由",
+          "section": "Intro1.functions",
+          "stage": "60 / 114\n表示 1 / 1",
+          "overflow": -433,
+          "density": "normal"
+        },
+        {
+          "page": 237,
+          "label": "集合族の直積の要素としての依存関数",
+          "section": "Intro1.dependent-functions",
+          "stage": "61 / 114\n表示 2 / 2",
+          "overflow": -262,
+          "density": "normal"
+        },
+        {
+          "page": 240,
+          "label": "依存関数を直和への切断として読む",
+          "section": "Intro1.dependent-functions",
+          "stage": "62 / 114\n表示 3 / 3",
+          "overflow": -124,
+          "density": "normal"
+        },
+        {
+          "page": 243,
+          "label": "型の族と、その各型の項を返す関数",
+          "section": "Intro1.dependent-functions",
+          "stage": "63 / 114\n表示 3 / 3",
+          "overflow": -207,
+          "density": "normal"
+        },
+        {
+          "page": 247,
+          "label": "Fin：自然数を添字にする型の族",
+          "section": "Intro1.dependent-functions",
+          "stage": "64 / 114\n表示 4 / 4",
+          "overflow": -100,
+          "density": "normal"
+        },
+        {
+          "page": 251,
+          "label": "Fin (n + 1) の各型から項を返す",
+          "section": "Intro1.dependent-functions",
+          "stage": "65 / 114\n表示 4 / 4",
+          "overflow": -105,
+          "density": "normal"
+        },
+        {
+          "page": 256,
+          "label": "最初の番号を選ぶ依存関数",
+          "section": "Intro1.dependent-functions",
+          "stage": "66 / 114\n表示 5 / 5",
+          "overflow": -8,
+          "density": "normal"
+        },
+        {
+          "page": 264,
+          "label": "同じ0でも、所属する型が異なる",
+          "section": "Intro1.dependent-functions",
+          "stage": "67 / 114\n表示 8 / 8",
+          "overflow": -83,
+          "density": "tight"
+        },
+        {
+          "page": 268,
+          "label": "最後の番号を返す Fin.last",
+          "section": "Intro1.dependent-functions",
+          "stage": "68 / 114\n表示 4 / 4",
+          "overflow": -188,
+          "density": "normal"
+        },
+        {
+          "page": 275,
+          "label": "同じ依存関数型から、異なる項を選ぶ",
+          "section": "Intro1.dependent-functions",
+          "stage": "69 / 114\n表示 7 / 7",
+          "overflow": -65,
+          "density": "tight"
+        },
+        {
+          "page": 281,
+          "label": "番号1を選ぶ依存関数",
+          "section": "Intro1.dependent-functions",
+          "stage": "70 / 114\n表示 6 / 6",
+          "overflow": -22,
+          "density": "tight"
+        },
+        {
+          "page": 286,
+          "label": "各型に恒等関数を割り当てる",
+          "section": "Intro1.dependent-functions",
+          "stage": "71 / 114\n表示 5 / 5",
+          "overflow": -34,
+          "density": "tight"
+        },
+        {
+          "page": 294,
+          "label": "型を渡すと、残りの関数の型が決まる",
+          "section": "Intro1.dependent-functions",
+          "stage": "72 / 114\n表示 8 / 8",
+          "overflow": -83,
+          "density": "tight"
+        },
+        {
+          "page": 297,
+          "label": "依存関数の適用：結果の型に代入する",
+          "section": "Intro1.dependent-functions",
+          "stage": "73 / 114\n表示 3 / 3",
+          "overflow": -154,
+          "density": "normal"
+        },
+        {
+          "page": 301,
+          "label": "練習：恒等関数に関数型を渡す",
+          "section": "Intro1.dependent-functions",
+          "stage": "74 / 114\n表示 4 / 4",
+          "overflow": -145,
+          "density": "normal"
+        },
+        {
+          "page": 304,
+          "label": "恒等関数に渡した double を計算する",
+          "section": "Intro1.dependent-functions",
+          "stage": "75 / 114\n表示 3 / 3",
+          "overflow": -396,
+          "density": "normal"
+        },
+        {
+          "page": 309,
+          "label": "型引数は、なくなったのではない",
+          "section": "Intro1.dependent-functions",
+          "stage": "76 / 114\n表示 5 / 5",
+          "overflow": -54,
+          "density": "dense"
+        },
+        {
+          "page": 315,
+          "label": "明示引数の型から、暗黙引数を補う",
+          "section": "Intro1.dependent-functions",
+          "stage": "77 / 114\n表示 6 / 6",
+          "overflow": -18,
+          "density": "normal"
+        },
+        {
+          "page": 318,
+          "label": "暗黙引数も、こちらから指定できる",
+          "section": "Intro1.dependent-functions",
+          "stage": "78 / 114\n表示 3 / 3",
+          "overflow": -212,
+          "density": "normal"
+        },
+        {
+          "page": 322,
+          "label": "期待される結果の型から、暗黙引数を補う",
+          "section": "Intro1.dependent-functions",
+          "stage": "79 / 114\n表示 4 / 4",
+          "overflow": -110,
+          "density": "normal"
+        },
+        {
+          "page": 326,
+          "label": "手がかりが足りない場合と省略の検査",
+          "section": "Intro1.dependent-functions",
+          "stage": "80 / 114\n表示 4 / 4",
+          "overflow": -40,
+          "density": "tight"
+        },
+        {
+          "page": 333,
+          "label": "章末問題",
+          "section": "Trial1.practice",
+          "stage": "81 / 114\n表示 7 / 7",
+          "overflow": -61,
+          "density": "dense"
+        },
+        {
+          "page": 335,
+          "label": "練習：Nat の項を Bool として定義できるか",
+          "section": "Trial1.basic-practice",
+          "stage": "82 / 114\n表示 2 / 2",
+          "overflow": -244,
+          "density": "normal"
+        },
+        {
+          "page": 340,
+          "label": "解答：宣言された型との照合が失敗する",
+          "section": "Trial1.basic-practice",
+          "stage": "83 / 114\n表示 5 / 5",
+          "overflow": -71,
+          "density": "tight"
+        },
+        {
+          "page": 346,
+          "label": "関数とバインダー形式",
+          "section": "Trial1.function-practice",
+          "stage": "84 / 114\n表示 6 / 6",
+          "overflow": -24,
+          "density": "tight"
+        },
+        {
+          "page": 350,
+          "label": "練習：binder 形式で triple を定義する",
+          "section": "Trial1.function-practice",
+          "stage": "85 / 114\n表示 4 / 4",
+          "overflow": -172,
+          "density": "normal"
+        },
+        {
+          "page": 354,
+          "label": "練習：double を2回適用する",
+          "section": "Trial1.function-practice",
+          "stage": "86 / 114\n表示 4 / 4",
+          "overflow": -295,
+          "density": "normal"
+        },
+        {
+          "page": 360,
+          "label": "練習：f を binder 形式で書き直す",
+          "section": "Trial1.function-practice",
+          "stage": "87 / 114\n表示 6 / 6",
+          "overflow": -46,
+          "density": "normal"
+        },
+        {
+          "page": 363,
+          "label": "多変数関数と高階関数",
+          "section": "Trial1.higher-practice",
+          "stage": "88 / 114\n表示 3 / 3",
+          "overflow": -126,
+          "density": "normal"
+        },
+        {
+          "page": 368,
+          "label": "解答：引数を1つずつ渡した型と値",
+          "section": "Trial1.higher-practice",
+          "stage": "89 / 114\n表示 5 / 5",
+          "overflow": -270,
+          "density": "normal"
+        },
+        {
+          "page": 370,
+          "label": "練習：型が同じ2つの引数の書き方",
+          "section": "Trial1.higher-practice",
+          "stage": "90 / 114\n表示 2 / 2",
+          "overflow": -210,
+          "density": "normal"
+        },
+        {
+          "page": 375,
+          "label": "解答：2つの binder 形式の表示と計算",
+          "section": "Trial1.higher-practice",
+          "stage": "91 / 114\n表示 5 / 5",
+          "overflow": -226,
+          "density": "normal"
+        },
+        {
+          "page": 379,
+          "label": "2通りの binder 形式の計算結果",
+          "section": "Trial1.higher-practice",
+          "stage": "92 / 114\n表示 4 / 4",
+          "overflow": -328,
+          "density": "normal"
+        },
+        {
+          "page": 381,
+          "label": "練習：関数を3回適用する",
+          "section": "Trial1.higher-practice",
+          "stage": "93 / 114\n表示 2 / 2",
+          "overflow": -288,
+          "density": "normal"
+        },
+        {
+          "page": 388,
+          "label": "解答：thrice double の型と値",
+          "section": "Trial1.higher-practice",
+          "stage": "94 / 114\n表示 7 / 7",
+          "overflow": -144,
+          "density": "normal"
+        },
+        {
+          "page": 392,
+          "label": "練習：Map の部分適用",
+          "section": "Trial1.higher-practice",
+          "stage": "95 / 114\n表示 4 / 4",
+          "overflow": -206,
+          "density": "normal"
+        },
+        {
+          "page": 394,
+          "label": "型の計算と関数の組み合わせ",
+          "section": "Trial1.combined-practice",
+          "stage": "96 / 114\n表示 2 / 2",
+          "overflow": -183,
+          "density": "normal"
+        },
+        {
+          "page": 402,
+          "label": "解答：4つの予測を #check で確かめる",
+          "section": "Trial1.combined-practice",
+          "stage": "97 / 114\n表示 8 / 8",
+          "overflow": -76,
+          "density": "normal"
+        },
+        {
+          "page": 406,
+          "label": "練習：部分適用した関数を渡す",
+          "section": "Trial1.combined-practice",
+          "stage": "98 / 114\n表示 4 / 4",
+          "overflow": -294,
+          "density": "normal"
+        },
+        {
+          "page": 407,
+          "label": "練習：evalAt と shift",
+          "section": "Trial1.combined-practice",
+          "stage": "99 / 114\n表示 1 / 1",
+          "overflow": -329,
+          "density": "normal"
+        },
+        {
+          "page": 411,
+          "label": "解答：関数に指定した値を適用する",
+          "section": "Trial1.combined-practice",
+          "stage": "100 / 114\n表示 4 / 4",
+          "overflow": -213,
+          "density": "normal"
+        },
+        {
+          "page": 416,
+          "label": "解答：入力を1つずらす関数",
+          "section": "Trial1.combined-practice",
+          "stage": "101 / 114\n表示 5 / 5",
+          "overflow": -148,
+          "density": "normal"
+        },
+        {
+          "page": 417,
+          "label": "練習：同じ型で中身の異なる関数",
+          "section": "Trial1.combined-practice",
+          "stage": "102 / 114\n表示 1 / 1",
+          "overflow": -349,
+          "density": "normal"
+        },
+        {
+          "page": 422,
+          "label": "解答：型は仕様を決める",
+          "section": "Trial1.combined-practice",
+          "stage": "103 / 114\n表示 5 / 5",
+          "overflow": -32,
+          "density": "normal"
+        },
+        {
+          "page": 423,
+          "label": "練習：一般の関数の合成",
+          "section": "Trial1.combined-practice",
+          "stage": "104 / 114\n表示 1 / 1",
+          "overflow": -393,
+          "density": "normal"
+        },
+        {
+          "page": 428,
+          "label": "解答：合成の定義・型・計算",
+          "section": "Trial1.combined-practice",
+          "stage": "105 / 114\n表示 5 / 5",
+          "overflow": -116,
+          "density": "normal"
+        },
+        {
+          "page": 429,
+          "label": "練習：evalAt と shift を任意の型へ一般化する",
+          "section": "Trial1.combined-practice",
+          "stage": "106 / 114\n表示 1 / 1",
+          "overflow": -261,
+          "density": "normal"
+        },
+        {
+          "page": 433,
+          "label": "解答：型も引数に取って一般化する",
+          "section": "Trial1.combined-practice",
+          "stage": "107 / 114\n表示 4 / 4",
+          "overflow": -96,
+          "density": "normal"
+        },
+        {
+          "page": 438,
+          "label": "解答：一般化した関数の計算",
+          "section": "Trial1.combined-practice",
+          "stage": "108 / 114\n表示 5 / 5",
+          "overflow": -270,
+          "density": "normal"
+        },
+        {
+          "page": 444,
+          "label": "章末の準備：n 個組を関数で表す",
+          "section": "Trial1.combined-practice",
+          "stage": "109 / 114\n表示 6 / 6",
+          "overflow": -61,
+          "density": "dense"
+        },
+        {
+          "page": 448,
+          "label": "各 n に対して定数の n 個組を作る",
+          "section": "Trial1.combined-practice",
+          "stage": "110 / 114\n表示 4 / 4",
+          "overflow": -88,
+          "density": "normal"
+        },
+        {
+          "page": 453,
+          "label": "Tuple は型を返し、constTuple は項を返す",
+          "section": "Trial1.combined-practice",
+          "stage": "111 / 114\n表示 5 / 5",
+          "overflow": -226,
+          "density": "normal"
+        },
+        {
+          "page": 459,
+          "label": "依存関数の章末問題",
+          "section": "Trial1.dependent-practice",
+          "stage": "112 / 114\n表示 6 / 6",
+          "overflow": -26,
+          "density": "tight"
+        },
+        {
+          "page": 461,
+          "label": "練習：Tuple 2 を展開して読む",
+          "section": "Trial1.dependent-practice",
+          "stage": "113 / 114\n表示 2 / 2",
+          "overflow": -332,
+          "density": "normal"
+        },
+        {
+          "page": 466,
+          "label": "練習：すべての成分が a の n 個組",
+          "section": "Trial1.dependent-practice",
+          "stage": "114 / 114\n表示 5 / 5",
+          "overflow": -26,
+          "density": "normal"
+        },
+        {
+          "page": 468,
+          "label": "証明の保証を与えられたか、という視点",
+          "section": "02_Forall.intro",
+          "stage": "1 / 55\n表示 2 / 2",
+          "overflow": -141,
+          "density": "normal"
+        },
+        {
+          "page": 471,
+          "label": "前提の保証から、結論の保証を作る",
+          "section": "02_Forall.intro",
+          "stage": "2 / 55\n表示 3 / 3",
+          "overflow": -168,
+          "density": "normal"
+        },
+        {
+          "page": 474,
+          "label": "対象ごとに保証を返す依存関数",
+          "section": "02_Forall.intro",
+          "stage": "3 / 55\n表示 3 / 3",
+          "overflow": -79,
+          "density": "normal"
+        },
+        {
+          "page": 477,
+          "label": "人間の理解と、機械の型検査",
+          "section": "02_Forall.intro",
+          "stage": "4 / 55\n表示 3 / 3",
+          "overflow": -35,
+          "density": "normal"
+        },
+        {
+          "page": 480,
+          "label": "単射の合成：まず数学の証明を読む",
+          "section": "Trial2.injective-composition",
+          "stage": "5 / 55\n表示 3 / 3",
+          "overflow": -54,
+          "density": "normal"
+        },
+        {
+          "page": 483,
+          "label": "証明を、受け取りと適用に分ける",
+          "section": "Trial2.injective-composition",
+          "stage": "6 / 55\n表示 3 / 3",
+          "overflow": -212,
+          "density": "normal"
+        },
+        {
+          "page": 487,
+          "label": "仮定の保証に名前を付ける",
+          "section": "Trial2.injective-composition",
+          "stage": "7 / 55\n表示 4 / 4",
+          "overflow": -105,
+          "density": "normal"
+        },
+        {
+          "page": 491,
+          "label": "命題を型、証明を項として読む",
+          "section": "Trial2.injective-composition",
+          "stage": "8 / 55\n表示 4 / 4",
+          "overflow": -66,
+          "density": "normal"
+        },
+        {
+          "page": 498,
+          "label": "単射性の仮定と、示したい結論",
+          "section": "Trial2.injective-composition",
+          "stage": "9 / 55\n表示 7 / 7",
+          "overflow": -46,
+          "density": "tight"
+        },
+        {
+          "page": 502,
+          "label": "証明を一つの関数の項にする",
+          "section": "Trial2.injective-composition",
+          "stage": "10 / 55\n表示 4 / 4",
+          "overflow": -40,
+          "density": "tight"
+        },
+        {
+          "page": 504,
+          "label": "単射の合成：定義と証明の検査",
+          "section": "Trial2.injective-composition",
+          "stage": "11 / 55\n表示 2 / 2",
+          "overflow": -259,
+          "density": "normal"
+        },
+        {
+          "page": 507,
+          "label": "型検査：引数と本体に要求される型",
+          "section": "Trial2.injective-composition",
+          "stage": "12 / 55\n表示 3 / 3",
+          "overflow": -296,
+          "density": "normal"
+        },
+        {
+          "page": 511,
+          "label": "型検査：内側の適用で得られる型",
+          "section": "Trial2.injective-composition",
+          "stage": "13 / 55\n表示 4 / 4",
+          "overflow": -249,
+          "density": "normal"
+        },
+        {
+          "page": 518,
+          "label": "型検査：外側の適用と結論の照合",
+          "section": "Trial2.injective-composition",
+          "stage": "14 / 55\n表示 7 / 7",
+          "overflow": -7,
+          "density": "tight"
+        },
+        {
+          "page": 522,
+          "label": "全称量化は依存関数、「ならば」は関数",
+          "section": "Trial2.injective-composition",
+          "stage": "15 / 55\n表示 4 / 4",
+          "overflow": -193,
+          "density": "normal"
+        },
+        {
+          "page": 527,
+          "label": "命題の型と、その証明である項",
+          "section": "Trial2.injective-composition",
+          "stage": "16 / 55\n表示 5 / 5",
+          "overflow": -50,
+          "density": "tight"
+        },
+        {
+          "page": 530,
+          "label": "練習：単調写像の合成",
+          "section": "Trial2.injective-composition",
+          "stage": "17 / 55\n表示 3 / 3",
+          "overflow": -50,
+          "density": "dense"
+        },
+        {
+          "page": 533,
+          "label": "左キャンセルを、各点で証明する",
+          "section": "Trial2.left-cancellation",
+          "stage": "18 / 55\n表示 3 / 3",
+          "overflow": -98,
+          "density": "normal"
+        },
+        {
+          "page": 535,
+          "label": "対象 t と、その点での保証を渡す",
+          "section": "Trial2.left-cancellation",
+          "stage": "19 / 55\n表示 2 / 2",
+          "overflow": -214,
+          "density": "normal"
+        },
+        {
+          "page": 541,
+          "label": "Eq：等式という命題を作る",
+          "section": "Trial2.rfl",
+          "stage": "20 / 55\n表示 6 / 6",
+          "overflow": -31,
+          "density": "dense"
+        },
+        {
+          "page": 545,
+          "label": "Eq.refl：自分自身との等式の保証",
+          "section": "Trial2.rfl",
+          "stage": "21 / 55\n表示 4 / 4",
+          "overflow": -188,
+          "density": "normal"
+        },
+        {
+          "page": 548,
+          "label": "rfl は Eq.refl の対象を暗黙引数にしたもの",
+          "section": "Trial2.rfl",
+          "stage": "22 / 55\n表示 3 / 3",
+          "overflow": -207,
+          "density": "normal"
+        },
+        {
+          "page": 554,
+          "label": "計算で一致する等式を rfl で示す",
+          "section": "Trial2.rfl",
+          "stage": "23 / 55\n表示 6 / 6",
+          "overflow": -64,
+          "density": "dense"
+        },
+        {
+          "page": 561,
+          "label": "対象を受け取り、その対象の等式を返す",
+          "section": "Trial2.rfl",
+          "stage": "24 / 55\n表示 7 / 7",
+          "overflow": 1,
+          "density": "tight"
+        },
+        {
+          "page": 564,
+          "label": "反射性を満たす関係と対角集合",
+          "section": "Trial2.rfl",
+          "stage": "25 / 55\n表示 3 / 3",
+          "overflow": -104,
+          "density": "normal"
+        },
+        {
+          "page": 566,
+          "label": "最小性から等号の性質を読む",
+          "section": "Trial2.rfl",
+          "stage": "26 / 55\n表示 2 / 2",
+          "overflow": -243,
+          "density": "normal"
+        },
+        {
+          "page": 568,
+          "label": "帰納型が等式の証明に与える原理",
+          "section": "Trial2.rfl",
+          "stage": "27 / 55\n表示 2 / 2",
+          "overflow": -182,
+          "density": "normal"
+        },
+        {
+          "page": 571,
+          "label": "Eq.symm：等号を逆向きに使う",
+          "section": "Trial2.rfl",
+          "stage": "28 / 55\n表示 3 / 3",
+          "overflow": -124,
+          "density": "normal"
+        },
+        {
+          "page": 574,
+          "label": "Eq.trans：二つの等号をつなぐ",
+          "section": "Trial2.rfl",
+          "stage": "29 / 55\n表示 3 / 3",
+          "overflow": -173,
+          "density": "normal"
+        },
+        {
+          "page": 577,
+          "label": "congrArg：両辺に同じ関数を適用する",
+          "section": "Trial2.rfl",
+          "stage": "30 / 55\n表示 3 / 3",
+          "overflow": -129,
+          "density": "normal"
+        },
+        {
+          "page": 581,
+          "label": "左逆から単射性へ：数学の証明",
+          "section": "Trial2.left-inverse",
+          "stage": "31 / 55\n表示 4 / 4",
+          "overflow": -21,
+          "density": "normal"
+        },
+        {
+          "page": 584,
+          "label": "三つの道具を左逆の証明に当てはめる",
+          "section": "Trial2.left-inverse",
+          "stage": "32 / 55\n表示 3 / 3",
           "overflow": -173,
           "density": "normal"
         },
         {
           "page": 588,
+          "label": "左逆の条件を使って証明の項を作る",
+          "section": "Trial2.left-inverse",
+          "stage": "33 / 55\n表示 4 / 4",
+          "overflow": -27,
+          "density": "dense"
+        },
+        {
+          "page": 591,
+          "label": "証明を考える順序と、型を追う順序",
+          "section": "Trial2.checking",
+          "stage": "34 / 55\n表示 3 / 3",
+          "overflow": -10,
+          "density": "normal"
+        },
+        {
+          "page": 592,
+          "label": "証明の一段を飛ばすと型が合わない",
+          "section": "Trial2.checking",
+          "stage": "35 / 55\n表示 1 / 1",
+          "overflow": -373,
+          "density": "normal"
+        },
+        {
+          "page": 596,
+          "label": "検査している命題と公理を確認する",
+          "section": "Trial2.checking",
+          "stage": "36 / 55\n表示 4 / 4",
+          "overflow": -144,
+          "density": "normal"
+        },
+        {
+          "page": 599,
+          "label": "省略を補う処理と証明の検査",
+          "section": "Trial2.checking",
+          "stage": "37 / 55\n表示 3 / 3",
+          "overflow": -273,
+          "density": "normal"
+        },
+        {
+          "page": 601,
+          "label": "旧版：型検査が証明の検査になる",
+          "section": "Trial2.checking-original",
+          "stage": "38 / 55\n表示 2 / 2",
+          "overflow": -262,
+          "density": "normal"
+        },
+        {
+          "page": 604,
+          "label": "旧版：公理と sorry の監査",
+          "section": "Trial2.checking-original",
+          "stage": "39 / 55\n表示 3 / 3",
+          "overflow": -57,
+          "density": "normal"
+        },
+        {
+          "page": 606,
+          "label": "旧版：意図した主張を検査しているか",
+          "section": "Trial2.checking-original",
+          "stage": "40 / 55\n表示 2 / 2",
+          "overflow": -48,
+          "density": "tight"
+        },
+        {
+          "page": 607,
+          "label": "旧版：理論の解釈について",
+          "section": "Trial2.checking-original",
+          "stage": "41 / 55\n表示 1 / 1",
+          "overflow": -345,
+          "density": "normal"
+        },
+        {
+          "page": 610,
+          "label": "旧版：仮定の取り違えと型の不一致",
+          "section": "Trial2.checking-original",
+          "stage": "42 / 55\n表示 3 / 3",
+          "overflow": -173,
+          "density": "normal"
+        },
+        {
+          "page": 612,
           "label": "旧版：エラボレータとカーネル",
           "section": "Trial2.checking-original",
-          "stage": "41 / 53\n表示 2 / 2",
+          "stage": "43 / 55\n表示 2 / 2",
           "overflow": -182,
           "density": "normal"
         },
         {
-          "page": 595,
+          "page": 619,
           "label": "章末問題：命題の型",
           "section": "Trial2.practice",
-          "stage": "42 / 53\n表示 7 / 7",
+          "stage": "44 / 55\n表示 7 / 7",
           "overflow": -61,
-          "density": "dense"
-        },
-        {
-          "page": 598,
-          "label": "練習：2 + 3 = 5",
-          "section": "Trial2.practice",
-          "stage": "43 / 53\n表示 3 / 3",
-          "overflow": -313,
-          "density": "normal"
-        },
-        {
-          "page": 602,
-          "label": "練習：rfl が使えない場合",
-          "section": "Trial2.practice",
-          "stage": "44 / 53\n表示 4 / 4",
-          "overflow": -50,
-          "density": "normal"
-        },
-        {
-          "page": 608,
-          "label": "練習：全称命題への適用",
-          "section": "Trial2.practice",
-          "stage": "45 / 53\n表示 6 / 6",
-          "overflow": -80,
-          "density": "normal"
-        },
-        {
-          "page": 611,
-          "label": "練習：三つの単射の合成",
-          "section": "Trial2.practice",
-          "stage": "46 / 53\n表示 3 / 3",
-          "overflow": -3,
-          "density": "tight"
-        },
-        {
-          "page": 614,
-          "label": "練習：点ごとの左キャンセル",
-          "section": "Trial2.practice",
-          "stage": "47 / 53\n表示 3 / 3",
-          "overflow": -54,
-          "density": "tight"
-        },
-        {
-          "page": 618,
-          "label": "章末問題：左合成の写像をLeanで形式化する",
-          "section": "Trial2.practice",
-          "stage": "48 / 53\n表示 4 / 4",
-          "overflow": -33,
           "density": "dense"
         },
         {
           "page": 622,
-          "label": "解答：左合成の定義と単射性",
+          "label": "練習：2 + 3 = 5",
           "section": "Trial2.practice",
-          "stage": "49 / 53\n表示 4 / 4",
-          "overflow": -60,
-          "density": "dense"
+          "stage": "45 / 55\n表示 3 / 3",
+          "overflow": -313,
+          "density": "normal"
         },
         {
           "page": 626,
-          "label": "練習：左キャンセルから単射性へ",
+          "label": "練習：rfl が使えない場合",
           "section": "Trial2.practice",
-          "stage": "50 / 53\n表示 4 / 4",
-          "overflow": -41,
-          "density": "tight"
-        },
-        {
-          "page": 629,
-          "label": "練習：三つの単調写像の合成",
-          "section": "Trial2.practice",
-          "stage": "51 / 53\n表示 3 / 3",
-          "overflow": -13,
+          "stage": "46 / 55\n表示 4 / 4",
+          "overflow": -50,
           "density": "normal"
         },
         {
-          "page": 633,
-          "label": "練習：三つの等号の型",
+          "page": 632,
+          "label": "練習：全称命題への適用",
           "section": "Trial2.practice",
-          "stage": "52 / 53\n表示 4 / 4",
-          "overflow": -89,
+          "stage": "47 / 55\n表示 6 / 6",
+          "overflow": -80,
           "density": "normal"
         },
         {
-          "page": 636,
-          "label": "練習：単射の右逆は左逆",
+          "page": 635,
+          "label": "練習：三つの単射の合成",
           "section": "Trial2.practice",
-          "stage": "53 / 53\n表示 3 / 3",
-          "overflow": -53,
+          "stage": "48 / 55\n表示 3 / 3",
+          "overflow": -3,
           "density": "tight"
         },
         {
           "page": 638,
-          "label": "構成子で作り、場合分けで使う",
-          "section": "03_InductiveTypes.intro",
-          "stage": "1 / 38\n表示 2 / 2",
-          "overflow": -186,
-          "density": "normal"
-        },
-        {
-          "page": 642,
-          "label": "列挙型：作り方を並べる",
-          "section": "Trial3.constructors",
-          "stage": "2 / 38\n表示 4 / 4",
-          "overflow": -19,
-          "density": "tight"
-        },
-        {
-          "page": 646,
-          "label": "match 全体も一つの項",
-          "section": "Trial3.constructors",
-          "stage": "3 / 38\n表示 4 / 4",
-          "overflow": -71,
-          "density": "normal"
-        },
-        {
-          "page": 650,
-          "label": "fun と match を組み合わせる",
-          "section": "Trial3.constructors",
-          "stage": "4 / 38\n表示 4 / 4",
-          "overflow": -29,
-          "density": "tight"
-        },
-        {
-          "page": 653,
-          "label": "練習：場合分けで関数を作る",
-          "section": "Trial3.constructors",
-          "stage": "5 / 38\n表示 3 / 3",
-          "overflow": -52,
-          "density": "normal"
-        },
-        {
-          "page": 658,
-          "label": "構成子が一つの場合と、ない場合",
-          "section": "Trial3.constructors",
-          "stage": "6 / 38\n表示 5 / 5",
-          "overflow": -43,
-          "density": "tight"
-        },
-        {
-          "page": 662,
-          "label": "引数を持つ構成子と直和",
-          "section": "Trial3.sums-products",
-          "stage": "7 / 38\n表示 4 / 4",
-          "overflow": -24,
-          "density": "normal"
-        },
-        {
-          "page": 666,
-          "label": "構成子の引数に名前を付けて使う",
-          "section": "Trial3.sums-products",
-          "stage": "8 / 38\n表示 4 / 4",
-          "overflow": -64,
-          "density": "tight"
-        },
-        {
-          "page": 670,
-          "label": "構成子の単射性も証明できる",
-          "section": "Trial3.sums-products",
-          "stage": "9 / 38\n表示 4 / 4",
-          "overflow": -61,
-          "density": "normal"
-        },
-        {
-          "page": 674,
-          "label": "型を受け取って型を作る",
-          "section": "Trial3.sums-products",
-          "stage": "10 / 38\n表示 4 / 4",
-          "overflow": -58,
-          "density": "tight"
-        },
-        {
-          "page": 678,
-          "label": "一つの構成子に二つの引数を渡す",
-          "section": "Trial3.sums-products",
-          "stage": "11 / 38\n表示 4 / 4",
-          "overflow": -71,
-          "density": "normal"
-        },
-        {
-          "page": 683,
-          "label": "組の成分を取り出す関数",
-          "section": "Trial3.sums-products",
-          "stage": "12 / 38\n表示 5 / 5",
-          "overflow": -17,
-          "density": "tight"
-        },
-        {
-          "page": 688,
-          "label": "集合族の直和を組で表す",
-          "section": "Trial3.dependent-pairs",
-          "stage": "13 / 38\n表示 5 / 5",
-          "overflow": -35,
-          "density": "tight"
-        },
-        {
-          "page": 692,
-          "label": "第一成分で第二成分の型が決まる",
-          "section": "Trial3.dependent-pairs",
-          "stage": "14 / 38\n表示 4 / 4",
-          "overflow": -71,
-          "density": "normal"
-        },
-        {
-          "page": 696,
-          "label": "依存する組から第一成分を取る",
-          "section": "Trial3.dependent-pairs",
-          "stage": "15 / 38\n表示 4 / 4",
-          "overflow": -32,
-          "density": "normal"
-        },
-        {
-          "page": 700,
-          "label": "第二成分の取り出しは依存関数",
-          "section": "Trial3.dependent-pairs",
-          "stage": "16 / 38\n表示 4 / 4",
-          "overflow": -32,
-          "density": "normal"
-        },
-        {
-          "page": 706,
-          "label": "一般の族でも同じ組を作る",
-          "section": "Trial3.dependent-pairs",
-          "stage": "17 / 38\n表示 6 / 6",
-          "overflow": -30,
-          "density": "tight"
-        },
-        {
-          "page": 709,
-          "label": "依存関数と依存する組を対にする",
-          "section": "Trial3.dependent-pairs",
-          "stage": "18 / 38\n表示 3 / 3",
-          "overflow": -188,
-          "density": "normal"
-        },
-        {
-          "page": 712,
-          "label": "練習：依存する組を作って使う",
-          "section": "Trial3.dependent-pairs",
-          "stage": "19 / 38\n表示 3 / 3",
-          "overflow": -81,
-          "density": "normal"
-        },
-        {
-          "page": 716,
-          "label": "再帰的な型を定義する",
-          "section": "Trial3.recursion",
-          "stage": "20 / 38\n表示 4 / 4",
+          "label": "練習：点ごとの左キャンセル",
+          "section": "Trial2.practice",
+          "stage": "49 / 55\n表示 3 / 3",
           "overflow": -54,
           "density": "tight"
         },
         {
-          "page": 721,
-          "label": "小さい項に対して再帰する",
-          "section": "Trial3.recursion",
-          "stage": "21 / 38\n表示 5 / 5",
-          "overflow": -8,
-          "density": "normal"
+          "page": 642,
+          "label": "章末問題：左合成の写像をLeanで形式化する",
+          "section": "Trial2.practice",
+          "stage": "50 / 55\n表示 4 / 4",
+          "overflow": -33,
+          "density": "dense"
         },
         {
-          "page": 725,
-          "label": "再帰で証明を書くと帰納法になる",
-          "section": "Trial3.recursion",
-          "stage": "22 / 38\n表示 4 / 4",
-          "overflow": -55,
+          "page": 646,
+          "label": "解答：左合成の定義と単射性",
+          "section": "Trial2.practice",
+          "stage": "51 / 55\n表示 4 / 4",
+          "overflow": -60,
+          "density": "dense"
+        },
+        {
+          "page": 650,
+          "label": "練習：左キャンセルから単射性へ",
+          "section": "Trial2.practice",
+          "stage": "52 / 55\n表示 4 / 4",
+          "overflow": -41,
           "density": "tight"
         },
         {
-          "page": 728,
-          "label": "帰納型で型の族を定義する",
-          "section": "Trial3.indexed",
-          "stage": "23 / 38\n表示 3 / 3",
-          "overflow": -159,
+          "page": 653,
+          "label": "練習：三つの単調写像の合成",
+          "section": "Trial2.practice",
+          "stage": "53 / 55\n表示 3 / 3",
+          "overflow": -13,
           "density": "normal"
         },
         {
-          "page": 732,
-          "label": "Eq.refl は族の対角に項を作る",
-          "section": "Trial3.indexed",
-          "stage": "24 / 38\n表示 4 / 4",
-          "overflow": -110,
+          "page": 657,
+          "label": "練習：三つの等号の型",
+          "section": "Trial2.practice",
+          "stage": "54 / 55\n表示 4 / 4",
+          "overflow": -89,
+          "density": "normal"
+        },
+        {
+          "page": 660,
+          "label": "練習：単射の右逆は左逆",
+          "section": "Trial2.practice",
+          "stage": "55 / 55\n表示 3 / 3",
+          "overflow": -53,
+          "density": "tight"
+        },
+        {
+          "page": 662,
+          "label": "構成子で作り、場合分けで使う",
+          "section": "03_InductiveTypes.intro",
+          "stage": "1 / 40\n表示 2 / 2",
+          "overflow": -186,
+          "density": "normal"
+        },
+        {
+          "page": 666,
+          "label": "列挙型：作り方を並べる",
+          "section": "Trial3.constructors",
+          "stage": "2 / 40\n表示 4 / 4",
+          "overflow": -16,
+          "density": "dense"
+        },
+        {
+          "page": 670,
+          "label": "match 全体も一つの項",
+          "section": "Trial3.constructors",
+          "stage": "3 / 40\n表示 4 / 4",
+          "overflow": -71,
+          "density": "normal"
+        },
+        {
+          "page": 674,
+          "label": "fun と match を組み合わせる",
+          "section": "Trial3.constructors",
+          "stage": "4 / 40\n表示 4 / 4",
+          "overflow": -63,
+          "density": "dense"
+        },
+        {
+          "page": 677,
+          "label": "練習：場合分けで関数を作る",
+          "section": "Trial3.constructors",
+          "stage": "5 / 40\n表示 3 / 3",
+          "overflow": -52,
+          "density": "normal"
+        },
+        {
+          "page": 682,
+          "label": "構成子が一つの場合と、ない場合",
+          "section": "Trial3.constructors",
+          "stage": "6 / 40\n表示 5 / 5",
+          "overflow": -43,
+          "density": "tight"
+        },
+        {
+          "page": 686,
+          "label": "引数を持つ構成子と直和",
+          "section": "Trial3.sums-products",
+          "stage": "7 / 40\n表示 4 / 4",
+          "overflow": -54,
+          "density": "tight"
+        },
+        {
+          "page": 689,
+          "label": "構成子を適用して項を作る",
+          "section": "Trial3.sums-products",
+          "stage": "8 / 40\n表示 3 / 3",
+          "overflow": -219,
+          "density": "normal"
+        },
+        {
+          "page": 693,
+          "label": "構成子の引数に名前を付けて使う",
+          "section": "Trial3.sums-products",
+          "stage": "9 / 40\n表示 4 / 4",
+          "overflow": -57,
+          "density": "dense"
+        },
+        {
+          "page": 696,
+          "label": "構成子の適用を括弧でまとめる",
+          "section": "Trial3.sums-products",
+          "stage": "10 / 40\n表示 3 / 3",
+          "overflow": -263,
+          "density": "normal"
+        },
+        {
+          "page": 700,
+          "label": "構成子の単射性も証明できる",
+          "section": "Trial3.sums-products",
+          "stage": "11 / 40\n表示 4 / 4",
+          "overflow": -17,
+          "density": "normal"
+        },
+        {
+          "page": 704,
+          "label": "型を受け取って型を作る",
+          "section": "Trial3.sums-products",
+          "stage": "12 / 40\n表示 4 / 4",
+          "overflow": -58,
+          "density": "tight"
+        },
+        {
+          "page": 708,
+          "label": "一つの構成子に二つの引数を渡す",
+          "section": "Trial3.sums-products",
+          "stage": "13 / 40\n表示 4 / 4",
+          "overflow": -71,
+          "density": "normal"
+        },
+        {
+          "page": 713,
+          "label": "組の成分を取り出す関数",
+          "section": "Trial3.sums-products",
+          "stage": "14 / 40\n表示 5 / 5",
+          "overflow": -17,
+          "density": "tight"
+        },
+        {
+          "page": 718,
+          "label": "集合族の直和を組で表す",
+          "section": "Trial3.dependent-pairs",
+          "stage": "15 / 40\n表示 5 / 5",
+          "overflow": -35,
+          "density": "tight"
+        },
+        {
+          "page": 722,
+          "label": "第一成分で第二成分の型が決まる",
+          "section": "Trial3.dependent-pairs",
+          "stage": "16 / 40\n表示 4 / 4",
+          "overflow": -71,
+          "density": "normal"
+        },
+        {
+          "page": 726,
+          "label": "依存する組から第一成分を取る",
+          "section": "Trial3.dependent-pairs",
+          "stage": "17 / 40\n表示 4 / 4",
+          "overflow": -32,
+          "density": "normal"
+        },
+        {
+          "page": 730,
+          "label": "第二成分の取り出しは依存関数",
+          "section": "Trial3.dependent-pairs",
+          "stage": "18 / 40\n表示 4 / 4",
+          "overflow": -32,
           "density": "normal"
         },
         {
           "page": 736,
-          "label": "等式を match で使う",
-          "section": "Trial3.indexed",
-          "stage": "25 / 38\n表示 4 / 4",
-          "overflow": -27,
-          "density": "normal"
+          "label": "一般の族でも同じ組を作る",
+          "section": "Trial3.dependent-pairs",
+          "stage": "19 / 40\n表示 6 / 6",
+          "overflow": -30,
+          "density": "tight"
         },
         {
           "page": 739,
-          "label": "等式をつなぐ関数も match で作る",
-          "section": "Trial3.indexed",
-          "stage": "26 / 38\n表示 3 / 3",
-          "overflow": -134,
+          "label": "依存関数と依存する組を対にする",
+          "section": "Trial3.dependent-pairs",
+          "stage": "20 / 40\n表示 3 / 3",
+          "overflow": -188,
           "density": "normal"
         },
         {
-          "page": 744,
-          "label": "同じ関数を適用しても等しい",
-          "section": "Trial3.indexed",
-          "stage": "27 / 38\n表示 5 / 5",
+          "page": 742,
+          "label": "練習：依存する組を作って使う",
+          "section": "Trial3.dependent-pairs",
+          "stage": "21 / 40\n表示 3 / 3",
+          "overflow": -81,
+          "density": "normal"
+        },
+        {
+          "page": 746,
+          "label": "再帰的な型を定義する",
+          "section": "Trial3.recursion",
+          "stage": "22 / 40\n表示 4 / 4",
+          "overflow": -54,
+          "density": "tight"
+        },
+        {
+          "page": 751,
+          "label": "小さい項に対して再帰する",
+          "section": "Trial3.recursion",
+          "stage": "23 / 40\n表示 5 / 5",
           "overflow": -8,
           "density": "normal"
         },
         {
-          "page": 748,
-          "label": "自然数の順序を帰納的に定義する",
-          "section": "Trial3.indexed",
-          "stage": "28 / 38\n表示 4 / 4",
-          "overflow": -115,
-          "density": "normal"
-        },
-        {
-          "page": 753,
-          "label": "不等式の証明を構成子で組み立てる",
-          "section": "Trial3.indexed",
-          "stage": "29 / 38\n表示 5 / 5",
-          "overflow": -92,
-          "density": "normal"
-        },
-        {
-          "page": 756,
-          "label": "不等式の証明も再帰で使う",
-          "section": "Trial3.indexed",
-          "stage": "30 / 38\n表示 3 / 3",
-          "overflow": -90,
-          "density": "normal"
-        },
-        {
-          "page": 759,
-          "label": "練習：不等式の証明の型を読む",
-          "section": "Trial3.indexed",
-          "stage": "31 / 38\n表示 3 / 3",
-          "overflow": -174,
-          "density": "normal"
-        },
-        {
-          "page": 763,
-          "label": "練習：逆回りの信号",
-          "section": "Trial3.practice",
-          "stage": "32 / 38\n表示 4 / 4",
-          "overflow": -59,
+          "page": 755,
+          "label": "再帰で証明を書くと帰納法になる",
+          "section": "Trial3.recursion",
+          "stage": "24 / 40\n表示 4 / 4",
+          "overflow": -55,
           "density": "tight"
         },
         {
+          "page": 758,
+          "label": "帰納型で型の族を定義する",
+          "section": "Trial3.indexed",
+          "stage": "25 / 40\n表示 3 / 3",
+          "overflow": -159,
+          "density": "normal"
+        },
+        {
+          "page": 762,
+          "label": "Eq.refl は族の対角に項を作る",
+          "section": "Trial3.indexed",
+          "stage": "26 / 40\n表示 4 / 4",
+          "overflow": -110,
+          "density": "normal"
+        },
+        {
           "page": 766,
-          "label": "練習：直和を入れ替える",
-          "section": "Trial3.practice",
-          "stage": "33 / 38\n表示 3 / 3",
-          "overflow": -196,
+          "label": "等式を match で使う",
+          "section": "Trial3.indexed",
+          "stage": "27 / 40\n表示 4 / 4",
+          "overflow": -27,
           "density": "normal"
         },
         {
           "page": 769,
-          "label": "練習：二つの関数の値を組にする",
-          "section": "Trial3.practice",
-          "stage": "34 / 38\n表示 3 / 3",
-          "overflow": -235,
+          "label": "等式をつなぐ関数も match で作る",
+          "section": "Trial3.indexed",
+          "stage": "28 / 40\n表示 3 / 3",
+          "overflow": -134,
           "density": "normal"
         },
         {
-          "page": 772,
-          "label": "練習：依存関数から依存和への写像",
-          "section": "Trial3.practice",
-          "stage": "35 / 38\n表示 3 / 3",
-          "overflow": -230,
-          "density": "normal"
-        },
-        {
-          "page": 775,
-          "label": "練習：再帰で自然数へ送る",
-          "section": "Trial3.practice",
-          "stage": "36 / 38\n表示 3 / 3",
-          "overflow": -196,
+          "page": 774,
+          "label": "同じ関数を適用しても等しい",
+          "section": "Trial3.indexed",
+          "stage": "29 / 40\n表示 5 / 5",
+          "overflow": -8,
           "density": "normal"
         },
         {
           "page": 778,
-          "label": "練習：自然数に応じて不等式の証明を作る",
-          "section": "Trial3.practice",
-          "stage": "37 / 38\n表示 3 / 3",
-          "overflow": -152,
-          "density": "normal"
-        },
-        {
-          "page": 781,
-          "label": "練習：等式によって証明を移す",
-          "section": "Trial3.practice",
-          "stage": "38 / 38\n表示 3 / 3",
-          "overflow": -235,
+          "label": "自然数の順序を帰納的に定義する",
+          "section": "Trial3.indexed",
+          "stage": "30 / 40\n表示 4 / 4",
+          "overflow": -115,
           "density": "normal"
         },
         {
           "page": 783,
+          "label": "不等式の証明を構成子で組み立てる",
+          "section": "Trial3.indexed",
+          "stage": "31 / 40\n表示 5 / 5",
+          "overflow": -92,
+          "density": "normal"
+        },
+        {
+          "page": 786,
+          "label": "不等式の証明も再帰で使う",
+          "section": "Trial3.indexed",
+          "stage": "32 / 40\n表示 3 / 3",
+          "overflow": -90,
+          "density": "normal"
+        },
+        {
+          "page": 789,
+          "label": "練習：不等式の証明の型を読む",
+          "section": "Trial3.indexed",
+          "stage": "33 / 40\n表示 3 / 3",
+          "overflow": -174,
+          "density": "normal"
+        },
+        {
+          "page": 793,
+          "label": "練習：逆回りの信号",
+          "section": "Trial3.practice",
+          "stage": "34 / 40\n表示 4 / 4",
+          "overflow": -59,
+          "density": "tight"
+        },
+        {
+          "page": 796,
+          "label": "練習：直和を入れ替える",
+          "section": "Trial3.practice",
+          "stage": "35 / 40\n表示 3 / 3",
+          "overflow": -196,
+          "density": "normal"
+        },
+        {
+          "page": 799,
+          "label": "練習：二つの関数の値を組にする",
+          "section": "Trial3.practice",
+          "stage": "36 / 40\n表示 3 / 3",
+          "overflow": -235,
+          "density": "normal"
+        },
+        {
+          "page": 802,
+          "label": "練習：依存関数から依存和への写像",
+          "section": "Trial3.practice",
+          "stage": "37 / 40\n表示 3 / 3",
+          "overflow": -230,
+          "density": "normal"
+        },
+        {
+          "page": 805,
+          "label": "練習：再帰で自然数へ送る",
+          "section": "Trial3.practice",
+          "stage": "38 / 40\n表示 3 / 3",
+          "overflow": -196,
+          "density": "normal"
+        },
+        {
+          "page": 808,
+          "label": "練習：自然数に応じて不等式の証明を作る",
+          "section": "Trial3.practice",
+          "stage": "39 / 40\n表示 3 / 3",
+          "overflow": -152,
+          "density": "normal"
+        },
+        {
+          "page": 811,
+          "label": "練習：等式によって証明を移す",
+          "section": "Trial3.practice",
+          "stage": "40 / 40\n表示 3 / 3",
+          "overflow": -235,
+          "density": "normal"
+        },
+        {
+          "page": 813,
           "label": "証明を構成子で作り、match で使う",
           "section": "04_Exists.intro",
           "stage": "1 / 29\n表示 2 / 2",
@@ -1661,7 +1709,7 @@
           "density": "normal"
         },
         {
-          "page": 787,
+          "page": 817,
           "label": "存在の証明は証人と根拠をまとめる",
           "section": "Trial4.existence",
           "stage": "2 / 29\n表示 4 / 4",
@@ -1669,7 +1717,7 @@
           "density": "normal"
         },
         {
-          "page": 792,
+          "page": 822,
           "label": "全称量化の内側で存在を示す",
           "section": "Trial4.existence",
           "stage": "3 / 29\n表示 5 / 5",
@@ -1677,7 +1725,7 @@
           "density": "normal"
         },
         {
-          "page": 797,
+          "page": 827,
           "label": "証人を決めてから根拠の型を読む",
           "section": "Trial4.existence",
           "stage": "4 / 29\n表示 5 / 5",
@@ -1685,7 +1733,7 @@
           "density": "normal"
         },
         {
-          "page": 800,
+          "page": 830,
           "label": "全射の合成：数学の証明",
           "section": "Trial4.existence",
           "stage": "5 / 29\n表示 3 / 3",
@@ -1693,7 +1741,7 @@
           "density": "normal"
         },
         {
-          "page": 805,
+          "page": 835,
           "label": "仮定と結論を型で書く",
           "section": "Trial4.existence",
           "stage": "6 / 29\n表示 5 / 5",
@@ -1701,7 +1749,7 @@
           "density": "normal"
         },
         {
-          "page": 809,
+          "page": 839,
           "label": "存在の証明を使うときは match",
           "section": "Trial4.existence",
           "stage": "7 / 29\n表示 4 / 4",
@@ -1709,7 +1757,7 @@
           "density": "normal"
         },
         {
-          "page": 812,
+          "page": 842,
           "label": "全射の合成：証明の項",
           "section": "Trial4.existence",
           "stage": "8 / 29\n表示 3 / 3",
@@ -1717,7 +1765,7 @@
           "density": "tight"
         },
         {
-          "page": 817,
+          "page": 847,
           "label": "全射の合成：本体の型検査",
           "section": "Trial4.existence",
           "stage": "9 / 29\n表示 5 / 5",
@@ -1725,7 +1773,7 @@
           "density": "normal"
         },
         {
-          "page": 821,
+          "page": 851,
           "label": "全称・存在を、示すときと使うときで整理",
           "section": "Trial4.existence",
           "stage": "10 / 29\n表示 4 / 4",
@@ -1733,7 +1781,7 @@
           "density": "tight"
         },
         {
-          "page": 824,
+          "page": 854,
           "label": "練習：右逆があれば全射",
           "section": "Trial4.existence",
           "stage": "11 / 29\n表示 3 / 3",
@@ -1741,7 +1789,7 @@
           "density": "normal"
         },
         {
-          "page": 828,
+          "page": 858,
           "label": "かつ：二つの証明をまとめる",
           "section": "Trial4.and",
           "stage": "12 / 29\n表示 4 / 4",
@@ -1749,7 +1797,7 @@
           "density": "normal"
         },
         {
-          "page": 831,
+          "page": 861,
           "label": "全単射の合成：既にある証明を組み合わせる",
           "section": "Trial4.and",
           "stage": "13 / 29\n表示 3 / 3",
@@ -1757,7 +1805,7 @@
           "density": "normal"
         },
         {
-          "page": 833,
+          "page": 863,
           "label": "かつを使って、かつを作る",
           "section": "Trial4.and",
           "stage": "14 / 29\n表示 2 / 2",
@@ -1765,7 +1813,7 @@
           "density": "tight"
         },
         {
-          "page": 836,
+          "page": 866,
           "label": "または：どちらかの証明から作る",
           "section": "Trial4.or",
           "stage": "15 / 29\n表示 3 / 3",
@@ -1773,7 +1821,7 @@
           "density": "normal"
         },
         {
-          "page": 839,
+          "page": 869,
           "label": "場合ごとに結論の構成子を選ぶ",
           "section": "Trial4.or",
           "stage": "16 / 29\n表示 3 / 3",
@@ -1781,7 +1829,7 @@
           "density": "normal"
         },
         {
-          "page": 842,
+          "page": 872,
           "label": "False と否定",
           "section": "Trial4.not",
           "stage": "17 / 29\n表示 3 / 3",
@@ -1789,7 +1837,7 @@
           "density": "normal"
         },
         {
-          "page": 845,
+          "page": 875,
           "label": "単射は異なる対象を異なる対象へ送る",
           "section": "Trial4.not",
           "stage": "18 / 29\n表示 3 / 3",
@@ -1797,7 +1845,7 @@
           "density": "normal"
         },
         {
-          "page": 848,
+          "page": 878,
           "label": "異なる構成子が等しくないことを使う",
           "section": "Trial4.not",
           "stage": "19 / 29\n表示 3 / 3",
@@ -1805,7 +1853,7 @@
           "density": "normal"
         },
         {
-          "page": 851,
+          "page": 881,
           "label": "偶数の和：二つの存在を使う",
           "section": "Trial4.even-add",
           "stage": "20 / 29\n表示 3 / 3",
@@ -1813,7 +1861,7 @@
           "density": "normal"
         },
         {
-          "page": 857,
+          "page": 887,
           "label": "必要な等式を三つにつなぐ",
           "section": "Trial4.even-add",
           "stage": "21 / 29\n表示 6 / 6",
@@ -1821,7 +1869,7 @@
           "density": "normal"
         },
         {
-          "page": 860,
+          "page": 890,
           "label": "等式の証明を一つの関数にする",
           "section": "Trial4.even-add",
           "stage": "22 / 29\n表示 3 / 3",
@@ -1829,7 +1877,7 @@
           "density": "normal"
         },
         {
-          "page": 863,
+          "page": 893,
           "label": "証人と等式の証明を構成子へ渡す",
           "section": "Trial4.even-add",
           "stage": "23 / 29\n表示 3 / 3",
@@ -1837,7 +1885,7 @@
           "density": "normal"
         },
         {
-          "page": 866,
+          "page": 896,
           "label": "示すときと使うとき",
           "section": "Trial4.summary",
           "stage": "24 / 29\n表示 3 / 3",
@@ -1845,7 +1893,7 @@
           "density": "tight"
         },
         {
-          "page": 870,
+          "page": 900,
           "label": "練習：三つの全射の合成",
           "section": "Trial4.practice",
           "stage": "25 / 29\n表示 4 / 4",
@@ -1853,7 +1901,7 @@
           "density": "dense"
         },
         {
-          "page": 873,
+          "page": 903,
           "label": "練習：存在と「かつ」を使う",
           "section": "Trial4.practice",
           "stage": "26 / 29\n表示 3 / 3",
@@ -1861,7 +1909,7 @@
           "density": "normal"
         },
         {
-          "page": 876,
+          "page": 906,
           "label": "練習：単射性を場合ごとに使う",
           "section": "Trial4.practice",
           "stage": "27 / 29\n表示 3 / 3",
@@ -1869,7 +1917,7 @@
           "density": "normal"
         },
         {
-          "page": 879,
+          "page": 909,
           "label": "練習：像が違えばもとも違う",
           "section": "Trial4.practice",
           "stage": "28 / 29\n表示 3 / 3",
@@ -1877,12 +1925,460 @@
           "density": "normal"
         },
         {
-          "page": 882,
+          "page": 912,
           "label": "練習：偶数に2を加える",
           "section": "Trial4.practice",
           "stage": "29 / 29\n表示 3 / 3",
           "overflow": -230,
           "density": "normal"
+        },
+        {
+          "page": 914,
+          "label": "数学を記述する道具",
+          "section": "05_MathematicalTools.intro",
+          "stage": "1 / 56\n表示 2 / 2",
+          "overflow": -102,
+          "density": "normal"
+        },
+        {
+          "page": 916,
+          "label": "一つの構成子と、成分を取り出す関数",
+          "section": "Trial5.structures",
+          "stage": "2 / 56\n表示 2 / 2",
+          "overflow": -150,
+          "density": "normal"
+        },
+        {
+          "page": 919,
+          "label": "structure でまとめて宣言する",
+          "section": "Trial5.structures",
+          "stage": "3 / 56\n表示 3 / 3",
+          "overflow": -190,
+          "density": "normal"
+        },
+        {
+          "page": 926,
+          "label": "構成子で作り、フィールドを取り出す",
+          "section": "Trial5.structures",
+          "stage": "4 / 56\n表示 7 / 7",
+          "overflow": -57,
+          "density": "dense"
+        },
+        {
+          "page": 930,
+          "label": "ドット記法も関数適用",
+          "section": "Trial5.structures",
+          "stage": "5 / 56\n表示 4 / 4",
+          "overflow": -188,
+          "density": "normal"
+        },
+        {
+          "page": 934,
+          "label": "期待される型から構成子を決める",
+          "section": "Trial5.structures",
+          "stage": "6 / 56\n表示 4 / 4",
+          "overflow": -27,
+          "density": "normal"
+        },
+        {
+          "page": 939,
+          "label": "フィールド名と構成子の略記",
+          "section": "Trial5.structures",
+          "stage": "7 / 56\n表示 5 / 5",
+          "overflow": -8,
+          "density": "normal"
+        },
+        {
+          "page": 943,
+          "label": "自分で定義した関数のドット記法",
+          "section": "Trial5.structures",
+          "stage": "8 / 56\n表示 4 / 4",
+          "overflow": -110,
+          "density": "normal"
+        },
+        {
+          "page": 947,
+          "label": "練習：成分の写像から組を作る",
+          "section": "Trial5.structures",
+          "stage": "9 / 56\n表示 4 / 4",
+          "overflow": -20,
+          "density": "dense"
+        },
+        {
+          "page": 951,
+          "label": "型をパラメータにする構造体",
+          "section": "Trial5.structures",
+          "stage": "10 / 56\n表示 4 / 4",
+          "overflow": -29,
+          "density": "tight"
+        },
+        {
+          "page": 954,
+          "label": "異なる型の項をまとめる",
+          "section": "Trial5.structures",
+          "stage": "11 / 56\n表示 3 / 3",
+          "overflow": -91,
+          "density": "normal"
+        },
+        {
+          "page": 958,
+          "label": "型と、その型の項をまとめる",
+          "section": "Trial5.dependent-fields",
+          "stage": "12 / 56\n表示 4 / 4",
+          "overflow": -52,
+          "density": "tight"
+        },
+        {
+          "page": 961,
+          "label": "点付き集合を作る",
+          "section": "Trial5.dependent-fields",
+          "stage": "13 / 56\n表示 3 / 3",
+          "overflow": -174,
+          "density": "normal"
+        },
+        {
+          "page": 966,
+          "label": "取り出す項の型も入力に依存する",
+          "section": "Trial5.dependent-fields",
+          "stage": "14 / 56\n表示 5 / 5",
+          "overflow": -44,
+          "density": "tight"
+        },
+        {
+          "page": 970,
+          "label": "部分型は値と証明の組",
+          "section": "Trial5.subtypes",
+          "stage": "15 / 56\n表示 4 / 4",
+          "overflow": -62,
+          "density": "normal"
+        },
+        {
+          "page": 973,
+          "label": "偶数という条件を付けた型",
+          "section": "Trial5.subtypes",
+          "stage": "16 / 56\n表示 3 / 3",
+          "overflow": -57,
+          "density": "normal"
+        },
+        {
+          "page": 978,
+          "label": "値と、その値の保証を使う",
+          "section": "Trial5.subtypes",
+          "stage": "17 / 56\n表示 5 / 5",
+          "overflow": -42,
+          "density": "normal"
+        },
+        {
+          "page": 981,
+          "label": "条件付きの値と、存在の証明",
+          "section": "Trial5.subtypes",
+          "stage": "18 / 56\n表示 3 / 3",
+          "overflow": -63,
+          "density": "normal"
+        },
+        {
+          "page": 984,
+          "label": "Fin の内部を読む",
+          "section": "Trial5.subtypes",
+          "stage": "19 / 56\n表示 3 / 3",
+          "overflow": -173,
+          "density": "normal"
+        },
+        {
+          "page": 990,
+          "label": "範囲の証明を添えて番号を作る",
+          "section": "Trial5.subtypes",
+          "stage": "20 / 56\n表示 6 / 6",
+          "overflow": 1,
+          "density": "tight"
+        },
+        {
+          "page": 993,
+          "label": "第1章の依存関数とつながる",
+          "section": "Trial5.subtypes",
+          "stage": "21 / 56\n表示 3 / 3",
+          "overflow": -85,
+          "density": "normal"
+        },
+        {
+          "page": 998,
+          "label": "構造体から class へ",
+          "section": "Intro2.classes",
+          "stage": "22 / 56\n表示 5 / 5",
+          "overflow": -35,
+          "density": "dense"
+        },
+        {
+          "page": 1002,
+          "label": "型ごとに基点を登録する",
+          "section": "Intro2.classes",
+          "stage": "23 / 56\n表示 4 / 4",
+          "overflow": -127,
+          "density": "normal"
+        },
+        {
+          "page": 1007,
+          "label": "暗黙引数とインスタンス引数",
+          "section": "Intro2.classes",
+          "stage": "24 / 56\n表示 5 / 5",
+          "overflow": -42,
+          "density": "tight"
+        },
+        {
+          "page": 1012,
+          "label": "探索が成功する場合・失敗する場合",
+          "section": "Intro2.classes",
+          "stage": "25 / 56\n表示 5 / 5",
+          "overflow": -30,
+          "density": "normal"
+        },
+        {
+          "page": 1018,
+          "label": "インスタンス引数を持つ関数",
+          "section": "Intro2.classes",
+          "stage": "26 / 56\n表示 6 / 6",
+          "overflow": -50,
+          "density": "normal"
+        },
+        {
+          "page": 1024,
+          "label": "自作型にもインスタンスを与える",
+          "section": "Intro2.classes",
+          "stage": "27 / 56\n表示 6 / 6",
+          "overflow": -68,
+          "density": "tight"
+        },
+        {
+          "page": 1029,
+          "label": "登録した構造を使って証明する",
+          "section": "Intro2.classes",
+          "stage": "28 / 56\n表示 5 / 5",
+          "overflow": -26,
+          "density": "dense"
+        },
+        {
+          "page": 1033,
+          "label": "積に構造を誘導する",
+          "section": "Intro2.classes",
+          "stage": "29 / 56\n表示 4 / 4",
+          "overflow": -15,
+          "density": "dense"
+        },
+        {
+          "page": 1036,
+          "label": "記法もクラスで動いている",
+          "section": "Intro2.classes",
+          "stage": "30 / 56\n表示 3 / 3",
+          "overflow": -212,
+          "density": "normal"
+        },
+        {
+          "page": 1041,
+          "label": "Point に足し算を登録する",
+          "section": "Intro2.classes",
+          "stage": "31 / 56\n表示 5 / 5",
+          "overflow": -64,
+          "density": "normal"
+        },
+        {
+          "page": 1045,
+          "label": "記法を自作する",
+          "section": "Intro2.notation",
+          "stage": "32 / 56\n表示 4 / 4",
+          "overflow": -96,
+          "density": "normal"
+        },
+        {
+          "page": 1050,
+          "label": "記法が展開されてから型検査される",
+          "section": "Intro2.notation",
+          "stage": "33 / 56\n表示 5 / 5",
+          "overflow": -58,
+          "density": "normal"
+        },
+        {
+          "page": 1056,
+          "label": "集合を述語として表す",
+          "section": "Intro2.sets",
+          "stage": "34 / 56\n表示 6 / 6",
+          "overflow": -22,
+          "density": "tight"
+        },
+        {
+          "page": 1061,
+          "label": "集合の内包記法を作る",
+          "section": "Intro2.sets",
+          "stage": "35 / 56\n表示 5 / 5",
+          "overflow": -35,
+          "density": "normal"
+        },
+        {
+          "page": 1067,
+          "label": "所属の記号を登録する",
+          "section": "Intro2.sets",
+          "stage": "36 / 56\n表示 6 / 6",
+          "overflow": -45,
+          "density": "tight"
+        },
+        {
+          "page": 1073,
+          "label": "表示の読み方と所属の証明",
+          "section": "Intro2.sets",
+          "stage": "37 / 56\n表示 6 / 6",
+          "overflow": -5,
+          "density": "normal"
+        },
+        {
+          "page": 1077,
+          "label": "包含を全称量化と含意で書く",
+          "section": "Intro2.sets",
+          "stage": "38 / 56\n表示 4 / 4",
+          "overflow": -132,
+          "density": "normal"
+        },
+        {
+          "page": 1082,
+          "label": "集合の包含も関数で証明する",
+          "section": "Intro2.sets",
+          "stage": "39 / 56\n表示 5 / 5",
+          "overflow": -25,
+          "density": "normal"
+        },
+        {
+          "page": 1088,
+          "label": "名前空間で名前をまとめる",
+          "section": "Intro2.namespaces",
+          "stage": "40 / 56\n表示 6 / 6",
+          "overflow": -46,
+          "density": "dense"
+        },
+        {
+          "page": 1090,
+          "label": "名前空間とドット記法",
+          "section": "Intro2.namespaces",
+          "stage": "41 / 56\n表示 2 / 2",
+          "overflow": -243,
+          "density": "normal"
+        },
+        {
+          "page": 1096,
+          "label": "練習：構造体をフィールドに持つ構造体",
+          "section": "Trial5.practice",
+          "stage": "42 / 56\n表示 6 / 6",
+          "overflow": -33,
+          "density": "dense"
+        },
+        {
+          "page": 1100,
+          "label": "練習：台の型を保ち、点を移す",
+          "section": "Trial5.practice",
+          "stage": "43 / 56\n表示 4 / 4",
+          "overflow": -6,
+          "density": "normal"
+        },
+        {
+          "page": 1104,
+          "label": "練習：条件付きの値を返す",
+          "section": "Trial5.practice",
+          "stage": "44 / 56\n表示 4 / 4",
+          "overflow": -45,
+          "density": "normal"
+        },
+        {
+          "page": 1109,
+          "label": "練習：Bool に基点を登録する",
+          "section": "Trial5.practice",
+          "stage": "45 / 56\n表示 5 / 5",
+          "overflow": -24,
+          "density": "dense"
+        },
+        {
+          "page": 1113,
+          "label": "練習：二項演算を登録する",
+          "section": "Trial5.practice",
+          "stage": "46 / 56\n表示 4 / 4",
+          "overflow": -42,
+          "density": "dense"
+        },
+        {
+          "page": 1117,
+          "label": "練習：登録された演算を使う",
+          "section": "Trial5.practice",
+          "stage": "47 / 56\n表示 4 / 4",
+          "overflow": -172,
+          "density": "normal"
+        },
+        {
+          "page": 1121,
+          "label": "練習：積に演算を誘導する",
+          "section": "Trial5.practice",
+          "stage": "48 / 56\n表示 4 / 4",
+          "overflow": -1,
+          "density": "normal"
+        },
+        {
+          "page": 1125,
+          "label": "練習：Point の掛け算",
+          "section": "Trial5.practice",
+          "stage": "49 / 56\n表示 4 / 4",
+          "overflow": -89,
+          "density": "normal"
+        },
+        {
+          "page": 1129,
+          "label": "練習：Point の記法を作る",
+          "section": "Trial5.practice",
+          "stage": "50 / 56\n表示 4 / 4",
+          "overflow": -55,
+          "density": "normal"
+        },
+        {
+          "page": 1133,
+          "label": "練習：中置記法を作る",
+          "section": "Trial5.practice",
+          "stage": "51 / 56\n表示 4 / 4",
+          "overflow": -128,
+          "density": "normal"
+        },
+        {
+          "page": 1137,
+          "label": "練習：包含の推移律",
+          "section": "Trial5.practice",
+          "stage": "52 / 56\n表示 4 / 4",
+          "overflow": -133,
+          "density": "normal"
+        },
+        {
+          "page": 1140,
+          "label": "練習：偶数の集合",
+          "section": "Trial5.practice",
+          "stage": "53 / 56\n表示 3 / 3",
+          "overflow": -147,
+          "density": "normal"
+        },
+        {
+          "page": 1143,
+          "label": "練習：全体集合への包含",
+          "section": "Trial5.practice",
+          "stage": "54 / 56\n表示 3 / 3",
+          "overflow": -108,
+          "density": "normal"
+        },
+        {
+          "page": 1147,
+          "label": "練習：述語で集合を指定する",
+          "section": "Trial5.practice",
+          "stage": "55 / 56\n表示 4 / 4",
+          "overflow": -172,
+          "density": "normal"
+        },
+        {
+          "page": 1151,
+          "label": "練習：名前空間を開き直す",
+          "section": "Trial5.practice",
+          "stage": "56 / 56\n表示 4 / 4",
+          "overflow": -9,
+          "density": "tight"
         }
       ]
     }

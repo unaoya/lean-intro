@@ -79,7 +79,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <body>
 <nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span><a href="03_inductivetypes.html">03_InductiveTypes →</a></span></nav>
 <main>
-<p class="trial-banner">第1〜4章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/02_forall.html">この章のスライド</a> · <a href="../src/02_Forall.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «01_TypesAndTerms»</code></pre>
+<p class="trial-banner">第1〜5章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/02_forall.html">この章のスライド</a> · <a href="../src/02_Forall.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «01_TypesAndTerms»</code></pre>
 <h1>型と命題 I — ならばと全称量化</h1>
 <p>この章では、<strong>その命題の証明を与えられたか、証明を書けたか</strong>という視点で数学を読む。命題の真偽を先に判定することや、同じ命題の証明どうしの文面を比べることから、いったん視点を移そう。注目するのは、その主張を支える保証を、実際に与えられたかどうかである。</p>
 <p>ここでいう保証は、その命題の<strong>証明書</strong>だと思えばよい。証明がまだ書けていないということと、その命題が偽であるということは区別する。</p>
@@ -110,11 +110,15 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <pre class="quote"><code>h : g (f x) = g (f y)</code></pre>
 <p>これは等式を表す文字列に名前を付けているのではなく、<strong>その等式を保証する証明書に <code>h</code> という名前を付けている</strong>。一般に <code>h : x = y</code> と書けば、<code>x = y</code> であるという保証を <code>h</code> と名付けたことになる。対象に名前を付ける <code>x : A</code> と同じ配置で、型の場所に命題を書いている。</p>
 <h3>命題を型、証明をその型の項として読む</h3>
-<p>Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2 : Prop</code> だが、その命題を保証する項の型は <code>1 + 1 = 2</code> である。</p>
+<p>Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2</code> の証明を <code>h</code> と名付けたとき、命題とその証明の型は次のように区別する。</p>
+<pre class="quote"><code>(1 + 1 = 2) : Prop
+h : 1 + 1 = 2</code></pre>
+<p><code>Prop</code> は命題たちの型であり、証明 <code>h</code> の型は、その証明が保証する命題 <code>1 + 1 = 2</code> である。</p>
 <p>証明に名前を付けるときも <code>def 名前 : 型 := 項</code> を使う。指定する型が証明したい命題で、右辺の項がその証明書になる。</p>
 <h3>単射性を、全称量化と「ならば」で書く</h3>
 <p>「どの <code>x</code>、<code>y</code> についても」は <code>∀ x y</code> と書く。<code>∀</code> は <code>\forall</code> で入力できる。また、二つの命題の間の <code>→</code> を「ならば」と読む。$f$ の単射性を表す命題は、次のようになる。</p>
 <pre class="quote"><code>∀ x y : A, f x = f y → x = y</code></pre>
+<p>関数適用は等号より強く結び付き、<code>f x = f y</code> は <code>(f x) = (f y)</code> と読む。</p>
 <p>その証明を <code>hf</code> と名付ける。$g$ の単射性の証明は <code>hg</code> とし、それぞれの型を、数学で使った条件のまま書く。</p>
 <pre class="quote"><code>hf : ∀ x y : A, f x = f y → x = y
 hg : ∀ u v : B, g u = g v → u = v</code></pre>
@@ -124,11 +128,13 @@ hg : ∀ u v : B, g u = g v → u = v</code></pre>
 <p>結論を外側から読むと、まず <code>x : A</code> と <code>y : A</code>、次に <code>h : g (f x) = g (f y)</code> を受け取り、<code>x = y</code> の証明を返せばよい。この「受け取る」を、<code>fun x y h =&gt;</code> と書く。</p>
 <p>では、本体をどう作るか。欲しい結論 <code>x = y</code> から考えると、 <code>hf x y</code> は <code>f x = f y</code> の証明を受け取って、その結論の証明を返してくれる。そこで、まず <code>f x = f y</code> の証明を作ればよい。</p>
 <p>このために <code>hg</code> に渡す対象は、<code>x</code>、<code>y</code> ではなく、<code>B</code> の項である <code>f x</code>、<code>f y</code> である。 <code>hg (f x) (f y)</code> が要求する等式は、ちょうど手元の <code>h</code> が保証している。したがって <code>hg (f x) (f y) h</code> を作って <code>hf x y</code> に渡すと、本体が完成する。</p>
+<p>証明の項は、仮定や既に与えられた定義・補題の名前を参照して組み立てられる。参照先の内容をすべて項の中に書き込む必要はなく、Lean はそれらの宣言も使って型を検査する。</p>
 <pre class="lean"><code><span class="kw">def</span> comp_injective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
     (hf : ∀ x y : A, f x = f y → x = y)
     (hg : ∀ u v : B, g u = g v → u = v) :
     ∀ x y : A, g (f x) = g (f y) → x = y :=
   <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</code></pre>
+<p>Lean は、この <code>def</code> の宣言を受理するときに証明の型検査を行う。後から <code>#check comp_injective</code> と書いたときには、既に検査された定義の型を確認している。</p>
 <h3>機械が行う型検査を追う</h3>
 <p>右辺全体に期待される型は、結論に書いた次の型である。</p>
 <pre class="quote"><code>(x : A) → (y : A) → (g (f x) = g (f y) → x = y)</code></pre>
@@ -143,11 +149,17 @@ hg : ∀ u v : B, g u = g v → u = v</code></pre>
 <pre class="quote"><code>hf x y (hg (f x) (f y) h) : x = y</code></pre>
 <p>本体の型が、要求されていた結論の型と一致した。これで、<code>x</code>、<code>y</code>、<code>h</code> を受け取ってその本体を返す <code>fun x y h =&gt; …</code> 全体が、指定された全称量化と「ならば」の型を持つと確かめられる。</p>
 <p>ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。「$g$ の単射性を使おう」という証明の発想をもう一度探すのではなく、 <strong>書かれた証明の各適用が型に合っているか</strong>を確かめている。</p>
+<p>長い項を読むときは、括弧や型注釈を明示し、途中の結果の型を確かめるとよい。この例なら、内側を <code>(hg (f x) (f y) h : f x = f y)</code> と注釈できる。必要なら小さな定義に分けて名前を付ける。本体の途中で結果に名前を付ける <code>let</code> は、<a href="04_exists.html#sec-Trial4.even-add">第4章5節</a>で扱う。</p>
 <h3>全称量化も「ならば」も関数として扱っている</h3>
 <p><code>hf</code> の型は、依存関数型の記法でも書ける。</p>
 <pre class="quote"><code>hf : (x : A) → (y : A) → (f x = f y → x = y)</code></pre>
 <p>最初の二つの引数は対象である。その値 <code>x</code>、<code>y</code> によって、残りの型に現れる等式も変わる。これが、全称量化の証明が依存関数であるという意味である。</p>
 <p>対象を二つ渡した後の <code>hf x y</code> は、<code>f x = f y</code> の証明を受け取り、<code>x = y</code> の証明を返す。ここでは入力も出力も証明だが、関数を適用する規則は前の章と変わらない。</p>
+<p>このとき、命題である関数型と、その型の項である関数を区別しよう。</p>
+<pre class="quote"><code>(f x = f y → x = y) : Prop
+hf x y : f x = f y → x = y</code></pre>
+<p>上の行は「ならば」で作った命題であり、下の行の <code>hf x y</code> が、その命題の証明となる関数である。</p>
+<p>Lean では、<strong>同じ命題の証明どうしは、書き方が違っても同じ項として扱われる</strong>。証明が存在する場合、その命題に対応する型の項は、この意味で一つとみなせる。「ならば」や全称命題の証明である関数も、命題に対応する型の項なので、この扱いを受ける。このため、ここでは<strong>要求された型の関数を書けるかどうか</strong>、すなわち、その命題の証明を与えられるかに注目する。</p>
 <p><strong>示すときは、要求される引数を <code>fun</code> で受け取る。使うときは、対象や証明を適用で渡す。</strong> 全称量化と「ならば」が重なった証明も、この二つの操作で読める。</p>
 <h3>✏ 練習</h3>
 <ol class="exercise" start="28" data-exercise="28">
@@ -198,12 +210,17 @@ hg : ∀ u v : B, g u = g v → u = v</code></pre>
 <p>左辺 <code>1 + 1</code> は計算すると <code>2</code> になる。そのため、例えば <code>Eq.refl 2 : 2 = 2</code> も、ここで要求された型 <code>1 + 1 = 2</code> の項として使える。</p>
 <pre class="lean"><code><span class="kw">def</span> one_add_one_explicit : 1 + 1 = 2 := Eq.refl 2</code></pre>
 <p>計算して一致するかどうかは、<code>Eq.refl</code> を直接使った場合にも、型の照合で調べられる。 <code>rfl</code> だけに特別な計算能力があるわけではない。違いは、対象を明示するか、暗黙に補ってもらうかである。</p>
+<aside class="note note--optional"><h3>補足: 型の照合に必要な計算</h3>
+<p>両辺を定義に沿って計算するにも、時間やメモリが必要である。複雑な計算では時間がかかったり、計算資源の上限に達して検査が中断されたりすることがある。 Lean には自然数の数値計算を効率よく行う仕組みがあり、負荷は数の大きさだけでなく、行う計算の内容にも依存する。計算が打ち切られたことは、等式が偽であることを意味しないので、エラーメッセージで理由を確かめよう。</p></aside>
 <h3>対象ごとの等式を保証する</h3>
 <p>対象を受け取って、その対象自身との等式の証明を返すこともできる。 <code>n</code> を受け取るたびに、返す証明の型が <code>n = n</code> に決まる。</p>
 <pre class="lean"><code><span class="kw">def</span> all_refl : ∀ n : Nat, n = n :=
   <span class="kw">fun</span> n =&gt; (rfl : n = n)
 
-<span class="kw">#check</span> all_refl 7</code></pre>
+<span class="kw">#check</span> all_refl</code></pre>
+<pre class="quote"><code>all_refl (n : Nat) : n = n</code></pre>
+<p><code>∀ n : Nat, n = n</code> の量化部分が、引数 <code>(n : Nat)</code> として左側に表示されている。 Infoview でもこのような binder 形式が使われる。<code>∀</code> の記号が見えなくても、「任意の <code>n : Nat</code> について <code>n = n</code>」という型は変わっていない。</p>
+<pre class="lean"><code><span class="kw">#check</span> all_refl 7</code></pre>
 <pre class="quote"><code>all_refl 7 : 7 = 7</code></pre>
 <p>これも全称量化の証明を依存関数として作り、対象を渡して使う例である。次は、このような等式の保証を逆向きに使ったり、二つつないだりする道具を使おう。</p>
 <h3>なぜ等式の性質を証明できるのか</h3>
@@ -216,7 +233,7 @@ hg : ∀ u v : B, g u = g v → u = v</code></pre>
 <p>上の最小性は、集合の言葉によるイメージである。 Lean では、<code>Eq</code> を帰納型として定義すると、<code>Eq.refl</code> で作る場合を調べることで、任意の等式の証明についての主張を示す原理が得られる。この原理が、余分な場合を持たないという最小性に対応する役割を果たす。</p>
 <p>例えば対称性を示すとき、<code>a = b</code> の証明が <code>Eq.refl a</code> である場合を考えればよい。この場合には <code>b</code> も <code>a</code> なので、逆向きの等式の証明も <code>Eq.refl a</code> で作れる。このように、反射性の証明と帰納型の原理を使って、対称性・推移性・関数への適用の性質を証明できる。その証明の書き方は後で扱い、ここでは得られた三つの道具の型と使い方を見よう。</p>
 <h3>Eq.symm — 等式の向きを逆にする</h3>
-<p><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。</p>
+<p><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。一般に、<code>a = b</code> の証明をそのまま <code>b = a</code> の証明として渡せるわけではない。等式の向きも型に含まれるので、逆向きの証明が必要なときは <code>Eq.symm</code> を使う。</p>
 <pre class="quote"><code>h : a = b
 Eq.symm h : b = a</code></pre>
 <p>対象 <code>a</code> と <code>b</code> は暗黙引数であり、渡した <code>h</code> の型から補われる。ここでも、第1章で見た暗黙引数の仕組みが使われている。</p>

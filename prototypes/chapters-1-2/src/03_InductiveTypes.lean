@@ -27,6 +27,8 @@ inductive Signal : Type where
 /-!
     Signal.red : Signal
 
+この宣言によって、新しい型 `Signal` と三つの項 `Signal.red`、`Signal.yellow`、`Signal.green` が一緒に導入された。
+それぞれを赤・黄・緑と読むのは人間が与える解釈であり、名前だけで色の性質や信号の動きが決まるわけではない。
 集合の言葉では、三点集合を作ったと思えばよい。
 三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。
 後者の証明は否定を扱う第4章で見る。
@@ -67,6 +69,7 @@ def Signal.next : Signal → Signal := fun s =>
 
 `fun` が入力を受け取り、その本体の `match` が値を選ぶ。
 有限集合からの写像を、各点の行き先を指定して定義するのと同じ形である。
+`match` で場合分けする対象や結果の型は、有限集合に限らない。後では自然数についても使う。
 -/
 
 /-!
@@ -101,51 +104,75 @@ def emptyToNat (e : Empty) : Nat := nomatch e
 
 構成子も関数なので、引数を受け取れる。
 次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。
+構成子の名前 `inl`・`inr` は、それぞれ左側・右側から項を入れることを表す。
 -/
-inductive NatOrBool : Type where
-  | nat (n : Nat) : NatOrBool
-  | bool (b : Bool) : NatOrBool
+inductive TaggedSum : Type where
+  | inl (n : Nat) : TaggedSum
+  | inr (b : Bool) : TaggedSum
 
-#check NatOrBool.nat
+#check TaggedSum.inl
 /-!
-    NatOrBool.nat (n : Nat) : NatOrBool
+    TaggedSum.inl (n : Nat) : TaggedSum
 
-構成子 `NatOrBool.nat` は `Nat → NatOrBool` という関数である。
+構成子 `TaggedSum.inl` は `Nat → TaggedSum` という関数である。
 集合の言葉では、この型は自然数と真偽値の**直和（非交和）**に対応する。
+-/
+
+#check TaggedSum.inr
+/-!
+    TaggedSum.inr (b : Bool) : TaggedSum
+
+同様に、`TaggedSum.inr` は `Bool → TaggedSum` という関数である。
+この構成子そのものは関数であり、それに `true : Bool` を渡した `TaggedSum.inr true` は、
+できあがった `TaggedSum` 型の項である。
+`true` 自体は `Bool` 型なので、`TaggedSum` 型の項が必要な場所では `TaggedSum.inr true` と書く。
+この例では、構成子の適用を省略しても自動で補われるわけではない。
 -/
 
 /-!
 ### 中身を受け取る場合分け
 
-`match` の枝で `NatOrBool.nat n` と書くと、その構成子に渡された自然数に `n` と名前を付けられる。
+`match` の枝で `TaggedSum.inl n` と書くと、その構成子に渡された自然数に `n` と名前を付けられる。
 返す項では、その名前を使ってよい。
 -/
-def valueOf : NatOrBool → Nat := fun x =>
+def valueOf : TaggedSum → Nat := fun x =>
   match x with
-  | NatOrBool.nat n => n
-  | NatOrBool.bool _ => 0
+  | TaggedSum.inl n => n
+  | TaggedSum.inr _ => 0
 
-#eval valueOf (NatOrBool.nat 7)
+#eval valueOf (TaggedSum.inl 7)
 /-!
     7
 
-`_` は、その引数の中身を使わないことを表す。
+枝の `TaggedSum.inr _` にある `_` は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。
+ここでは `true` と `false` のどちらも同じ枝で扱い、その値を使わずに `0` を返している。
 直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。
+-/
+
+#eval valueOf (TaggedSum.inr true)
+/-!
+    0
+
+まず `TaggedSum.inr true` という項を作り、それを `valueOf` に渡すので、括弧でまとめている。
+括弧を外した `valueOf TaggedSum.inr true` は `(valueOf TaggedSum.inr) true` と読まれ、
+`valueOf` に必要な `TaggedSum` 型の項の代わりに構成子そのものを渡すことになり、型が合わない。
 -/
 
 /-!
 ### 構成子が違う場合と、同じ場合
 
-`NatOrBool.nat n` と `NatOrBool.bool b` が等しくないことも、
-`NatOrBool.nat n = NatOrBool.nat m` から `n = m` が言えることも、Leanで証明できる。
+`TaggedSum.inl n` と `TaggedSum.inr b` が等しくないことも、
+`TaggedSum.inl n = TaggedSum.inl m` から `n = m` が言えることも、Leanで証明できる。
 後者を表す補題は、帰納型の宣言に伴って生成される。
 -/
-#check NatOrBool.nat.inj
+#check TaggedSum.inl.inj
 /-!
-    NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝
+    TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝
 
 第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。
 「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。
+`TaggedSum.inr` についても同様である。集合の言葉では、この二つの構成子は、
+それぞれの集合から直和への標準的な単射に対応する。
 -/
 
 /-!

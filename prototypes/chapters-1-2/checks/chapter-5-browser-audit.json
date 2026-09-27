@@ -1,0 +1,33 @@
+{
+  "failures": [],
+  "reports": [
+    {
+      "chapter": "05_mathematicaltools",
+      "reading": {
+        "pairs": 16,
+        "matched": true,
+        "mathRendered": 4
+      }
+    },
+    {
+      "chapter": "05_mathematicaltools",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 4,
+      "pages": 56,
+      "overflow": []
+    },
+    {
+      "chapter": "05_mathematicaltools",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 4,
+      "pages": 56,
+      "overflow": []
+    }
+  ]
+}

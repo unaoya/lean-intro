@@ -59,11 +59,27 @@
       }
     },
     {
+      "id": "sum-constructors",
+      "label": "構成子を適用して項を作る",
+      "at": {
+        "tag": "pre",
+        "starts": "#check TaggedSum.inr"
+      }
+    },
+    {
       "id": "sum-match",
       "label": "構成子の引数に名前を付けて使う",
       "at": {
         "tag": "h3",
         "starts": "中身を受け取る場合分け"
+      }
+    },
+    {
+      "id": "sum-application",
+      "label": "構成子の適用を括弧でまとめる",
+      "at": {
+        "tag": "pre",
+        "starts": "#eval valueOf (TaggedSum.inr true)"
       }
     },
     {

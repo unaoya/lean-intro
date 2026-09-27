@@ -79,7 +79,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <body>
 <nav><span><a href="02_forall.html">← 02_Forall</a></span><a href="index.html">目次</a><span><a href="04_exists.html">04_Exists →</a></span></nav>
 <main>
-<p class="trial-banner">第1〜4章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/03_inductivetypes.html">この章のスライド</a> · <a href="../src/03_InductiveTypes.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «02_Forall»</code></pre>
+<p class="trial-banner">第1〜5章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/03_inductivetypes.html">この章のスライド</a> · <a href="../src/03_InductiveTypes.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «02_Forall»</code></pre>
 <h1>型と項 II — 帰納型</h1>
 <p>第1・2章では、<code>fun</code> で関数を作り、適用でその関数を使った。この章では、<strong>構成子で項を作り、<code>match</code> でその項を使う</strong>という道具を加える。有限集合、直和、直積、集合族の直和を、同じ仕組みで表していこう。</p>
 <p>自然数のように再帰的に作られる型も扱う。最後に、第2章で使った等式と自然数の不等式を帰納型として読み、証明の項をどのように作り、使うのかを確かめる。</p>
@@ -92,7 +92,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> Signal.red</code></pre>
 <pre class="quote"><code>Signal.red : Signal</code></pre>
-<p>集合の言葉では、三点集合を作ったと思えばよい。三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。後者の証明は否定を扱う第4章で見る。</p>
+<p>この宣言によって、新しい型 <code>Signal</code> と三つの項 <code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> が一緒に導入された。それぞれを赤・黄・緑と読むのは人間が与える解釈であり、名前だけで色の性質や信号の動きが決まるわけではない。集合の言葉では、三点集合を作ったと思えばよい。三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。後者の証明は否定を扱う第4章で見る。</p>
 <h3>match で項を使う</h3>
 <p><code>match 対象 with</code> の後に、構成子ごとに <code>| 構成子 =&gt; 返す項</code> を並べる。 <strong><code>match … with …</code> 全体が一つの項</strong>であり、対象に対応する枝の項が結果になる。</p>
 <pre class="lean"><code><span class="kw">#eval</span> <span class="kw">match</span> Signal.red <span class="kw">with</span>
@@ -111,7 +111,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#eval</span> Signal.next Signal.red</code></pre>
 <pre class="quote"><code>Signal.green</code></pre>
-<p><code>fun</code> が入力を受け取り、その本体の <code>match</code> が値を選ぶ。有限集合からの写像を、各点の行き先を指定して定義するのと同じ形である。</p>
+<p><code>fun</code> が入力を受け取り、その本体の <code>match</code> が値を選ぶ。有限集合からの写像を、各点の行き先を指定して定義するのと同じ形である。 <code>match</code> で場合分けする対象や結果の型は、有限集合に限らない。後では自然数についても使う。</p>
 <h3>✏ 練習</h3>
 <ol class="exercise" start="40" data-exercise="40">
 <li><code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> をそれぞれ <code>0</code>、<code>1</code>、<code>2</code> に送る <code>signalCode : Signal → Nat</code> を定義せよ。各枝の型を確かめ、<code>signalCode Signal.yellow</code> の値を予想せよ。</li>
@@ -134,29 +134,35 @@ inductive Empty : Type</code></pre>
 <pre class="lean"><code><span class="kw">def</span> emptyToNat (e : Empty) : Nat := nomatch e</code></pre>
 <p>これは <code>Empty</code> の項を作ったのではなく、<code>Empty → Nat</code> という関数を作ったのである。</p>
 <h2 id="sec-Trial3.sums-products">2. 直和と直積</h2>
-<p>構成子も関数なので、引数を受け取れる。次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。</p>
-<pre class="lean"><code><span class="kw">inductive</span> NatOrBool : <span class="sort">Type</span> <span class="kw">where</span>
-  | nat (n : Nat) : NatOrBool
-  | bool (b : Bool) : NatOrBool
+<p>構成子も関数なので、引数を受け取れる。次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。構成子の名前 <code>inl</code>・<code>inr</code> は、それぞれ左側・右側から項を入れることを表す。</p>
+<pre class="lean"><code><span class="kw">inductive</span> TaggedSum : <span class="sort">Type</span> <span class="kw">where</span>
+  | inl (n : Nat) : TaggedSum
+  | inr (b : Bool) : TaggedSum
 
-<span class="kw">#check</span> NatOrBool.nat</code></pre>
-<pre class="quote"><code>NatOrBool.nat (n : Nat) : NatOrBool</code></pre>
-<p>構成子 <code>NatOrBool.nat</code> は <code>Nat → NatOrBool</code> という関数である。集合の言葉では、この型は自然数と真偽値の<strong>直和（非交和）</strong>に対応する。</p>
+<span class="kw">#check</span> TaggedSum.inl</code></pre>
+<pre class="quote"><code>TaggedSum.inl (n : Nat) : TaggedSum</code></pre>
+<p>構成子 <code>TaggedSum.inl</code> は <code>Nat → TaggedSum</code> という関数である。集合の言葉では、この型は自然数と真偽値の<strong>直和（非交和）</strong>に対応する。</p>
+<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inr</code></pre>
+<pre class="quote"><code>TaggedSum.inr (b : Bool) : TaggedSum</code></pre>
+<p>同様に、<code>TaggedSum.inr</code> は <code>Bool → TaggedSum</code> という関数である。この構成子そのものは関数であり、それに <code>true : Bool</code> を渡した <code>TaggedSum.inr true</code> は、できあがった <code>TaggedSum</code> 型の項である。 <code>true</code> 自体は <code>Bool</code> 型なので、<code>TaggedSum</code> 型の項が必要な場所では <code>TaggedSum.inr true</code> と書く。この例では、構成子の適用を省略しても自動で補われるわけではない。</p>
 <h3>中身を受け取る場合分け</h3>
-<p><code>match</code> の枝で <code>NatOrBool.nat n</code> と書くと、その構成子に渡された自然数に <code>n</code> と名前を付けられる。返す項では、その名前を使ってよい。</p>
-<pre class="lean"><code><span class="kw">def</span> valueOf : NatOrBool → Nat := <span class="kw">fun</span> x =&gt;
+<p><code>match</code> の枝で <code>TaggedSum.inl n</code> と書くと、その構成子に渡された自然数に <code>n</code> と名前を付けられる。返す項では、その名前を使ってよい。</p>
+<pre class="lean"><code><span class="kw">def</span> valueOf : TaggedSum → Nat := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
-  | NatOrBool.nat n =&gt; n
-  | NatOrBool.bool _ =&gt; 0
+  | TaggedSum.inl n =&gt; n
+  | TaggedSum.inr _ =&gt; 0
 
-<span class="kw">#eval</span> valueOf (NatOrBool.nat 7)</code></pre>
+<span class="kw">#eval</span> valueOf (TaggedSum.inl 7)</code></pre>
 <pre class="quote"><code>7</code></pre>
-<p><code>_</code> は、その引数の中身を使わないことを表す。直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。</p>
+<p>枝の <code>TaggedSum.inr _</code> にある <code>_</code> は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。ここでは <code>true</code> と <code>false</code> のどちらも同じ枝で扱い、その値を使わずに <code>0</code> を返している。直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。</p>
+<pre class="lean"><code><span class="kw">#eval</span> valueOf (TaggedSum.inr true)</code></pre>
+<pre class="quote"><code>0</code></pre>
+<p>まず <code>TaggedSum.inr true</code> という項を作り、それを <code>valueOf</code> に渡すので、括弧でまとめている。括弧を外した <code>valueOf TaggedSum.inr true</code> は <code>(valueOf TaggedSum.inr) true</code> と読まれ、 <code>valueOf</code> に必要な <code>TaggedSum</code> 型の項の代わりに構成子そのものを渡すことになり、型が合わない。</p>
 <h3>構成子が違う場合と、同じ場合</h3>
-<p><code>NatOrBool.nat n</code> と <code>NatOrBool.bool b</code> が等しくないことも、 <code>NatOrBool.nat n = NatOrBool.nat m</code> から <code>n = m</code> が言えることも、Leanで証明できる。後者を表す補題は、帰納型の宣言に伴って生成される。</p>
-<pre class="lean"><code><span class="kw">#check</span> NatOrBool.nat.inj</code></pre>
-<pre class="quote"><code>NatOrBool.nat.inj {n n✝ : Nat} : NatOrBool.nat n = NatOrBool.nat n✝ → n = n✝</code></pre>
-<p>第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。</p>
+<p><code>TaggedSum.inl n</code> と <code>TaggedSum.inr b</code> が等しくないことも、 <code>TaggedSum.inl n = TaggedSum.inl m</code> から <code>n = m</code> が言えることも、Leanで証明できる。後者を表す補題は、帰納型の宣言に伴って生成される。</p>
+<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inl.inj</code></pre>
+<pre class="quote"><code>TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝</code></pre>
+<p>第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。 <code>TaggedSum.inr</code> についても同様である。集合の言葉では、この二つの構成子は、それぞれの集合から直和への標準的な単射に対応する。</p>
 <h3>中身の型をパラメータにする</h3>
 <p>自然数と真偽値に限定せず、任意の型 <code>A</code> と <code>B</code> の直和を同じように作れる。</p>
 <pre class="lean"><code><span class="kw">inductive</span> MySum (A B : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>

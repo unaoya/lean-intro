@@ -92,6 +92,14 @@
       }
     },
     {
+      "id": "composition-definition",
+      "label": "単射の合成：定義と証明の検査",
+      "at": {
+        "tag": "pre",
+        "starts": "def comp_injective"
+      }
+    },
+    {
       "id": "checking-expected",
       "label": "型検査：引数と本体に要求される型",
       "at": {
@@ -116,6 +124,10 @@
         "section": "Trial2.injective-composition",
         "tag": "p",
         "starts": "次に外側を見る。hf に x と y を渡すと、次の型になる。"
+      },
+      "column_at": {
+        "tag": "p",
+        "starts": "ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。"
       }
     },
     {
@@ -125,6 +137,14 @@
         "section": "Trial2.injective-composition",
         "tag": "h3",
         "starts": "全称量化も「ならば」も関数として扱っている"
+      }
+    },
+    {
+      "id": "proposition-and-proof",
+      "label": "命題の型と、その証明である項",
+      "at": {
+        "tag": "p",
+        "starts": "このとき、命題である関数型と、その型の項である関数を区別しよう。"
       }
     },
     {
@@ -196,6 +216,10 @@
         "section": "Trial2.rfl",
         "tag": "h3",
         "starts": "対象ごとの等式を保証する"
+      },
+      "column_at": {
+        "tag": "pre",
+        "starts": "all_refl (n : Nat) : n = n"
       }
     },
     {

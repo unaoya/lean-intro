@@ -223,7 +223,11 @@
         "starts": "一致しなければ、もちろん受理されない。本体を true にしてみる:"
       },
       "id": "function-error",
-      "label": "関数本体の型エラー"
+      "label": "関数本体の型エラー",
+      "column_at": {
+        "tag": "p",
+        "starts": "一方、行き先を Bool にすれば受理される。"
+      }
     },
     {
       "at": {
@@ -475,12 +479,28 @@
       }
     },
     {
+      "id": "application-rule-detail",
+      "label": "適用の入力型と結果の型",
+      "at": {
+        "tag": "h3",
+        "starts": "適用の型を、内側から求める"
+      }
+    },
+    {
       "id": "checking-example",
       "label": "複合した項を、小さい照合に分ける",
       "at": {
         "section": "Intro1.functions",
         "tag": "h3",
         "starts": "複合した項を、小さい照合に分ける"
+      }
+    },
+    {
+      "id": "checking-example-types",
+      "label": "部分項から全体の型を求める",
+      "at": {
+        "tag": "ol",
+        "starts": "3 : Nat、4 : Nat。"
       }
     },
     {

@@ -108,6 +108,9 @@ def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
 
 矢印形式では `(Nat → Nat) → (Nat → Nat)`。数学でいう
 Map(ℕ, ℕ) → Map(ℕ, ℕ) に対応している。
+
+`F (F n)` の括弧は、`F n` 全体を一つの引数として渡すために必要である。
+省略すると `(F F) n` と読まれ、最初の適用で型が合わなくなる。
 -/
 
 #check twice double
@@ -140,8 +143,10 @@ def double2 : Map Nat Nat := double
 /-!
     double2 : Map Nat Nat
 
-受理される。`Map Nat Nat` を計算すると `Nat → Nat` で、`double` の型と一致する。
-表示には定義で指定した `Map Nat Nat` が残るが、同じ型として扱われている。
+受理される。`Map Nat Nat` は定義を展開すると `Nat → Nat` になり、`double` の型と一致する。
+Lean は、このように定義を展開して一致するものを同じ型として扱う。
+表示には定義で指定した `Map Nat Nat` が残っていても、型の照合では一致すると判断される。
+`double2` 自体も、定義を展開すれば `double` なので、同じ関数として扱われる。
 -/
 
 /-! SOL Intro1.dependent-functions:1 -/
@@ -538,4 +543,8 @@ def repeatTuple (n : Nat) (a : Nat) : Tuple n := fun _ => a
     repeatTuple 2 9 : Tuple 2
 
 番号を一つ受け取り、どの番号にも a を返す。n は返す関数の定義域 `Fin n` を決めている。
+結果の型 `Tuple n` を展開すると `Fin n → Nat` なので、`_` の引数の型はそこから決まり、
+`fun (_ : Fin n) => a` と型を注釈しても同じである。
+
+`Fin n` 型の引数に数字を書くときの読み方は、[第5章3節](#sec-Trial5.subtypes)の補足で説明する。
 -/

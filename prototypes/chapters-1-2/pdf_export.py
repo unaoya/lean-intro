@@ -7,7 +7,7 @@ from urllib.parse import urljoin, urlsplit
 def prepare_pdf_documents(here, book, titles, bodies, slide_document):
     preview = here / 'preview'
     names = {name.lower() for name in titles}
-    intro = '<h1>第1〜4章 改稿試作</h1><p>型と項、型と命題</p><ol>'
+    intro = '<h1>第1〜5章 改稿試作</h1><p>型と項、型と命題、数学を記述する道具</p><ol>'
     for name, title in titles.items():
         intro += f'<li><a href="#ch-{name.lower()}">{html.escape(title)}</a></li>'
     intro += ('</ol><p>練習の解答を開いた通読版です。第3・4章の元原稿の補足は各章末に保存しています。'
@@ -41,7 +41,7 @@ pre, table, ol.exercise { break-inside: avoid; }
 details.sol > summary { break-after: avoid; }
 @page { @bottom-center { content: counter(page); font-size: 9pt; color: #646e76; } }
 '''
-    reading = book.page('第1〜4章 改稿試作 · 通読版', '\n'.join(parts), css=reading_css)
+    reading = book.page('第1〜5章 改稿試作 · 通読版', '\n'.join(parts), css=reading_css)
 
     # Trial section labels and pages are not published at the canonical URL.
     # Links from slide PDFs therefore open the matching local trial HTML.
@@ -56,7 +56,7 @@ details.sol > summary { break-after: avoid; }
         return f'href="{html.escape(href, quote=True)}"'
 
     slide_document = re.sub(r'href="([^"]+)"', slide_link, slide_document)
-    slide_document = slide_document.replace('はじめての Lean · スライド</title>', '第1〜4章 改稿試作 · スライド</title>')
+    slide_document = slide_document.replace('はじめての Lean · スライド</title>', '第1〜5章 改稿試作 · スライド</title>')
     # Use another 10px above the body while keeping a clear header gap. Keep the
     # available height independent of density so repeated print fitting is stable.
     slide_document = slide_document.replace('</style>', '</style><style>'

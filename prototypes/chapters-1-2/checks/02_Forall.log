@@ -1,5 +1,6 @@
 Eq : Nat → Nat → Prop
 Eq.refl 2 : 2 = 2
 one_add_one : 1 + 1 = 2
+all_refl (n : Nat) : n = n
 all_refl 7 : 7 = 7
 'comp_injective' does not depend on any axioms

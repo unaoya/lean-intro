@@ -222,7 +222,7 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 </head>
 <body>
   <header class="toolbar">
-    <div class="identity"><a href="index.html">はじめての Lean · 改稿試作</a><select id="chapter-select" aria-label="章"><option value="index.html">はじめに</option><option value="01_typesandterms.html">第1章</option><option value="02_forall.html" selected>第2章</option><option value="03_inductivetypes.html">第3章</option><option value="04_exists.html">第4章</option></select></div>
+    <div class="identity"><a href="index.html">はじめての Lean · 改稿試作</a><select id="chapter-select" aria-label="章"><option value="index.html">はじめに</option><option value="01_typesandterms.html">第1章</option><option value="02_forall.html" selected>第2章</option><option value="03_inductivetypes.html">第3章</option><option value="04_exists.html">第4章</option><option value="05_mathematicaltools.html">第5章</option></select></div>
     <div class="tools" role="group" aria-label="表示の設定">
       <button id="contents" type="button" aria-haspopup="dialog">目次</button>
       <label class="optional-control" hidden><input id="optional" type="checkbox">補足・先取り</label>
@@ -263,25 +263,31 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
 <pre class="quote"><code><span class="step" data-step="2">h : g (f x) = g (f y)</span></code></pre>
 <p><span class="step" data-step="3">これは等式を表す文字列に名前を付けているのではなく、<strong>その等式を保証する証明書に <code>h</code> という名前を付けている</strong>。一般に <code>h : x = y</code> と書けば、<code>x = y</code> であるという保証を <code>h</code> と名付けたことになる。対象に名前を付ける <code>x : A</code> と同じ配置で、型の場所に命題を書いている。</span></p></article>
 <article class="slide" id="02_forall-propositions-and-proofs" data-kind="main" data-label="命題を型、証明を項として読む" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>命題を型、証明をその型の項として読む</h3></div>
-<p><span class="step" data-step="0">Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2 : Prop</code> だが、その命題を保証する項の型は <code>1 + 1 = 2</code> である。</span></p>
-<p><span class="step" data-step="1">証明に名前を付けるときも <code>def 名前 : 型 := 項</code> を使う。指定する型が証明したい命題で、右辺の項がその証明書になる。</span></p></article>
+<p><span class="step" data-step="0">Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2</code> の証明を <code>h</code> と名付けたとき、命題とその証明の型は次のように区別する。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">(1 + 1 = 2) : Prop
+h : 1 + 1 = 2</span></code></pre>
+<p><span class="step" data-step="2"><code>Prop</code> は命題たちの型であり、証明 <code>h</code> の型は、その証明が保証する命題 <code>1 + 1 = 2</code> である。</span></p>
+<p><span class="step" data-step="3">証明に名前を付けるときも <code>def 名前 : 型 := 項</code> を使う。指定する型が証明したい命題で、右辺の項がその証明書になる。</span></p></article>
 <article class="slide" id="02_forall-injectivity-statement" data-kind="main" data-label="単射性の仮定と、示したい結論" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>単射性を、全称量化と「ならば」で書く</h3></div>
 <p><span class="step" data-step="0">「どの <code>x</code>、<code>y</code> についても」は <code>∀ x y</code> と書く。<code>∀</code> は <code>\forall</code> で入力できる。また、二つの命題の間の <code>→</code> を「ならば」と読む。$f$ の単射性を表す命題は、次のようになる。</span></p>
 <pre class="quote"><code><span class="step" data-step="1">∀ x y : A, f x = f y → x = y</span></code></pre>
-<p><span class="step" data-step="2">その証明を <code>hf</code> と名付ける。$g$ の単射性の証明は <code>hg</code> とし、それぞれの型を、数学で使った条件のまま書く。</span></p>
-<pre class="quote"><code><span class="step" data-step="3">hf : ∀ x y : A, f x = f y → x = y
+<p><span class="step" data-step="2">関数適用は等号より強く結び付き、<code>f x = f y</code> は <code>(f x) = (f y)</code> と読む。</span></p>
+<p><span class="step" data-step="3">その証明を <code>hf</code> と名付ける。$g$ の単射性の証明は <code>hg</code> とし、それぞれの型を、数学で使った条件のまま書く。</span></p>
+<pre class="quote"><code><span class="step" data-step="4">hf : ∀ x y : A, f x = f y → x = y
 hg : ∀ u v : B, g u = g v → u = v</span></code></pre>
-<p><span class="step" data-step="4">示したい結論は、合成の単射性である。</span></p>
-<pre class="quote"><code><span class="step" data-step="5">∀ x y : A, g (f x) = g (f y) → x = y</span></code></pre></article>
+<p><span class="step" data-step="5">示したい結論は、合成の単射性である。</span></p>
+<pre class="quote"><code><span class="step" data-step="6">∀ x y : A, g (f x) = g (f y) → x = y</span></code></pre></article>
 <article class="slide" id="02_forall-composition-term" data-kind="main" data-label="証明を一つの関数の項にする" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>証明を一つの関数の項にする</h3></div>
 <p><span class="step" data-step="0">結論を外側から読むと、まず <code>x : A</code> と <code>y : A</code>、次に <code>h : g (f x) = g (f y)</code> を受け取り、<code>x = y</code> の証明を返せばよい。この「受け取る」を、<code>fun x y h =&gt;</code> と書く。</span></p>
 <p><span class="step" data-step="1">では、本体をどう作るか。欲しい結論 <code>x = y</code> から考えると、 <code>hf x y</code> は <code>f x = f y</code> の証明を受け取って、その結論の証明を返してくれる。そこで、まず <code>f x = f y</code> の証明を作ればよい。</span></p>
 <p><span class="step" data-step="2">このために <code>hg</code> に渡す対象は、<code>x</code>、<code>y</code> ではなく、<code>B</code> の項である <code>f x</code>、<code>f y</code> である。 <code>hg (f x) (f y)</code> が要求する等式は、ちょうど手元の <code>h</code> が保証している。したがって <code>hg (f x) (f y) h</code> を作って <code>hf x y</code> に渡すと、本体が完成する。</span></p>
-<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> comp_injective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
+<p><span class="step" data-step="3">証明の項は、仮定や既に与えられた定義・補題の名前を参照して組み立てられる。参照先の内容をすべて項の中に書き込む必要はなく、Lean はそれらの宣言も使って型を検査する。</span></p></article>
+<article class="slide" id="02_forall-composition-definition" data-kind="main" data-label="単射の合成：定義と証明の検査" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> comp_injective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
     (hf : ∀ x y : A, f x = f y → x = y)
     (hg : ∀ u v : B, g u = g v → u = v) :
     ∀ x y : A, g (f x) = g (f y) → x = y :=
-  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</span></code></pre></article>
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</span></code></pre>
+<p><span class="step" data-step="1">Lean は、この <code>def</code> の宣言を受理するときに証明の型検査を行う。後から <code>#check comp_injective</code> と書いたときには、既に検査された定義の型を確認している。</span></p></article>
 <article class="slide" id="02_forall-checking-expected" data-kind="main" data-label="型検査：引数と本体に要求される型" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>機械が行う型検査を追う</h3></div>
 <p><span class="step" data-step="0">右辺全体に期待される型は、結論に書いた次の型である。</span></p>
 <pre class="quote"><code><span class="step" data-step="1">(x : A) → (y : A) → (g (f x) = g (f y) → x = y)</span></code></pre>
@@ -290,17 +296,26 @@ hg : ∀ u v : B, g u = g v → u = v</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="1">hg (f x) (f y) : g (f x) = g (f y) → f x = f y</span></code></pre>
 <p><span class="step" data-step="2">この関数が要求する入力型は <code>g (f x) = g (f y)</code> であり、手元の <code>h</code> の型と一致する。したがって、<code>h</code> を渡した結果は次の型になる。</span></p>
 <pre class="quote"><code><span class="step" data-step="3">hg (f x) (f y) h : f x = f y</span></code></pre></article>
-<article class="slide" id="02_forall-checking-outer" data-kind="main" data-label="型検査：外側の適用と結論の照合" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">次に外側を見る。<code>hf</code> に <code>x</code> と <code>y</code> を渡すと、次の型になる。</span></p>
+<article class="slide" id="02_forall-checking-outer" data-kind="main" data-label="型検査：外側の適用と結論の照合" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<p><span class="step" data-step="0">次に外側を見る。<code>hf</code> に <code>x</code> と <code>y</code> を渡すと、次の型になる。</span></p>
 <pre class="quote"><code><span class="step" data-step="1">hf x y : f x = f y → x = y</span></code></pre>
 <p><span class="step" data-step="2">この入力型 <code>f x = f y</code> は、いま内側で得た証明の型と一致する。よって、その証明を渡した本体全体の型が分かる。</span></p>
 <pre class="quote"><code><span class="step" data-step="3">hf x y (hg (f x) (f y) h) : x = y</span></code></pre>
 <p><span class="step" data-step="4">本体の型が、要求されていた結論の型と一致した。これで、<code>x</code>、<code>y</code>、<code>h</code> を受け取ってその本体を返す <code>fun x y h =&gt; …</code> 全体が、指定された全称量化と「ならば」の型を持つと確かめられる。</span></p>
-<p><span class="step" data-step="5">ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。「$g$ の単射性を使おう」という証明の発想をもう一度探すのではなく、 <strong>書かれた証明の各適用が型に合っているか</strong>を確かめている。</span></p></article>
+</div><div class="slide-column">
+<p><span class="step" data-step="5">ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。「$g$ の単射性を使おう」という証明の発想をもう一度探すのではなく、 <strong>書かれた証明の各適用が型に合っているか</strong>を確かめている。</span></p>
+<p><span class="step" data-step="6">長い項を読むときは、括弧や型注釈を明示し、途中の結果の型を確かめるとよい。この例なら、内側を <code>(hg (f x) (f y) h : f x = f y)</code> と注釈できる。必要なら小さな定義に分けて名前を付ける。本体の途中で結果に名前を付ける <code>let</code> は、<a target="_blank" rel="noopener" href="../04_exists.html#sec-Trial4.even-add">第4章5節</a>で扱う。</span></p>
+</div></div></article>
 <article class="slide" id="02_forall-forall-as-function" data-kind="main" data-label="全称量化は依存関数、「ならば」は関数" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>全称量化も「ならば」も関数として扱っている</h3></div>
 <p><span class="step" data-step="0"><code>hf</code> の型は、依存関数型の記法でも書ける。</span></p>
 <pre class="quote"><code><span class="step" data-step="1">hf : (x : A) → (y : A) → (f x = f y → x = y)</span></code></pre>
 <p><span class="step" data-step="2">最初の二つの引数は対象である。その値 <code>x</code>、<code>y</code> によって、残りの型に現れる等式も変わる。これが、全称量化の証明が依存関数であるという意味である。</span></p>
-<p><span class="step" data-step="3">対象を二つ渡した後の <code>hf x y</code> は、<code>f x = f y</code> の証明を受け取り、<code>x = y</code> の証明を返す。ここでは入力も出力も証明だが、関数を適用する規則は前の章と変わらない。</span></p>
+<p><span class="step" data-step="3">対象を二つ渡した後の <code>hf x y</code> は、<code>f x = f y</code> の証明を受け取り、<code>x = y</code> の証明を返す。ここでは入力も出力も証明だが、関数を適用する規則は前の章と変わらない。</span></p></article>
+<article class="slide" id="02_forall-proposition-and-proof" data-kind="main" data-label="命題の型と、その証明である項" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">このとき、命題である関数型と、その型の項である関数を区別しよう。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">(f x = f y → x = y) : Prop
+hf x y : f x = f y → x = y</span></code></pre>
+<p><span class="step" data-step="2">上の行は「ならば」で作った命題であり、下の行の <code>hf x y</code> が、その命題の証明となる関数である。</span></p>
+<p><span class="step" data-step="3">Lean では、<strong>同じ命題の証明どうしは、書き方が違っても同じ項として扱われる</strong>。証明が存在する場合、その命題に対応する型の項は、この意味で一つとみなせる。「ならば」や全称命題の証明である関数も、命題に対応する型の項なので、この扱いを受ける。このため、ここでは<strong>要求された型の関数を書けるかどうか</strong>、すなわち、その命題の証明を与えられるかに注目する。</span></p>
 <p><span class="step" data-step="4"><strong>示すときは、要求される引数を <code>fun</code> で受け取る。使うときは、対象や証明を適用で渡す。</strong> 全称量化と「ならば」が重なった証明も、この二つの操作で読める。</span></p></article>
 <article class="slide" id="02_forall-monotone-exercise" data-kind="main" data-label="練習：単調写像の合成" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
 <ol class="exercise" start="28" data-exercise="28"><li><span class="step" data-step="0">写像 $f:\mathbb{N}\to\mathbb{N}$ が<strong>単調</strong>であるとは、任意の $x,y$ について、$x\le y$ ならば $f(x)\le f(y)$ となることである。$f,g$ が単調なら $g\circ f$ も単調であることを、<code>comp_monotone</code> という名前で証明せよ。単調性の仮定と結論の型を書き、<code>fun</code> と仮定の適用だけで証明の項を作ること。 <code>≤</code> は <code>\le</code> で入力する。不等式はいつもの意味で読み、その定義は帰納型のところで扱う。</span></li></ol>
@@ -348,14 +363,20 @@ hg : ∀ u v : B, g u = g v → u = v</span></code></pre>
 <p><span class="step" data-step="3">左辺 <code>1 + 1</code> は計算すると <code>2</code> になる。そのため、例えば <code>Eq.refl 2 : 2 = 2</code> も、ここで要求された型 <code>1 + 1 = 2</code> の項として使える。</span></p>
 <pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> one_add_one_explicit : 1 + 1 = 2 := Eq.refl 2</span></code></pre>
 <p><span class="step" data-step="5">計算して一致するかどうかは、<code>Eq.refl</code> を直接使った場合にも、型の照合で調べられる。 <code>rfl</code> だけに特別な計算能力があるわけではない。違いは、対象を明示するか、暗黙に補ってもらうかである。</span></p></article>
-<article class="slide" id="02_forall-forall-rfl" data-kind="main" data-label="対象を受け取り、その対象の等式を返す" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>対象ごとの等式を保証する</h3></div>
+<article class="slide" id="02_forall-forall-rfl" data-kind="main" data-label="対象を受け取り、その対象の等式を返す" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<div class="step" data-step="0"><h3>対象ごとの等式を保証する</h3></div>
 <p><span class="step" data-step="0">対象を受け取って、その対象自身との等式の証明を返すこともできる。 <code>n</code> を受け取るたびに、返す証明の型が <code>n = n</code> に決まる。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> all_refl : ∀ n : Nat, n = n :=
   <span class="kw">fun</span> n =&gt; (rfl : n = n)
 
-<span class="kw">#check</span> all_refl 7</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">all_refl 7 : 7 = 7</span></code></pre>
-<p><span class="step" data-step="3">これも全称量化の証明を依存関数として作り、対象を渡して使う例である。次は、このような等式の保証を逆向きに使ったり、二つつないだりする道具を使おう。</span></p></article>
+<span class="kw">#check</span> all_refl</span></code></pre>
+</div><div class="slide-column">
+<pre class="quote"><code><span class="step" data-step="2">all_refl (n : Nat) : n = n</span></code></pre>
+<p><span class="step" data-step="3"><code>∀ n : Nat, n = n</code> の量化部分が、引数 <code>(n : Nat)</code> として左側に表示されている。 Infoview でもこのような binder 形式が使われる。<code>∀</code> の記号が見えなくても、「任意の <code>n : Nat</code> について <code>n = n</code>」という型は変わっていない。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#check</span> all_refl 7</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">all_refl 7 : 7 = 7</span></code></pre>
+<p><span class="step" data-step="6">これも全称量化の証明を依存関数として作り、対象を渡して使う例である。次は、このような等式の保証を逆向きに使ったり、二つつないだりする道具を使おう。</span></p>
+</div></div></article>
 <article class="slide" id="02_forall-equality-diagonal" data-kind="main" data-label="反射性を満たす関係と対角集合" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>なぜ等式の性質を証明できるのか</h3></div>
 <p><span class="step" data-step="0">等式には対称性や推移性も必要なはずだが、ここまで出てきたコンストラクターは、反射性 <code>a = a</code> を保証する <code>Eq.refl</code> だけである。ここから他の性質を証明できるのは、<code>Eq</code> を<strong>帰納型</strong>として定義しているからである。詳しい仕組みは次の章で学ぶが、まず集合の言葉でイメージをつかもう。</span></p>
 <p><span class="step" data-step="1">集合 $X$ 上の二項関係を $R\subseteq X\times X$ として考える。反射性を満たすには、すべての $x\in X$ について $(x,x)\in R$ でなければならない。したがって、どの反射的な関係も<strong>対角集合</strong>を含む。</span></p>
@@ -366,7 +387,7 @@ hg : ∀ u v : B, g u = g v → u = v</span></code></pre>
 <p><span class="step" data-step="0">上の最小性は、集合の言葉によるイメージである。 Lean では、<code>Eq</code> を帰納型として定義すると、<code>Eq.refl</code> で作る場合を調べることで、任意の等式の証明についての主張を示す原理が得られる。この原理が、余分な場合を持たないという最小性に対応する役割を果たす。</span></p>
 <p><span class="step" data-step="1">例えば対称性を示すとき、<code>a = b</code> の証明が <code>Eq.refl a</code> である場合を考えればよい。この場合には <code>b</code> も <code>a</code> なので、逆向きの等式の証明も <code>Eq.refl a</code> で作れる。このように、反射性の証明と帰納型の原理を使って、対称性・推移性・関数への適用の性質を証明できる。その証明の書き方は後で扱い、ここでは得られた三つの道具の型と使い方を見よう。</span></p></article>
 <article class="slide" id="02_forall-eq-symm" data-kind="main" data-label="Eq.symm：等号を逆向きに使う" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Eq.symm — 等式の向きを逆にする</h3></div>
-<p><span class="step" data-step="0"><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。</span></p>
+<p><span class="step" data-step="0"><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。一般に、<code>a = b</code> の証明をそのまま <code>b = a</code> の証明として渡せるわけではない。等式の向きも型に含まれるので、逆向きの証明が必要なときは <code>Eq.symm</code> を使う。</span></p>
 <pre class="quote"><code><span class="step" data-step="1">h : a = b
 Eq.symm h : b = a</span></code></pre>
 <p><span class="step" data-step="2">対象 <code>a</code> と <code>b</code> は暗黙引数であり、渡した <code>h</code> の型から補われる。ここでも、第1章で見た暗黙引数の仕組みが使われている。</span></p></article>
