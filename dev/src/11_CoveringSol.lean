@@ -882,7 +882,7 @@ theorem deg_refl : deg triv = 0 :=
 /-- 問題32: `deg` は逆道を符号反転に写す。 -/
 theorem deg_inv (γ : PathClass bouquet () ()) : deg γ.inv = - deg γ := by
   have h := deg_comp γ.inv γ
-  rw [PathClass.inv_comp, deg_refl] at h
+  rw [PathClass.inv_comp γ, deg_refl] at h
   omega
 
 /-- 花束のループの類。 -/

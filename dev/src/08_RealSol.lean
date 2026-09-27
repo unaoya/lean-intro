@@ -57,8 +57,7 @@ theorem add_neg_cancel (a : R) : a + -a = 0 := by rw [add_comm, neg_add_cancel]
 
 /-- 問題1: 足し算は左から簡約できる。 -/
 theorem add_left_cancel {a b c : R} (h : a + b = a + c) : b = c := by
-  have h' := congrArg (fun x => -a + x) h
-  simp only at h'
+  have h' : -a + (a + b) = -a + (a + c) := congrArg (fun x => -a + x) h
   rw [← add_assoc, ← add_assoc, neg_add_cancel, zero_add, zero_add] at h'
   exact h'
 
@@ -96,8 +95,7 @@ theorem add_sub_cancel (a b : R) : a + b - b = a := by
 theorem sub_eq_zero {a b : R} : a - b = 0 ↔ a = b := by
   constructor
   · intro h
-    have h' := congrArg (· + b) h
-    simp only at h'
+    have h' : a - b + b = 0 + b := congrArg (· + b) h
     rw [sub_add_cancel, zero_add] at h'
     exact h'
   · intro h; rw [h, sub_self]

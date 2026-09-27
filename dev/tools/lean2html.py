@@ -844,6 +844,9 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
     for idx, name in enumerate(CHAPTERS):
         out_path = OUT / f"{name.lower()}.html"
         slide_link = f'<p class="lecture-link"><a href="slides/{name.lower()}.html">講義用スライド</a></p>' if with_slides and name in slide_chapters else ""
+        if SRC == ROOT / "src":
+            import bundle
+            slide_link += f'<p class="lecture-link"><a href="{html.escape(bundle.link(name))}" target="_blank" rel="noopener">この章のコードをブラウザで動かす</a></p>'
         out_path.write_text(page(titles[name], slide_link + bodies[name], nav_html(idx)), encoding="utf-8")
         print(f"  {name}.lean → docs/{name.lower()}.html")
 
@@ -859,6 +862,8 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
     if with_student:
         import student
         student.main()
+        import bundle   # ブラウザ（Lean 4 Web）用の1ファイル版 docs/play/
+        bundle.write_all()
 
     if with_slides:
         import slides

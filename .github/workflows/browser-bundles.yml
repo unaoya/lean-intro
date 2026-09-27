@@ -1,0 +1,37 @@
+# ブラウザ版（docs/play/*.lean）の検査。
+#   course: 生成物が最新か、講座の Lean（lean-toolchain）でコンパイルできるか
+#   stable: Lean 4 Web（live.lean-lang.org の Stable）と同じ最新の stable 版でコンパイルできるか
+#           Lean 4 Web の版は予告なく上がるので、毎週月曜にも走らせる。失敗したら、ブラウザ版の
+#           その章は受講者の画面でエラーになる（ローカルの VS Code 版には影響しない）。
+name: browser-bundles
+
+on:
+  push:
+    paths: ["LeanIntro/**", "docs/play/**", "dev/tools/bundle.py", ".github/workflows/browser-bundles.yml"]
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: [course, stable]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: elan を入れる
+        run: |
+          curl -sSfL https://elan.lean-lang.org/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: 生成物が最新か
+        if: matrix.toolchain == 'course'
+        run: |
+          python3 dev/tools/bundle.py
+          git diff --exit-code -- docs/play || (echo "docs/play が古い。dev/ で python3 tools/bundle.py を実行してコミットする" && exit 1)
+      - name: コンパイル（${{ matrix.toolchain }}）
+        run: |
+          if [ "${{ matrix.toolchain }}" = course ]; then LEAN="lean"; else LEAN="lean +stable"; fi
+          $LEAN --version
+          python3 dev/tools/bundle.py --check --lean="$LEAN"

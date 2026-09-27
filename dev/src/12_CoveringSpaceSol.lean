@@ -16,6 +16,11 @@ variable {X Y Z : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] [tZ 
 
 /-! ### 部分空間 -/
 
+/-- `W : Set X` を条件 `X → Prop` とみなした部分型 `Subtype W` にも、`07_Exercises.lean` の部分空間の
+位相を入れる。`Set X` は定義上 `X → Prop` だが、インスタンスの探索はこの定義を展開しないことがあるので、
+`Set` 用のインスタンスとして明示しておく。 -/
+instance instTopSubtypeSet (W : Set X) : TopologicalSpace (Subtype W) := instTopSubtype W
+
 theorem continuous_subtype_val {p : X → Prop} : Continuous (Subtype.val : Subtype p → X) :=
   continuous_fromInitial (Y := fun _ : Unit => X) (fun _ => tX)
     (fun _ => Subtype.val) ()

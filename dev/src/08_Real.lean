@@ -166,8 +166,7 @@ theorem add_sub_cancel (a b : R) : a + b - b = a := by
 theorem sub_eq_zero {a b : R} : a - b = 0 ↔ a = b := by
   constructor
   · intro h
-    have h' := congrArg (· + b) h
-    simp only at h'
+    have h' : a - b + b = 0 + b := congrArg (· + b) h
     rw [sub_add_cancel, zero_add] at h'
     exact h'
   · intro h; rw [h, sub_self]

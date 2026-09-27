@@ -9,6 +9,7 @@
 | --- | --- | --- |
 | 公開ページ（通読版・講義スライド） | リポジトリ直下の `docs/` | `tools/lean2html.py` |
 | 受講者用プロジェクト（`LeanIntro/Original`・`Solutions`、`Start.lean`、`lakefile.lean`） | リポジトリ直下 | `tools/student.py`（lean2html から呼ばれる） |
+| ブラウザ版（Lean 4 Web 用の1ファイル版） | リポジトリ直下の `docs/play/` | `tools/bundle.py`（lean2html から呼ばれる） |
 | PDF | `dev/pdf/`（Git 管理外） | `tools/lean2html.py` |
 
 公開ページ: **https://unaoya.github.io/lean-intro/** （`dev/src/*.lean` から自動生成）
@@ -73,6 +74,23 @@ lakefile が変わり、受講者の手元で新しい章が追加される。�
 
 本文中のすべての Lean コードと Infoview 風の出力表示は、実際のコンパイラ出力で裏を取ってある。
 解答ファイルも `lakefile.lean` の `roots` に入っているので、`lake build` で常に検査される。
+
+## ブラウザ版
+
+VS Code を準備できない受講者向けに、各章を Lean 4 Web（live.lean-lang.org）で開けるようにしている。
+`tools/bundle.py` が、受講者用ファイル `LeanIntro/Original/<章>.lean` の import をたどり、
+依存する章（コメントと `#check` などを除き `section … end` で囲んだもの）を先頭に、その章をそのまま後ろに並べた
+1ファイル版を `docs/play/<章>.lean` に作る。各章の HTML の冒頭に、これを
+`https://live.lean-lang.org/#project=Stable&url=…` で開くリンクが付く（`url=` 読み込みなので、リンクは短い）。
+
+Lean 4 Web の `Stable` は最新の stable 版の Lean で動き、講座の `lean-toolchain` とは版が違うことがある。
+`.github/workflows/browser-bundles.yml` が、講座の版と stable 版の両方でブラウザ版をコンパイルする
+（毎週月曜にも走る）。手元では次で確かめられる。
+
+```bash
+python3 tools/bundle.py --check                       # 講座の版
+python3 tools/bundle.py --check --lean="lean +stable"  # Lean 4 Web と同じ stable 版
+```
 
 ## ファイルの管理
 
