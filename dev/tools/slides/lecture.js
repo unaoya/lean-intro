@@ -167,14 +167,16 @@
     if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
     if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
     if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
-    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+    if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && event.shiftKey) {
+      // ↑↓ is left to scroll a slide that overflows the viewport.
+      if (reading) return;
+      event.preventDefault(); page(event.key === 'ArrowRight' ? 1 : -1);
+    } else if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
       if (reading) return;
       event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
     } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
       if (reading) return;
       event.preventDefault(); navigate(-1);
-    } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !reading) {
-      event.preventDefault(); page(event.key === 'ArrowDown' ? 1 : -1);
     } else if (event.key === 'Home' && !reading) {
       event.preventDefault(); jump(included()[0]);
     } else if (event.key === 'End' && !reading) {

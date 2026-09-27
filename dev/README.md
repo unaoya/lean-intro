@@ -133,6 +133,7 @@ python3 tools/lean2html.py --no-pdf # PDF を省いて両形式の HTML を生�
 06_Topology・07_Exercises・08_Real・09_Ascoli・10_AscoliReal・11_Covering・12_CoveringSpace・13_FundamentalGroupoid は通読版にのみ含める。
 対象外の章は `tools/lean2html.py` の `SLIDE_EXCLUDED_CHAPTERS` で管理する。
 講義版は左右キー・Space で進み、コードの出力は次の操作で表示する。
+Shift+→ / Shift+← は残りの段階を飛ばして次／前の画面へ移り、その画面を最後の段階まで表示する（↑↓ ははみ出した画面のスクロールに残す）。
 スライドの HTML・PDF は、標準では補足・先取りを省略する。解答は各問題の直後に追加表示する。
 補足・先取りも含める場合は `python3 tools/lean2html.py --include-slide-notes` を実行する。
 この場合は HTML に補足・先取りの表示切替が付く。次の `lake build` では標準の省略版に戻る。
