@@ -790,7 +790,8 @@ def build_pdf(titles: dict, bodies: dict) -> None:
 
 def build_inputs():
     paths = [*SRC.glob("*.lean"), *Path(__file__).parent.glob("*.py"),
-             *(ROOT / "tools/slides").glob("*"), *(ROOT / "slides").glob("*.json"), ROOT / "lean-toolchain"]
+             *(ROOT / "tools/slides").glob("*"), *(ROOT / "tools/student").glob("*"),
+             *(ROOT / "slides").glob("*.json"), ROOT / "lean-toolchain"]
     return sorted(path for path in paths if path.is_file())
 
 
@@ -882,6 +883,10 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
         outputs += [OUT / f"{name.lower()}.html" for name in CHAPTERS]
         outputs += [OUT / f"slides/{name.lower()}.html" for name in slide_chapters]
         outputs += redirects
+        if with_student:   # 受講者用プロジェクト（student.py）とブラウザ版（bundle.py）
+            outputs += [*(REPO / "LeanIntro/Original").glob("*.lean"), *(REPO / "LeanIntro/Solutions").glob("*.lean"),
+                        REPO / "LeanIntro/Status.lean", REPO / "Start.lean", REPO / "lakefile.lean",
+                        *(OUT / "play").glob("*.lean")]
         if with_pdf:
             outputs += [PDF_OUT, PDF_OUT.with_name("slides.pdf")]
         cache.parent.mkdir(exist_ok=True)
