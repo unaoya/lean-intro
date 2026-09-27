@@ -1,0 +1,33 @@
+{
+  "failures": [],
+  "reports": [
+    {
+      "chapter": "02_forall",
+      "reading": {
+        "pairs": 13,
+        "matched": true,
+        "mathRendered": 128
+      }
+    },
+    {
+      "chapter": "02_forall",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 128,
+      "pages": 53,
+      "overflow": []
+    },
+    {
+      "chapter": "02_forall",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 128,
+      "pages": 53,
+      "overflow": []
+    }
+  ]
+}

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>型と命題 I — ならばと全称量化</title>
+<style>
+:root { --fg: #1a1a1a; --bg: #ffffff; --code-bg: #f5f5f0; --border: #ddd;
+        --kw: #7b2d8b; --doc: #1a7f37; --cm: #8a8a8a; --sort: #0550ae; --sorry: #c0392b;
+        --link: #0969da; --quote-bg: #f0f4f8;
+        --optional-bg: #f6f6f2; --optional-border: #666666; --optional-fg: #242424;
+        --preview-bg: #f3f0f8; --preview-border: #5a4271; --preview-fg: #2a2036; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #d8d8d3; --bg: #1e1e1e; --code-bg: #262626; --border: #444;
+          --kw: #d38ae0; --doc: #7ec699; --cm: #888; --sort: #6cb6ff; --sorry: #e07a6a;
+          --link: #58a6ff; --quote-bg: #24292e;
+          --optional-bg: #2b2b29; --optional-border: #a3a3a0; --optional-fg: #e3e3df;
+          --preview-bg: #2b2533; --preview-border: #bca6d4; --preview-fg: #eee8f5; }
+}
+
+* { box-sizing: border-box; }
+body { color: var(--fg); background: var(--bg); margin: 0;
+       font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+       line-height: 1.9; font-size: 16px; }
+main { max-width: 50rem; margin: 0 auto; padding: 1rem 1.2rem 4rem; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--border); padding-bottom: .4rem; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+     padding-bottom: .25rem; }
+h3 { font-size: 1.1rem; margin-top: 2rem; }
+p { margin: .8rem 0; }
+code { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+       font-size: .88em; background: var(--code-bg); padding: .1em .3em;
+       border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem 1rem; overflow-x: auto; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: .85rem; }
+pre.quote { background: var(--quote-bg); }
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85rem; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--fg); padding: .15em .5em 0; }
+aside.note { margin: 1.3rem 0; padding: .7rem 1rem; border-radius: 8px; }
+aside.note h3 { margin: 0 0 .35rem; font-size: 1rem; }
+aside.note p { margin: .4rem 0; }
+aside.note--optional { color: var(--optional-fg); background: var(--optional-bg);
+                       border: 2px dashed var(--optional-border); }
+aside.note--preview { color: var(--preview-fg); background: var(--preview-bg);
+                      border: 1px solid var(--preview-border);
+                      border-left: 6px solid var(--preview-border); }
+.kw { color: var(--kw); font-weight: 600; }
+.doc { color: var(--doc); }
+.cm { color: var(--cm); }
+.sort { color: var(--sort); }
+.sorry { color: var(--sorry); font-weight: 700; }
+table { border-collapse: collapse; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .35rem .7rem; }
+th { background: var(--code-bg); }
+ul, ol { padding-left: 1.6rem; }
+li { margin: .25rem 0; }
+nav { display: flex; justify-content: space-between; max-width: 50rem;
+      margin: 0 auto; padding: .8rem 1.2rem; font-size: .92rem; }
+nav a { color: var(--link); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+a { color: var(--link); }
+hr { border: none; border-top: 1px solid var(--border); }
+details.sol { margin: .6rem 0 1.4rem; border: 1px solid var(--border); border-radius: 8px;
+              padding: .35rem .9rem; background: var(--code-bg); }
+details.sol > summary { cursor: pointer; color: var(--link); font-weight: 600; }
+details.sol[open] > summary { margin-bottom: .4rem; }
+
+.trial-banner{border-left:4px solid #386456;padding:12px 16px;background:#eff6f2;font-size:14px}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span></span></nav>
+<main>
+<p class="trial-banner">第1・2章 改稿試作 · <a href="index.html">試作の目次</a></p><p><a href="slides/02_forall.html">この章のスライド</a> · <a href="../src/02_Forall.lean">試作原稿</a></p><pre class="lean"><code><span class="kw">import</span> «01_TypesAndTerms»</code></pre>
+<h1>型と命題 I — ならばと全称量化</h1>
+<p>この章では、<strong>その命題の証明を与えられたか、証明を書けたか</strong>という視点で数学を読む。命題の真偽を先に判定することや、同じ命題の証明どうしの文面を比べることから、いったん視点を移そう。注目するのは、その主張を支える保証を、実際に与えられたかどうかである。</p>
+<p>ここでいう保証は、その命題の<strong>証明書</strong>だと思えばよい。証明がまだ書けていないということと、その命題が偽であるということは区別する。</p>
+<h3>保証を受け取って、保証を作る</h3>
+<p>ある前提のもとで結論が成り立つ、という定理を考えよう。これは「前提が正しいという保証を与えてくれたら、結論が正しいという保証を作ります」と言っている、と読める。</p>
+<p>この説明のために前提を $P$、結論を $Q$ と呼ぶ。「$P$ ならば $Q$」を保証するには、$P$ の証明書を受け取り、$Q$ の証明書を返す関数を書けばよい。ここで受け取るものと返すものは、真・偽という値ではなく、それぞれの命題の証明書である。</p>
+<p>命題をその証明書の型と思えば、この関数の型は $P\to Q$ になる。仮定のもとで結論を示す、という証明の形を、入力から出力を作る関数の形として捉えている。</p>
+<h3>対象ごとに、その対象についての保証を与える</h3>
+<p>「どんな $x$ に対しても $P(x)$ が成り立つ」を保証する場合はどうだろうか。必要なのは、どの $x$ を渡されても、その $x$ についての命題 $P(x)$ の証明書を返すことである。一つの関数で、すべての対象に対する保証を一斉に与える。</p>
+<p>返す証明書の型は $P(x)$ であり、受け取った $x$ に応じて変わる。だから、その保証を与えるものは<strong>依存関数</strong>だと考えられる。前の章で、$n$ に対して <code>Fin (n + 1)</code> の項を返したのと同じ形で、今度は対象ごとの証明を返す。</p>
+<p>各 $x\in A$ に命題 $P(x)$ を割り当てるものを<strong>述語</strong>という。命題を型と思えば、述語は $A$ を添字とする<strong>型の族</strong> $(P(x))_{x\in A}$ である。全称命題の証明は、この族の各型 $P(x)$ の項を返す依存関数、すなわち<strong>依存積</strong> $\prod_{x\in A}P(x)$ の項なのである。</p>
+<h3>人間が納得することと、機械が検査すること</h3>
+<p><strong>人間が理解したいこと</strong>は、この読み替えが、数学でしている証明の操作を表しているということである。「ならば」を証明する代わりに保証から保証を作る関数を、全称命題を証明する代わりに対象から保証を作る依存関数を書く。その関数を作れたことで、元の数学の主張を証明したと納得できるかを考えたい。</p>
+<p><strong>機械が確かめること</strong>は、渡された項が、指定された型を持つかどうかである。この読み替えのもとで書いた証明の項を型検査し、要求された結論の証明になっているかを確かめる。数学の主張をどう表したかを読むことと、できた項の型を検査することの、両方が必要になる。</p>
+<p>単射の合成、左キャンセル、単調写像の合成、左逆の四つを通して、この対応を見ていこう。</p>
+<h2 id="sec-Trial2.injective-composition">1. 単射の合成 — 対象と仮定を受け取る</h2>
+<p>写像 $f : A\to B$ と $g : B\to C$ がともに単射なら、合成 $g\circ f : A\to C$ も単射である。まず、ふつうの数学の証明を書いてみよう。</p>
+<h3>数学の証明を読む</h3>
+<p><strong>証明。</strong> $x,y\in A$ を任意に取り、$g(f(x))=g(f(y))$ と仮定する。$g$ は単射だから $f(x)=f(y)$ である。さらに $f$ は単射だから $x=y$ となる。したがって、$g\circ f$ は単射である。∎</p>
+<p>学生のレポートを採点するつもりで、この証明を読んでみよう。各行で述べたことは、どの仮定から言えるだろうか。最後の結論に必要な対象と仮定が、最初にきちんと取られているだろうか。</p>
+<h3>証明を、受け取りと適用に分ける</h3>
+<p>最初に取ったのは、二つの対象 $x,y\in A$ と、等式 $g(f(x))=g(f(y))$ の保証である。これらを受け取った上で、最後に $x=y$ の保証を作ろうとしている。</p>
+<p>途中では、$g$ の単射性に対象 $f(x),f(y)$ とその像が等しいという保証を渡し、$f(x)=f(y)$ の保証を得た。その保証を、今度は $f$ の単射性に渡して $x=y$ の保証を得た。</p>
+<p>「これらを与えられたら、これを作る」という小さな操作に分けると、仮定を使う一行一行が関数の適用として、証明全体が関数を作る操作として見えてくる。</p>
+<h3>仮定の保証に名前を付ける</h3>
+<p>使う仮定を指せるように、$f$ の単射性の保証を <code>hf</code>、$g$ の単射性の保証を <code>hg</code> と名付けよう。また、最初に受け取る等式 $g(f(x))=g(f(y))$ の保証を <code>h</code> と名付ける。</p>
+<p>Lean の書き方では、例えば次のようになる。</p>
+<pre class="quote"><code>h : g (f x) = g (f y)</code></pre>
+<p>これは等式を表す文字列に名前を付けているのではなく、<strong>その等式を保証する証明書に <code>h</code> という名前を付けている</strong>。一般に <code>h : x = y</code> と書けば、<code>x = y</code> であるという保証を <code>h</code> と名付けたことになる。対象に名前を付ける <code>x : A</code> と同じ配置で、型の場所に命題を書いている。</p>
+<h3>命題を型、証明をその型の項として読む</h3>
+<p>Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2 : Prop</code> だが、その命題を保証する項の型は <code>1 + 1 = 2</code> である。</p>
+<p>証明に名前を付けるときも <code>def 名前 : 型 := 項</code> を使う。指定する型が証明したい命題で、右辺の項がその証明書になる。</p>
+<h3>単射性を、全称量化と「ならば」で書く</h3>
+<p>「どの <code>x</code>、<code>y</code> についても」は <code>∀ x y</code> と書く。<code>∀</code> は <code>\forall</code> で入力できる。また、二つの命題の間の <code>→</code> を「ならば」と読む。$f$ の単射性を表す命題は、次のようになる。</p>
+<pre class="quote"><code>∀ x y : A, f x = f y → x = y</code></pre>
+<p>その証明を <code>hf</code> と名付ける。$g$ の単射性の証明は <code>hg</code> とし、それぞれの型を、数学で使った条件のまま書く。</p>
+<pre class="quote"><code>hf : ∀ x y : A, f x = f y → x = y
+hg : ∀ u v : B, g u = g v → u = v</code></pre>
+<p>示したい結論は、合成の単射性である。</p>
+<pre class="quote"><code>∀ x y : A, g (f x) = g (f y) → x = y</code></pre>
+<h3>証明を一つの関数の項にする</h3>
+<p>結論を外側から読むと、まず <code>x : A</code> と <code>y : A</code>、次に <code>h : g (f x) = g (f y)</code> を受け取り、<code>x = y</code> の証明を返せばよい。この「受け取る」を、<code>fun x y h =&gt;</code> と書く。</p>
+<p>では、本体をどう作るか。欲しい結論 <code>x = y</code> から考えると、 <code>hf x y</code> は <code>f x = f y</code> の証明を受け取って、その結論の証明を返してくれる。そこで、まず <code>f x = f y</code> の証明を作ればよい。</p>
+<p>このために <code>hg</code> に渡す対象は、<code>x</code>、<code>y</code> ではなく、<code>B</code> の項である <code>f x</code>、<code>f y</code> である。 <code>hg (f x) (f y)</code> が要求する等式は、ちょうど手元の <code>h</code> が保証している。したがって <code>hg (f x) (f y) h</code> を作って <code>hf x y</code> に渡すと、本体が完成する。</p>
+<pre class="lean"><code><span class="kw">def</span> comp_injective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (hg : ∀ u v : B, g u = g v → u = v) :
+    ∀ x y : A, g (f x) = g (f y) → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</code></pre>
+<h3>機械が行う型検査を追う</h3>
+<p>右辺全体に期待される型は、結論に書いた次の型である。</p>
+<pre class="quote"><code>(x : A) → (y : A) → (g (f x) = g (f y) → x = y)</code></pre>
+<p>右辺が <code>fun x y h =&gt; …</code> なので、機械は <code>x : A</code>、<code>y : A</code>、 <code>h : g (f x) = g (f y)</code> を使えるものとして、本体を検査する。本体に要求される型は、最後の結論 <code>x = y</code> である。</p>
+<p>まず、内側の <code>hg (f x) (f y)</code> の型を求める。 <code>hg</code> の二つの対象に <code>f x</code> と <code>f y</code> を代入すると、次の型になる。</p>
+<pre class="quote"><code>hg (f x) (f y) : g (f x) = g (f y) → f x = f y</code></pre>
+<p>この関数が要求する入力型は <code>g (f x) = g (f y)</code> であり、手元の <code>h</code> の型と一致する。したがって、<code>h</code> を渡した結果は次の型になる。</p>
+<pre class="quote"><code>hg (f x) (f y) h : f x = f y</code></pre>
+<p>次に外側を見る。<code>hf</code> に <code>x</code> と <code>y</code> を渡すと、次の型になる。</p>
+<pre class="quote"><code>hf x y : f x = f y → x = y</code></pre>
+<p>この入力型 <code>f x = f y</code> は、いま内側で得た証明の型と一致する。よって、その証明を渡した本体全体の型が分かる。</p>
+<pre class="quote"><code>hf x y (hg (f x) (f y) h) : x = y</code></pre>
+<p>本体の型が、要求されていた結論の型と一致した。これで、<code>x</code>、<code>y</code>、<code>h</code> を受け取ってその本体を返す <code>fun x y h =&gt; …</code> 全体が、指定された全称量化と「ならば」の型を持つと確かめられる。</p>
+<p>ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。「$g$ の単射性を使おう」という証明の発想をもう一度探すのではなく、 <strong>書かれた証明の各適用が型に合っているか</strong>を確かめている。</p>
+<h3>全称量化も「ならば」も関数として扱っている</h3>
+<p><code>hf</code> の型は、依存関数型の記法でも書ける。</p>
+<pre class="quote"><code>hf : (x : A) → (y : A) → (f x = f y → x = y)</code></pre>
+<p>最初の二つの引数は対象である。その値 <code>x</code>、<code>y</code> によって、残りの型に現れる等式も変わる。これが、全称量化の証明が依存関数であるという意味である。</p>
+<p>対象を二つ渡した後の <code>hf x y</code> は、<code>f x = f y</code> の証明を受け取り、<code>x = y</code> の証明を返す。ここでは入力も出力も証明だが、関数を適用する規則は前の章と変わらない。</p>
+<p><strong>示すときは、要求される引数を <code>fun</code> で受け取る。使うときは、対象や証明を適用で渡す。</strong> 全称量化と「ならば」が重なった証明も、この二つの操作で読める。</p>
+<h3>✏ 練習</h3>
+<ol class="exercise" start="28" data-exercise="28">
+<li>写像 $f:\mathbb{N}\to\mathbb{N}$ が<strong>単調</strong>であるとは、任意の $x,y$ について、$x\le y$ ならば $f(x)\le f(y)$ となることである。$f,g$ が単調なら $g\circ f$ も単調であることを、<code>comp_monotone</code> という名前で証明せよ。単調性の仮定と結論の型を書き、<code>fun</code> と仮定の適用だけで証明の項を作ること。 <code>≤</code> は <code>\le</code> で入力する。不等式はいつもの意味で読み、その定義は帰納型のところで扱う。</li>
+</ol>
+<details class="sol" data-exercise="28"><summary>解答 28</summary>
+<pre class="lean"><code><span class="kw">def</span> comp_monotone (f g : Nat → Nat)
+    (hf : ∀ x y : Nat, x ≤ y → f x ≤ f y)
+    (hg : ∀ u v : Nat, u ≤ v → g u ≤ g v) :
+    ∀ x y : Nat, x ≤ y → g (f x) ≤ g (f y) :=
+  <span class="kw">fun</span> x y h =&gt; hg (f x) (f y) (hf x y h)</code></pre>
+<p><code>x</code>、<code>y</code> と <code>h : x ≤ y</code> を受け取り、<code>hf x y h : f x ≤ f y</code> を作る。これを <code>hg (f x) (f y)</code> に渡せばよい。単射の合成とは逆に、もとの不等式から像の不等式へ進む。</p>
+</details>
+<h2 id="sec-Trial2.left-cancellation">2. 左キャンセル — 関数を引数として受け取る</h2>
+<p>単射 $f : A \to B$ と、二つの写像 $u,v : X \to A$ を考える。任意の $t \in X$ に対して $f(u(t)) = f(v(t))$ が成り立つとする。このとき、任意の $t \in X$ に対して $u(t)=v(t)$ が成り立つ。これを、$f$ を左から合成した式の <strong>左キャンセル</strong> と呼ぼう。</p>
+<h3>各点で単射性を使う</h3>
+<p><strong>証明。</strong> $t\in X$ を任意に取る。仮定から $f(u(t))=f(v(t))$ であり、$f$ は単射だから $u(t)=v(t)$ となる。∎</p>
+<p>仮定と結論はどちらも「すべての $t$ について」という形である。対象 <code>t</code> を受け取り、その点での等式の保証に単射性を適用すればよい。</p>
+<pre class="lean"><code><span class="kw">def</span> cancel_pointwise (X A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (u v : X → A) (h : ∀ t : X, f (u t) = f (v t)) :
+    ∀ t : X, u t = v t :=
+  <span class="kw">fun</span> t =&gt; hf (u t) (v t) (h t)</code></pre>
+<p><code>h t</code> は、対象 <code>t</code> に対する等式 <code>f (u t) = f (v t)</code> の証明である。これを <code>hf (u t) (v t)</code> に渡して、<code>u t = v t</code> の証明を得る。関数 <code>u</code> と <code>v</code> も引数になったが、証明の操作は先ほどと同じ適用である。</p>
+<h2 id="sec-Trial2.rfl">3. Eq と rfl — 等式の保証を作る</h2>
+<p>ここまでは、仮定された等式の保証を使ってきた。左逆の証明へ進む前に、等式そのものと、その基本の証明をもう少し見ておこう。</p>
+<h3>等式を表す Eq</h3>
+<p><code>a = b</code> は <code>Eq a b</code> という項の記法である。例えば自然数については、<code>Eq</code> は二つの自然数を受け取って命題を返す関数として使える。</p>
+<pre class="lean"><code><span class="kw">#check</span> (Eq : Nat → Nat → <span class="sort">Prop</span>)</code></pre>
+<pre class="quote"><code>Eq : Nat → Nat → Prop</code></pre>
+<p><code>Eq 2 2</code> は <code>2 = 2</code> という命題、<code>Eq 2 3</code> は <code>2 = 3</code> という命題である。同じ型の項どうしの等式を扱うので、<code>Eq</code> はその共通の型も暗黙引数として受け取る。上の注釈では、それが <code>Nat</code> と決まっている。</p>
+<p>命題 <code>Eq a b</code> 自体と、その保証を区別しよう。 <code>h : Eq a b</code>、つまり <code>h : a = b</code> と書いたとき、<code>h</code> が等式の証明である。</p>
+<h3>自分自身との等式を保証する Eq.refl</h3>
+<p>等式の基本の証明を作るのが <code>Eq.refl</code> である。項 <code>a</code> を渡すと、<code>a = a</code> の証明を返す。</p>
+<pre class="lean"><code><span class="kw">#check</span> Eq.refl 2</code></pre>
+<pre class="quote"><code>Eq.refl 2 : 2 = 2</code></pre>
+<p><code>Eq.refl</code> は等式の証明を作るコンストラクターである。その定義を帰納型として読む方法は後で学ぶが、今は、対象を渡せばその対象自身との等式の証明が得られる、と読めばよい。</p>
+<h3>rfl は、対象を暗黙引数にしたもの</h3>
+<p><code>Eq.refl a</code> は対象 <code>a</code> を明示して <code>a = a</code> の証明を作る。 <code>rfl</code> は、この対象を暗黙引数にしたものである。Lean では、次のように <code>def</code> で定義されている。</p>
+<pre class="quote"><code>def rfl {α : Sort u} {a : α} : a = a := Eq.refl a</code></pre>
+<p><code>Sort u</code> は型 <code>α</code> の範囲を一般的に扱うための指定である。ここで注目したいのは <code>{a : α}</code>。対象 <code>a</code> は、証明を置く場所で期待される型から補われる。 <code>rfl</code> 自体も普通の項であり、第1章で学んだ暗黙引数の実例になっている。</p>
+<h3>計算して一致するときは rfl</h3>
+<p><code>rfl</code> を使うと、期待される等式の型に合わせて対象が補われる。両辺が定義から計算して一致するときに使える。</p>
+<pre class="lean"><code><span class="kw">def</span> one_add_one : 1 + 1 = 2 := rfl
+
+<span class="kw">#check</span> one_add_one</code></pre>
+<pre class="quote"><code>one_add_one : 1 + 1 = 2</code></pre>
+<p>左辺 <code>1 + 1</code> は計算すると <code>2</code> になる。そのため、例えば <code>Eq.refl 2 : 2 = 2</code> も、ここで要求された型 <code>1 + 1 = 2</code> の項として使える。</p>
+<pre class="lean"><code><span class="kw">def</span> one_add_one_explicit : 1 + 1 = 2 := Eq.refl 2</code></pre>
+<p>計算して一致するかどうかは、<code>Eq.refl</code> を直接使った場合にも、型の照合で調べられる。 <code>rfl</code> だけに特別な計算能力があるわけではない。違いは、対象を明示するか、暗黙に補ってもらうかである。</p>
+<h3>対象ごとの等式を保証する</h3>
+<p>対象を受け取って、その対象自身との等式の証明を返すこともできる。 <code>n</code> を受け取るたびに、返す証明の型が <code>n = n</code> に決まる。</p>
+<pre class="lean"><code><span class="kw">def</span> all_refl : ∀ n : Nat, n = n :=
+  <span class="kw">fun</span> n =&gt; (rfl : n = n)
+
+<span class="kw">#check</span> all_refl 7</code></pre>
+<pre class="quote"><code>all_refl 7 : 7 = 7</code></pre>
+<p>これも全称量化の証明を依存関数として作り、対象を渡して使う例である。次は、このような等式の保証を逆向きに使ったり、二つつないだりする道具を使おう。</p>
+<h3>なぜ等式の性質を証明できるのか</h3>
+<p>等式には対称性や推移性も必要なはずだが、ここまで出てきたコンストラクターは、反射性 <code>a = a</code> を保証する <code>Eq.refl</code> だけである。ここから他の性質を証明できるのは、<code>Eq</code> を<strong>帰納型</strong>として定義しているからである。詳しい仕組みは次の章で学ぶが、まず集合の言葉でイメージをつかもう。</p>
+<p>集合 $X$ 上の二項関係を $R\subseteq X\times X$ として考える。反射性を満たすには、すべての $x\in X$ について $(x,x)\in R$ でなければならない。したがって、どの反射的な関係も<strong>対角集合</strong>を含む。</p>
+<p>$$\Delta_X=\{(x,x)\mid x\in X\}$$</p>
+<p>対角集合自身も反射的だから、<strong>反射性を満たす二項関係のうち最小のものは $\Delta_X$</strong> である。これは「同じ要素どうしだけを関係づける」という等号の関係であり、対称性と推移性も満たす。反射性だけを仮定した任意の関係に、対称性や推移性があると言っているわけではない。余分な組を入れない、という最小性が効いている。</p>
+<p>関数 $f:X\to Y$ についても、対角上の組 $(x,x)$ は $(f(x),f(x))$ に移り、これは $\Delta_Y$ に属する。したがって、この関係は同じ関数を両辺に適用しても保たれる。後で使う <code>congrArg</code> は、この性質の証明である。</p>
+<h3>帰納型による定義が与えるもの</h3>
+<p>上の最小性は、集合の言葉によるイメージである。 Lean では、<code>Eq</code> を帰納型として定義すると、<code>Eq.refl</code> で作る場合を調べることで、任意の等式の証明についての主張を示す原理が得られる。この原理が、余分な場合を持たないという最小性に対応する役割を果たす。</p>
+<p>例えば対称性を示すとき、<code>a = b</code> の証明が <code>Eq.refl a</code> である場合を考えればよい。この場合には <code>b</code> も <code>a</code> なので、逆向きの等式の証明も <code>Eq.refl a</code> で作れる。このように、反射性の証明と帰納型の原理を使って、対称性・推移性・関数への適用の性質を証明できる。その証明の書き方は後で扱い、ここでは得られた三つの道具の型と使い方を見よう。</p>
+<h3>Eq.symm — 等式の向きを逆にする</h3>
+<p><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。</p>
+<pre class="quote"><code>h : a = b
+Eq.symm h : b = a</code></pre>
+<p>対象 <code>a</code> と <code>b</code> は暗黙引数であり、渡した <code>h</code> の型から補われる。ここでも、第1章で見た暗黙引数の仕組みが使われている。</p>
+<h3>Eq.trans — 二つの等式をつなぐ</h3>
+<p><code>h₁ : a = b</code> と <code>h₂ : b = c</code> があるとき、<code>Eq.trans h₁ h₂</code> は <code>a = c</code> の証明になる。一つ目の右辺と二つ目の左辺が一致することが、二つの証明を渡すための条件である。</p>
+<pre class="quote"><code>h₁ : a = b
+h₂ : b = c
+Eq.trans h₁ h₂ : a = c</code></pre>
+<p>数学で等号を並べて $a=b=c$ と書く操作を、二つの保証から一つの保証を作る関数として表している。三つ以上の等式をつなぐときも、<code>Eq.trans</code> の適用を重ねればよい。</p>
+<h3>congrArg — 両辺に同じ関数を適用する</h3>
+<p><code>f : A → B</code> と <code>h : a = b</code> があるとき、<code>congrArg f h</code> は <code>f a = f b</code> の証明になる。関数 <code>f</code> と等式の証明 <code>h</code> を受け取り、像どうしの等式の証明を返す。</p>
+<pre class="quote"><code>f : A → B
+h : a = b
+congrArg f h : f a = f b</code></pre>
+<p>両辺に同じ関数を適用する、という数学の操作に対応している。この三つの道具は、新しい公理を付け加えたものではなく、<code>Eq</code> の帰納型としての仕組みから証明できるものである。次の左逆の例では、これらを組み合わせて証明を作る。</p>
+<aside class="note note--optional"><h3>補足: theorem と def</h3>
+<p>この試作の本文では、証明も <code>def</code> で定義している。通常の Lean のコードでは、証明に名前を付けるために <code>theorem</code> も使われる。例えば <code>theorem one_add_one : 1 + 1 = 2 := rfl</code> という形である。どちらも、右辺の項が指定された命題の型を持つかを検査する。</p>
+<p>二つの宣言には違いもある。<code>def</code> の本体は型の照合のために展開できるが、 <code>theorem</code> の証明の本体は、そのように展開して照合する対象にはならない。ここでは、証明が指定された型の項であるという共通の形に注目する。</p></aside>
+<h2 id="sec-Trial2.left-inverse">4. 左逆を持つ写像は単射</h2>
+<p>写像 $f : A\to B$ に対し、$g : B\to A$ が $g\circ f=\mathrm{id}_A$ を満たすとき、$g$ を $f$ の <strong>左逆</strong>という。この条件を各点で書くと、どの $x\in A$ に対しても $g(f(x))=x$ となる。左逆を持つ $f$ は単射であることを示そう。</p>
+<h3>まず数学の証明を書く</h3>
+<p><strong>証明。</strong> $x,y\in A$ を任意に取り、$f(x)=f(y)$ と仮定する。両辺に $g$ を適用すると、$g(f(x))=g(f(y))$ となる。$g$ が左逆であることから $g(f(x))=x$、$g(f(y))=y$ なので、</p>
+<p>$$x=g(f(x))=g(f(y))=y$$</p>
+<p>を得る。したがって $x=y$ であり、$f$ は単射である。∎</p>
+<h3>先ほどの三つの道具を、この証明に当てはめる</h3>
+<p>受け取る保証を <code>hgf : ∀ x : A, g (f x) = x</code> と <code>h : f x = f y</code> と名付ける。数学の等号の列に必要なのは、次の三つの証明である。</p>
+<pre class="quote"><code>Eq.symm (hgf x) : x = g (f x)
+congrArg g h : g (f x) = g (f y)
+hgf y : g (f y) = y</code></pre>
+<p>左逆の保証を逆向きにし、像が等しいという保証の両辺に <code>g</code> を適用し、もう一度左逆の保証を使った。これらを <code>Eq.trans</code> でつなげば、要求された <code>x = y</code> の証明が得られる。</p>
+<h3>道具を適用して、証明の項を作る</h3>
+<p><code>Eq.trans</code> を二回使う。まず後ろの二つの等式をつなぎ、その結果を最初の等式とつなぐ。</p>
+<pre class="lean"><code><span class="kw">def</span> injective_of_left_inverse (A B : <span class="sort">Type</span>)
+    (f : A → B) (g : B → A)
+    (hgf : ∀ x : A, g (f x) = x) :
+    ∀ x y : A, f x = f y → x = y :=
+  <span class="kw">fun</span> x y h =&gt;
+    Eq.trans (Eq.symm (hgf x))
+      (Eq.trans (congrArg g h) (hgf y))</code></pre>
+<p>内側の <code>Eq.trans</code> が <code>g (f x) = y</code> を作り、外側の <code>Eq.trans</code> が <code>x = g (f x)</code> とそれをつないで <code>x = y</code> を作る。数学の三つの等号に対応する証明を組み合わせて、要求された型の項を得ている。</p>
+<p>左逆の条件そのものをこの場で証明したわけではない。その条件の証明を引数 <code>hgf</code> として受け取り、単射性の証明を返す関数を作ったのである。</p>
+<h2 id="sec-Trial2.checking">5. 型を追うことが、証明を確かめることになる</h2>
+<p>単射の合成の証明では、<code>hg</code> に何を渡せばよいか、得られた証明を <code>hf</code> に渡せるかを確かめた。左逆の例では、等式をつなぐ位置が合うかを確かめた。どの場合も、部分項の型を調べ、関数の入力型と照合している。</p>
+<h3>証明を考える順序と、出来上がった項を読む順序</h3>
+<p>証明を考えるときは、まず結論から必要な入力と出力を見る。単射性なら二つの対象と像の等式を受け取り、対象どうしの等式を返す必要がある。その出力を作れる仮定や道具を探し、必要な証明を組み合わせる。</p>
+<p>出来上がった項を読むときは、内側の適用から型を追える。単射の合成なら、<code>hg (f x) (f y) h : f x = f y</code>、次に <code>hf x y (hg (f x) (f y) h) : x = y</code> である。この照合を機械的に実行するのが、Lean の型検査である。</p>
+<h3>一段を飛ばすと型が合わない</h3>
+<p>もし証明の本体を <code>hf x y h</code> としてしまうと、受理されない。 <code>hf x y</code> が要求するのは <code>f x = f y</code> の証明だが、<code>h</code> は <code>g (f x) = g (f y)</code> の証明だからである。「$g$ の単射性を使う」という一段が、型の違いとして見える。</p>
+<h3>検査している主張を読む</h3>
+<p>型検査が確かめるのは、<strong>書かれた項が、書かれた命題の証明になっているか</strong>である。その命題が意図した数学の主張を表しているかは、別に読む必要がある。今回なら、結論の式が本当に合成の単射性を表しているかを確認する。</p>
+<p>また、<code>sorry</code> で証明を保留していないこと、どの公理を使ったかも確かめる。例えば、最初の証明について調べると、次のようになる。</p>
+<pre class="lean"><code><span class="kw">#print</span> axioms comp_injective</code></pre>
+<pre class="quote"><code>&#x27;comp_injective&#x27; does not depend on any axioms</code></pre>
+<p>ソースの省略などを補う処理を <strong>エラボレーション</strong>、完成した項の型を検査する中核を <strong>カーネル</strong>という。省略を補ってもらった後も、指定された命題の型を持つかが検査される。</p>
+<p>次の章では帰納型を学び、コンストラクターで項を作り、場合分けで使う方法を増やす。その後、それらを命題に当てはめて、「かつ」「または」「存在」などの証明を読む。</p>
+<p>以下は比較用に残す旧版の節である。古い例への言及と記述はそのままにし、 <code>#print axioms modus_ponens</code> とその出力も、旧版での実行例として引用する。</p>
+<h2 id="sec-Trial2.checking-original">6. 型検査が証明の検査になる（旧版・比較用）</h2>
+<p>含意と全称、単射の合成で行った型の照合から、この章の中心の主張を確かめよう。</p>
+<p>証明は項なのだから、「証明が正しいか」は「項が主張どおりの型を持つか」という <strong>型検査</strong>の問題になる。型検査は機械的な計算であり、Lean はすべての宣言に対してそれを実行している。だから、ファイルがエラーなしに受理された時点で、そこに書かれた全定理の検査は済んでいる。</p>
+<p>この主張には但し書きが3つある。第一は、この検査が<strong>宣言済みの公理に相対的</strong>であること。 <code>axiom bad : 0 = 1</code> のような宣言もエラーなく受理できてしまうので、「何を公理として使ったか」は <code>#print axioms</code> で別に監査する必要がある。第二は、証明を保留する印 <code>sorry</code> がエラーではなく<strong>警告</strong>になること（依存すると <code>#print axioms</code> に <code>sorryAx</code> が現れる）。だから正確には、「エラーがなく、<code>sorry</code> の警告もなく、<code>#print axioms</code> の結果が納得できる公理だけ」を見る。<code>06_Topology.lean</code> の末尾で、主定理に対してこの監査を実行する。第三は、この監査の例を見たあとで述べる。</p>
+<pre class="quote"><code>#print axioms modus_ponens
+
+&#x27;modus_ponens&#x27; does not depend on any axioms</code></pre>
+<p>この証明は追加の公理に依存していない。</p>
+<h3>その検査は、形式化したかったものの検査か</h3>
+<p>第三の但し書きは、公理や <code>sorry</code> の監査を済ませても残る。型検査が確かめるのは「項が主張どおりの型を持つ」ことだけで、 <strong>その型が、本当に確かめたかった主張であるか</strong>は型検査の外側にある。問題は3点に分けられる。</p>
+<ol>
+<li>形式化の問題。「単射どうしの合成は単射」という気持ちを <code>∀ x y, g (f x) = g (f y) → x = y</code> と書いたとき、式が気持ちを正しく写しているかは、書いた人が判断するほかない。</li>
+<li>実装の問題。エラボレータやカーネルにバグがあれば、誤った項を受理しうる。カーネルを小さく保ち、独立した検査器で再検査する対策はあるが、ゼロにはならない。</li>
+<li>理論の解釈の問題。<code>P → Q</code> をなぜ「<code>P</code> ならば <code>Q</code>」と読んでよいのか、型をなぜ集合のように扱ってよいのか。型検査を通った項が一貫した意味を持つ、という仮定がここにある。この仮定が正しければ、矛盾が導けないことも従う。</li>
+</ol>
+<p>第3点について、Lean の理論（帰納型・宇宙の階層・<code>Prop</code>・後で見る公理を含む）を ZFC に相対的に解釈するモデルは知られている。ただしそのためには、ZFC に到達不能基数を（宇宙の階層の段ごとに1つずつ、可算無限個）加える必要があり、これは ZFC より真に強い仮定である。この教材では以後、これらを認めたうえで「エラーなしに受理された」ことを検査済みと呼ぶ。</p>
+<h3>仮定を取り違えると、型が合わなくなる</h3>
+<p>含意の推移で、本来 <code>hPQ hP</code> を渡すべきところに <code>hP</code> を直接渡すとどうなるか。</p>
+<pre class="quote"><code>theorem bad_trans (P Q R : Prop) (hPQ : P → Q) (hQR : Q → R) : P → R :=
+  fun hP =&gt; hQR hP</code></pre>
+<p><code>hQR</code> が要求するのは Q の証明だが、渡した <code>hP</code> は P の証明である。 Lean はこの適用を型の不一致として拒否する。紙の証明で「Q である」という一段を飛ばしたことが、そのまま引数の型の不一致になる。</p>
+<h3>省略を補う処理と、完成した項の検査</h3>
+<p>ソースの記法を展開し、暗黙引数などを補うのが<strong>エラボレータ</strong>である。その後、完成した項が宣言どおりの型を持つかを<strong>カーネル</strong>が検査する。補完の仕組みが賢いことと、出来上がった項が正しいことは、別に確かめられる。詳しい例は <a href="../../../docs/04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の8節</a>で読む。</p>
+<p>ここまでで、仮定や対象を受け取り、適用で進む証明を読めた。次は <code>03_InductiveTypes.lean</code> で構成子と場合分けを学ぶ。<code>04_Exists.lean</code> では、それを使って存在を含む証明を読み、全射の合成へ進む。</p>
+<h2 id="sec-Trial2.practice">7. 章末問題</h2>
+<p>四つの題材と <code>rfl</code> を使って、型と証明を確かめよう。</p>
+<h3>✏ 練習 — 命題の型と rfl</h3>
+<ol class="exercise" start="29" data-exercise="29">
+<li><code>#check 3 = 5</code> と <code>#check 5 = 5</code> の表示を予想せよ。 <code>#check</code> の結果から、命題が真かどうかを判断できるか。</li>
+</ol>
+<details class="sol" data-exercise="29"><summary>解答 29</summary>
+<pre class="lean"><code><span class="kw">#check</span> 3 = 5</code></pre>
+<pre class="quote"><code>3 = 5 : Prop</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> 5 = 5</code></pre>
+<pre class="quote"><code>5 = 5 : Prop</code></pre>
+<p>どちらも命題なので型は <code>Prop</code>。<code>#check</code> は、命題を表す項の型を調べている。真偽や証明の有無を調べているわけではない。</p>
+</details>
+<ol class="exercise" start="30" data-exercise="30">
+<li><code>def two_add_three : 2 + 3 = 5 := …</code> の右辺を <code>rfl</code> で埋めよ。 <code>rfl</code> が使える理由を説明せよ。</li>
+</ol>
+<details class="sol" data-exercise="30"><summary>解答 30</summary>
+<pre class="lean"><code><span class="kw">def</span> two_add_three : 2 + 3 = 5 := rfl</code></pre>
+<p>左辺を計算すると <code>5</code> になり、右辺と一致するので <code>rfl</code> が使える。</p>
+</details>
+<ol class="exercise" start="31" data-exercise="31">
+<li><code>def oops : 2 + 2 = 5 := rfl</code> は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。</li>
+</ol>
+<details class="sol" data-exercise="31"><summary>解答 31</summary>
+<p>受理されない。<code>2 + 2</code> を計算した <code>4</code> と、右辺の <code>5</code> が一致しない。エラーには次の説明が現れる。</p>
+<pre class="quote"><code>error: Not a definitional equality: the left-hand side
+  2 + 2
+is not definitionally equal to the right-hand side
+  5</code></pre>
+<p>一般に、<code>rfl</code> が使えないだけで命題が偽だとは判断できない。ここで失敗したのは、計算して両辺を一致させるという確かめ方である。</p>
+</details>
+<ol class="exercise" start="32" data-exercise="32">
+<li><code>all_refl 12</code> の型を予想せよ。さらに <code>fun n : Nat =&gt; all_refl (n + 1)</code> の型を答えよ。</li>
+</ol>
+<details class="sol" data-exercise="32"><summary>解答 32</summary>
+<pre class="lean"><code><span class="kw">#check</span> all_refl 12</code></pre>
+<pre class="quote"><code>all_refl 12 : 12 = 12</code></pre>
+<pre class="lean"><code><span class="kw">#check</span> <span class="kw">fun</span> n : Nat =&gt; all_refl (n + 1)</code></pre>
+<pre class="quote"><code>fun n ↦ all_refl (n + 1) : ∀ (n : Nat), n + 1 = n + 1</code></pre>
+<p><code>all_refl</code> に <code>n + 1</code> を渡すので、返される証明の型にも <code>n + 1</code> が入る。全体は <code>n</code> を受け取って、その等式の証明を返す依存関数である。</p>
+</details>
+<h3>✏ 練習 — 単射と左キャンセル</h3>
+<ol class="exercise" start="33" data-exercise="33">
+<li>三つの単射 $f : A\to B$、$g : B\to C$、$k : C\to D$ の合成が単射であることを示せ。それぞれの単射性を <code>∀ x y, f x = f y → x = y</code> の形で仮定し、 <code>∀ x y, k (g (f x)) = k (g (f y)) → x = y</code> の証明を書け。</li>
+</ol>
+<details class="sol" data-exercise="33"><summary>解答 33</summary>
+<pre class="lean"><code><span class="kw">def</span> three_comp_injective (A B C D : <span class="sort">Type</span>)
+    (f : A → B) (g : B → C) (k : C → D)
+    (hf : ∀ x y, f x = f y → x = y)
+    (hg : ∀ x y, g x = g y → x = y)
+    (hk : ∀ x y, k x = k y → x = y) :
+    ∀ x y, k (g (f x)) = k (g (f y)) → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) (hk (g (f x)) (g (f y)) h))</code></pre>
+<p>最初に <code>hk</code> で <code>g (f x) = g (f y)</code>、次に <code>hg</code> で <code>f x = f y</code>、最後に <code>hf</code> で <code>x = y</code> を得る。外側の写像の単射性から順に使う。</p>
+</details>
+<ol class="exercise" start="34" data-exercise="34">
+<li>単射 $f : A\to B$ と $u,v : X\to A$、 <code>h : ∀ t : X, f (u t) = f (v t)</code> を受け取ったとする。 <code>∀ t : X, u t = v t</code> の証明を書け。 <code>h</code> 全体を単射性に渡すのではなく、どの項を渡せばよいか説明せよ。</li>
+</ol>
+<details class="sol" data-exercise="34"><summary>解答 34</summary>
+<pre class="lean"><code><span class="kw">def</span> cancel_pointwise_again (X A B : <span class="sort">Type</span>)
+    (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (u v : X → A) (h : ∀ t : X, f (u t) = f (v t)) :
+    ∀ t : X, u t = v t :=
+  <span class="kw">fun</span> t =&gt; hf (u t) (v t) (h t)</code></pre>
+<p><code>h</code> は全称命題の証明なので、まず対象 <code>t</code> を渡す。得られた <code>h t : f (u t) = f (v t)</code> が、<code>hf (u t) (v t)</code> の要求する入力である。各点で <code>u t = v t</code> の証明を作り、<code>fun t =&gt; …</code> で全体の証明にする。</p>
+</details>
+<ol class="exercise" start="35" data-exercise="35">
+<li>（発展）単射 $f:A\to B$ に対して、写像$L_f:\mathrm{Map}(X,A)\to\mathrm{Map}(X,B)$ を $L_f(u)=f\circ u$ と定めると、$L_f$ も単射である。この事実を Lean で形式化せよ。まず <code>X A B : Type</code> と <code>f : A → B</code> を引数に取り、$L_f$ を <code>leftCompose</code> という名前で定義せよ。次に <code>hf : ∀ x y : A, f x = f y → x = y</code> を仮定し、 <code>leftCompose X A B f</code> の単射性の証明を <code>leftCompose_injective</code> として書け。</li>
+</ol>
+<p><strong>ヒント1 — 写像を定義する。</strong> <code>Map X A</code> は <code>X → A</code> のことだった。 <code>leftCompose X A B f</code> の型は <code>Map (Map X A) (Map X B)</code> である。関数 <code>u</code> を受け取り、さらに対象 <code>t</code> を受け取って <code>f (u t)</code> を返す項を書こう。</p>
+<p><strong>ヒント2 — 等式を各点で使う。</strong> <code>u</code>、<code>v</code> と、その像が等しいという証明 <code>h</code> を受け取る。関数を対象 <code>t</code> で評価する写像 <code>fun w : Map X B =&gt; w t</code> を <code>congrArg</code> に渡すと、 <code>h</code> から <code>f (u t) = f (v t)</code> の証明を得られる。それを <code>hf</code> に渡そう。</p>
+<p><strong>ヒント3 — 関数どうしの等式に戻す。</strong> 各点での等式の証明 <code>k : ∀ t : X, u t = v t</code> から、<code>funext k : u = v</code> が得られる。これを<strong>関数外延性</strong>という。<code>fun t =&gt; …</code> で各点の証明をまとめ、<code>funext</code> に渡そう。</p>
+<details class="sol" data-exercise="35"><summary>解答 35</summary>
+<pre class="lean"><code><span class="kw">def</span> leftCompose (X A B : <span class="sort">Type</span>) (f : A → B) :
+    Map (Map X A) (Map X B) :=
+  <span class="kw">fun</span> u =&gt; <span class="kw">fun</span> t =&gt; f (u t)</code></pre>
+<p>この写像の単射性を証明する。</p>
+<pre class="lean"><code><span class="kw">def</span> leftCompose_injective (X A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y) :
+    ∀ u v : Map X A,
+      leftCompose X A B f u = leftCompose X A B f v →
+      u = v :=
+  <span class="kw">fun</span> u v h =&gt;
+    funext (<span class="kw">fun</span> t =&gt;
+      hf (u t) (v t) (congrArg (<span class="kw">fun</span> w : Map X B =&gt; w t) h))</code></pre>
+<p><code>congrArg</code> で得た証明の型は、定義を展開すると <code>f (u t) = f (v t)</code> となる。 <code>hf</code> で <code>u t = v t</code> を得て、各点の証明を <code>funext</code> に渡すと <code>u = v</code> が得られる。</p>
+</details>
+<ol class="exercise" start="36" data-exercise="36">
+<li>$f : \mathbb{N}\to\mathbb{N}$ について、任意の $u,v : \mathbb{N}\to\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。$u,v$ に定数関数を使うとよい。</li>
+</ol>
+<pre class="quote"><code>   hcancel : ∀ u v : Nat → Nat,
+     (∀ t : Nat, f (u t) = f (v t)) → ∀ t : Nat, u t = v t</code></pre>
+<details class="sol" data-exercise="36"><summary>解答 36</summary>
+<pre class="lean"><code><span class="kw">def</span> injective_of_pointwise_cancel (f : Nat → Nat)
+    (hcancel : ∀ u v : Nat → Nat,
+      (∀ t : Nat, f (u t) = f (v t)) → ∀ t : Nat, u t = v t) :
+    ∀ x y : Nat, f x = f y → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hcancel (<span class="kw">fun</span> _ =&gt; x) (<span class="kw">fun</span> _ =&gt; y) (<span class="kw">fun</span> _ =&gt; h) 0</code></pre>
+<p>定数関数 <code>fun _ =&gt; x</code> と <code>fun _ =&gt; y</code> を渡す。それらに <code>f</code> を合成した結果が各点で等しいことは、どの点でも <code>h</code> を返して示せる。 <code>hcancel</code> の結論に対象 <code>0</code> を渡せば、<code>x = y</code> が得られる。ここでは、前提の証明を返す関数自体も、引数として渡している。</p>
+</details>
+<h3>✏ 練習 — 単調性と左逆</h3>
+<ol class="exercise" start="37" data-exercise="37">
+<li>三つの単調写像 $f,g,k : \mathbb{N}\to\mathbb{N}$ の合成が単調であることを示せ。本文と同じ形で三つの単調性を仮定し、<code>fun</code> と適用だけで証明せよ。</li>
+</ol>
+<details class="sol" data-exercise="37"><summary>解答 37</summary>
+<pre class="lean"><code><span class="kw">def</span> three_comp_monotone (f g k : Nat → Nat)
+    (hf : ∀ x y, x ≤ y → f x ≤ f y)
+    (hg : ∀ x y, x ≤ y → g x ≤ g y)
+    (hk : ∀ x y, x ≤ y → k x ≤ k y) :
+    ∀ x y, x ≤ y → k (g (f x)) ≤ k (g (f y)) :=
+  <span class="kw">fun</span> x y h =&gt; hk (g (f x)) (g (f y)) (hg (f x) (f y) (hf x y h))</code></pre>
+<p><code>hf</code>、<code>hg</code>、<code>hk</code> の順に、内側の写像から単調性を使う。それぞれの結果の不等式が、次の単調性の仮定になる。</p>
+</details>
+<ol class="exercise" start="38" data-exercise="38">
+<li>左逆の証明で使った <code>hgf : ∀ x : A, g (f x) = x</code> と <code>h : f x = f y</code> があるとする。 <code>Eq.symm (hgf x)</code>、<code>congrArg g h</code>、<code>hgf y</code> の型を答え、それぞれが $x=g(f(x))=g(f(y))=y$ のどの等号に対応するか説明せよ。</li>
+</ol>
+<details class="sol" data-exercise="38"><summary>解答 38</summary>
+<p>三つの型は次のとおり。</p>
+<pre class="quote"><code>Eq.symm (hgf x) : x = g (f x)
+congrArg g h : g (f x) = g (f y)
+hgf y : g (f y) = y</code></pre>
+<p>並べると、数学の証明の三つの等号になる。 <code>Eq.trans</code> に渡すときには、一つ目の右辺と二つ目の左辺が一致している。</p>
+</details>
+<ol class="exercise" start="39" data-exercise="39">
+<li>$f : A\to B$ が単射で、$g : B\to A$ が $f(g(y))=y$ をすべての $y\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\in A$ で成り立つことを示せ。$f$ の単射性を、どの二つの対象に適用すればよいか考えること。</li>
+</ol>
+<details class="sol" data-exercise="39"><summary>解答 39</summary>
+<pre class="lean"><code><span class="kw">def</span> left_inverse_of_right_inverse (A B : <span class="sort">Type</span>) (f : A → B) (g : B → A)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (hfg : ∀ y : B, f (g y) = y) :
+    ∀ x : A, g (f x) = x :=
+  <span class="kw">fun</span> x =&gt; hf (g (f x)) x (hfg (f x))</code></pre>
+<p>比べたい二つの対象は <code>g (f x)</code> と <code>x</code> である。それらに <code>f</code> を適用した結果の等式 <code>f (g (f x)) = f x</code> は、<code>hfg (f x)</code> が与える。この証明を単射性に渡せばよい。等号の書き換えをせず、二つの仮定の適用で証明できる。</p>
+</details>
+</main>
+<nav><span><a href="01_typesandterms.html">← 01_TypesAndTerms</a></span><a href="index.html">目次</a><span></span></nav>
+</body>
+</html>

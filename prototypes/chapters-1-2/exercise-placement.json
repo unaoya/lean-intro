@@ -1,0 +1,164 @@
+[
+  {
+    "old_group": 0,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "`#check Bool` と `#check Type 2` の表示を予想してから確かめよ。"
+  },
+  {
+    "old_group": 0,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "`#check 3 = 5` と `#check 5 = 5` の表示をそれぞれ予想してから確かめよ。\n   命題の真偽が異なっても、同じ型が付くことを説明せよ。"
+  },
+  {
+    "old_group": 1,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "`def z : Nat := 5` を自分で宣言し、`#check z`・`#eval z`・`#print z`\n   の表示をそれぞれ予想してから確かめよ。"
+  },
+  {
+    "old_group": 1,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "本文の `def x : Nat := 2` が使える状態で、`def oops : Bool := x` は受理されるか。\n   予想してから試し、エラーメッセージを本文の例と見比べよ。\n   別のファイルで試す場合は、先に `def x : Nat := 2` を書くこと。"
+  },
+  {
+    "old_group": 2,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "関数 $\\mathrm{inc} : \\mathbb{N} \\to \\mathbb{N}$ を $\\mathrm{inc}(n) = n + 1$ で定める。これを `fun` を用いて Lean で定義せよ。\n   `#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。"
+  },
+  {
+    "old_group": 2,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "関数 $f : \\mathbb{N} \\to \\mathbb{N}$ を $f(n) = 2n + 3$ で定める。これを `fun` を用いて Lean で定義せよ\n   （掛け算は `*` と書く）。`#check f` の型と `#eval f 4` の値を予想してから確かめよ。"
+  },
+  {
+    "old_group": 3,
+    "old_item": 1,
+    "placement": "章末",
+    "question": "関数 $\\mathrm{triple} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。\n   `#check triple` の表示を予想してから確かめよ。"
+  },
+  {
+    "old_group": 3,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "`#eval double (double 5)` の値を予想してから実行せよ。"
+  },
+  {
+    "old_group": 3,
+    "old_item": 3,
+    "placement": "本文",
+    "question": "先ほどの $\\mathrm{inc}(n) = n + 1$ を、今度は binder 形式で `inc'` という名前で定義せよ。\n   `#check inc'` の表示と `#eval inc' 4` の値を予想して確かめ、`inc` と比較せよ。"
+  },
+  {
+    "old_group": 3,
+    "old_item": 4,
+    "placement": "章末",
+    "question": "同様に $f(n) = 2n + 3$ を、binder 形式で `f'` という名前で定義せよ。\n   `#check f'` の表示と `#eval f' 4` の値を予想して確かめ、`f` と比較せよ。"
+  },
+  {
+    "old_group": 4,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "関数 $\\mathrm{addThree} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{addThree}(n) = 3 + n$ を、`plus 3 : Nat → Nat` を使って\n   Lean で定義せよ。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。"
+  },
+  {
+    "old_group": 4,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "関数 $g : \\mathbb{N} \\times \\mathbb{N} \\to \\mathbb{N}$、$g(a, b) = 2a + 3b$ を、カリー化して Lean で定義せよ。\n   型は `Nat → Nat → Nat` とし、`fun a => fun b => …` を使うこと。\n   `#check g`・`#check g 2` の型と `#eval g 2 4` の値を予想してから確かめよ。"
+  },
+  {
+    "old_group": 5,
+    "old_item": 1,
+    "placement": "章末",
+    "question": "章末の前の問題で扱った $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。\n   `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。\n   `#check g'`・`#check g''` の表示と、`#eval g' 2 4`・`#eval g'' 2 4` の値を\n   予想してから確かめよ。"
+  },
+  {
+    "old_group": 6,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "写像 $\\mathrm{twice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\mathbb{N}, \\mathbb{N})$ を、$F \\mapsto (n \\mapsto F(F(n)))$ で定める。\n   つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。\n   これを Lean で `def twice (F : Nat → Nat) : Nat → Nat := …` と定義せよ。\n   `#check twice`・`#check twice double` の表示と `#eval twice double 3` の値を\n   予想してから確かめよ。"
+  },
+  {
+    "old_group": 6,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "写像 $\\mathrm{thrice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\mathbb{N}, \\mathbb{N})$ を、$F \\mapsto (n \\mapsto F(F(F(n))))$ で定める。\n   これを Lean で定義し、`#check thrice`・`#check thrice double` の表示と\n   `#eval thrice double 3` の値を予想してから確かめよ。"
+  },
+  {
+    "old_group": 7,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "`#check Map Nat Bool` の表示を予想してから確かめよ。また、数学でいう\n   関数 $\\mathrm{double} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{double}(n) = n + n$ を、`Map Nat Nat` 型の項としても使えるか考えよ。\n   `def double2 : Map Nat Nat := double` が受理されるか予想してから試せ。\n   受理されたら、`#check double2` の表示も予想してから確かめよ。"
+  },
+  {
+    "old_group": 7,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "`#check Map Nat` の表示を予想してから確かめよ\n   （`Map` に1つだけ渡すと、何が返るか。`plus 3` の型を読んだのと同じ手順で考える）。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 1,
+    "placement": "章末",
+    "question": "`#check` する**前に**型を計算せよ: `(3 + 4) * 2`、`plus (double 3)`、\n   `applyTo21 (plus 3)`、`fun n : Nat => plus n n`。それから確かめよ。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "`#eval applyTo21 (plus 100)` の値を予想してから実行せよ。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 3,
+    "placement": "章末",
+    "question": "次の2つの写像を Lean で定義し、`#check` の表示を予想してから確かめよ:\n   * $\\mathrm{evalAt} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\times \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{evalAt}(F, n) = F(n)$。カリー化して定義すること。\n     `#eval evalAt double 5` の値も予想してから実行せよ。\n   * $\\mathrm{shift} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\mathbb{N}, \\mathbb{N})$、$F \\mapsto (n \\mapsto F(n + 1))$。\n     関数を受け取って**関数を返す**関数である。\n     `#eval shift double 3` の値も予想してから実行せよ。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 4,
+    "placement": "章末",
+    "question": "「型から項を書く」練習: $\\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathbb{N}$ という写像を、**中身の違うもので2つ**考えよ\n   （例えば $F \\mapsto F(21)$ と $F \\mapsto 0$）。それらを Lean で `useF1`・`useF2` と名付けて定義し、\n   型を予想してから `#check` で確かめよ。どちらも `(Nat → Nat) → Nat` 型になるはずである。\n   同じ型に項は何通りもある——型は仕様であって、中身までは決めない。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 5,
+    "placement": "章末",
+    "question": "（発展）写像 $G : B \\to C$ と $F : A \\to B$ に合成 $G \\circ F : A \\to C$ を対応させる写像を考える。\n   型 $A$・$B$・$C$ も引数に取り、これを Lean で\n   `compose (A B C : Type) (G : B → C) (F : A → B) : A → C` と定義せよ。\n   `#check compose` の表示と、\n   `#eval compose Nat Nat Nat double (fun n => n + 1) 3` の値を予想してから\n   確かめよ。"
+  },
+  {
+    "old_group": 8,
+    "old_item": 6,
+    "placement": "章末",
+    "question": "（発展）`evalAt` と `shift` を一般化し、任意の $A$・$B$ に対する写像 $\\mathrm{Map}(A, B) \\times A \\to B$、$(F, a) \\mapsto F(a)$ と、\n   写像 $g : A \\to A$ に対する変換 $\\mathrm{Map}(A, A) \\to \\mathrm{Map}(A, A)$、$F \\mapsto (a \\mapsto F(g(a)))$ を考える。\n   型や $g$ も引数として受け取るように、Lean で\n   `evalAt' (A B : Type) (F : A → B) (a : A) : B` と\n   `shift' (A : Type) (g : A → A) (F : A → A) : A → A` を定義せよ。\n   両者の `#check` の表示と、\n   `#eval evalAt' Nat Nat double 5` と `#eval shift' Nat (fun x => x + 1) double 3`\n   の値を予想してから確かめ、元の版と比較せよ。"
+  },
+  {
+    "old_group": 9,
+    "old_item": 1,
+    "placement": "本文",
+    "question": "`#check idAt (Nat → Nat)` の表示と、`#eval idAt (Nat → Nat) double 21` の値を予想せよ。"
+  },
+  {
+    "old_group": 9,
+    "old_item": 2,
+    "placement": "章末",
+    "question": "集合 A の要素 a に対して、集合 B 上の定数写像を対応させる\n   `constAt (A B : Type) (a : A) : B → A` を書け。\n   `#check constAt Nat Bool 5` と `#eval constAt Nat Bool 5 true` を確かめよ。"
+  },
+  {
+    "old_group": 9,
+    "old_item": 3,
+    "placement": "章末",
+    "question": "`Tuple 2` を定義で展開すると、どんな型になるか。\n   `constTuple 2` の内側の引数と結果の型を答えよ。"
+  },
+  {
+    "old_group": 9,
+    "old_item": 4,
+    "placement": "章末",
+    "question": "n と自然数 a を受け取り、すべての成分が a である n 個組を返す\n   `repeatTuple (n : Nat) (a : Nat) : Tuple n` を書け。"
+  }
+]

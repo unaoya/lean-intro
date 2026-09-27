@@ -1,0 +1,4 @@
+3 = 5 : Prop
+5 = 5 : Prop
+all_refl 12 : 12 = 12
+fun n ↦ all_refl (n + 1) : ∀ (n : Nat), n + 1 = n + 1

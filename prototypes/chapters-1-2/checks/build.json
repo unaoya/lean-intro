@@ -1,0 +1,22 @@
+{
+  "exercises": {
+    "01_TypesAndTerms": 27,
+    "02_Forall": 12
+  },
+  "slides": {
+    "Index": {
+      "pages": 1,
+      "steps": 3
+    },
+    "01_TypesAndTerms": {
+      "pages": 112,
+      "steps": 452
+    },
+    "02_Forall": {
+      "pages": 53,
+      "steps": 181
+    }
+  },
+  "canonical_sources_unchanged_during_build": true,
+  "matches_initial_canonical_sources": true
+}

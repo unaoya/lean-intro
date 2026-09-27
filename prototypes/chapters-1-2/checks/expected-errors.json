@@ -1,0 +1,4 @@
+{
+  "rfl-mismatch": "<stdin>:1:24: error: Type mismatch\n  rfl\nhas type\n  ?m.16 = ?m.16\nbut is expected to have type\n  2 + 2 = 5\n<stdin>:1:4: error: Not a definitional equality: the left-hand side\n  2 + 2\nis not definitionally equal to the right-hand side\n  5\n",
+  "missing-injectivity-step": "<stdin>:4:22: error: Application type mismatch: The argument\n  h\nhas type\n  g (f x) = g (f y)\nbut is expected to have type\n  f x = f y\nin the application\n  hf x y h\n"
+}

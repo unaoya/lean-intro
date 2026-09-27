@@ -1,0 +1,489 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "id": "opening",
+      "label": "証明の保証を与えられたか、という視点",
+      "at": {
+        "section": "02_Forall.intro",
+        "tag": "pre",
+        "starts": "import «01_TypesAndTerms»"
+      }
+    },
+    {
+      "id": "implication-as-guarantee",
+      "label": "前提の保証から、結論の保証を作る",
+      "at": {
+        "section": "02_Forall.intro",
+        "tag": "h3",
+        "starts": "保証を受け取って、保証を作る"
+      }
+    },
+    {
+      "id": "forall-as-guarantee",
+      "label": "対象ごとに保証を返す依存関数",
+      "at": {
+        "section": "02_Forall.intro",
+        "tag": "h3",
+        "starts": "対象ごとに、その対象についての保証を与える"
+      }
+    },
+    {
+      "id": "human-and-machine",
+      "label": "人間の理解と、機械の型検査",
+      "at": {
+        "section": "02_Forall.intro",
+        "tag": "h3",
+        "starts": "人間が納得することと、機械が検査すること"
+      }
+    },
+    {
+      "id": "composition-math",
+      "label": "単射の合成：まず数学の証明を読む",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h2",
+        "starts": "1. 単射の合成 — 対象と仮定を受け取る"
+      }
+    },
+    {
+      "id": "composition-structure",
+      "label": "証明を、受け取りと適用に分ける",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "証明を、受け取りと適用に分ける"
+      }
+    },
+    {
+      "id": "name-assumptions",
+      "label": "仮定の保証に名前を付ける",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "仮定の保証に名前を付ける"
+      }
+    },
+    {
+      "id": "propositions-and-proofs",
+      "label": "命題を型、証明を項として読む",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "命題を型、証明をその型の項として読む"
+      }
+    },
+    {
+      "id": "injectivity-statement",
+      "label": "単射性の仮定と、示したい結論",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "単射性を、全称量化と「ならば」で書く"
+      }
+    },
+    {
+      "id": "composition-term",
+      "label": "証明を一つの関数の項にする",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "証明を一つの関数の項にする"
+      }
+    },
+    {
+      "id": "checking-expected",
+      "label": "型検査：引数と本体に要求される型",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "機械が行う型検査を追う"
+      }
+    },
+    {
+      "id": "checking-inner",
+      "label": "型検査：内側の適用で得られる型",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "p",
+        "starts": "まず、内側の hg (f x) (f y) の型を求める。 hg の二つの対象に f x と f y を代入すると、次の型になる。"
+      }
+    },
+    {
+      "id": "checking-outer",
+      "label": "型検査：外側の適用と結論の照合",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "p",
+        "starts": "次に外側を見る。hf に x と y を渡すと、次の型になる。"
+      }
+    },
+    {
+      "id": "forall-as-function",
+      "label": "全称量化は依存関数、「ならば」は関数",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "全称量化も「ならば」も関数として扱っている"
+      }
+    },
+    {
+      "id": "monotone-exercise",
+      "label": "練習：単調写像の合成",
+      "at": {
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      }
+    },
+    {
+      "id": "left-cancellation",
+      "label": "左キャンセルを、各点で証明する",
+      "at": {
+        "section": "Trial2.left-cancellation",
+        "tag": "h2",
+        "starts": "2. 左キャンセル — 関数を引数として受け取る"
+      }
+    },
+    {
+      "id": "pointwise-cancellation",
+      "label": "対象 t と、その点での保証を渡す",
+      "at": {
+        "section": "Trial2.left-cancellation",
+        "tag": "pre",
+        "starts": "def cancel_pointwise (X A B : Type) (f : A → B) (hf : ∀ x y : A, f x = f y → x = y) (u v : X → A) (h : ∀ t : X"
+      }
+    },
+    {
+      "id": "eq",
+      "label": "Eq：等式という命題を作る",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h2"
+      }
+    },
+    {
+      "id": "eq-refl",
+      "label": "Eq.refl：自分自身との等式の保証",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "自分自身との等式を保証する Eq.refl"
+      }
+    },
+    {
+      "id": "rfl-implicit",
+      "label": "rfl は Eq.refl の対象を暗黙引数にしたもの",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "rfl は、対象を暗黙引数にしたもの"
+      }
+    },
+    {
+      "id": "rfl",
+      "label": "計算で一致する等式を rfl で示す",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "計算して一致するときは rfl"
+      }
+    },
+    {
+      "id": "forall-rfl",
+      "label": "対象を受け取り、その対象の等式を返す",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "対象ごとの等式を保証する"
+      }
+    },
+    {
+      "id": "equality-diagonal",
+      "label": "反射性を満たす関係と対角集合",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "なぜ等式の性質を証明できるのか"
+      }
+    },
+    {
+      "id": "equality-minimality",
+      "label": "最小性から等号の性質を読む",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "p",
+        "starts": "対角集合自身も反射的だから、"
+      }
+    },
+    {
+      "id": "equality-induction",
+      "label": "帰納型が等式の証明に与える原理",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "帰納型による定義が与えるもの"
+      }
+    },
+    {
+      "id": "eq-symm",
+      "label": "Eq.symm：等号を逆向きに使う",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "Eq.symm —"
+      }
+    },
+    {
+      "id": "eq-trans",
+      "label": "Eq.trans：二つの等号をつなぐ",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "Eq.trans —"
+      }
+    },
+    {
+      "id": "congr-arg",
+      "label": "congrArg：両辺に同じ関数を適用する",
+      "at": {
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "congrArg —"
+      }
+    },
+    {
+      "id": "left-inverse",
+      "label": "左逆から単射性へ：数学の証明",
+      "at": {
+        "section": "Trial2.left-inverse",
+        "tag": "h2"
+      }
+    },
+    {
+      "id": "equality-tools",
+      "label": "三つの道具を左逆の証明に当てはめる",
+      "at": {
+        "section": "Trial2.left-inverse",
+        "tag": "h3",
+        "starts": "先ほどの三つの道具を、この証明に当てはめる"
+      }
+    },
+    {
+      "id": "left-inverse-term",
+      "label": "左逆の条件を使って証明の項を作る",
+      "at": {
+        "section": "Trial2.left-inverse",
+        "tag": "h3",
+        "starts": "道具を適用して、証明の項を作る"
+      }
+    },
+    {
+      "id": "checking",
+      "label": "証明を考える順序と、型を追う順序",
+      "at": {
+        "section": "Trial2.checking",
+        "tag": "h2"
+      }
+    },
+    {
+      "id": "missing-step",
+      "label": "証明の一段を飛ばすと型が合わない",
+      "at": {
+        "section": "Trial2.checking",
+        "tag": "h3",
+        "starts": "一段を飛ばすと型が合わない"
+      }
+    },
+    {
+      "id": "checking-statement",
+      "label": "検査している命題と公理を確認する",
+      "at": {
+        "section": "Trial2.checking",
+        "tag": "h3",
+        "starts": "検査している主張を読む"
+      }
+    },
+    {
+      "id": "next-chapter",
+      "label": "省略を補う処理と証明の検査",
+      "at": {
+        "section": "Trial2.checking",
+        "tag": "p",
+        "starts": "ソースの省略などを補う処理を エラボレーション、完成した項の型を検査する中核を カーネルという。省略を補ってもらった後も、指定された命題の型を持つかが検査される。"
+      }
+    },
+    {
+      "id": "checking-original",
+      "label": "旧版：型検査が証明の検査になる",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "h2",
+        "starts": "6. 型検査が証明の検査になる"
+      }
+    },
+    {
+      "id": "original-axioms",
+      "label": "旧版：公理と sorry の監査",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "p",
+        "starts": "この主張には但し書きが3つある。"
+      }
+    },
+    {
+      "id": "original-interpretation",
+      "label": "旧版：意図した主張を検査しているか",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "h3",
+        "starts": "その検査は、形式化したかったものの検査か"
+      }
+    },
+    {
+      "id": "original-model",
+      "label": "旧版：理論の解釈について",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "p",
+        "starts": "第3点について、Lean の理論"
+      }
+    },
+    {
+      "id": "original-mismatch",
+      "label": "旧版：仮定の取り違えと型の不一致",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "h3",
+        "starts": "仮定を取り違えると、型が合わなくなる"
+      }
+    },
+    {
+      "id": "original-elaboration",
+      "label": "旧版：エラボレータとカーネル",
+      "at": {
+        "section": "Trial2.checking-original",
+        "tag": "h3",
+        "starts": "省略を補う処理と、完成した項の検査"
+      }
+    },
+    {
+      "id": "end-practice",
+      "label": "章末問題：命題の型",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "h2",
+        "starts": "7. 章末問題"
+      }
+    },
+    {
+      "id": "rfl-exercise",
+      "label": "練習：2 + 3 = 5",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "def two_add_three : 2 + 3 = 5 := … の右辺を rfl で埋めよ。 rfl が使える理由を説明せよ。",
+        "question": "def two_add_three : 2 + 3 = 5 := … の右辺を rfl で埋めよ。 rfl が使える理由を説明せよ。"
+      }
+    },
+    {
+      "id": "rfl-error",
+      "label": "練習：rfl が使えない場合",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "def oops : 2 + 2 = 5 := rfl は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。",
+        "question": "def oops : 2 + 2 = 5 := rfl は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。"
+      }
+    },
+    {
+      "id": "forall-application",
+      "label": "練習：全称命題への適用",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "all_refl 12 の型を予想せよ。さらに fun n : Nat => all_refl (n + 1) の型を答えよ。",
+        "question": "all_refl 12 の型を予想せよ。さらに fun n : Nat => all_refl (n + 1) の型を答えよ。"
+      }
+    },
+    {
+      "id": "three-injections",
+      "label": "練習：三つの単射の合成",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "h3",
+        "starts": "✏ 練習 — 単射と左キャンセル"
+      }
+    },
+    {
+      "id": "pointwise-exercise",
+      "label": "練習：点ごとの左キャンセル",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "単射 $f : A\\to B$ と $u,v : X\\to A$、 h : ∀ t : X, f (u t) = f (v t) を受け取ったとする。 ∀ t : X, u t = v t の証明を書け。 h 全体を単射",
+        "question": "単射 $f : A\\to B$ と $u,v : X\\to A$、 h : ∀ t : X, f (u t) = f (v t) を受け取ったとする。 ∀ t : X, u t = v t の証明を書け。 h 全体を単射性に渡すのではなく、"
+      }
+    },
+    {
+      "id": "cancellation-map-exercise",
+      "label": "章末問題：左合成の写像をLeanで形式化する",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "（発展）単射 $f:A\\to B$ に対して、写像"
+      }
+    },
+    {
+      "id": "cancellation-map-solution",
+      "label": "解答：左合成の定義と単射性",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "p",
+        "class": "answer-heading",
+        "answer": true,
+        "question": "（発展）単射 $f:A\\to B$ に対して、写像"
+      }
+    },
+    {
+      "id": "cancel-converse",
+      "label": "練習：左キャンセルから単射性へ",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "$f : \\mathbb{N}\\to\\mathbb{N}$ について、任意の $u,v : \\mathbb{N}\\to\\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。",
+        "question": "$f : \\mathbb{N}\\to\\mathbb{N}$ について、任意の $u,v : \\mathbb{N}\\to\\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。$u,v$ に定数関"
+      }
+    },
+    {
+      "id": "three-monotone",
+      "label": "練習：三つの単調写像の合成",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "h3",
+        "starts": "✏ 練習 — 単調性と左逆"
+      }
+    },
+    {
+      "id": "equalities-exercise",
+      "label": "練習：三つの等号の型",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "左逆の証明で使った hgf : ∀ x : A, g (f x) = x と h : f x = f y があるとする。 Eq.symm (hgf x)、congrArg g h、hgf y の型を答え、それぞれが $x",
+        "question": "左逆の証明で使った hgf : ∀ x : A, g (f x) = x と h : f x = f y があるとする。 Eq.symm (hgf x)、congrArg g h、hgf y の型を答え、それぞれが $x=g(f(x))=g"
+      }
+    },
+    {
+      "id": "right-to-left",
+      "label": "練習：単射の右逆は左逆",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "ol",
+        "starts": "$f : A\\to B$ が単射で、$g : B\\to A$ が $f(g(y))=y$ をすべての $y\\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\\in A$ で成り立つことを示せ",
+        "question": "$f : A\\to B$ が単射で、$g : B\\to A$ が $f(g(y))=y$ をすべての $y\\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\\in A$ で成り立つことを示せ。$f$ の単射性を"
+      }
+    }
+  ],
+  "splits": []
+}

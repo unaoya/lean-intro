@@ -1,0 +1,58 @@
+Bool : Type
+Type 2 : Type 3
+z : Nat
+5
+def z : Nat :=
+5
+inc : Nat → Nat
+5
+inc' (n : Nat) : Nat
+5
+addThree : Nat → Nat
+7
+twice (F : Nat → Nat) : Nat → Nat
+twice double : Nat → Nat
+12
+Map Nat Bool : Type
+double2 : Map Nat Nat
+idAt (Nat → Nat) : (Nat → Nat) → Nat → Nat
+42
+3 = 5 : Prop
+5 = 5 : Prop
+f : Nat → Nat
+11
+triple (n : Nat) : Nat
+20
+f' (n : Nat) : Nat
+11
+g : Nat → Nat → Nat
+g 2 : Nat → Nat
+16
+g' (a b : Nat) : Nat
+g'' (a b : Nat) : Nat
+16
+16
+thrice (F : Nat → Nat) : Nat → Nat
+thrice double : Nat → Nat
+24
+Map Nat : Type → Type
+(3 + 4) * 2 : Nat
+plus (double 3) : Nat → Nat
+applyTo21 (plus 3) : Nat
+fun n ↦ plus n n : Nat → Nat
+121
+evalAt (F : Nat → Nat) (n : Nat) : Nat
+10
+shift (F : Nat → Nat) : Nat → Nat
+8
+useF1 : (Nat → Nat) → Nat
+useF2 : (Nat → Nat) → Nat
+compose (A B C : Type) (G : B → C) (F : A → B) : A → C
+8
+evalAt' (A B : Type) (F : A → B) (a : A) : B
+shift' (A : Type) (g F : A → A) : A → A
+10
+8
+constAt Nat Bool 5 : Bool → Nat
+5
+repeatTuple 2 9 : Tuple 2

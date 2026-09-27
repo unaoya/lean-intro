@@ -1,0 +1,31 @@
+{
+  "errors": [],
+  "reports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "overflow": 0,
+      "steps": [
+        "0",
+        "0",
+        "1",
+        "2"
+      ],
+      "hasNewParagraph": true,
+      "mathErrors": 0
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "overflow": 0,
+      "steps": [
+        "0",
+        "0",
+        "1",
+        "2"
+      ],
+      "hasNewParagraph": true,
+      "mathErrors": 0
+    }
+  ]
+}

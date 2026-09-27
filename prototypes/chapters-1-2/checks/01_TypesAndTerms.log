@@ -1,0 +1,60 @@
+3 : Nat
+Bool.true : Bool
+Nat : Type
+Type : Type 1
+Type 1 : Type 2
+3 + 4 : Nat
+1 + 1 = 2 : Prop
+2 = 1 : Prop
+Prop : Type
+x : Nat
+y : Nat
+2
+def x : Nat :=
+2
+double : Nat → Nat
+double 21 : Nat
+42
+double' (n : Nat) : Nat
+plus : Nat → Nat → Nat
+plus 3 : Nat → Nat
+plus 3 4 : Nat
+7
+addMul (a b c : Nat) : Nat
+applyTo21 (F : Nat → Nat) : Nat
+42
+applyAt (F : Nat → Nat) (n : Nat) : Nat
+Map : Type → Type → Type
+Nat.add : Nat → Nat → Nat
+HAdd.hAdd : Nat → Nat → Nat
+double (plus 3 4) : Nat
+2 : Nat
+2 : Int
+2 + 3 : Int
+Fin (n : Nat) : Type
+zeroIndex (n : Nat) : Fin (n + 1)
+zeroIndex 2 : Fin (2 + 1)
+zeroIndex 4 : Fin (4 + 1)
+0
+Fin.last (n : Nat) : Fin (n + 1)
+lastIndex 2 : Fin (2 + 1)
+2
+4
+oneIndex 2 : Fin (2 + 2)
+1
+idAt (α : Type) (a : α) : α
+idAt Nat : Nat → Nat
+idAt Bool : Bool → Bool
+42
+idImplicit {α : Type} (a : α) : α
+idImplicit 3 : Nat
+idImplicit true : Bool
+natId : Nat → Nat
+Tuple : Nat → Type
+Tuple 3 : Type
+constTuple (n : Nat) : Tuple n
+constTuple 3 : Tuple 3
+constTuple 4 : Tuple 4
+Vector Nat 3 : Type
+zeros 3 : Vector Nat 3
+zeros 4 : Vector Nat 4

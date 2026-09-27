@@ -1,0 +1,61 @@
+{
+  "failures": [],
+  "reports": [
+    {
+      "chapter": "01_typesandterms",
+      "reading": {
+        "pairs": 27,
+        "matched": true,
+        "mathRendered": 101
+      }
+    },
+    {
+      "chapter": "01_typesandterms",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 101,
+      "pages": 112,
+      "overflow": []
+    },
+    {
+      "chapter": "01_typesandterms",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 101,
+      "pages": 112,
+      "overflow": []
+    },
+    {
+      "chapter": "02_forall",
+      "reading": {
+        "pairs": 12,
+        "matched": true,
+        "mathRendered": 104
+      }
+    },
+    {
+      "chapter": "02_forall",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mathRendered": 100,
+      "pages": 41,
+      "overflow": []
+    },
+    {
+      "chapter": "02_forall",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mathRendered": 100,
+      "pages": 41,
+      "overflow": []
+    }
+  ]
+}

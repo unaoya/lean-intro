@@ -1,0 +1,1104 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "at": {
+        "section": "01_TypesAndTerms.intro",
+        "tag": "h1",
+        "starts": "型と項 I — 関数と依存関数"
+      },
+      "id": "reading",
+      "label": "型の予想からコードを読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "h2"
+      },
+      "id": "terms-and-types",
+      "label": "項と型の大まかなイメージ"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "p",
+        "starts": "#check e は、項 e の型を調べて表示するコマンドである。ここで、調べる対象の e"
+      },
+      "id": "check-nat",
+      "label": "#check で自然数の型を調べる"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "pre",
+        "starts": "#check true"
+      },
+      "id": "check-bool",
+      "label": "Bool.true の型と名前の読み方"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "p",
+        "starts": "すべての項は型を持つ。ここで大事な観察が1つある。 型を表す表記それ自体もまた項である。実"
+      },
+      "id": "nat-type",
+      "label": "型 Nat も Type 型の項である"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "p",
+        "starts": "では Type は？"
+      },
+      "id": "type-type",
+      "label": "Type の型と、型を項として扱うこと"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "starts": "数の演算や、等式も項として書ける。",
+        "section": "Intro1.terms-types"
+      },
+      "id": "addition",
+      "label": "演算で作る項の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "pre",
+        "starts": "#check 1 + 1 = 2"
+      },
+      "id": "propositions",
+      "label": "真の命題も偽の命題も Prop"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "p",
+        "starts": "#check という機能があることから分かるように、Lean には項を与えると、その型を機"
+      },
+      "id": "checking-proofs",
+      "label": "項の型の検査から証明の検査へ"
+    },
+    {
+      "at": {
+        "section": "Intro1.terms-types",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "universe-exercise",
+      "label": "練習：Bool と Type 2 の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "h2"
+      },
+      "id": "definition-x",
+      "label": "def の形と x の定義"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "p",
+        "starts": "定義した項は、それ自体また項として使える:"
+      },
+      "id": "definition-y",
+      "label": "定義した項を使って y を定義する"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "p",
+        "starts": "項を扱うコマンドをあと2つ紹介する。#eval は項を計算して値を表示する:"
+      },
+      "id": "eval-print",
+      "label": "#eval と #print の役割"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "p",
+        "starts": "さて、ここからがこの教材の最重要のテーマである。 Lean は def の宣言を受理する前"
+      },
+      "id": "type-checking",
+      "label": "型検査・型の計算・読者の推測"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "p",
+        "starts": "読む側の目線で言えば、次の定義の右辺には Nat 型の項を期待する:"
+      },
+      "id": "expected-nat",
+      "label": "Nat を期待した場所での型エラー"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "h3",
+        "starts": "コメントと docstring"
+      },
+      "id": "comments",
+      "label": "Lean が読み飛ばすコメント"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "p",
+        "starts": "もう1つ、宣言の直前に /-- … -/ と書くと、docstring（その宣言の説明書き"
+      },
+      "id": "docstring",
+      "label": "宣言に説明を付ける docstring"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "h3",
+        "starts": "✏ 練習"
+      },
+      "id": "commands-exercise",
+      "label": "練習：定義と #check・#eval"
+    },
+    {
+      "at": {
+        "section": "Intro1.definitions",
+        "tag": "pre",
+        "answer": true,
+        "question": "def z : Nat := 5 を自分で宣言し、#check z・#eval z・#print z の表示をそれぞれ予想してから確かめよ。",
+        "starts": "#print z"
+      },
+      "id": "commands-print-answer",
+      "label": "解答：#print と3つのコマンドの違い"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h2"
+      },
+      "id": "function-types",
+      "label": "関数の型 A → B"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "fun 記法 — 関数を項として書く"
+      },
+      "id": "fun-notation",
+      "label": "fun の書き方と型の読み方"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "starts": "注意 — 名前を書く場所と、項を書く場所。",
+        "section": "Intro1.functions"
+      },
+      "id": "fun-syntax",
+      "label": "引数名・本体・記号の役割"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "starts": "この項の型は、次のように読む。",
+        "section": "Intro1.functions"
+      },
+      "id": "fun-type",
+      "label": "関数の項の型を確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "pre",
+        "starts": "def double : Nat → Nat := fun n => n + n #che"
+      },
+      "id": "double",
+      "label": "double の定義と表示された型"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "一致しなければ、もちろん受理されない。本体を true にしてみる:"
+      },
+      "id": "function-error",
+      "label": "関数本体の型エラー"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "適用の書き方"
+      },
+      "id": "application-notation",
+      "label": "関数適用 f x の書き方"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "実際 double 21 と書くと、Lean は2つのことを確かめる:"
+      },
+      "id": "application-checks",
+      "label": "適用で照合する2点"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "pre",
+        "starts": "#check double 21"
+      },
+      "id": "double-21",
+      "label": "double 21 の型・値と double true の型エラー",
+      "column_at": {
+        "tag": "p",
+        "starts": "一方、double true を調べると、",
+        "section": "Intro1.functions"
+      }
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "関数 $\\mathrm{inc} : \\mathbb{N} \\to \\mathbb{N}$ を $\\mathrm{inc}(n) = n + 1$ で定める。これを fun を用いて Lean で定義"
+      },
+      "id": "increment-exercise",
+      "label": "練習：n + 1 を返す関数"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "表示の読み方: binder 形式"
+      },
+      "id": "binder-double",
+      "label": "引数を宣言の左側に書く"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "表示が double' (n : Nat) : Nat となったことに注意。これは「引数の"
+      },
+      "id": "binder-reading",
+      "label": "binder 形式と矢印形式を読み替える"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "ol",
+        "question": "先ほどの $\\mathrm{inc}(n) = n + 1$ を、今度は binder 形式で inc' という名前で定義せよ。 #check inc",
+        "starts": "先ほどの $\\mathrm{inc}(n) = n + 1$ を、今度は binder 形"
+      },
+      "id": "increment-binder-exercise",
+      "label": "練習：inc を binder 形式で書き直す"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "多変数関数はカリー化で表す"
+      },
+      "id": "currying",
+      "label": "数学のカリー化とアンカリー化"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "Lean では、多変数関数も1引数関数を重ねて表す。 2引数なら、1つ目を受け取って残り1"
+      },
+      "id": "plus",
+      "label": "plus をカリー化し、矢印を右結合で読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "逆に、適用は左結合:"
+      },
+      "id": "application-association",
+      "label": "適用は左結合で読む"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "plus 自体の型は注釈のとおり:"
+      },
+      "id": "plus-type",
+      "label": "plus 自体の型"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "では、plus 3 の型は何か。表示を見る前に推測しよう。 plus の型を右結合で読めば"
+      },
+      "id": "plus-partial",
+      "label": "plus 3 の型を推測する"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "もう1つ渡せば Nat になるはずで:"
+      },
+      "id": "plus-applied",
+      "label": "残りの引数を渡して型と値を確かめる"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "関数 $\\mathrm{addThree} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{addThree}(n) = 3 + n$ を、plus 3 : Nat → N"
+      },
+      "id": "add-three-exercise",
+      "label": "練習：部分適用から関数を定義する"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "多変数関数の binder 形式"
+      },
+      "id": "multiple-binders",
+      "label": "多変数関数を binder 形式で書く"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "3引数以上も同じことの繰り返し。 Nat → Nat → Nat → Nat は Nat "
+      },
+      "id": "add-mul",
+      "label": "3つの引数と binder 形式"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "関数を引数として受け取る"
+      },
+      "id": "apply-to-21",
+      "label": "関数を引数として受け取る"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "applyTo21 double という項を読んでみよう。定義域は Nat → Nat で"
+      },
+      "id": "apply-to-21-double",
+      "label": "applyTo21 double の型と値"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "型の異なる引数の binder 形式"
+      },
+      "id": "apply-at",
+      "label": "型の異なる引数を別々に注釈する"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "写像 $\\mathrm{twice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(\\mathbb{N}, \\mathbb{N})$ "
+      },
+      "id": "twice-exercise",
+      "label": "練習：関数を受け取り2回適用する"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "pre",
+        "answer": true,
+        "question": "写像 $\\mathrm{twice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(",
+        "starts": "def twice (F : Nat → Nat) : Nat → Nat := fun ",
+        "part": "#check twice"
+      },
+      "id": "twice-answer",
+      "label": "解答：twice の型・部分適用・計算"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "定義域や行き先が型でもよい"
+      },
+      "id": "map",
+      "label": "型を受け取り関数型を返す Map"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#check Map Nat Bool の表示を予想してから確かめよ。また、数学でいう関数 $\\mathrm{double} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm"
+      },
+      "id": "map-exercise",
+      "label": "練習：Map Nat Bool と double2"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "pre",
+        "answer": true,
+        "question": "#check Map Nat Bool の表示を予想してから確かめよ。また、数学でいう関数 $\\mathrm{double} : \\mathbb{N}",
+        "starts": "def double2 : Map Nat Nat := double #check do"
+      },
+      "id": "map-double-answer",
+      "label": "解答：Map Nat Nat と Nat → Nat は同じ型"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "+ をあらためて"
+      },
+      "id": "addition-function",
+      "label": "自然数の足し算を2引数の関数として読む"
+    },
+    {
+      "id": "application-rule",
+      "label": "型の求め方：宣言と適用",
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "型はどう決まるか——下から計算し、上から期待を伝える"
+      }
+    },
+    {
+      "id": "checking-example",
+      "label": "複合した項を、小さい照合に分ける",
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "複合した項を、小さい照合に分ける"
+      }
+    },
+    {
+      "id": "expected-types",
+      "label": "期待される型から、関数の本体へ",
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "期待される型から、関数の本体へ"
+      }
+    },
+    {
+      "id": "literal-types",
+      "label": "型注釈と数字の読み方",
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "h3",
+        "starts": "型注釈が、項の読み方を決める"
+      }
+    },
+    {
+      "id": "expected-type-inside",
+      "label": "型の情報を内側へ伝える",
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "期待される型は、項の内側にも伝わる。次の式では、足し算の結果を Int 型と指定しているので、 2 と 3 も整数の項として読まれる。"
+      }
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "照合が失敗すれば、その場所がエラーになる。double に関数 plus を渡してみる:"
+      },
+      "id": "application-error",
+      "label": "関数適用での型エラー"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "「引数の型 Nat → Nat → Nat が、要求される型 Nat と合わない」と、規則"
+      },
+      "id": "unfinished-terms",
+      "label": "型エラーと未完成の項 sorry"
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "p",
+        "starts": "では double plus 3 4 と括弧なしで書いたらどうなるか。適用は左結合なのでこ"
+      },
+      "id": "application-parentheses",
+      "label": "適用の括弧を省略できない理由"
+    },
+    {
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h2"
+      },
+      "id": "dependent-functions",
+      "label": "集合族の直積の要素としての依存関数"
+    },
+    {
+      "id": "dependent-sections",
+      "label": "依存関数を直和への切断として読む",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "直和への関数と切断"
+      }
+    },
+    {
+      "id": "type-families",
+      "label": "型の族と、その各型の項を返す関数",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "型の族と依存関数"
+      }
+    },
+    {
+      "id": "finite-index-types",
+      "label": "Fin：自然数を添字にする型の族",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "自然数を添字にする型の族 Fin"
+      }
+    },
+    {
+      "id": "nonempty-fin",
+      "label": "Fin (n + 1) の各型から項を返す",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "なぜ Fin (n + 1) を使うのか"
+      }
+    },
+    {
+      "id": "zero-index",
+      "label": "最初の番号を選ぶ依存関数",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "例1: いつも最初の番号を選ぶ"
+      }
+    },
+    {
+      "id": "zero-index-types",
+      "label": "同じ0でも、所属する型が異なる",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "pre",
+        "starts": "#check zeroIndex 2"
+      }
+    },
+    {
+      "id": "last-index",
+      "label": "最後の番号を返す Fin.last",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "例2: 最後の番号を選ぶ"
+      }
+    },
+    {
+      "id": "last-index-values",
+      "label": "同じ依存関数型から、異なる項を選ぶ",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "pre",
+        "starts": "def lastIndex : (n : Nat) → Fin (n + 1) := fun n => Fin.last n #check lastIndex 2"
+      }
+    },
+    {
+      "id": "one-index",
+      "label": "番号1を選ぶ依存関数",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "例3: いつも1を選べる族にする"
+      }
+    },
+    {
+      "id": "identity-family",
+      "label": "各型に恒等関数を割り当てる",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "各集合に恒等写像を割り当てる"
+      }
+    },
+    {
+      "id": "id-at-types",
+      "label": "型を渡すと、残りの関数の型が決まる",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "pre",
+        "starts": "#check idAt Nat"
+      }
+    },
+    {
+      "id": "dependent-application",
+      "label": "依存関数の適用：結果の型に代入する",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "依存する適用の規則"
+      }
+    },
+    {
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "#check idAt (Nat → Nat) の表示と、#eval idAt (Nat → Nat) double 21 の値を予想せよ。"
+      },
+      "id": "identity-function-exercise",
+      "label": "練習：恒等関数に関数型を渡す"
+    },
+    {
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "pre",
+        "answer": true,
+        "question": "#check idAt (Nat → Nat) の表示と、#eval idAt (Nat → Nat) double 21 の値を予想せよ。",
+        "starts": "#eval idAt (Nat → Nat) double 21"
+      },
+      "id": "identity-function-value",
+      "label": "恒等関数に渡した double を計算する"
+    },
+    {
+      "id": "implicit",
+      "label": "型引数は、なくなったのではない",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "型引数を補ってもらう — 明示引数と暗黙引数"
+      }
+    },
+    {
+      "id": "implicit-examples",
+      "label": "明示引数の型から、暗黙引数を補う",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "渡した項の型から補う"
+      }
+    },
+    {
+      "id": "explicit-type-argument",
+      "label": "暗黙引数も、こちらから指定できる",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "補う型を、こちらから指定する"
+      }
+    },
+    {
+      "id": "implicit-expected",
+      "label": "期待される結果の型から、暗黙引数を補う",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "結果に期待される型から補う"
+      }
+    },
+    {
+      "id": "implicit-missing-information",
+      "label": "手がかりが足りない場合と省略の検査",
+      "at": {
+        "section": "Intro1.dependent-functions",
+        "tag": "h3",
+        "starts": "手がかりが足りない場合"
+      }
+    },
+    {
+      "at": {
+        "tag": "h2",
+        "section": "Trial1.practice"
+      },
+      "id": "end-practice",
+      "label": "章末問題"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "本文の def x : Nat := 2 が使える状態で、def oops : Bool := x は受理されるか。予想してから試し、エラーメッセージ",
+        "starts": "本文の def x : Nat := 2 が使える状態で、def oops : Bool ",
+        "section": "Trial1.basic-practice"
+      },
+      "id": "definition-error-exercise",
+      "label": "練習：Nat の項を Bool として定義できるか"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "answer": true,
+        "question": "本文の def x : Nat := 2 が使える状態で、def oops : Bool := x は受理されるか。予想してから試し、エラーメッセージ",
+        "starts": "受理されない。x の型は Nat で、コロンの右の Bool と一致しないから型検査が失敗",
+        "section": "Trial1.basic-practice"
+      },
+      "id": "definition-error-answer",
+      "label": "解答：宣言された型との照合が失敗する"
+    },
+    {
+      "at": {
+        "tag": "h3",
+        "section": "Trial1.function-practice",
+        "starts": "✏ 練習 — 関数とバインダー形式"
+      },
+      "id": "group-function-practice",
+      "label": "関数とバインダー形式"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "starts": "関数 $\\mathrm{triple} : \\mathbb{N} \\to \\mathbb{N}$、$\\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。 ",
+        "section": "Trial1.function-practice"
+      },
+      "id": "triple-exercise",
+      "label": "練習：binder 形式で triple を定義する"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "#eval double (double 5) の値を予想してから実行せよ。",
+        "starts": "#eval double (double 5) の値を予想してから実行せよ。",
+        "section": "Trial1.function-practice"
+      },
+      "id": "double-twice-exercise",
+      "label": "練習：double を2回適用する"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "同様に $f(n) = 2n + 3$ を、binder 形式で f' という名前で定義せよ。 #check f' の表示と #eval f' 4 の",
+        "starts": "同様に $f(n) = 2n + 3$ を、binder 形式で f' という名前で定義せ",
+        "section": "Trial1.function-practice"
+      },
+      "id": "affine-binder-exercise",
+      "label": "練習：f を binder 形式で書き直す"
+    },
+    {
+      "at": {
+        "tag": "h3",
+        "section": "Trial1.higher-practice",
+        "starts": "✏ 練習 — 多変数関数と高階関数"
+      },
+      "id": "group-higher-practice",
+      "label": "多変数関数と高階関数"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "関数 $g : \\mathbb{N} \\times \\mathbb{N} \\to \\mathbb{N}$、$g(a, b) = 2a + 3b$ を、",
+        "starts": "#check g 2",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "curried-affine-application",
+      "label": "解答：引数を1つずつ渡した型と値"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "starts": "先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 g' は (a : Nat) (b : Nat) と分け、g'' は (a b : Nat) とまとめること。",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "two-binders-exercise",
+      "label": "練習：型が同じ2つの引数の書き方"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 g' は (a : Nat) (b : Nat) と分け、g",
+        "starts": "def g' (a : Nat) (b : Nat) : Nat := 2 * a + 3",
+        "part": "#check g'",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "two-binders-checks",
+      "label": "解答：2つの binder 形式の表示と計算"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 g' は (a : Nat) (b : Nat) と分け、g",
+        "starts": "#eval g' 2 4",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "two-binders-values",
+      "label": "2通りの binder 形式の計算結果"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "写像 $\\mathrm{thrice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}",
+        "starts": "写像 $\\mathrm{thrice} : \\mathrm{Map}(\\mathbb{N}",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "thrice-exercise",
+      "label": "練習：関数を3回適用する"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "写像 $\\mathrm{thrice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}",
+        "starts": "def thrice (F : Nat → Nat) : Nat → Nat := fun",
+        "part": "#check thrice",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "thrice-answer",
+      "label": "解答：thrice double の型と値"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "#check Map Nat の表示を予想してから確かめよ（Map に1つだけ渡すと、何が返るか。plus 3 の型を読んだのと同じ手順で考える）。",
+        "starts": "#check Map Nat の表示を予想してから確かめよ（Map に1つだけ渡すと、何が",
+        "section": "Trial1.higher-practice"
+      },
+      "id": "map-partial-exercise",
+      "label": "練習：Map の部分適用"
+    },
+    {
+      "at": {
+        "tag": "h3",
+        "section": "Trial1.combined-practice",
+        "starts": "✏ 練習 — 型の計算と関数の組み合わせ"
+      },
+      "id": "group-combined-practice",
+      "label": "型の計算と関数の組み合わせ"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "#check する前に型を計算せよ: (3 + 4) * 2、plus (double 3)、 applyTo21 (plus 3)、fun n : ",
+        "starts": "#check (3 + 4) * 2",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "predict-types-checks",
+      "label": "解答：4つの予測を #check で確かめる"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "#eval applyTo21 (plus 100) の値を予想してから実行せよ。",
+        "starts": "#eval applyTo21 (plus 100) の値を予想してから実行せよ。",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "partial-evaluation-exercise",
+      "label": "練習：部分適用した関数を渡す"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "次の2つの写像を Lean で定義し、#check の表示を予想してから確かめよ: $\\mathrm{evalAt} : \\mathrm{Map}(\\",
+        "starts": "次の2つの写像を Lean で定義し、#check の表示を予想してから確かめよ: $\\m",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "eval-shift-exercise",
+      "label": "練習：evalAt と shift"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "answer": true,
+        "question": "次の2つの写像を Lean で定義し、#check の表示を予想してから確かめよ: $\\mathrm{evalAt} : \\mathrm{Map}(\\",
+        "class": "answer-heading",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "eval-at-answer",
+      "label": "解答：関数に指定した値を適用する"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "次の2つの写像を Lean で定義し、#check の表示を予想してから確かめよ: $\\mathrm{evalAt} : \\mathrm{Map}(\\",
+        "starts": "def shift (F : Nat → Nat) : Nat → Nat := fun ",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "shift-answer",
+      "label": "解答：入力を1つずらす関数"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "「型から項を書く」練習: $\\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathbb{N}$ という写像を、中",
+        "starts": "「型から項を書く」練習: $\\mathrm{Map}(\\mathbb{N}, \\mathb",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "same-type-exercise",
+      "label": "練習：同じ型で中身の異なる関数"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "answer": true,
+        "question": "「型から項を書く」練習: $\\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathbb{N}$ という写像を、中",
+        "class": "answer-heading",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "same-type-answer",
+      "label": "解答：型は仕様を決める"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "（発展）写像 $G : B \\to C$ と $F : A \\to B$ に合成 $G \\circ F : A \\to C$ を対応させる写像を考える",
+        "starts": "（発展）写像 $G : B \\to C$ と $F : A \\to B$ に合成 $G \\",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "composition-exercise",
+      "label": "練習：一般の関数の合成"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）写像 $G : B \\to C$ と $F : A \\to B$ に合成 $G \\circ F : A \\to C$ を対応させる写像を考える",
+        "class": "answer-heading",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "composition-answer",
+      "label": "解答：合成の定義・型・計算"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "（発展）evalAt と shift を一般化し、任意の $A$・$B$ に対する写像 $\\mathrm{Map}(A, B) \\times A \\t",
+        "starts": "（発展）evalAt と shift を一般化し、任意の $A$・$B$ に対する写像 $",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "generalize-functions-exercise",
+      "label": "練習：evalAt と shift を任意の型へ一般化する"
+    },
+    {
+      "at": {
+        "tag": "p",
+        "answer": true,
+        "question": "（発展）evalAt と shift を一般化し、任意の $A$・$B$ に対する写像 $\\mathrm{Map}(A, B) \\times A \\t",
+        "class": "answer-heading",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "generalize-functions-answer",
+      "label": "解答：型も引数に取って一般化する"
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "（発展）evalAt と shift を一般化し、任意の $A$・$B$ に対する写像 $\\mathrm{Map}(A, B) \\times A \\t",
+        "starts": "#eval evalAt' Nat Nat double 5",
+        "section": "Trial1.combined-practice"
+      },
+      "id": "generalize-functions-eval",
+      "label": "解答：一般化した関数の計算"
+    },
+    {
+      "id": "tuple",
+      "label": "章末の準備：n 個組を関数で表す",
+      "at": {
+        "section": "Trial1.combined-practice",
+        "tag": "h3",
+        "starts": "章末の準備: 自然数の n 個組を関数で表す"
+      }
+    },
+    {
+      "id": "const-tuple",
+      "label": "各 n に対して定数の n 個組を作る",
+      "at": {
+        "section": "Trial1.combined-practice",
+        "tag": "p",
+        "starts": "では、各 n について、すべての成分が7である n 個組を作ってみよう。 型の族 Tuple に対する依存関数になるのが、次の constTuple である。"
+      }
+    },
+    {
+      "id": "tuple-values",
+      "label": "Tuple は型を返し、constTuple は項を返す",
+      "at": {
+        "section": "Trial1.combined-practice",
+        "tag": "pre",
+        "starts": "#check constTuple 3"
+      }
+    },
+    {
+      "at": {
+        "tag": "h3",
+        "section": "Trial1.dependent-practice",
+        "starts": "✏ 練習 — 依存関数"
+      },
+      "id": "group-dependent-practice",
+      "label": "依存関数の章末問題"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "starts": "Tuple 2 を定義で展開すると、どんな型になるか。 constTuple 2 の内側の引数と結果の型を答えよ。",
+        "question": "Tuple 2 を定義で展開すると、どんな型になるか。 constTuple 2 の内側の引数と結果の型を答えよ。",
+        "section": "Trial1.dependent-practice"
+      },
+      "id": "tuple-expansion-exercise",
+      "label": "練習：Tuple 2 を展開して読む"
+    },
+    {
+      "at": {
+        "tag": "ol",
+        "question": "n と自然数 a を受け取り、すべての成分が a である n 個組を返す repeatTuple (n : Nat) (a : Nat) : Tupl",
+        "starts": "n と自然数 a を受け取り、すべての成分が a である n 個組を返す repeatTu",
+        "section": "Trial1.dependent-practice"
+      },
+      "id": "repeat-tuple-exercise",
+      "label": "練習：すべての成分が a の n 個組"
+    }
+  ],
+  "splits": [
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。 g' は (a : Nat) (b : Nat) と分け、g",
+        "starts": "def g' (a : Nat) (b : Nat) : Nat := 2 * a + 3",
+        "section": "Trial1.higher-practice"
+      },
+      "before": [
+        "#check g'"
+      ]
+    },
+    {
+      "at": {
+        "section": "Intro1.functions",
+        "tag": "pre",
+        "answer": true,
+        "question": "写像 $\\mathrm{twice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}(",
+        "starts": "def twice (F : Nat → Nat) : Nat → Nat := fun "
+      },
+      "before": [
+        "#check twice"
+      ]
+    },
+    {
+      "at": {
+        "tag": "pre",
+        "answer": true,
+        "question": "写像 $\\mathrm{thrice} : \\mathrm{Map}(\\mathbb{N}, \\mathbb{N}) \\to \\mathrm{Map}",
+        "starts": "def thrice (F : Nat → Nat) : Nat → Nat := fun",
+        "section": "Trial1.higher-practice"
+      },
+      "before": [
+        "#check thrice"
+      ]
+    }
+  ]
+}

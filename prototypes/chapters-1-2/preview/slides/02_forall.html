@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>型と命題 I — ならばと全称量化 · 改稿試作</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #fcfcfa;
+  --ink: #252c33;
+  --muted: #646e76;
+  --line: #dce1e2;
+  --accent: #235965;
+  --code: #f0f2f1;
+  --output: #edf3f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font-family: "Hiragino Sans", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button {
+  color: inherit; border: 1px solid var(--line); border-radius: 5px;
+  background: transparent; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #edf0ee; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 3px solid #49858e; outline-offset: 4px;
+}
+button:disabled { cursor: default; opacity: .4; }
+button[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+.toolbar, .navigation {
+  display: none;
+  align-items: center; justify-content: space-between;
+  font-size: 14px; line-height: 1.5; background: var(--paper); z-index: 2;
+}
+.toolbar { border-bottom: 1px solid var(--line); padding: 14px 30px; gap: 20px; }
+.identity { display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.identity > span:first-child { font-weight: 600; }
+.identity a { font-weight: 600; text-decoration: none; color: inherit; }
+#chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
+.chapter { color: var(--muted); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 13px; }
+.tools button { border-color: transparent; padding-inline: 8px; }
+.optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
+.optional-control[hidden] { display: none; }
+input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
+.slide, .print-content {
+  font-size: clamp(22px, 2.1vw, 27px); line-height: 1.8;
+  overflow-wrap: anywhere; margin-bottom: 60px;
+}
+.slide h1 { font-size: 1.5em; line-height: 1.5; font-weight: 650; margin: 0 0 36px; }
+.slide h2 { font-size: 1.28em; line-height: 1.5; font-weight: 650; margin: 0 0 28px; }
+.slide h3 { font-size: 1.08em; line-height: 1.65; font-weight: 600; margin: 0 0 24px; }
+.slide p { margin: 0 0 1em; }
+.slide strong { font-weight: 650; }
+.slide a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.slide ul, .slide ol { margin: 0 0 1em; padding-left: 1.6em; }
+.slide li { padding-left: .15em; margin-bottom: .8em; }
+.slide .list-fragment, .print-slide .print-content .list-fragment { margin-bottom: 0; }
+.slide code {
+  font-family: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
+  font-size: .87em; background: var(--code); border-radius: 3px; padding: .08em .12em;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.slide pre {
+  margin: 0 0 22px; padding: 18px 24px; line-height: 1.55;
+  border-left: 3px solid #c5cecd; background: var(--code);
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.1em;
+}
+.slide pre code { padding: 0; font-size: .92em; background: transparent; }
+.slide pre.quote { background: var(--output); border-color: #80a5b0; }
+.slide[data-layout="compact"] p, .print-slide[data-layout="compact"] .print-content p { margin-bottom: 18px; }
+.slide[data-layout="compact"] pre, .print-slide[data-layout="compact"] .print-content pre {
+  margin-bottom: 12px; padding-block: 10px;
+}
+.slide p.answer-heading, .print-slide .print-content p.answer-heading {
+  color: var(--accent); font-size: .8em; line-height: 1.4; margin: 0 0 12px;
+}
+.slide[data-editorial] p, .print-slide[data-editorial] .print-content p { margin-bottom: 14px; line-height: 1.7; }
+.slide[data-editorial] pre, .print-slide[data-editorial] .print-content pre {
+  padding-block: 8px; margin-bottom: 8px;
+}
+.slide[data-editorial] li, .print-slide[data-editorial] .print-content li { margin-bottom: 10px; line-height: 1.7; }
+.slide[data-editorial] h1, .print-slide[data-editorial] .print-content h1 { margin-bottom: 24px; }
+.slide[data-editorial] h2, .print-slide[data-editorial] .print-content h2 { margin-bottom: 20px; }
+.slide[data-editorial] h3, .print-slide[data-editorial] .print-content h3 { margin-bottom: 16px; }
+.slide[data-editorial] p.answer-heading, .print-slide[data-editorial] .print-content p.answer-heading {
+  margin-bottom: 8px; line-height: 1.4;
+}
+.kw { color: #793683; font-weight: 600; }
+.sort { color: #075c8b; }
+.doc { color: #34794f; }
+.cm { color: #68736e; }
+.sorry { color: #a33938; }
+.slide[data-kind="optional"], .slide[data-kind="preview"] {
+  border-left: 3px solid #b3ada0; padding-left: 28px;
+}
+.solution { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: .83em; }
+.solution summary { cursor: pointer; color: var(--accent); font-size: .9em; }
+.solution[open] summary { margin-bottom: 18px; }
+.solution pre { margin-top: 18px; }
+.slide details.sol { border-top: 1px solid var(--line); padding: 10px 0; margin-top: 14px; font-size: .8em; }
+.slide details.sol summary { color: var(--accent); cursor: pointer; }
+.slide details.sol[open] summary { margin-bottom: 18px; }
+.slide table { border-collapse: collapse; font-size: .8em; width: 100%; table-layout: fixed; margin-bottom: 20px; }
+.slide th, .slide td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+.slide th { background: var(--code); }
+.enhanced body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+.enhanced .toolbar, .enhanced .navigation { display: flex; }
+.enhanced .viewport { overflow: auto; min-height: 0; scrollbar-gutter: stable; }
+.enhanced .slide { margin-bottom: 0; }
+.enhanced:not(.reading) main {
+  min-height: 100%; display: flex; flex-direction: column; justify-content: safe center;
+  padding-block: 24px;
+}
+.enhanced:not(.reading) .slide { flex: none; display: flow-root; }
+.slide-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; align-items: center; }
+.slide-column { display: flow-root; min-width: 0; }
+.slide .slide-column pre, .print-content .slide-column pre { font-size: 1em; line-height: 1.4; }
+.slide > :last-child, .slide-column > :last-child, .print-body > :last-child { margin-bottom: 0; }
+/* Keep the authored content and type size. Denser pages use less leading and
+   spacing, while short pages keep the normal spacing and center vertically. */
+.slide[data-density] p, .print-slide[data-density] .print-content p {
+  line-height: 1.55; margin-bottom: 10px;
+}
+.slide[data-density] pre, .print-slide[data-density] .print-content pre {
+  line-height: 1.32; padding-block: 6px; margin-bottom: 6px;
+}
+.slide[data-density] :is(ul, ol), .print-slide[data-density] .print-content :is(ul, ol) { margin-bottom: 10px; }
+.slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
+.slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
+.slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
+.slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
+.slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
+.slide[data-density="dense"] :is(ul, ol), .print-slide[data-density="dense"] .print-content :is(ul, ol) { margin-bottom: 6px; }
+.enhanced .slide[hidden] { display: none; }
+.enhanced .step[data-unrevealed] { visibility: hidden; pointer-events: none; }
+.enhanced .slide[data-editorial] :is(pre, table, ol[data-exercise]):not(:has(.step:not([data-unrevealed]))) {
+  visibility: hidden;
+}
+.navigation { position: relative; padding: 13px 30px 17px; border-top: 1px solid var(--line); gap: 20px; }
+.position { display: flex; gap: 18px; align-items: baseline; font-variant-numeric: tabular-nums; }
+#counter { font-weight: 600; min-width: 58px; }
+#step-count { color: var(--muted); font-size: 12px; min-width: 56px; }
+.hint { font-size: 12px; color: var(--muted); }
+.navigation-buttons { display: flex; gap: 12px; }
+#next { background: var(--accent); color: white; border-color: var(--accent); min-width: 134px; }
+#next:hover { background: #1e4c56; }
+.progress { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; background: #e6e9e7; }
+#progress-fill { height: 100%; background: var(--accent); }
+dialog { width: min(620px, calc(100% - 36px)); max-height: 82dvh; border: 1px solid var(--line); border-radius: 8px; padding: 25px 30px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: rgb(24 35 39 / .35); }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { font-size: 23px; margin: 0; }
+.dialog-caption { color: var(--muted); font-size: 13px; margin-top: 4px; }
+#toc-list { padding: 0; list-style: none; }
+#toc-list button { border: 0; width: 100%; text-align: left; padding: 10px 12px; white-space: normal; font-size: 15px; }
+#toc-list button[aria-current="page"] { background: #e7eeed; color: var(--accent); font-weight: 600; }
+#toc-list .toc-number { display: inline-block; width: 32px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.reading .slide { display: block; border-bottom: 1px solid var(--line); padding-bottom: 45px; margin-bottom: 45px; }
+.reading .step[data-unrevealed] { visibility: visible; pointer-events: auto; }
+.reading .slide[hidden] { display: none; }
+.reading .hint { display: none; }
+@media (max-width: 860px) {
+  .slide-columns { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .toolbar { padding: 12px 20px; flex-wrap: wrap; gap: 9px; }
+  .identity { gap: 12px; }
+  .tools { gap: 8px; }
+  main { padding: 30px 30px 40px; }
+  .slide { font-size: 23px; line-height: 1.8; }
+  .navigation { padding-inline: 20px; gap: 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 520px) {
+  .toolbar { padding: 9px 16px; gap: 6px; font-size: 12px; }
+  .identity { width: 100%; justify-content: space-between; }
+  .chapter { font-size: 11px; }
+  .tools { width: 100%; justify-content: space-between; gap: 2px; }
+  .tools button { min-height: 40px; padding: 7px; }
+  .optional-control { min-height: 40px; gap: 2px; }
+  main { padding: 26px 22px 32px; }
+  .slide { font-size: 20px; line-height: 1.85; }
+  .slide h1 { font-size: 1.35em; }
+  .slide pre { padding: 14px 16px; }
+  .navigation { padding: 10px 16px 14px; font-size: 12px; }
+  .position { flex-direction: column; gap: 0; }
+  .navigation-buttons { gap: 7px; }
+  .navigation-buttons button { min-height: 44px; padding: 8px 10px; }
+  #next { min-width: 120px; }
+  .slide[data-kind="optional"], .slide[data-kind="preview"] { padding-left: 16px; }
+}
+@media print {
+  .enhanced:not(.reading) main { display: block; min-height: 0; }
+  .enhanced body { display: block; height: auto; overflow: visible; }
+  .enhanced .toolbar, .enhanced .navigation, dialog, .sr-only { display: none; }
+  .enhanced .viewport { overflow: visible; }
+  main { width: 100%; padding: 0; }
+  .enhanced .slide { display: block !important; break-after: page; font-size: 16pt; margin-bottom: 0; }
+  .enhanced .step[data-unrevealed] { visibility: visible; }
+  .enhanced:not(.include-optional) .slide[data-kind="optional"],
+  .enhanced:not(.include-optional) .slide[data-kind="preview"] { display: none !important; }
+}
+
+/* 推論規則（前提 / 横線 / 結論）。通読版の .rule と同じ組み方 */
+.rule { display: inline-grid; text-align: center; margin: 1rem 2rem;
+        font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: .85em; }
+.rule .prem { display: flex; gap: 2em; justify-content: center; padding: 0 .5em; }
+.rule .concl { border-top: 1px solid var(--ink); padding: .15em .5em 0; }
+</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.7/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><a href="index.html">はじめての Lean · 改稿試作</a><select id="chapter-select" aria-label="章"><option value="index.html">はじめに</option><option value="01_typesandterms.html">第1章</option><option value="02_forall.html" selected>第2章</option></select></div>
+    <div class="tools" role="group" aria-label="表示の設定">
+      <button id="contents" type="button" aria-haspopup="dialog">目次</button>
+      <label class="optional-control" hidden><input id="optional" type="checkbox">補足・先取り</label>
+      <button id="reading-mode" type="button" aria-pressed="false">通読</button>
+      <button id="fullscreen" type="button">全画面</button>
+    </div>
+  </header>
+  <div class="viewport" id="viewport">
+    <main id="slides" aria-label="講義本文">
+      <article class="slide" id="02_forall-opening" data-kind="main" data-label="証明の保証を与えられたか、という視点" data-section="02_Forall.intro" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">import</span> «01_TypesAndTerms»</span></code></pre>
+<div class="step" data-step="0"><h1>型と命題 I — ならばと全称量化</h1></div>
+<p><span class="step" data-step="0">この章では、<strong>その命題の証明を与えられたか、証明を書けたか</strong>という視点で数学を読む。命題の真偽を先に判定することや、同じ命題の証明どうしの文面を比べることから、いったん視点を移そう。注目するのは、その主張を支える保証を、実際に与えられたかどうかである。</span></p>
+<p><span class="step" data-step="1">ここでいう保証は、その命題の<strong>証明書</strong>だと思えばよい。証明がまだ書けていないということと、その命題が偽であるということは区別する。</span></p></article>
+<article class="slide" id="02_forall-implication-as-guarantee" data-kind="main" data-label="前提の保証から、結論の保証を作る" data-section="02_Forall.intro" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>保証を受け取って、保証を作る</h3></div>
+<p><span class="step" data-step="0">ある前提のもとで結論が成り立つ、という定理を考えよう。これは「前提が正しいという保証を与えてくれたら、結論が正しいという保証を作ります」と言っている、と読める。</span></p>
+<p><span class="step" data-step="1">この説明のために前提を $P$、結論を $Q$ と呼ぶ。「$P$ ならば $Q$」を保証するには、$P$ の証明書を受け取り、$Q$ の証明書を返す関数を書けばよい。ここで受け取るものと返すものは、真・偽という値ではなく、それぞれの命題の証明書である。</span></p>
+<p><span class="step" data-step="2">命題をその証明書の型と思えば、この関数の型は $P\to Q$ になる。仮定のもとで結論を示す、という証明の形を、入力から出力を作る関数の形として捉えている。</span></p></article>
+<article class="slide" id="02_forall-forall-as-guarantee" data-kind="main" data-label="対象ごとに保証を返す依存関数" data-section="02_Forall.intro" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>対象ごとに、その対象についての保証を与える</h3></div>
+<p><span class="step" data-step="0">「どんな $x$ に対しても $P(x)$ が成り立つ」を保証する場合はどうだろうか。必要なのは、どの $x$ を渡されても、その $x$ についての命題 $P(x)$ の証明書を返すことである。一つの関数で、すべての対象に対する保証を一斉に与える。</span></p>
+<p><span class="step" data-step="1">返す証明書の型は $P(x)$ であり、受け取った $x$ に応じて変わる。だから、その保証を与えるものは<strong>依存関数</strong>だと考えられる。前の章で、$n$ に対して <code>Fin (n + 1)</code> の項を返したのと同じ形で、今度は対象ごとの証明を返す。</span></p>
+<p><span class="step" data-step="2">各 $x\in A$ に命題 $P(x)$ を割り当てるものを<strong>述語</strong>という。命題を型と思えば、述語は $A$ を添字とする<strong>型の族</strong> $(P(x))_{x\in A}$ である。全称命題の証明は、この族の各型 $P(x)$ の項を返す依存関数、すなわち<strong>依存積</strong> $\prod_{x\in A}P(x)$ の項なのである。</span></p></article>
+<article class="slide" id="02_forall-human-and-machine" data-kind="main" data-label="人間の理解と、機械の型検査" data-section="02_Forall.intro" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>人間が納得することと、機械が検査すること</h3></div>
+<p><span class="step" data-step="0"><strong>人間が理解したいこと</strong>は、この読み替えが、数学でしている証明の操作を表しているということである。「ならば」を証明する代わりに保証から保証を作る関数を、全称命題を証明する代わりに対象から保証を作る依存関数を書く。その関数を作れたことで、元の数学の主張を証明したと納得できるかを考えたい。</span></p>
+<p><span class="step" data-step="1"><strong>機械が確かめること</strong>は、渡された項が、指定された型を持つかどうかである。この読み替えのもとで書いた証明の項を型検査し、要求された結論の証明になっているかを確かめる。数学の主張をどう表したかを読むことと、できた項の型を検査することの、両方が必要になる。</span></p>
+<p><span class="step" data-step="2">単射の合成、左キャンセル、単調写像の合成、左逆の四つを通して、この対応を見ていこう。</span></p></article>
+<article class="slide" id="02_forall-composition-math" data-kind="main" data-label="単射の合成：まず数学の証明を読む" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.injective-composition">1. 単射の合成 — 対象と仮定を受け取る</h2></div>
+<p><span class="step" data-step="0">写像 $f : A\to B$ と $g : B\to C$ がともに単射なら、合成 $g\circ f : A\to C$ も単射である。まず、ふつうの数学の証明を書いてみよう。</span></p>
+<div class="step" data-step="1"><h3>数学の証明を読む</h3></div>
+<p><span class="step" data-step="1"><strong>証明。</strong> $x,y\in A$ を任意に取り、$g(f(x))=g(f(y))$ と仮定する。$g$ は単射だから $f(x)=f(y)$ である。さらに $f$ は単射だから $x=y$ となる。したがって、$g\circ f$ は単射である。∎</span></p>
+<p><span class="step" data-step="2">学生のレポートを採点するつもりで、この証明を読んでみよう。各行で述べたことは、どの仮定から言えるだろうか。最後の結論に必要な対象と仮定が、最初にきちんと取られているだろうか。</span></p></article>
+<article class="slide" id="02_forall-composition-structure" data-kind="main" data-label="証明を、受け取りと適用に分ける" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>証明を、受け取りと適用に分ける</h3></div>
+<p><span class="step" data-step="0">最初に取ったのは、二つの対象 $x,y\in A$ と、等式 $g(f(x))=g(f(y))$ の保証である。これらを受け取った上で、最後に $x=y$ の保証を作ろうとしている。</span></p>
+<p><span class="step" data-step="1">途中では、$g$ の単射性に対象 $f(x),f(y)$ とその像が等しいという保証を渡し、$f(x)=f(y)$ の保証を得た。その保証を、今度は $f$ の単射性に渡して $x=y$ の保証を得た。</span></p>
+<p><span class="step" data-step="2">「これらを与えられたら、これを作る」という小さな操作に分けると、仮定を使う一行一行が関数の適用として、証明全体が関数を作る操作として見えてくる。</span></p></article>
+<article class="slide" id="02_forall-name-assumptions" data-kind="main" data-label="仮定の保証に名前を付ける" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>仮定の保証に名前を付ける</h3></div>
+<p><span class="step" data-step="0">使う仮定を指せるように、$f$ の単射性の保証を <code>hf</code>、$g$ の単射性の保証を <code>hg</code> と名付けよう。また、最初に受け取る等式 $g(f(x))=g(f(y))$ の保証を <code>h</code> と名付ける。</span></p>
+<p><span class="step" data-step="1">Lean の書き方では、例えば次のようになる。</span></p>
+<pre class="quote"><code><span class="step" data-step="2">h : g (f x) = g (f y)</span></code></pre>
+<p><span class="step" data-step="3">これは等式を表す文字列に名前を付けているのではなく、<strong>その等式を保証する証明書に <code>h</code> という名前を付けている</strong>。一般に <code>h : x = y</code> と書けば、<code>x = y</code> であるという保証を <code>h</code> と名付けたことになる。対象に名前を付ける <code>x : A</code> と同じ配置で、型の場所に命題を書いている。</span></p></article>
+<article class="slide" id="02_forall-propositions-and-proofs" data-kind="main" data-label="命題を型、証明を項として読む" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>命題を型、証明をその型の項として読む</h3></div>
+<p><span class="step" data-step="0">Lean では命題そのものを型とし、その型の項を証明として扱う。命題自体の型は <code>Prop</code> である。例えば <code>1 + 1 = 2 : Prop</code> だが、その命題を保証する項の型は <code>1 + 1 = 2</code> である。</span></p>
+<p><span class="step" data-step="1">証明に名前を付けるときも <code>def 名前 : 型 := 項</code> を使う。指定する型が証明したい命題で、右辺の項がその証明書になる。</span></p></article>
+<article class="slide" id="02_forall-injectivity-statement" data-kind="main" data-label="単射性の仮定と、示したい結論" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>単射性を、全称量化と「ならば」で書く</h3></div>
+<p><span class="step" data-step="0">「どの <code>x</code>、<code>y</code> についても」は <code>∀ x y</code> と書く。<code>∀</code> は <code>\forall</code> で入力できる。また、二つの命題の間の <code>→</code> を「ならば」と読む。$f$ の単射性を表す命題は、次のようになる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">∀ x y : A, f x = f y → x = y</span></code></pre>
+<p><span class="step" data-step="2">その証明を <code>hf</code> と名付ける。$g$ の単射性の証明は <code>hg</code> とし、それぞれの型を、数学で使った条件のまま書く。</span></p>
+<pre class="quote"><code><span class="step" data-step="3">hf : ∀ x y : A, f x = f y → x = y
+hg : ∀ u v : B, g u = g v → u = v</span></code></pre>
+<p><span class="step" data-step="4">示したい結論は、合成の単射性である。</span></p>
+<pre class="quote"><code><span class="step" data-step="5">∀ x y : A, g (f x) = g (f y) → x = y</span></code></pre></article>
+<article class="slide" id="02_forall-composition-term" data-kind="main" data-label="証明を一つの関数の項にする" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>証明を一つの関数の項にする</h3></div>
+<p><span class="step" data-step="0">結論を外側から読むと、まず <code>x : A</code> と <code>y : A</code>、次に <code>h : g (f x) = g (f y)</code> を受け取り、<code>x = y</code> の証明を返せばよい。この「受け取る」を、<code>fun x y h =&gt;</code> と書く。</span></p>
+<p><span class="step" data-step="1">では、本体をどう作るか。欲しい結論 <code>x = y</code> から考えると、 <code>hf x y</code> は <code>f x = f y</code> の証明を受け取って、その結論の証明を返してくれる。そこで、まず <code>f x = f y</code> の証明を作ればよい。</span></p>
+<p><span class="step" data-step="2">このために <code>hg</code> に渡す対象は、<code>x</code>、<code>y</code> ではなく、<code>B</code> の項である <code>f x</code>、<code>f y</code> である。 <code>hg (f x) (f y)</code> が要求する等式は、ちょうど手元の <code>h</code> が保証している。したがって <code>hg (f x) (f y) h</code> を作って <code>hf x y</code> に渡すと、本体が完成する。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> comp_injective (A B C : <span class="sort">Type</span>) (f : A → B) (g : B → C)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (hg : ∀ u v : B, g u = g v → u = v) :
+    ∀ x y : A, g (f x) = g (f y) → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) h)</span></code></pre></article>
+<article class="slide" id="02_forall-checking-expected" data-kind="main" data-label="型検査：引数と本体に要求される型" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>機械が行う型検査を追う</h3></div>
+<p><span class="step" data-step="0">右辺全体に期待される型は、結論に書いた次の型である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">(x : A) → (y : A) → (g (f x) = g (f y) → x = y)</span></code></pre>
+<p><span class="step" data-step="2">右辺が <code>fun x y h =&gt; …</code> なので、機械は <code>x : A</code>、<code>y : A</code>、 <code>h : g (f x) = g (f y)</code> を使えるものとして、本体を検査する。本体に要求される型は、最後の結論 <code>x = y</code> である。</span></p></article>
+<article class="slide" id="02_forall-checking-inner" data-kind="main" data-label="型検査：内側の適用で得られる型" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">まず、内側の <code>hg (f x) (f y)</code> の型を求める。 <code>hg</code> の二つの対象に <code>f x</code> と <code>f y</code> を代入すると、次の型になる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">hg (f x) (f y) : g (f x) = g (f y) → f x = f y</span></code></pre>
+<p><span class="step" data-step="2">この関数が要求する入力型は <code>g (f x) = g (f y)</code> であり、手元の <code>h</code> の型と一致する。したがって、<code>h</code> を渡した結果は次の型になる。</span></p>
+<pre class="quote"><code><span class="step" data-step="3">hg (f x) (f y) h : f x = f y</span></code></pre></article>
+<article class="slide" id="02_forall-checking-outer" data-kind="main" data-label="型検査：外側の適用と結論の照合" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">次に外側を見る。<code>hf</code> に <code>x</code> と <code>y</code> を渡すと、次の型になる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">hf x y : f x = f y → x = y</span></code></pre>
+<p><span class="step" data-step="2">この入力型 <code>f x = f y</code> は、いま内側で得た証明の型と一致する。よって、その証明を渡した本体全体の型が分かる。</span></p>
+<pre class="quote"><code><span class="step" data-step="3">hf x y (hg (f x) (f y) h) : x = y</span></code></pre>
+<p><span class="step" data-step="4">本体の型が、要求されていた結論の型と一致した。これで、<code>x</code>、<code>y</code>、<code>h</code> を受け取ってその本体を返す <code>fun x y h =&gt; …</code> 全体が、指定された全称量化と「ならば」の型を持つと確かめられる。</span></p>
+<p><span class="step" data-step="5">ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。「$g$ の単射性を使おう」という証明の発想をもう一度探すのではなく、 <strong>書かれた証明の各適用が型に合っているか</strong>を確かめている。</span></p></article>
+<article class="slide" id="02_forall-forall-as-function" data-kind="main" data-label="全称量化は依存関数、「ならば」は関数" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>全称量化も「ならば」も関数として扱っている</h3></div>
+<p><span class="step" data-step="0"><code>hf</code> の型は、依存関数型の記法でも書ける。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">hf : (x : A) → (y : A) → (f x = f y → x = y)</span></code></pre>
+<p><span class="step" data-step="2">最初の二つの引数は対象である。その値 <code>x</code>、<code>y</code> によって、残りの型に現れる等式も変わる。これが、全称量化の証明が依存関数であるという意味である。</span></p>
+<p><span class="step" data-step="3">対象を二つ渡した後の <code>hf x y</code> は、<code>f x = f y</code> の証明を受け取り、<code>x = y</code> の証明を返す。ここでは入力も出力も証明だが、関数を適用する規則は前の章と変わらない。</span></p>
+<p><span class="step" data-step="4"><strong>示すときは、要求される引数を <code>fun</code> で受け取る。使うときは、対象や証明を適用で渡す。</strong> 全称量化と「ならば」が重なった証明も、この二つの操作で読める。</span></p></article>
+<article class="slide" id="02_forall-monotone-exercise" data-kind="main" data-label="練習：単調写像の合成" data-section="Trial2.injective-composition" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
+<ol class="exercise" start="28" data-exercise="28"><li><span class="step" data-step="0">写像 $f:\mathbb{N}\to\mathbb{N}$ が<strong>単調</strong>であるとは、任意の $x,y$ について、$x\le y$ ならば $f(x)\le f(y)$ となることである。$f,g$ が単調なら $g\circ f$ も単調であることを、<code>comp_monotone</code> という名前で証明せよ。単調性の仮定と結論の型を書き、<code>fun</code> と仮定の適用だけで証明の項を作ること。 <code>≤</code> は <code>\le</code> で入力する。不等式はいつもの意味で読み、その定義は帰納型のところで扱う。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 28</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> comp_monotone (f g : Nat → Nat)
+    (hf : ∀ x y : Nat, x ≤ y → f x ≤ f y)
+    (hg : ∀ u v : Nat, u ≤ v → g u ≤ g v) :
+    ∀ x y : Nat, x ≤ y → g (f x) ≤ g (f y) :=
+  <span class="kw">fun</span> x y h =&gt; hg (f x) (f y) (hf x y h)</span></code></pre>
+<p><span class="step" data-step="2"><code>x</code>、<code>y</code> と <code>h : x ≤ y</code> を受け取り、<code>hf x y h : f x ≤ f y</code> を作る。これを <code>hg (f x) (f y)</code> に渡せばよい。単射の合成とは逆に、もとの不等式から像の不等式へ進む。</span></p></article>
+<article class="slide" id="02_forall-left-cancellation" data-kind="main" data-label="左キャンセルを、各点で証明する" data-section="Trial2.left-cancellation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.left-cancellation">2. 左キャンセル — 関数を引数として受け取る</h2></div>
+<p><span class="step" data-step="0">単射 $f : A \to B$ と、二つの写像 $u,v : X \to A$ を考える。任意の $t \in X$ に対して $f(u(t)) = f(v(t))$ が成り立つとする。このとき、任意の $t \in X$ に対して $u(t)=v(t)$ が成り立つ。これを、$f$ を左から合成した式の <strong>左キャンセル</strong> と呼ぼう。</span></p>
+<div class="step" data-step="1"><h3>各点で単射性を使う</h3></div>
+<p><span class="step" data-step="1"><strong>証明。</strong> $t\in X$ を任意に取る。仮定から $f(u(t))=f(v(t))$ であり、$f$ は単射だから $u(t)=v(t)$ となる。∎</span></p>
+<p><span class="step" data-step="2">仮定と結論はどちらも「すべての $t$ について」という形である。対象 <code>t</code> を受け取り、その点での等式の保証に単射性を適用すればよい。</span></p></article>
+<article class="slide" id="02_forall-pointwise-cancellation" data-kind="main" data-label="対象 t と、その点での保証を渡す" data-section="Trial2.left-cancellation" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> cancel_pointwise (X A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (u v : X → A) (h : ∀ t : X, f (u t) = f (v t)) :
+    ∀ t : X, u t = v t :=
+  <span class="kw">fun</span> t =&gt; hf (u t) (v t) (h t)</span></code></pre>
+<p><span class="step" data-step="1"><code>h t</code> は、対象 <code>t</code> に対する等式 <code>f (u t) = f (v t)</code> の証明である。これを <code>hf (u t) (v t)</code> に渡して、<code>u t = v t</code> の証明を得る。関数 <code>u</code> と <code>v</code> も引数になったが、証明の操作は先ほどと同じ適用である。</span></p></article>
+<article class="slide" id="02_forall-eq" data-kind="main" data-label="Eq：等式という命題を作る" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.rfl">3. Eq と rfl — 等式の保証を作る</h2></div>
+<p><span class="step" data-step="0">ここまでは、仮定された等式の保証を使ってきた。左逆の証明へ進む前に、等式そのものと、その基本の証明をもう少し見ておこう。</span></p>
+<div class="step" data-step="1"><h3>等式を表す Eq</h3></div>
+<p><span class="step" data-step="1"><code>a = b</code> は <code>Eq a b</code> という項の記法である。例えば自然数については、<code>Eq</code> は二つの自然数を受け取って命題を返す関数として使える。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> (Eq : Nat → Nat → <span class="sort">Prop</span>)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">Eq : Nat → Nat → Prop</span></code></pre>
+<p><span class="step" data-step="4"><code>Eq 2 2</code> は <code>2 = 2</code> という命題、<code>Eq 2 3</code> は <code>2 = 3</code> という命題である。同じ型の項どうしの等式を扱うので、<code>Eq</code> はその共通の型も暗黙引数として受け取る。上の注釈では、それが <code>Nat</code> と決まっている。</span></p>
+<p><span class="step" data-step="5">命題 <code>Eq a b</code> 自体と、その保証を区別しよう。 <code>h : Eq a b</code>、つまり <code>h : a = b</code> と書いたとき、<code>h</code> が等式の証明である。</span></p></article>
+<article class="slide" id="02_forall-eq-refl" data-kind="main" data-label="Eq.refl：自分自身との等式の保証" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自分自身との等式を保証する Eq.refl</h3></div>
+<p><span class="step" data-step="0">等式の基本の証明を作るのが <code>Eq.refl</code> である。項 <code>a</code> を渡すと、<code>a = a</code> の証明を返す。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Eq.refl 2</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Eq.refl 2 : 2 = 2</span></code></pre>
+<p><span class="step" data-step="3"><code>Eq.refl</code> は等式の証明を作るコンストラクターである。その定義を帰納型として読む方法は後で学ぶが、今は、対象を渡せばその対象自身との等式の証明が得られる、と読めばよい。</span></p></article>
+<article class="slide" id="02_forall-rfl-implicit" data-kind="main" data-label="rfl は Eq.refl の対象を暗黙引数にしたもの" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>rfl は、対象を暗黙引数にしたもの</h3></div>
+<p><span class="step" data-step="0"><code>Eq.refl a</code> は対象 <code>a</code> を明示して <code>a = a</code> の証明を作る。 <code>rfl</code> は、この対象を暗黙引数にしたものである。Lean では、次のように <code>def</code> で定義されている。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">def rfl {α : Sort u} {a : α} : a = a := Eq.refl a</span></code></pre>
+<p><span class="step" data-step="2"><code>Sort u</code> は型 <code>α</code> の範囲を一般的に扱うための指定である。ここで注目したいのは <code>{a : α}</code>。対象 <code>a</code> は、証明を置く場所で期待される型から補われる。 <code>rfl</code> 自体も普通の項であり、第1章で学んだ暗黙引数の実例になっている。</span></p></article>
+<article class="slide" id="02_forall-rfl" data-kind="main" data-label="計算で一致する等式を rfl で示す" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>計算して一致するときは rfl</h3></div>
+<p><span class="step" data-step="0"><code>rfl</code> を使うと、期待される等式の型に合わせて対象が補われる。両辺が定義から計算して一致するときに使える。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> one_add_one : 1 + 1 = 2 := rfl
+
+<span class="kw">#check</span> one_add_one</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">one_add_one : 1 + 1 = 2</span></code></pre>
+<p><span class="step" data-step="3">左辺 <code>1 + 1</code> は計算すると <code>2</code> になる。そのため、例えば <code>Eq.refl 2 : 2 = 2</code> も、ここで要求された型 <code>1 + 1 = 2</code> の項として使える。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> one_add_one_explicit : 1 + 1 = 2 := Eq.refl 2</span></code></pre>
+<p><span class="step" data-step="5">計算して一致するかどうかは、<code>Eq.refl</code> を直接使った場合にも、型の照合で調べられる。 <code>rfl</code> だけに特別な計算能力があるわけではない。違いは、対象を明示するか、暗黙に補ってもらうかである。</span></p></article>
+<article class="slide" id="02_forall-forall-rfl" data-kind="main" data-label="対象を受け取り、その対象の等式を返す" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>対象ごとの等式を保証する</h3></div>
+<p><span class="step" data-step="0">対象を受け取って、その対象自身との等式の証明を返すこともできる。 <code>n</code> を受け取るたびに、返す証明の型が <code>n = n</code> に決まる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> all_refl : ∀ n : Nat, n = n :=
+  <span class="kw">fun</span> n =&gt; (rfl : n = n)
+
+<span class="kw">#check</span> all_refl 7</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">all_refl 7 : 7 = 7</span></code></pre>
+<p><span class="step" data-step="3">これも全称量化の証明を依存関数として作り、対象を渡して使う例である。次は、このような等式の保証を逆向きに使ったり、二つつないだりする道具を使おう。</span></p></article>
+<article class="slide" id="02_forall-equality-diagonal" data-kind="main" data-label="反射性を満たす関係と対角集合" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>なぜ等式の性質を証明できるのか</h3></div>
+<p><span class="step" data-step="0">等式には対称性や推移性も必要なはずだが、ここまで出てきたコンストラクターは、反射性 <code>a = a</code> を保証する <code>Eq.refl</code> だけである。ここから他の性質を証明できるのは、<code>Eq</code> を<strong>帰納型</strong>として定義しているからである。詳しい仕組みは次の章で学ぶが、まず集合の言葉でイメージをつかもう。</span></p>
+<p><span class="step" data-step="1">集合 $X$ 上の二項関係を $R\subseteq X\times X$ として考える。反射性を満たすには、すべての $x\in X$ について $(x,x)\in R$ でなければならない。したがって、どの反射的な関係も<strong>対角集合</strong>を含む。</span></p>
+<p><span class="step" data-step="2">$$\Delta_X=\{(x,x)\mid x\in X\}$$</span></p></article>
+<article class="slide" id="02_forall-equality-minimality" data-kind="main" data-label="最小性から等号の性質を読む" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">対角集合自身も反射的だから、<strong>反射性を満たす二項関係のうち最小のものは $\Delta_X$</strong> である。これは「同じ要素どうしだけを関係づける」という等号の関係であり、対称性と推移性も満たす。反射性だけを仮定した任意の関係に、対称性や推移性があると言っているわけではない。余分な組を入れない、という最小性が効いている。</span></p>
+<p><span class="step" data-step="1">関数 $f:X\to Y$ についても、対角上の組 $(x,x)$ は $(f(x),f(x))$ に移り、これは $\Delta_Y$ に属する。したがって、この関係は同じ関数を両辺に適用しても保たれる。後で使う <code>congrArg</code> は、この性質の証明である。</span></p></article>
+<article class="slide" id="02_forall-equality-induction" data-kind="main" data-label="帰納型が等式の証明に与える原理" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>帰納型による定義が与えるもの</h3></div>
+<p><span class="step" data-step="0">上の最小性は、集合の言葉によるイメージである。 Lean では、<code>Eq</code> を帰納型として定義すると、<code>Eq.refl</code> で作る場合を調べることで、任意の等式の証明についての主張を示す原理が得られる。この原理が、余分な場合を持たないという最小性に対応する役割を果たす。</span></p>
+<p><span class="step" data-step="1">例えば対称性を示すとき、<code>a = b</code> の証明が <code>Eq.refl a</code> である場合を考えればよい。この場合には <code>b</code> も <code>a</code> なので、逆向きの等式の証明も <code>Eq.refl a</code> で作れる。このように、反射性の証明と帰納型の原理を使って、対称性・推移性・関数への適用の性質を証明できる。その証明の書き方は後で扱い、ここでは得られた三つの道具の型と使い方を見よう。</span></p></article>
+<article class="slide" id="02_forall-eq-symm" data-kind="main" data-label="Eq.symm：等号を逆向きに使う" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Eq.symm — 等式の向きを逆にする</h3></div>
+<p><span class="step" data-step="0"><code>h : a = b</code> があるとき、<code>Eq.symm h</code> は <code>b = a</code> の証明になる。等式の証明を受け取り、逆向きの等式の証明を返す関数である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">h : a = b
+Eq.symm h : b = a</span></code></pre>
+<p><span class="step" data-step="2">対象 <code>a</code> と <code>b</code> は暗黙引数であり、渡した <code>h</code> の型から補われる。ここでも、第1章で見た暗黙引数の仕組みが使われている。</span></p></article>
+<article class="slide" id="02_forall-eq-trans" data-kind="main" data-label="Eq.trans：二つの等号をつなぐ" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Eq.trans — 二つの等式をつなぐ</h3></div>
+<p><span class="step" data-step="0"><code>h₁ : a = b</code> と <code>h₂ : b = c</code> があるとき、<code>Eq.trans h₁ h₂</code> は <code>a = c</code> の証明になる。一つ目の右辺と二つ目の左辺が一致することが、二つの証明を渡すための条件である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">h₁ : a = b
+h₂ : b = c
+Eq.trans h₁ h₂ : a = c</span></code></pre>
+<p><span class="step" data-step="2">数学で等号を並べて $a=b=c$ と書く操作を、二つの保証から一つの保証を作る関数として表している。三つ以上の等式をつなぐときも、<code>Eq.trans</code> の適用を重ねればよい。</span></p></article>
+<article class="slide" id="02_forall-congr-arg" data-kind="main" data-label="congrArg：両辺に同じ関数を適用する" data-section="Trial2.rfl" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>congrArg — 両辺に同じ関数を適用する</h3></div>
+<p><span class="step" data-step="0"><code>f : A → B</code> と <code>h : a = b</code> があるとき、<code>congrArg f h</code> は <code>f a = f b</code> の証明になる。関数 <code>f</code> と等式の証明 <code>h</code> を受け取り、像どうしの等式の証明を返す。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">f : A → B
+h : a = b
+congrArg f h : f a = f b</span></code></pre>
+<p><span class="step" data-step="2">両辺に同じ関数を適用する、という数学の操作に対応している。この三つの道具は、新しい公理を付け加えたものではなく、<code>Eq</code> の帰納型としての仕組みから証明できるものである。次の左逆の例では、これらを組み合わせて証明を作る。</span></p></article>
+<article class="slide" id="02_forall-left-inverse" data-kind="main" data-label="左逆から単射性へ：数学の証明" data-section="Trial2.left-inverse" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.left-inverse">4. 左逆を持つ写像は単射</h2></div>
+<p><span class="step" data-step="0">写像 $f : A\to B$ に対し、$g : B\to A$ が $g\circ f=\mathrm{id}_A$ を満たすとき、$g$ を $f$ の <strong>左逆</strong>という。この条件を各点で書くと、どの $x\in A$ に対しても $g(f(x))=x$ となる。左逆を持つ $f$ は単射であることを示そう。</span></p>
+<div class="step" data-step="1"><h3>まず数学の証明を書く</h3></div>
+<p><span class="step" data-step="1"><strong>証明。</strong> $x,y\in A$ を任意に取り、$f(x)=f(y)$ と仮定する。両辺に $g$ を適用すると、$g(f(x))=g(f(y))$ となる。$g$ が左逆であることから $g(f(x))=x$、$g(f(y))=y$ なので、</span></p>
+<p><span class="step" data-step="2">$$x=g(f(x))=g(f(y))=y$$</span></p>
+<p><span class="step" data-step="3">を得る。したがって $x=y$ であり、$f$ は単射である。∎</span></p></article>
+<article class="slide" id="02_forall-equality-tools" data-kind="main" data-label="三つの道具を左逆の証明に当てはめる" data-section="Trial2.left-inverse" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>先ほどの三つの道具を、この証明に当てはめる</h3></div>
+<p><span class="step" data-step="0">受け取る保証を <code>hgf : ∀ x : A, g (f x) = x</code> と <code>h : f x = f y</code> と名付ける。数学の等号の列に必要なのは、次の三つの証明である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">Eq.symm (hgf x) : x = g (f x)
+congrArg g h : g (f x) = g (f y)
+hgf y : g (f y) = y</span></code></pre>
+<p><span class="step" data-step="2">左逆の保証を逆向きにし、像が等しいという保証の両辺に <code>g</code> を適用し、もう一度左逆の保証を使った。これらを <code>Eq.trans</code> でつなげば、要求された <code>x = y</code> の証明が得られる。</span></p></article>
+<article class="slide" id="02_forall-left-inverse-term" data-kind="main" data-label="左逆の条件を使って証明の項を作る" data-section="Trial2.left-inverse" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>道具を適用して、証明の項を作る</h3></div>
+<p><span class="step" data-step="0"><code>Eq.trans</code> を二回使う。まず後ろの二つの等式をつなぎ、その結果を最初の等式とつなぐ。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> injective_of_left_inverse (A B : <span class="sort">Type</span>)
+    (f : A → B) (g : B → A)
+    (hgf : ∀ x : A, g (f x) = x) :
+    ∀ x y : A, f x = f y → x = y :=
+  <span class="kw">fun</span> x y h =&gt;
+    Eq.trans (Eq.symm (hgf x))
+      (Eq.trans (congrArg g h) (hgf y))</span></code></pre>
+<p><span class="step" data-step="2">内側の <code>Eq.trans</code> が <code>g (f x) = y</code> を作り、外側の <code>Eq.trans</code> が <code>x = g (f x)</code> とそれをつないで <code>x = y</code> を作る。数学の三つの等号に対応する証明を組み合わせて、要求された型の項を得ている。</span></p>
+<p><span class="step" data-step="3">左逆の条件そのものをこの場で証明したわけではない。その条件の証明を引数 <code>hgf</code> として受け取り、単射性の証明を返す関数を作ったのである。</span></p></article>
+<article class="slide" id="02_forall-checking" data-kind="main" data-label="証明を考える順序と、型を追う順序" data-section="Trial2.checking" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.checking">5. 型を追うことが、証明を確かめることになる</h2></div>
+<p><span class="step" data-step="0">単射の合成の証明では、<code>hg</code> に何を渡せばよいか、得られた証明を <code>hf</code> に渡せるかを確かめた。左逆の例では、等式をつなぐ位置が合うかを確かめた。どの場合も、部分項の型を調べ、関数の入力型と照合している。</span></p>
+<div class="step" data-step="1"><h3>証明を考える順序と、出来上がった項を読む順序</h3></div>
+<p><span class="step" data-step="1">証明を考えるときは、まず結論から必要な入力と出力を見る。単射性なら二つの対象と像の等式を受け取り、対象どうしの等式を返す必要がある。その出力を作れる仮定や道具を探し、必要な証明を組み合わせる。</span></p>
+<p><span class="step" data-step="2">出来上がった項を読むときは、内側の適用から型を追える。単射の合成なら、<code>hg (f x) (f y) h : f x = f y</code>、次に <code>hf x y (hg (f x) (f y) h) : x = y</code> である。この照合を機械的に実行するのが、Lean の型検査である。</span></p></article>
+<article class="slide" id="02_forall-missing-step" data-kind="main" data-label="証明の一段を飛ばすと型が合わない" data-section="Trial2.checking" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>一段を飛ばすと型が合わない</h3></div>
+<p><span class="step" data-step="0">もし証明の本体を <code>hf x y h</code> としてしまうと、受理されない。 <code>hf x y</code> が要求するのは <code>f x = f y</code> の証明だが、<code>h</code> は <code>g (f x) = g (f y)</code> の証明だからである。「$g$ の単射性を使う」という一段が、型の違いとして見える。</span></p></article>
+<article class="slide" id="02_forall-checking-statement" data-kind="main" data-label="検査している命題と公理を確認する" data-section="Trial2.checking" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>検査している主張を読む</h3></div>
+<p><span class="step" data-step="0">型検査が確かめるのは、<strong>書かれた項が、書かれた命題の証明になっているか</strong>である。その命題が意図した数学の主張を表しているかは、別に読む必要がある。今回なら、結論の式が本当に合成の単射性を表しているかを確認する。</span></p>
+<p><span class="step" data-step="1">また、<code>sorry</code> で証明を保留していないこと、どの公理を使ったかも確かめる。例えば、最初の証明について調べると、次のようになる。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#print</span> axioms comp_injective</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">&#x27;comp_injective&#x27; does not depend on any axioms</span></code></pre></article>
+<article class="slide" id="02_forall-next-chapter" data-kind="main" data-label="省略を補う処理と証明の検査" data-section="Trial2.checking" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">ソースの省略などを補う処理を <strong>エラボレーション</strong>、完成した項の型を検査する中核を <strong>カーネル</strong>という。省略を補ってもらった後も、指定された命題の型を持つかが検査される。</span></p>
+<p><span class="step" data-step="1">次の章では帰納型を学び、コンストラクターで項を作り、場合分けで使う方法を増やす。その後、それらを命題に当てはめて、「かつ」「または」「存在」などの証明を読む。</span></p>
+<p><span class="step" data-step="2">以下は比較用に残す旧版の節である。古い例への言及と記述はそのままにし、 <code>#print axioms modus_ponens</code> とその出力も、旧版での実行例として引用する。</span></p></article>
+<article class="slide" id="02_forall-checking-original" data-kind="main" data-label="旧版：型検査が証明の検査になる" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.checking-original">6. 型検査が証明の検査になる（旧版・比較用）</h2></div>
+<p><span class="step" data-step="0">含意と全称、単射の合成で行った型の照合から、この章の中心の主張を確かめよう。</span></p>
+<p><span class="step" data-step="1">証明は項なのだから、「証明が正しいか」は「項が主張どおりの型を持つか」という <strong>型検査</strong>の問題になる。型検査は機械的な計算であり、Lean はすべての宣言に対してそれを実行している。だから、ファイルがエラーなしに受理された時点で、そこに書かれた全定理の検査は済んでいる。</span></p></article>
+<article class="slide" id="02_forall-original-axioms" data-kind="main" data-label="旧版：公理と sorry の監査" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この主張には但し書きが3つある。第一は、この検査が<strong>宣言済みの公理に相対的</strong>であること。 <code>axiom bad : 0 = 1</code> のような宣言もエラーなく受理できてしまうので、「何を公理として使ったか」は <code>#print axioms</code> で別に監査する必要がある。第二は、証明を保留する印 <code>sorry</code> がエラーではなく<strong>警告</strong>になること（依存すると <code>#print axioms</code> に <code>sorryAx</code> が現れる）。だから正確には、「エラーがなく、<code>sorry</code> の警告もなく、<code>#print axioms</code> の結果が納得できる公理だけ」を見る。<code>06_Topology.lean</code> の末尾で、主定理に対してこの監査を実行する。第三は、この監査の例を見たあとで述べる。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">#print axioms modus_ponens
+
+&#x27;modus_ponens&#x27; does not depend on any axioms</span></code></pre>
+<p><span class="step" data-step="2">この証明は追加の公理に依存していない。</span></p></article>
+<article class="slide" id="02_forall-original-interpretation" data-kind="main" data-label="旧版：意図した主張を検査しているか" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>その検査は、形式化したかったものの検査か</h3></div>
+<p><span class="step" data-step="0">第三の但し書きは、公理や <code>sorry</code> の監査を済ませても残る。型検査が確かめるのは「項が主張どおりの型を持つ」ことだけで、 <strong>その型が、本当に確かめたかった主張であるか</strong>は型検査の外側にある。問題は3点に分けられる。</span></p>
+<ol><li data-step="1" class="step">形式化の問題。「単射どうしの合成は単射」という気持ちを <code>∀ x y, g (f x) = g (f y) → x = y</code> と書いたとき、式が気持ちを正しく写しているかは、書いた人が判断するほかない。</li><li data-step="1" class="step">実装の問題。エラボレータやカーネルにバグがあれば、誤った項を受理しうる。カーネルを小さく保ち、独立した検査器で再検査する対策はあるが、ゼロにはならない。</li><li data-step="1" class="step">理論の解釈の問題。<code>P → Q</code> をなぜ「<code>P</code> ならば <code>Q</code>」と読んでよいのか、型をなぜ集合のように扱ってよいのか。型検査を通った項が一貫した意味を持つ、という仮定がここにある。この仮定が正しければ、矛盾が導けないことも従う。</li></ol></article>
+<article class="slide" id="02_forall-original-model" data-kind="main" data-label="旧版：理論の解釈について" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">第3点について、Lean の理論（帰納型・宇宙の階層・<code>Prop</code>・後で見る公理を含む）を ZFC に相対的に解釈するモデルは知られている。ただしそのためには、ZFC に到達不能基数を（宇宙の階層の段ごとに1つずつ、可算無限個）加える必要があり、これは ZFC より真に強い仮定である。この教材では以後、これらを認めたうえで「エラーなしに受理された」ことを検査済みと呼ぶ。</span></p></article>
+<article class="slide" id="02_forall-original-mismatch" data-kind="main" data-label="旧版：仮定の取り違えと型の不一致" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>仮定を取り違えると、型が合わなくなる</h3></div>
+<p><span class="step" data-step="0">含意の推移で、本来 <code>hPQ hP</code> を渡すべきところに <code>hP</code> を直接渡すとどうなるか。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">theorem bad_trans (P Q R : Prop) (hPQ : P → Q) (hQR : Q → R) : P → R :=
+  fun hP =&gt; hQR hP</span></code></pre>
+<p><span class="step" data-step="2"><code>hQR</code> が要求するのは Q の証明だが、渡した <code>hP</code> は P の証明である。 Lean はこの適用を型の不一致として拒否する。紙の証明で「Q である」という一段を飛ばしたことが、そのまま引数の型の不一致になる。</span></p></article>
+<article class="slide" id="02_forall-original-elaboration" data-kind="main" data-label="旧版：エラボレータとカーネル" data-section="Trial2.checking-original" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>省略を補う処理と、完成した項の検査</h3></div>
+<p><span class="step" data-step="0">ソースの記法を展開し、暗黙引数などを補うのが<strong>エラボレータ</strong>である。その後、完成した項が宣言どおりの型を持つかを<strong>カーネル</strong>が検査する。補完の仕組みが賢いことと、出来上がった項が正しいことは、別に確かめられる。詳しい例は <a target="_blank" rel="noopener" href="../../../../docs/04_exists.html#sec-CH2.checking-details"><code>04_Exists.lean</code> の8節</a>で読む。</span></p>
+<p><span class="step" data-step="1">ここまでで、仮定や対象を受け取り、適用で進む証明を読めた。次は <code>03_InductiveTypes.lean</code> で構成子と場合分けを学ぶ。<code>04_Exists.lean</code> では、それを使って存在を含む証明を読み、全射の合成へ進む。</span></p></article>
+<article class="slide" id="02_forall-end-practice" data-kind="main" data-label="章末問題：命題の型" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial2.practice">7. 章末問題</h2></div>
+<p><span class="step" data-step="0">四つの題材と <code>rfl</code> を使って、型と証明を確かめよう。</span></p>
+<div class="step" data-step="1"><h3>✏ 練習 — 命題の型と rfl</h3></div>
+<ol class="exercise" start="29" data-exercise="29"><li><span class="step" data-step="1"><code>#check 3 = 5</code> と <code>#check 5 = 5</code> の表示を予想せよ。 <code>#check</code> の結果から、命題が真かどうかを判断できるか。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="2">解答 29</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> 3 = 5</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">3 = 5 : Prop</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#check</span> 5 = 5</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">5 = 5 : Prop</span></code></pre>
+<p><span class="step" data-step="6">どちらも命題なので型は <code>Prop</code>。<code>#check</code> は、命題を表す項の型を調べている。真偽や証明の有無を調べているわけではない。</span></p></article>
+<article class="slide" id="02_forall-rfl-exercise" data-kind="main" data-label="練習：2 + 3 = 5" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="30" data-exercise="30"><li><span class="step" data-step="0"><code>def two_add_three : 2 + 3 = 5 := …</code> の右辺を <code>rfl</code> で埋めよ。 <code>rfl</code> が使える理由を説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 30</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> two_add_three : 2 + 3 = 5 := rfl</span></code></pre>
+<p><span class="step" data-step="2">左辺を計算すると <code>5</code> になり、右辺と一致するので <code>rfl</code> が使える。</span></p></article>
+<article class="slide" id="02_forall-rfl-error" data-kind="main" data-label="練習：rfl が使えない場合" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="31" data-exercise="31"><li><span class="step" data-step="0"><code>def oops : 2 + 2 = 5 := rfl</code> は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 31</span></p>
+<p><span class="step" data-step="1">受理されない。<code>2 + 2</code> を計算した <code>4</code> と、右辺の <code>5</code> が一致しない。エラーには次の説明が現れる。</span></p>
+<pre class="quote"><code><span class="step" data-step="2">error: Not a definitional equality: the left-hand side
+  2 + 2
+is not definitionally equal to the right-hand side
+  5</span></code></pre>
+<p><span class="step" data-step="3">一般に、<code>rfl</code> が使えないだけで命題が偽だとは判断できない。ここで失敗したのは、計算して両辺を一致させるという確かめ方である。</span></p></article>
+<article class="slide" id="02_forall-forall-application" data-kind="main" data-label="練習：全称命題への適用" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="32" data-exercise="32"><li><span class="step" data-step="0"><code>all_refl 12</code> の型を予想せよ。さらに <code>fun n : Nat =&gt; all_refl (n + 1)</code> の型を答えよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 32</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> all_refl 12</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">all_refl 12 : 12 = 12</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#check</span> <span class="kw">fun</span> n : Nat =&gt; all_refl (n + 1)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">fun n ↦ all_refl (n + 1) : ∀ (n : Nat), n + 1 = n + 1</span></code></pre>
+<p><span class="step" data-step="5"><code>all_refl</code> に <code>n + 1</code> を渡すので、返される証明の型にも <code>n + 1</code> が入る。全体は <code>n</code> を受け取って、その等式の証明を返す依存関数である。</span></p></article>
+<article class="slide" id="02_forall-three-injections" data-kind="main" data-label="練習：三つの単射の合成" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習 — 単射と左キャンセル</h3></div>
+<ol class="exercise" start="33" data-exercise="33"><li><span class="step" data-step="0">三つの単射 $f : A\to B$、$g : B\to C$、$k : C\to D$ の合成が単射であることを示せ。それぞれの単射性を <code>∀ x y, f x = f y → x = y</code> の形で仮定し、 <code>∀ x y, k (g (f x)) = k (g (f y)) → x = y</code> の証明を書け。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 33</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> three_comp_injective (A B C D : <span class="sort">Type</span>)
+    (f : A → B) (g : B → C) (k : C → D)
+    (hf : ∀ x y, f x = f y → x = y)
+    (hg : ∀ x y, g x = g y → x = y)
+    (hk : ∀ x y, k x = k y → x = y) :
+    ∀ x y, k (g (f x)) = k (g (f y)) → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hf x y (hg (f x) (f y) (hk (g (f x)) (g (f y)) h))</span></code></pre>
+<p><span class="step" data-step="2">最初に <code>hk</code> で <code>g (f x) = g (f y)</code>、次に <code>hg</code> で <code>f x = f y</code>、最後に <code>hf</code> で <code>x = y</code> を得る。外側の写像の単射性から順に使う。</span></p></article>
+<article class="slide" id="02_forall-pointwise-exercise" data-kind="main" data-label="練習：点ごとの左キャンセル" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="34" data-exercise="34"><li><span class="step" data-step="0">単射 $f : A\to B$ と $u,v : X\to A$、 <code>h : ∀ t : X, f (u t) = f (v t)</code> を受け取ったとする。 <code>∀ t : X, u t = v t</code> の証明を書け。 <code>h</code> 全体を単射性に渡すのではなく、どの項を渡せばよいか説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 34</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> cancel_pointwise_again (X A B : <span class="sort">Type</span>)
+    (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (u v : X → A) (h : ∀ t : X, f (u t) = f (v t)) :
+    ∀ t : X, u t = v t :=
+  <span class="kw">fun</span> t =&gt; hf (u t) (v t) (h t)</span></code></pre>
+<p><span class="step" data-step="2"><code>h</code> は全称命題の証明なので、まず対象 <code>t</code> を渡す。得られた <code>h t : f (u t) = f (v t)</code> が、<code>hf (u t) (v t)</code> の要求する入力である。各点で <code>u t = v t</code> の証明を作り、<code>fun t =&gt; …</code> で全体の証明にする。</span></p></article>
+<article class="slide" id="02_forall-cancellation-map-exercise" data-kind="main" data-label="章末問題：左合成の写像をLeanで形式化する" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="35" data-exercise="35"><li><span class="step" data-step="0">（発展）単射 $f:A\to B$ に対して、写像$L_f:\mathrm{Map}(X,A)\to\mathrm{Map}(X,B)$ を $L_f(u)=f\circ u$ と定めると、$L_f$ も単射である。この事実を Lean で形式化せよ。まず <code>X A B : Type</code> と <code>f : A → B</code> を引数に取り、$L_f$ を <code>leftCompose</code> という名前で定義せよ。次に <code>hf : ∀ x y : A, f x = f y → x = y</code> を仮定し、 <code>leftCompose X A B f</code> の単射性の証明を <code>leftCompose_injective</code> として書け。</span></li></ol>
+<p><span class="step" data-step="1"><strong>ヒント1 — 写像を定義する。</strong> <code>Map X A</code> は <code>X → A</code> のことだった。 <code>leftCompose X A B f</code> の型は <code>Map (Map X A) (Map X B)</code> である。関数 <code>u</code> を受け取り、さらに対象 <code>t</code> を受け取って <code>f (u t)</code> を返す項を書こう。</span></p>
+<p><span class="step" data-step="2"><strong>ヒント2 — 等式を各点で使う。</strong> <code>u</code>、<code>v</code> と、その像が等しいという証明 <code>h</code> を受け取る。関数を対象 <code>t</code> で評価する写像 <code>fun w : Map X B =&gt; w t</code> を <code>congrArg</code> に渡すと、 <code>h</code> から <code>f (u t) = f (v t)</code> の証明を得られる。それを <code>hf</code> に渡そう。</span></p>
+<p><span class="step" data-step="3"><strong>ヒント3 — 関数どうしの等式に戻す。</strong> 各点での等式の証明 <code>k : ∀ t : X, u t = v t</code> から、<code>funext k : u = v</code> が得られる。これを<strong>関数外延性</strong>という。<code>fun t =&gt; …</code> で各点の証明をまとめ、<code>funext</code> に渡そう。</span></p></article>
+<article class="slide" id="02_forall-cancellation-map-solution" data-kind="main" data-label="解答：左合成の定義と単射性" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 35</span></p>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> leftCompose (X A B : <span class="sort">Type</span>) (f : A → B) :
+    Map (Map X A) (Map X B) :=
+  <span class="kw">fun</span> u =&gt; <span class="kw">fun</span> t =&gt; f (u t)</span></code></pre>
+<p><span class="step" data-step="1">この写像の単射性を証明する。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> leftCompose_injective (X A B : <span class="sort">Type</span>) (f : A → B)
+    (hf : ∀ x y : A, f x = f y → x = y) :
+    ∀ u v : Map X A,
+      leftCompose X A B f u = leftCompose X A B f v →
+      u = v :=
+  <span class="kw">fun</span> u v h =&gt;
+    funext (<span class="kw">fun</span> t =&gt;
+      hf (u t) (v t) (congrArg (<span class="kw">fun</span> w : Map X B =&gt; w t) h))</span></code></pre>
+<p><span class="step" data-step="3"><code>congrArg</code> で得た証明の型は、定義を展開すると <code>f (u t) = f (v t)</code> となる。 <code>hf</code> で <code>u t = v t</code> を得て、各点の証明を <code>funext</code> に渡すと <code>u = v</code> が得られる。</span></p></article>
+<article class="slide" id="02_forall-cancel-converse" data-kind="main" data-label="練習：左キャンセルから単射性へ" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="36" data-exercise="36"><li><span class="step" data-step="0">$f : \mathbb{N}\to\mathbb{N}$ について、任意の $u,v : \mathbb{N}\to\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。$u,v$ に定数関数を使うとよい。</span></li></ol>
+<pre class="quote"><code><span class="step" data-step="1">   hcancel : ∀ u v : Nat → Nat,
+     (∀ t : Nat, f (u t) = f (v t)) → ∀ t : Nat, u t = v t</span></code></pre>
+<p class="answer-heading"><span class="step" data-step="2">解答 36</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> injective_of_pointwise_cancel (f : Nat → Nat)
+    (hcancel : ∀ u v : Nat → Nat,
+      (∀ t : Nat, f (u t) = f (v t)) → ∀ t : Nat, u t = v t) :
+    ∀ x y : Nat, f x = f y → x = y :=
+  <span class="kw">fun</span> x y h =&gt; hcancel (<span class="kw">fun</span> _ =&gt; x) (<span class="kw">fun</span> _ =&gt; y) (<span class="kw">fun</span> _ =&gt; h) 0</span></code></pre>
+<p><span class="step" data-step="3">定数関数 <code>fun _ =&gt; x</code> と <code>fun _ =&gt; y</code> を渡す。それらに <code>f</code> を合成した結果が各点で等しいことは、どの点でも <code>h</code> を返して示せる。 <code>hcancel</code> の結論に対象 <code>0</code> を渡せば、<code>x = y</code> が得られる。ここでは、前提の証明を返す関数自体も、引数として渡している。</span></p></article>
+<article class="slide" id="02_forall-three-monotone" data-kind="main" data-label="練習：三つの単調写像の合成" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習 — 単調性と左逆</h3></div>
+<ol class="exercise" start="37" data-exercise="37"><li><span class="step" data-step="0">三つの単調写像 $f,g,k : \mathbb{N}\to\mathbb{N}$ の合成が単調であることを示せ。本文と同じ形で三つの単調性を仮定し、<code>fun</code> と適用だけで証明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 37</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> three_comp_monotone (f g k : Nat → Nat)
+    (hf : ∀ x y, x ≤ y → f x ≤ f y)
+    (hg : ∀ x y, x ≤ y → g x ≤ g y)
+    (hk : ∀ x y, x ≤ y → k x ≤ k y) :
+    ∀ x y, x ≤ y → k (g (f x)) ≤ k (g (f y)) :=
+  <span class="kw">fun</span> x y h =&gt; hk (g (f x)) (g (f y)) (hg (f x) (f y) (hf x y h))</span></code></pre>
+<p><span class="step" data-step="2"><code>hf</code>、<code>hg</code>、<code>hk</code> の順に、内側の写像から単調性を使う。それぞれの結果の不等式が、次の単調性の仮定になる。</span></p></article>
+<article class="slide" id="02_forall-equalities-exercise" data-kind="main" data-label="練習：三つの等号の型" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="38" data-exercise="38"><li><span class="step" data-step="0">左逆の証明で使った <code>hgf : ∀ x : A, g (f x) = x</code> と <code>h : f x = f y</code> があるとする。 <code>Eq.symm (hgf x)</code>、<code>congrArg g h</code>、<code>hgf y</code> の型を答え、それぞれが $x=g(f(x))=g(f(y))=y$ のどの等号に対応するか説明せよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 38</span></p>
+<p><span class="step" data-step="1">三つの型は次のとおり。</span></p>
+<pre class="quote"><code><span class="step" data-step="2">Eq.symm (hgf x) : x = g (f x)
+congrArg g h : g (f x) = g (f y)
+hgf y : g (f y) = y</span></code></pre>
+<p><span class="step" data-step="3">並べると、数学の証明の三つの等号になる。 <code>Eq.trans</code> に渡すときには、一つ目の右辺と二つ目の左辺が一致している。</span></p></article>
+<article class="slide" id="02_forall-right-to-left" data-kind="main" data-label="練習：単射の右逆は左逆" data-section="Trial2.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="39" data-exercise="39"><li><span class="step" data-step="0">$f : A\to B$ が単射で、$g : B\to A$ が $f(g(y))=y$ をすべての $y\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\in A$ で成り立つことを示せ。$f$ の単射性を、どの二つの対象に適用すればよいか考えること。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 39</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> left_inverse_of_right_inverse (A B : <span class="sort">Type</span>) (f : A → B) (g : B → A)
+    (hf : ∀ x y : A, f x = f y → x = y)
+    (hfg : ∀ y : B, f (g y) = y) :
+    ∀ x : A, g (f x) = x :=
+  <span class="kw">fun</span> x =&gt; hf (g (f x)) x (hfg (f x))</span></code></pre>
+<p><span class="step" data-step="2">比べたい二つの対象は <code>g (f x)</code> と <code>x</code> である。それらに <code>f</code> を適用した結果の等式 <code>f (g (f x)) = f x</code> は、<code>hfg (f x)</code> が与える。この証明を単射性に渡せばよい。等号の書き換えをせず、二つの仮定の適用で証明できる。</span></p></article>
+    </main>
+  </div>
+  <footer class="navigation">
+    <div class="position"><span id="counter"></span><span id="step-count"></span></div>
+    <div class="hint" id="hint">← → / Space で進行</div>
+    <div class="navigation-buttons">
+      <button id="previous" type="button" aria-label="一つ前の表示へ">← 戻る</button>
+      <button id="next" type="button">次へ →</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  </footer>
+  <p class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="toc" aria-labelledby="toc-title">
+    <div class="dialog-heading"><h2 id="toc-title">第2章</h2><button id="close-toc" type="button">閉じる</button></div>
+    <p class="dialog-caption">型と命題 I — ならばと全称量化</p>
+    <ol id="toc-list"></ol>
+  </dialog>
+  <noscript><p>段階表示には JavaScript が必要です。本文は通読できます。</p></noscript>
+  <script>(() => {
+  'use strict';
+
+  // Measure the complete page, including unrevealed blocks. Font size and
+  // authored page boundaries stay fixed; only line spacing and margins tighten.
+  function fit(frame, content, available) {
+    frame.removeAttribute('data-density');
+    for (const density of ['tight', 'dense']) {
+      if (content.getBoundingClientRect().height <= available + 1) break;
+      frame.dataset.density = density;
+    }
+  }
+
+  function fitPrint() {
+    for (const slide of document.querySelectorAll('.print-slide[data-editorial]')) {
+      const frame = slide.querySelector('.print-content');
+      fit(slide, frame.querySelector('.print-body'), frame.clientHeight);
+    }
+  }
+
+  window.LectureLayout = {fit};
+  if (document.querySelector('.print-deck')) {
+    fitPrint();
+    window.addEventListener('load', fitPrint);
+    window.addEventListener('beforeprint', fitPrint);
+    document.fonts.ready.then(fitPrint);
+  }
+})();
+
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const viewport = $('viewport');
+  const optional = $('optional');
+  let active = slides[0];
+  let step = 0;
+  let reading = false;
+
+  function included() {
+    return slides.filter(slide => optional.checked || slide.dataset.kind === 'main');
+  }
+  function steps(slide = active) {
+    const groups = [];
+    for (const fragment of slide.querySelectorAll('.step[data-step]')) {
+      (groups[Number(fragment.dataset.step)] ||= []).push(fragment);
+    }
+    return groups;
+  }
+  function updateHash() {
+    const hash = `#${active.id}/${step + 1}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+  function readHash() {
+    const match = location.hash.match(/^#([a-z0-9_-]+)(?:\/(\d+))?$/);
+    if (!match) return;
+    const target = slides.find(slide => slide.id === match[1]);
+    if (!target) return;
+    active = target;
+    step = Math.min(Math.max(Number(match[2] || 1) - 1, 0), steps().length - 1);
+    if (active.dataset.kind !== 'main') optional.checked = true;
+  }
+  function fitActive() {
+    if (reading) {
+      slides.forEach(slide => slide.removeAttribute('data-density'));
+      return;
+    }
+    const main = $('slides');
+    const style = getComputedStyle(main);
+    const available = viewport.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    window.LectureLayout.fit(active, active, available);
+  }
+  function render({scroll = false, announce = true} = {}) {
+    const visible = included();
+    const index = visible.indexOf(active);
+    root.classList.toggle('include-optional', optional.checked);
+    for (const slide of slides) {
+      slide.hidden = reading ? !visible.includes(slide) : slide !== active;
+      steps(slide).forEach((fragments, i) => {
+        const hidden = !reading && i > (slide === active ? step : 0);
+        for (const fragment of fragments) {
+          fragment.toggleAttribute('data-unrevealed', hidden);
+          fragment.inert = hidden;
+          fragment.setAttribute('aria-hidden', String(hidden));
+        }
+      });
+    }
+    fitActive();
+    $('counter').textContent = `${index + 1} / ${visible.length}`;
+    $('step-count').textContent = reading ? '通読' : `表示 ${step + 1} / ${steps().length}`;
+    $('next').textContent = step < steps().length - 1 && !reading ? '続きを表示 →' : '次の画面 →';
+    $('previous').disabled = reading || (index === 0 && step === 0);
+    $('next').disabled = reading || (index === visible.length - 1 && step === steps().length - 1);
+    $('progress-fill').style.width = `${((index + (step + 1) / steps().length) / visible.length) * 100}%`;
+    $('reading-mode').setAttribute('aria-pressed', String(reading));
+    $('reading-mode').textContent = reading ? '講義に戻る' : '通読';
+    if (announce) $('announcement').textContent = `${index + 1} / ${visible.length}、${active.dataset.label}、表示 ${step + 1} / ${steps().length}`;
+    updateHash();
+    if (scroll) viewport.scrollTop = 0;
+  }
+  function navigate(direction) {
+    if (reading) return;
+    const visible = included();
+    const index = visible.indexOf(active);
+    let changedSlide = false;
+    if (direction > 0) {
+      if (step < steps().length - 1) step++;
+      else if (index < visible.length - 1) {
+        active = visible[index + 1]; step = 0; changedSlide = true;
+      }
+    } else {
+      if (step > 0) step--;
+      else if (index > 0) {
+        active = visible[index - 1]; step = steps().length - 1; changedSlide = true;
+      }
+    }
+    render({scroll: changedSlide});
+    if (!changedSlide && direction > 0) {
+      const fragment = steps()[step][0];
+      const frame = viewport.getBoundingClientRect();
+      const rect = fragment.getBoundingClientRect();
+      if (rect.top > frame.bottom - 70) fragment.scrollIntoView({block: 'start'});
+    }
+  }
+  function jump(target) {
+    active = target;
+    step = 0;
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  function showContents() {
+    const list = $('toc-list');
+    list.replaceChildren();
+    included().forEach((slide, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const number = document.createElement('span');
+      number.className = 'toc-number';
+      number.textContent = `${i + 1}`;
+      button.append(number, document.createTextNode(slide.dataset.label));
+      if (slide === active) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => { $('toc').close(); jump(slide); });
+      li.append(button); list.append(li);
+    });
+    $('toc').showModal();
+  }
+  function toggleReading() {
+    if (reading) {
+      const frame = viewport.getBoundingClientRect();
+      active = included().find(slide => slide.getBoundingClientRect().bottom > frame.top + 40) || active;
+      step = 0;
+    }
+    reading = !reading;
+    root.classList.toggle('reading', reading);
+    render({scroll: !reading});
+    if (reading) active.scrollIntoView({block: 'start'});
+  }
+  optional.addEventListener('change', () => {
+    if (!optional.checked && active.dataset.kind !== 'main') {
+      const index = slides.indexOf(active);
+      active = slides.slice(index + 1).find(slide => slide.dataset.kind === 'main') || slides[0];
+      step = 0;
+    }
+    render({scroll: !reading});
+  });
+  $('previous').addEventListener('click', () => navigate(-1));
+  $('next').addEventListener('click', () => navigate(1));
+  $('contents').addEventListener('click', showContents);
+  $('close-toc').addEventListener('click', () => $('toc').close());
+  $('reading-mode').addEventListener('click', toggleReading);
+  $('chapter-select').addEventListener('change', event => { location.href = event.target.value; });
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await root.requestFullscreen();
+    } catch {
+      $('hint').textContent = 'ブラウザの全画面表示をご利用ください';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '全画面解除' : '全画面';
+  });
+  document.addEventListener('keydown', event => {
+    if ($('toc').open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('input:not([type="checkbox"]), textarea, select, summary, a') || event.target.isContentEditable) return;
+    if (event.code === 'Space' && event.target.closest('input[type="checkbox"]')) return;
+    if ((event.code === 'Space' || event.key === 'Enter') && event.target.closest('button')) return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.code === 'Space') {
+      if (reading) return;
+      event.preventDefault(); navigate(event.shiftKey ? -1 : 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      if (reading) return;
+      event.preventDefault(); navigate(-1);
+    } else if (event.key === 'Home' && !reading) {
+      event.preventDefault(); jump(included()[0]);
+    } else if (event.key === 'End' && !reading) {
+      event.preventDefault(); active = included().at(-1); step = steps().length - 1; render({scroll:true});
+    } else if (event.key.toLowerCase() === 'm') showContents();
+  });
+  window.addEventListener('hashchange', () => { readHash(); render({scroll: true}); });
+  window.addEventListener('resize', fitActive);
+  window.addEventListener('load', fitActive);
+  document.fonts.ready.then(fitActive);
+  // Published section links can be opened directly in the slide edition too.
+  const sectionTarget = location.hash.startsWith('#sec-') &&
+    slides.find(slide => slide.dataset.section === location.hash.slice(5));
+  if (sectionTarget) active = sectionTarget;
+  readHash();
+  root.classList.add('enhanced');
+  render({announce: false});
+})();
+</script>
+</body>
+</html>

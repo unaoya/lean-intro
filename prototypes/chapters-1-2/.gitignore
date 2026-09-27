@@ -1,0 +1,5 @@
+.build/
+__pycache__/
+src/*.olean
+src/*.ilean
+checks/*.png

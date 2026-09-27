@@ -2,6 +2,8 @@
 .lake/
 # 受講者の書き込み用（lakefile.lean が LeanIntro/Original/ から自動で作る）
 /LeanIntro/MyWork/
+# ローカルの試し書き
+/Sandbox.lean
 # 生成物・一時ファイル
 pdf/
 __pycache__/
