@@ -566,6 +566,14 @@ body { font-size: 1rem; line-height: 1.75; }
 main { max-width: none; padding: 0; }
 section.chapter { page-break-before: always; break-before: page; }
 section.chapter:first-of-type { page-break-before: avoid; break-before: auto; }
+.pdf-cover { height: 262mm; display: flex; flex-direction: column; align-items: center;
+             justify-content: center; text-align: center; padding-bottom: 26mm;
+             break-inside: avoid; break-after: page; }
+.pdf-cover h1 { font-size: 32pt; font-weight: 600; line-height: 1.5;
+                border: 0; margin: 0; padding: 0; }
+.pdf-cover .cover-author { font-size: 16pt; margin: 24mm 0 2mm; }
+.pdf-cover .cover-affiliation { font-size: 12pt; margin: 0; }
+.pdf-cover .cover-date { font-size: 12pt; margin: 12mm 0 0; }
 h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
 h1 { margin-top: 0; }
 pre { white-space: pre-wrap; overflow-wrap: break-word; overflow: visible; }
@@ -694,6 +702,26 @@ def write_legacy_redirects(out: Path, slide_chapters) -> list[Path]:
 # ---------------------------------------------------------------- pdf
 
 PDF_OUT = ROOT / "pdf" / "all.pdf"
+PDF_TITLE = "はじめてのLean"
+PDF_AUTHOR = "梅崎直也"
+PDF_AFFILIATION = "ZEN大学"
+
+
+def pdf_build_date():
+    """公開環境のタイムゾーンによらず、日本時間のビルド日を使う。"""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    return datetime.now(ZoneInfo("Asia/Tokyo")).date()
+
+
+def pdf_cover_html() -> str:
+    day = pdf_build_date()
+    return (f'<section class="pdf-cover" aria-label="表紙">'
+            f'<h1>{html.escape(PDF_TITLE)}</h1>'
+            f'<p class="cover-author">{html.escape(PDF_AUTHOR)}</p>'
+            f'<p class="cover-affiliation">{html.escape(PDF_AFFILIATION)}</p>'
+            f'<p class="cover-date">{day.year}年{day.month}月{day.day}日</p>'
+            '</section>')
 
 # Chrome を探す順。環境変数 CHROME で明示的に上書きできる。
 CHROME_CANDIDATES = [
@@ -721,13 +749,14 @@ def find_chrome() -> str | None:
 
 def pdf_html(titles: dict, bodies: dict) -> str:
     """全章を1つの印刷用 HTML にまとめる。練習の解答はすべて開いた状態にする。"""
-    parts = [f'<section class="chapter" id="ch-index">\n{toc_html(titles, lambda n: f"#ch-{n.lower()}")}\n</section>']
+    parts = [pdf_cover_html(),
+             f'<section class="chapter" id="ch-index">\n{toc_html(titles, lambda n: f"#ch-{n.lower()}")}\n</section>']
     for name in CHAPTERS:
         body = bodies[name].replace('<details class="sol"', '<details open class="sol"')
         # Stable labels are globally unique, including in the combined document.
         body = re.sub(r'href="(?:[a-z0-9_-]+\.html)?#(sec-[A-Za-z0-9_.-]+)"', r'href="#\1"', body)
         parts.append(f'<section class="chapter" id="ch-{name.lower()}">\n{body}\n</section>')
-    return page(SITE_TITLE, "\n".join(parts), css=PDF_CSS)
+    return page(PDF_TITLE, "\n".join(parts), css=PDF_CSS)
 
 
 def write_pdf(document: str, destination: Path) -> None:
@@ -802,7 +831,8 @@ def file_digest(path):
 
 def build_signature(with_pdf, include_slide_notes=False):
     import hashlib
-    return hashlib.sha256((str((with_pdf, include_slide_notes)) + "\n" + "\n".join(
+    cover_date = pdf_build_date().isoformat() if with_pdf else None
+    return hashlib.sha256((str((with_pdf, include_slide_notes, cover_date)) + "\n" + "\n".join(
         str(path.relative_to(ROOT)) + ":" + file_digest(path) for path in build_inputs())).encode()).hexdigest()
 
 
@@ -859,7 +889,7 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
     if with_slides:
         links.append('<a href="slides/index.html">講義用スライド</a>')
     if has_pdf:
-        links.append('<a href="all.pdf" download>通読版PDF（全章）をダウンロード</a>')
+        links.append('<a href="all.pdf" target="_blank" rel="noopener">通読版PDF（全章）を開く</a>')
     (OUT / "index.html").write_text(
         page(SITE_TITLE, (f'<p>{"・".join(links)}</p>' if links else '') +
              toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")

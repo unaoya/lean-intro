@@ -590,7 +590,7 @@ def html_page(chapter, title, pages, chapters, reading_pdf_url=None):
         return f'target="_blank" rel="noopener" href="{textbook_href(href)}"'
     content = re.sub(r'href="([^"]+)"', link, content)
     label = chapter_label(chapter)
-    pdf_link = (f'<a href="{html.escape(reading_pdf_url, quote=True)}" download>通読版PDF（全章）</a>'
+    pdf_link = (f'<a href="{html.escape(reading_pdf_url, quote=True)}" target="_blank" rel="noopener">通読版PDF（全章）</a>'
                 if chapter == 'Index' and reading_pdf_url else '')
     return (template.replace("@@TITLE@@", html.escape(title)).replace("@@CHAPTER@@", html.escape(label))
             .replace("@@PDF_LINK@@", pdf_link)

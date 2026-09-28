@@ -297,7 +297,7 @@ class RefTests(unittest.TestCase):
         self.assertIn(f'{first}.lean:2:', run.stderr)
         self.assertFalse((self.root/'docs').exists())
 
-    def test_pdf_download_is_published_and_preserved_by_html_only_or_failed_builds(self):
+    def test_pdf_opens_in_new_tab_and_is_preserved_by_html_only_or_failed_builds(self):
         out = self.root / 'docs'
         local_pdf = self.root / 'all.pdf'
         rendered = []
@@ -318,8 +318,9 @@ class RefTests(unittest.TestCase):
 
             html.main()
             self.assertEqual((out / 'all.pdf').read_bytes(), local_pdf.read_bytes())
-            self.assertIn('href="all.pdf" download', (out / 'index.html').read_text())
-            self.assertIn('href="../all.pdf" download', (out / 'slides/index.html').read_text())
+            self.assertIn('href="all.pdf" target="_blank" rel="noopener"', (out / 'index.html').read_text())
+            self.assertIn('href="../all.pdf" target="_blank" rel="noopener"', (out / 'slides/index.html').read_text())
+            self.assertNotIn('download', (out / 'index.html').read_text())
             self.assertNotIn('href="../all.pdf"', (out / 'slides/intro1.html').read_text())
             self.assertTrue(all('download' not in document for document in rendered))
 
@@ -327,12 +328,22 @@ class RefTests(unittest.TestCase):
             html.main(with_pdf=False)
             write_pdf.assert_not_called()
             self.assertEqual((out / 'all.pdf').read_bytes(), b'%PDF-complete')
-            self.assertIn('href="all.pdf" download', (out / 'index.html').read_text())
+            self.assertIn('href="all.pdf" target="_blank"', (out / 'index.html').read_text())
 
             write_pdf.side_effect = RuntimeError('PDF generation failed')
             with self.assertRaisesRegex(RuntimeError, 'PDF generation failed'):
                 html.main()
             self.assertEqual((out / 'all.pdf').read_bytes(), b'%PDF-complete')
+
+    def test_pdf_build_cache_expires_when_cover_date_changes(self):
+        from datetime import date
+        with patch.object(html, 'build_inputs', return_value=[]), \
+             patch.object(html, 'pdf_build_date', return_value=date(2026, 9, 28)) as today:
+            pdf_signature = html.build_signature(with_pdf=True)
+            html_signature = html.build_signature(with_pdf=False)
+            today.return_value = date(2026, 9, 29)
+            self.assertNotEqual(html.build_signature(with_pdf=True), pdf_signature)
+            self.assertEqual(html.build_signature(with_pdf=False), html_signature)
 
     def test_combined_document_links_are_local_and_unique(self):
         sections = self.analyze().sections

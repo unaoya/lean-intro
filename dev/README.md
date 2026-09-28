@@ -132,9 +132,9 @@ python3 tools/lean2html.py --no-pdf # PDF を省いて両形式の HTML を生�
 | 講義スライド版 | `../docs/slides/index.html` と各章 | `pdf/slides.pdf` |
 
 本文・補足・解答の原本は `src/*.lean` だけ。両形式は同じ解析・参照解決・コード着色を共有する。
-通読版PDFは通常のトップページとスライドのトップページからダウンロードできる。
+通読版PDFは通常のトップページとスライドのトップページから別タブで開ける。
 `lake build` で公開用の `docs/all.pdf` も更新するので、HTMLと一緒にGitへ含める。
-`--no-pdf` では既存の公開用PDFを保持する。PDFがまだなければダウンロードリンクは表示しない。
+`--no-pdf` では既存の公開用PDFを保持する。PDFがまだなければPDFへのリンクは表示しない。
 スライド版は 01_TypesAndTerms・02_Forall・03_InductiveTypes・04_Exists・05_MathematicalTools の5章を対象とする。
 冒頭の目的・目標・構成も通読版と共有し、`docs/slides/index.html` とスライドPDFの冒頭に含める。
 その区切りは `slides/Index.json` で設定する。「講義の各章」のリンクから各章のスライドへ進める。
@@ -153,6 +153,8 @@ Shift+→ / Shift+← は残りの段階を飛ばして次／前の画面へ移�
 
 PDF（`pdf/` は `.gitignore` 済み）は headless Chrome で生成する。
 通読版は解答を開いた状態でまとめ、章の頭で改ページする。
+冒頭に表紙を付け、タイトル・著者・所属（`tools/lean2html.py` の `PDF_TITLE`・`PDF_AUTHOR`・
+`PDF_AFFILIATION`）と、日本時間のビルド日を表示する。日付が変わった後のビルドでもPDFを更新する。
 講義版は 16:9 で、HTML の各表示段階をそれぞれ1ページにする。
 問題と解答が同じ画面に収まる場合も表示段階ごとに刷るため、PDF のページ数は HTML の画面数より多い。
 通読版は補足・先取りを含む。スライドPDFの補足・先取りは上記オプションを付けた場合に含む。
