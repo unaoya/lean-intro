@@ -77,7 +77,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <body>
 <nav><span><a href="07_exercises.html">← 07_Exercises</a></span><a href="index.html">目次</a><span><a href="09_ascoli.html">09_Ascoli →</a></span></nav>
 <main>
-<p class="lecture-link"><a href="https://live.lean-lang.org/#project=Stable&amp;url=https%3A%2F%2Funaoya.github.io%2Flean-intro%2Fplay%2F08_Real.lean" target="_blank" rel="noopener">この章のコードをブラウザで動かす</a></p><pre class="lean"><code><span class="kw">import</span> «06_Topology»</code></pre>
+<p class="lecture-link"><a href="https://live.lean-lang.org/#project=mathlib-stable&amp;url=https%3A%2F%2Funaoya.github.io%2Flean-intro%2Fplay%2F08_Real.lean" target="_blank" rel="noopener">この章のコードをブラウザで動かす</a></p><pre class="lean"><code><span class="kw">import</span> «06_Topology»</code></pre>
 <h1>発展演習: 実数</h1>
 <p><code>06_Topology.lean</code> まで読み終えた人のための演習問題集（<code>07_Exercises.lean</code> とは独立に読める）。題材は<strong>実数</strong>で、「実数の公理」から出発して、四則演算と順序の計算規則、絶対値、アルキメデス性、実数の位相と連続関数、そして閉区間のコンパクト性（Heine–Borel）・連結性・ルベーグ数の補題までを証明する。</p>
 <h2>実数を構成せずに仮定する</h2>
@@ -104,7 +104,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <li><strong>演算と順序の両立</strong>: 両辺に同じ数を足しても <code>≤</code> は保たれる。0 以上の数の積は 0 以上</li>
 <li><strong>完備性</strong>: 空でなく上に有界な集合には、最小の上界（上限）がある</li>
 </ul>
-<p><code>Add R</code>・<code>Mul R</code> などを <code>extends</code> しているのは、<code>a + b</code>・<code>a * b</code>・<code>a⁻¹</code>・<code>a ≤ b</code> といった記法を使うためである（記法が class で動く仕組みは <a href="05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 1節</a>）。引き算 <code>a - b</code> と割り算 <code>a / b</code> は公理に含めず、<code>a + -b</code>・<code>a * b⁻¹</code> として定義する。数 <code>2</code> は <code>1 + 1</code> と定義する。</p>
+<p><code>Add R</code>・<code>Mul R</code> などを <code>extends</code> しているのは、<code>a + b</code>・<code>a * b</code>・<code>a⁻¹</code>・<code>a ≤ b</code> といった記法を使うためである（記法が class で動く仕組みは <a href="05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 4節</a>）。引き算 <code>a - b</code> と割り算 <code>a / b</code> は公理に含めず、<code>a + -b</code>・<code>a * b⁻¹</code> として定義する。数 <code>2</code> は <code>1 + 1</code> と定義する。</p>
 <p>完備順序体の公理。</p>
 <pre class="lean"><code><span class="kw">class</span> CompleteOrderedField (R : <span class="sort">Type</span>) extends Add R, Mul R, Neg R, Inv R, Zero R, One R,
     LE R, LT R <span class="kw">where</span>

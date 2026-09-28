@@ -91,6 +91,38 @@
       }
     },
     {
+      "id": "even-add-math",
+      "label": "偶数の和：二つの存在を使う",
+      "at": {
+        "tag": "h3",
+        "starts": "偶数と偶数の和は偶数"
+      }
+    },
+    {
+      "id": "even-add-equalities",
+      "label": "必要な等式を三つにつなぐ",
+      "at": {
+        "tag": "h3",
+        "starts": "等式の連鎖を項で書く"
+      }
+    },
+    {
+      "id": "even-add-term",
+      "label": "証人と等式の証明を構成子へ渡す",
+      "at": {
+        "tag": "h3",
+        "starts": "偶数の和の証明を完成させる"
+      }
+    },
+    {
+      "id": "practice-even",
+      "label": "練習：偶数に2を加える",
+      "at": {
+        "tag": "ol",
+        "starts": "任意の自然数 n について、IsEven n → IsEven (n + 2) を証明せよ。"
+      }
+    },
+    {
       "id": "and",
       "label": "かつ：二つの証明をまとめる",
       "at": {
@@ -115,6 +147,14 @@
       }
     },
     {
+      "id": "practice-exists-and",
+      "label": "練習：存在と「かつ」を使う",
+      "at": {
+        "tag": "ol",
+        "starts": "f : A → B、g : A → C と b : B、c : C に対して、"
+      }
+    },
+    {
       "id": "or",
       "label": "または：どちらかの証明から作る",
       "at": {
@@ -128,6 +168,14 @@
       "at": {
         "tag": "h3",
         "starts": "またはの証明を match で使う"
+      }
+    },
+    {
+      "id": "practice-or",
+      "label": "練習：単射性を場合ごとに使う",
+      "at": {
+        "tag": "ol",
+        "starts": "$f:A\\to B$ を単射とする。f x = f a ∨ f x = f b から x = a ∨ x = b を示せ。"
       }
     },
     {
@@ -147,78 +195,6 @@
       }
     },
     {
-      "id": "constructors-ne",
-      "label": "異なる構成子が等しくないことを使う",
-      "at": {
-        "tag": "h3",
-        "starts": "帰納型の異なる構成子"
-      }
-    },
-    {
-      "id": "even-add-math",
-      "label": "偶数の和：二つの存在を使う",
-      "at": {
-        "tag": "h2",
-        "starts": "5. 偶数と偶数の和は偶数"
-      }
-    },
-    {
-      "id": "even-add-equalities",
-      "label": "必要な等式を三つにつなぐ",
-      "at": {
-        "tag": "h3",
-        "starts": "算術の部分に必要な型をそろえる"
-      }
-    },
-    {
-      "id": "even-add-helper",
-      "label": "等式の証明を一つの関数にする",
-      "at": {
-        "tag": "h3",
-        "starts": "証明の途中の項にも名前を付ける"
-      }
-    },
-    {
-      "id": "even-add-term",
-      "label": "証人と等式の証明を構成子へ渡す",
-      "at": {
-        "tag": "h3",
-        "starts": "偶数の和の証明を完成させる"
-      }
-    },
-    {
-      "id": "summary",
-      "label": "示すときと使うとき",
-      "at": {
-        "tag": "h2",
-        "starts": "6. 証明を作る・証明を使う"
-      }
-    },
-    {
-      "id": "practice-three-surjective",
-      "label": "練習：三つの全射の合成",
-      "at": {
-        "tag": "h2",
-        "starts": "7. ✏ 練習 — 章末問題"
-      }
-    },
-    {
-      "id": "practice-exists-and",
-      "label": "練習：存在と「かつ」を使う",
-      "at": {
-        "tag": "ol",
-        "starts": "f : A → B、g : A → C と b : B、c : C に対して、"
-      }
-    },
-    {
-      "id": "practice-or",
-      "label": "練習：単射性を場合ごとに使う",
-      "at": {
-        "tag": "ol",
-        "starts": "$f:A\\to B$ を単射とする。f x = f a ∨ f x = f b から x = a ∨ x = b を示せ。"
-      }
-    },
-    {
       "id": "practice-not",
       "label": "練習：像が違えばもとも違う",
       "at": {
@@ -227,11 +203,90 @@
       }
     },
     {
-      "id": "practice-even",
-      "label": "練習：偶数に2を加える",
+      "id": "constructors-ne",
+      "label": "異なる構成子が等しくないことを使う",
       "at": {
-        "tag": "ol",
-        "starts": "任意の自然数 n について、IsEven n → IsEven (n + 2) を証明せよ。"
+        "tag": "h3",
+        "starts": "帰納型の異なる構成子"
+      }
+    },
+    {
+      "id": "summary",
+      "label": "示すときと使うとき",
+      "at": {
+        "tag": "h2",
+        "section": "Trial4.summary"
+      }
+    },
+    {
+      "id": "checking",
+      "label": "型検査が証明の検査になる",
+      "at": {
+        "tag": "h2",
+        "starts": "6. 型検査が証明の検査になる",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-axioms",
+      "label": "公理と sorry の監査",
+      "at": {
+        "tag": "p",
+        "starts": "この主張には但し書きが3つある。",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-interpretation",
+      "label": "意図した主張を検査しているか",
+      "at": {
+        "tag": "h3",
+        "starts": "その検査は、形式化したかったものの検査か",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-order",
+      "label": "証明を作る順序と読む順序",
+      "at": {
+        "tag": "h3",
+        "starts": "証明を考える順序と、出来上がった項を読む順序",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-missing-step",
+      "label": "推論の抜けは型の不一致になる",
+      "at": {
+        "tag": "h3",
+        "starts": "一段を飛ばすと型が合わない",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-elaboration",
+      "label": "エラボレータとカーネル",
+      "at": {
+        "tag": "h3",
+        "starts": "省略を補う処理と、完成した項の検査",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "checking-placeholder",
+      "label": "必要な仮定を省略するとどうなるか",
+      "at": {
+        "tag": "pre",
+        "starts": "#check Nat.sub_add_cancel",
+        "section": "Trial4.checking"
+      }
+    },
+    {
+      "id": "practice-three-surjective",
+      "label": "練習：三つの全射の合成",
+      "at": {
+        "tag": "h2",
+        "starts": "7. ✏ 練習 — 章末問題"
       }
     }
   ],

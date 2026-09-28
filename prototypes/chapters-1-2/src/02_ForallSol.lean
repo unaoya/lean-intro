@@ -4,7 +4,7 @@ import «02_Forall»
 試作第2章の解答。証明はすべて def で定義する。
 -/
 
-/-! SOL Trial2.injective-composition:1 -/
+/-! SOL Trial2.injective-composition-exercise-8bd08815:1 -/
 
 def comp_monotone (f g : Nat → Nat)
     (hf : ∀ x y : Nat, x ≤ y → f x ≤ f y)
@@ -18,7 +18,7 @@ def comp_monotone (f g : Nat → Nat)
 単射の合成とは逆に、もとの不等式から像の不等式へ進む。
 -/
 
-/-! SOL Trial2.practice:1 -/
+/-! SOL Trial2.practice-review-1:1 -/
 
 #check 3 = 5
 
@@ -35,7 +35,7 @@ def comp_monotone (f g : Nat → Nat)
 真偽や証明の有無を調べているわけではない。
 -/
 
-/-! SOL Trial2.practice:2 -/
+/-! SOL Trial2.practice-review-2:1 -/
 
 def two_add_three : 2 + 3 = 5 := rfl
 
@@ -43,7 +43,7 @@ def two_add_three : 2 + 3 = 5 := rfl
 左辺を計算すると `5` になり、右辺と一致するので `rfl` が使える。
 -/
 
-/-! SOL Trial2.practice:3 -/
+/-! SOL Trial2.practice-review-2:2 -/
 
 /-!
 受理されない。`2 + 2` を計算した `4` と、右辺の `5` が一致しない。
@@ -58,7 +58,7 @@ def two_add_three : 2 + 3 = 5 := rfl
 ここで失敗したのは、計算して両辺を一致させるという確かめ方である。
 -/
 
-/-! SOL Trial2.practice:4 -/
+/-! SOL Trial2.practice-review-4:1 -/
 
 #check all_refl 12
 
@@ -75,7 +75,7 @@ def two_add_three : 2 + 3 = 5 := rfl
 全体は `n` を受け取って、その等式の証明を返す依存関数である。
 -/
 
-/-! SOL Trial2.practice:5 -/
+/-! SOL Trial2.practice-exercise-bab90c50:1 -/
 
 def three_comp_injective (A B C D : Type)
     (f : A → B) (g : B → C) (k : C → D)
@@ -90,7 +90,7 @@ def three_comp_injective (A B C D : Type)
 最後に `hf` で `x = y` を得る。外側の写像の単射性から順に使う。
 -/
 
-/-! SOL Trial2.practice:6 -/
+/-! SOL Trial2.practice-review-6:1 -/
 
 def cancel_pointwise_again (X A B : Type)
     (f : A → B)
@@ -105,7 +105,7 @@ def cancel_pointwise_again (X A B : Type)
 各点で `u t = v t` の証明を作り、`fun t => …` で全体の証明にする。
 -/
 
-/-! SOL Trial2.practice:7 -/
+/-! SOL Trial2.practice-exercise-bab90c50:2 -/
 
 def leftCompose (X A B : Type) (f : A → B) :
     Map (Map X A) (Map X B) :=
@@ -129,7 +129,7 @@ def leftCompose_injective (X A B : Type) (f : A → B)
 `hf` で `u t = v t` を得て、各点の証明を `funext` に渡すと `u = v` が得られる。
 -/
 
-/-! SOL Trial2.practice:8 -/
+/-! SOL Trial2.practice-exercise-bab90c50:3 -/
 
 def injective_of_pointwise_cancel (f : Nat → Nat)
     (hcancel : ∀ u v : Nat → Nat,
@@ -144,7 +144,7 @@ def injective_of_pointwise_cancel (f : Nat → Nat)
 ここでは、前提の証明を返す関数自体も、引数として渡している。
 -/
 
-/-! SOL Trial2.practice:9 -/
+/-! SOL Trial2.practice-exercise-bab90c50:4 -/
 
 def three_comp_monotone (f g k : Nat → Nat)
     (hf : ∀ x y, x ≤ y → f x ≤ f y)
@@ -158,7 +158,7 @@ def three_comp_monotone (f g k : Nat → Nat)
 それぞれの結果の不等式が、次の単調性の仮定になる。
 -/
 
-/-! SOL Trial2.practice:10 -/
+/-! SOL Trial2.practice-review-10:1 -/
 
 /-!
 三つの型は次のとおり。
@@ -171,7 +171,7 @@ def three_comp_monotone (f g k : Nat → Nat)
 `Eq.trans` に渡すときには、一つ目の右辺と二つ目の左辺が一致している。
 -/
 
-/-! SOL Trial2.practice:11 -/
+/-! SOL Trial2.practice-exercise-bab90c50:5 -/
 
 def left_inverse_of_right_inverse (A B : Type) (f : A → B) (g : B → A)
     (hf : ∀ x y : A, f x = f y → x = y)

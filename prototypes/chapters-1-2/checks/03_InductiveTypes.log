@@ -1,12 +1,14 @@
 Signal.red : Signal
 0
 Signal.green
-TaggedSum.inl (n : Nat) : TaggedSum
-TaggedSum.inr (b : Bool) : TaggedSum
+TaggedSum.inn (n : Nat) : TaggedSum
+TaggedSum.inb (b : Bool) : TaggedSum
 7
 0
-TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝
+TaggedSum.inn.inj {n n✝ : Nat} : TaggedSum.inn n = TaggedSum.inn n✝ → n = n✝
 MySum.inl {A B : Type} (a : A) : MySum A B
+getLeft {A B : Type} (d : A) : MySum A B → A
+0
 MyPair.mk 3 true : MyPair Nat Bool
 3
 Numbered.mk (n : Nat) (i : Fin n) : Numbered
@@ -16,5 +18,8 @@ numberedThree.index : Fin numberedThree.size
 numberedSigma : (n : Nat) × Fin n
 MyNat.zero.succ.succ : MyNat
 MyNat.zero.succ.succ
+two_mul_from_scratch (n : Nat) : 2 * n = n + n
+'two_mul_from_scratch' does not depend on any axioms
 'eqSymmByMatch' does not depend on any axioms
+MyEq {A : Type} (a : A) : A → Prop
 Nat.le.step two_le_four : Nat.le 2 (Nat.succ 4)

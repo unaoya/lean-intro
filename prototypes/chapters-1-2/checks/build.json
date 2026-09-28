@@ -6,32 +6,7 @@
     "04_Exists": 6,
     "05_MathematicalTools": 16
   },
-  "slides": {
-    "Index": {
-      "pages": 1,
-      "steps": 3
-    },
-    "01_TypesAndTerms": {
-      "pages": 114,
-      "steps": 463
-    },
-    "02_Forall": {
-      "pages": 55,
-      "steps": 194
-    },
-    "03_InductiveTypes": {
-      "pages": 40,
-      "steps": 151
-    },
-    "04_Exists": {
-      "pages": 29,
-      "steps": 101
-    },
-    "05_MathematicalTools": {
-      "pages": 56,
-      "steps": 239
-    }
-  },
+  "slides": {},
   "canonical_sources_unchanged_during_build": true,
   "matches_initial_canonical_sources": false
 }

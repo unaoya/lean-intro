@@ -10,8 +10,7 @@ def prepare_pdf_documents(here, book, titles, bodies, slide_document):
     intro = '<h1>第1〜5章 改稿試作</h1><p>型と項、型と命題、数学を記述する道具</p><ol>'
     for name, title in titles.items():
         intro += f'<li><a href="#ch-{name.lower()}">{html.escape(title)}</a></li>'
-    intro += ('</ol><p>練習の解答を開いた通読版です。第3・4章の元原稿の補足は各章末に保存しています。'
-              '補足内の問題番号は元原稿の番号です。</p>')
+    intro += '</ol><p>練習の解答を開いた通読版です。補足は本文の関連箇所に配置しています。</p>'
     parts = [f'<section class="chapter" id="ch-index">{intro}</section>']
     for name, source in bodies.items():
         chapter = name.lower()

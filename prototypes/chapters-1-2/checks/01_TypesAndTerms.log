@@ -27,7 +27,7 @@ applyTo21 (F : Nat → Nat) : Nat
 applyAt (F : Nat → Nat) (n : Nat) : Nat
 Map : Type → Type → Type
 Nat.add : Nat → Nat → Nat
-HAdd.hAdd : Nat → Nat → Nat
+7
 double (plus 3 4) : Nat
 2 : Nat
 2 : Int
@@ -51,11 +51,6 @@ idImplicit {α : Type} (a : α) : α
 idImplicit 3 : Nat
 idImplicit true : Bool
 natId : Nat → Nat
-Tuple : Nat → Type
-Tuple 3 : Type
-constTuple (n : Nat) : Tuple n
-constTuple 3 : Tuple 3
-constTuple 4 : Tuple 4
 Vector Nat 3 : Type
 zeros 3 : Vector Nat 3
 zeros 4 : Vector Nat 4

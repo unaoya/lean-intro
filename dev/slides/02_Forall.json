@@ -2,523 +2,443 @@
   "version": 2,
   "pages": [
     {
+      "id": "opening",
+      "label": "証明の保証を与えられたか、という視点",
+      "at": {
+        "tag": "h1",
+        "starts": "型と命題 I — ならばと全称量化"
+      }
+    },
+    {
+      "id": "implication-as-guarantee",
+      "label": "前提の保証から、結論の保証を作る",
       "at": {
         "section": "02_Forall.intro",
-        "tag": "pre",
-        "starts": "import «01_TypesAndTerms»"
-      },
-      "id": "introduction",
-      "label": "証明を読む目的"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
-        "tag": "h2"
-      },
-      "id": "proofs-as-terms",
-      "label": "命題の型を持つ項が証明になる"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
         "tag": "h3",
-        "starts": "命題と証明の書き方"
-      },
-      "id": "proposition-proof-notation",
-      "label": "命題・証明・theorem の書き方"
+        "starts": "保証を受け取って、保証を作る"
+      }
     },
     {
+      "id": "forall-as-guarantee",
+      "label": "対象ごとに保証を返す依存関数",
       "at": {
-        "section": "CH.reading-proofs",
+        "section": "02_Forall.intro",
         "tag": "h3",
-        "starts": "例1: P と「P ならば Q」から Q"
-      },
-      "id": "modus-ponens-math",
-      "label": "P と「P ならば Q」から Q"
+        "starts": "対象ごとに、その対象についての保証を与える"
+      }
     },
     {
+      "id": "human-and-machine",
+      "label": "人間の理解と、機械の型検査",
       "at": {
-        "section": "CH.reading-proofs",
-        "tag": "p",
-        "starts": "ここで、「P ならば Q」の証明を、"
-      },
-      "id": "modus-ponens-application",
-      "label": "含意の証明に仮定を適用する"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
-        "tag": "pre",
-        "starts": "theorem modus_ponens (P Q : Prop) (hP : P) (h"
-      },
-      "id": "modus-ponens-code",
-      "label": "modus_ponens の宣言と型検査"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
+        "section": "02_Forall.intro",
         "tag": "h3",
-        "starts": "✏ 練習",
-        "next": "次の #check の結果を予想してから確かめよ。出力の最後が Q になるまでを、 P → Q の入力型と出力型から説明せよ。"
-      },
-      "id": "predict-proof-type",
-      "label": "練習：関数の出力が Q になる理由"
+        "starts": "人間が納得することと、機械が検査すること"
+      }
     },
     {
+      "id": "composition-math",
+      "label": "単射の合成：まず数学の証明を読む",
       "at": {
-        "section": "CH.reading-proofs",
-        "tag": "ol",
-        "question": "引数の順だけを入れ替えた theorem use_imp (P Q : Prop) (hPQ : P → Q) (hP : P) : Q の右辺を書け",
-        "starts": "引数の順だけを入れ替えた theorem use_imp (P Q : Prop) (hP"
-      },
-      "id": "reorder-assumptions",
-      "label": "練習：仮定の順と適用の順"
+        "section": "Trial2.injective-composition",
+        "tag": "h2",
+        "starts": "1. 単射の合成 — 対象と仮定を受け取る"
+      }
     },
     {
+      "id": "composition-structure",
+      "label": "証明を、受け取りと適用に分ける",
       "at": {
-        "section": "CH.reading-proofs",
         "tag": "h3",
-        "starts": "例2: 含意の推移"
-      },
-      "id": "implication-transitivity-math",
-      "label": "含意の推移：証明の型を追う4段階"
+        "starts": "対象と仮定を受け取り、保証に名前を付ける"
+      }
     },
     {
+      "id": "propositions-and-proofs",
+      "label": "命題を型、証明を項として読む",
       "at": {
-        "section": "CH.reading-proofs",
-        "tag": "p",
-        "starts": "この4段を、そのまま fun と適用で書く:"
-      },
-      "id": "implication-transitivity-code",
-      "label": "4段階を fun と適用にする"
+        "section": "Trial2.injective-composition",
+        "tag": "h3",
+        "starts": "命題を型、証明をその型の項として読む"
+      }
     },
     {
+      "id": "proposition-check-exercise",
+      "label": "練習：型と真偽の区別",
       "at": {
-        "section": "CH.reading-proofs",
-        "tag": "pre",
-        "starts": "theorem imp_trans (P Q R : Prop) (hPQ : P → Q",
-        "part": "#check imp_trans"
-      },
-      "id": "implication-transitivity-check",
-      "label": "imp_trans の型と内側からの読み方"
-    },
-    {
-      "at": {
-        "section": "CH.reading-proofs",
         "tag": "h3",
         "starts": "✏ 練習",
-        "next": "theorem imp_refl (P : Prop) : P → P を書け。"
-      },
-      "id": "identity-proof",
-      "label": "練習：P → P の証明"
+        "section": "Trial2.practice-review-1"
+      }
     },
     {
+      "id": "injectivity-statement",
+      "label": "単射性の仮定と、示したい結論",
       "at": {
-        "section": "CH.reading-proofs",
-        "tag": "ol",
-        "question": "P → Q、Q → R、R → S を順に使う theorem imp_trans3 (P Q R S : Prop) (hPQ : P → Q) (",
-        "starts": "P → Q、Q → R、R → S を順に使う theorem imp_trans3 (P"
-      },
-      "id": "three-implications",
-      "label": "練習：3つの含意を合成する"
-    },
-    {
-      "at": {
-        "section": "CH.propositions",
         "tag": "h3",
-        "starts": "整理 — 命題・theorem・rfl"
-      },
-      "id": "propositions-recap",
-      "label": "命題として書けることと証明できること"
+        "starts": "単射性を、全称量化と「ならば」で書く",
+        "section": "Trial2.practice-review-1"
+      }
     },
     {
+      "id": "forall-as-function",
+      "label": "全称量化は依存関数、「ならば」は関数",
       "at": {
-        "section": "CH.propositions",
         "tag": "h3",
-        "starts": "theorem と def"
-      },
-      "id": "theorem-and-def",
-      "label": "theorem と def の共通点と違い"
+        "starts": "全称量化も「ならば」も関数として扱っている",
+        "section": "Trial2.practice-review-1"
+      }
     },
     {
+      "id": "proposition-and-proof",
+      "label": "命題の型と、その証明である項",
       "at": {
-        "section": "CH.propositions",
+        "tag": "p",
+        "starts": "このとき、命題である関数型と、その型の項である関数を区別しよう。"
+      }
+    },
+    {
+      "id": "composition-term",
+      "label": "証明を一つの関数の項にする",
+      "at": {
+        "tag": "h3",
+        "starts": "証明を一つの関数の項にする",
+        "section": "Trial2.practice-review-1"
+      }
+    },
+    {
+      "id": "composition-definition",
+      "label": "単射の合成：定義と証明の検査",
+      "at": {
         "tag": "pre",
-        "starts": "theorem one_add_one : 1 + 1 = 2 := rfl"
-      },
-      "id": "rfl-example",
-      "label": "等式の証明 rfl と型検査"
+        "starts": "def comp_injective"
+      }
     },
     {
+      "id": "checking-expected",
+      "label": "型検査：引数と本体に要求される型",
       "at": {
-        "section": "CH.propositions",
         "tag": "h3",
+        "starts": "機械が行う型検査を追う",
+        "section": "Trial2.practice-review-1"
+      }
+    },
+    {
+      "id": "checking-inner",
+      "label": "型検査：内側の適用で得られる型",
+      "at": {
+        "tag": "p",
+        "starts": "まず、内側の hg (f x) (f y) の型を求める。 hg の二つの対象に f x と f y を代入すると、次の型になる。",
+        "section": "Trial2.practice-review-1"
+      }
+    },
+    {
+      "id": "checking-outer",
+      "label": "型検査：外側の適用と結論の照合",
+      "at": {
+        "tag": "p",
+        "starts": "次に外側を見る。hf に x と y を渡すと、次の型になる。",
+        "section": "Trial2.practice-review-1"
+      },
+      "column_at": {
+        "tag": "p",
+        "starts": "ここで機械がしているのは、宣言された型への引数の代入と、適用の入力型・出力型の照合である。"
+      }
+    },
+    {
+      "id": "proof-irrelevance",
+      "label": "証明を書けるかどうかに注目する",
+      "at": {
+        "tag": "h3",
+        "starts": "証明を書けるかどうかに注目する"
+      }
+    },
+    {
+      "id": "monotone-exercise",
+      "label": "練習：単調写像の合成",
+      "at": {
+        "tag": "h3",
+        "section": "Trial2.injective-composition-exercise-8bd08815",
         "starts": "✏ 練習"
-      },
-      "id": "true-and-false-propositions",
-      "label": "練習：真偽が違っても Prop"
+      }
     },
     {
+      "id": "left-cancellation",
+      "label": "左キャンセルを、各点で証明する",
       "at": {
-        "section": "CH.propositions",
-        "tag": "ol",
-        "question": "theorem two_add_three : 2 + 3 = 5 := rfl を自分で宣言してみよ。",
-        "starts": "theorem two_add_three : 2 + 3 = 5 := rfl を自分で"
-      },
-      "id": "compute-equality",
-      "label": "練習：計算で一致する等式"
+        "section": "Trial2.left-cancellation",
+        "tag": "h2",
+        "starts": "2. 左キャンセル — 関数を引数として受け取る"
+      }
     },
     {
+      "id": "cancellation-types",
+      "label": "左キャンセル：仮定に名前を付ける",
       "at": {
-        "section": "CH.propositions",
-        "tag": "ol",
-        "question": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してから試し、エラーメッセージがどの規則の破れを指しているか読み取",
-        "starts": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してか"
-      },
-      "id": "failed-rfl",
-      "label": "練習：rfl が受理されない理由"
+        "tag": "p",
+        "starts": "二つの仮定の保証を hf、h"
+      }
     },
     {
+      "id": "pointwise-cancellation",
+      "label": "対象 t と、その点での保証を渡す",
       "at": {
-        "section": "CH.propositions",
+        "section": "Trial2.left-cancellation",
         "tag": "pre",
-        "answer": true,
-        "question": "theorem oops : 2 + 2 = 5 := rfl は受理されるか。予想してから試し、エラーメッセージがどの規則の破れを指しているか読み取",
-        "starts": "theorem oops : 2 + 2 = 5 := rfl error: Not a "
-      },
-      "id": "failed-rfl-message",
-      "label": "定義的等しさのエラーを読む"
+        "starts": "def cancel_pointwise (X A B : Type) (f : A → B) (hf : ∀ x y : A, f x = f y → x = y) (u v : X → A) (h : ∀ t : X"
+      }
     },
     {
+      "id": "pointwise-exercise",
+      "label": "練習：点ごとの左キャンセル",
       "at": {
-        "section": "CH.implication",
         "tag": "h3",
-        "starts": "整理 — 関数型と「ならば」"
-      },
-      "id": "implication-introduction",
-      "label": "関数を作ることと含意を示すこと"
+        "starts": "✏ 練習",
+        "section": "Trial2.practice-review-6"
+      }
     },
     {
+      "id": "eq",
+      "label": "Eq：等式という命題を作る",
       "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "starts": "使うとき。まず数学の言葉では、p → q と p から q を導ける。これを証明項の言葉で"
-      },
-      "id": "implication-elimination",
-      "label": "関数を使うことと含意を使うこと"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "starts": "作るとき（型側）: β の項が1つあれば、α から β への関数が作れる。"
-      },
-      "id": "constant-function",
-      "label": "型側：定数関数を作る"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "starts": "示すとき（命題側）: q の証明が1つあれば、p → q が示せる。字面はまったく同じ。"
-      },
-      "id": "constant-implication",
-      "label": "命題側：同じ形で含意を示す"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "starts": "使うとき（型側）: 適用。"
-      },
-      "id": "function-application",
-      "label": "型側：関数を適用する"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "p",
-        "starts": "使うとき（命題側）: 適用。これも字面が同じ。"
-      },
-      "id": "proof-application",
-      "label": "命題側：証明を適用する"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "keep-left-exercise",
-      "label": "練習：受け取った証明を返す"
-    },
-    {
-      "at": {
-        "section": "CH.implication",
-        "tag": "ol",
-        "starts": "h : P → Q → R に P と Q の証明を順に渡して、R の証明を作れ。 theorem use_two (P Q R : Prop) (h : P → Q → R) (",
-        "question": "h : P → Q → R に P と Q の証明を順に渡して、R の証明を作れ。 theorem use_two (P Q R : Pro"
-      },
-      "id": "use-two-exercise",
-      "label": "練習：二つの証明を順に渡す"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
+        "section": "Trial2.rfl",
         "tag": "h2"
-      },
-      "id": "injective-composition",
-      "label": "単射どうしの合成：設定"
+      }
     },
     {
+      "id": "eq-at-nat",
+      "label": "等式の型と、その証明",
       "at": {
-        "section": "CH1.forall-examples",
         "tag": "p",
-        "starts": "証明の手順。"
-      },
-      "id": "injective-math-proof",
-      "label": "単射の証明を3段階で読む"
+        "starts": "共通の型 α を受け取り"
+      }
     },
     {
+      "id": "eq-refl",
+      "label": "Eq.refl：自分自身との等式の保証",
       "at": {
-        "section": "CH1.forall-examples",
-        "tag": "p",
-        "starts": "論理式。「どの $x$ についても」は"
-      },
-      "id": "injective-formula",
-      "label": "単射の主張を論理式にする"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "p",
-        "starts": "形式化を意識した版。論理式で書いたとおり、示すべきは全称と「ならば」の重なった命題である。"
-      },
-      "id": "specialization",
-      "label": "全称と含意の使い方は適用"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "p",
-        "starts": "項。まず、論理式をそのまま型にして証明する（仮定 hg・hf も単射の定義を開いた論理式の"
-      },
-      "id": "injective-expanded-proof",
-      "label": "定義を開いた単射の証明項"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "p",
-        "starts": "単射のような頻出の性質には、ライブラリが名前のついた述語を用意している—— Functio"
-      },
-      "id": "injective-library-proof",
-      "label": "Function.Injective を使う証明"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "pre",
-        "starts": "theorem comp_injective {α β γ : Type} {f : α → β} {g : β → γ} (hg : Function.Injective g) "
-      },
-      "id": "injective-notation",
-      "label": "単射性の述語で書き直す"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "pre",
-        "starts": "theorem comp_injective {α β γ : Type} {f : α ",
-        "part": "#check comp_injective"
-      },
-      "id": "injective-check",
-      "label": "comp_injective の型と暗黙引数"
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
+        "section": "Trial2.rfl",
         "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "injective-types-exercise",
-      "label": "練習：単射の証明で部分項の型を追う"
+        "starts": "自分自身との等式を保証する Eq.refl"
+      }
     },
     {
+      "id": "rfl-implicit",
+      "label": "rfl は Eq.refl の対象を暗黙引数にしたもの",
       "at": {
-        "section": "CH1.forall-examples",
-        "tag": "pre",
-        "starts": "hg (f x) (f y) h : f x = f y",
-        "answer": true,
-        "question": "定義を開いた最初の example で、hg (f x) (f y) h と hf x y (hg (f x) (f y) h) の型を内側"
-      },
-      "id": "check-injective-results",
-      "label": "単射性を適用した結果"
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "rfl は、対象を暗黙引数にしたもの"
+      }
     },
     {
+      "id": "rfl",
+      "label": "計算で一致する等式を rfl で示す",
       "at": {
-        "section": "CH1.forall-examples",
+        "section": "Trial2.rfl",
+        "tag": "h3",
+        "starts": "計算して一致するときは rfl"
+      }
+    },
+    {
+      "id": "rfl-exercise",
+      "label": "練習：2 + 3 = 5",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial2.practice-review-2"
+      }
+    },
+    {
+      "id": "rfl-error",
+      "label": "練習：rfl が使えない場合",
+      "at": {
         "tag": "ol",
-        "question": "恒等関数が単射であることを示す theorem id_injective (α : Type) : Function.Injective (fun x",
-        "starts": "恒等関数が単射であることを示す theorem id_injective (α : Typ"
-      },
-      "id": "identity-injective",
-      "label": "練習：恒等関数の単射性"
+        "starts": "def oops : 2 + 2 = 5 := rfl は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。",
+        "question": "def oops : 2 + 2 = 5 := rfl は受理されるか。受理されないなら、どの二つの項が計算しても一致しないのかを説明せよ。",
+        "section": "Trial2.practice-review-2"
+      }
     },
     {
+      "id": "forall-rfl",
+      "label": "対象を受け取り、その対象の等式を返す",
       "at": {
-        "section": "CH.dependent-products",
         "tag": "h3",
-        "starts": "整理 — 依存積と「すべての」"
-      },
-      "id": "forall-predicate",
-      "label": "述語と「すべての」の証明"
+        "starts": "対象ごとの等式を保証する",
+        "section": "Trial2.practice-review-2"
+      }
     },
     {
+      "id": "forall-rfl-reading",
+      "label": "全称量化と依存関数型の表示",
       "at": {
-        "section": "CH.dependent-products",
         "tag": "p",
-        "starts": "小例には等式を使う。"
-      },
-      "id": "forall-reflexivity",
-      "label": "自然数を任意に取り rfl を返す"
+        "starts": "依存関数型の形では"
+      }
     },
     {
+      "id": "forall-application",
+      "label": "練習：全称命題への適用",
       "at": {
-        "section": "CH.dependent-products",
-        "tag": "p",
-        "starts": "関数型 α → β を一般化して、"
-      },
-      "id": "dependent-products-forall",
-      "label": "依存積と全称命題の対応"
-    },
-    {
-      "at": {
-        "section": "CH.dependent-products",
-        "tag": "pre",
-        "starts": "def mkPi {α : Type} {P : α → Type} (f : (a : "
-      },
-      "id": "make-dependent-function",
-      "label": "型側と命題側で依存関数を作る"
-    },
-    {
-      "at": {
-        "section": "CH.dependent-products",
-        "tag": "p",
-        "starts": "使うとき（型側）: 点 a を与えると P a の項が出る。"
-      },
-      "id": "use-dependent-function",
-      "label": "型側：点を渡して P a の項を得る"
-    },
-    {
-      "at": {
-        "section": "CH.dependent-products",
-        "tag": "p",
-        "starts": "使うとき（命題側）: 点 a を与えると Q a の証明が出る。"
-      },
-      "id": "use-forall-proof",
-      "label": "命題側：点を渡して Q a の証明を得る"
-    },
-    {
-      "at": {
-        "section": "CH.dependent-products",
         "tag": "h3",
-        "starts": "具体例: 述語と全称命題"
-      },
-      "id": "predicate-iszero",
-      "label": "IsZero：点ごとに命題を割り当てる"
+        "starts": "✏ 練習",
+        "section": "Trial2.practice-review-4"
+      }
     },
     {
+      "id": "eq-symm",
+      "label": "Eq.symm：等号を逆向きに使う",
       "at": {
-        "section": "CH.dependent-products",
-        "tag": "p",
-        "starts": "「すべての n について…」の証明は、依存関数そのものである:各 n を受け取って、命題 "
-      },
-      "id": "prove-all-mul-zero",
-      "label": "各 n について IsZero (n * 0) を示す"
-    },
-    {
-      "at": {
-        "section": "CH.dependent-products",
         "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "forall-specialization-exercise",
-      "label": "練習：引数7を結果の命題へ代入する"
+        "starts": "Eq.symm —",
+        "section": "Trial2.practice-review-4"
+      }
     },
     {
+      "id": "eq-trans",
+      "label": "Eq.trans：二つの等号をつなぐ",
       "at": {
-        "section": "CH.type-checking",
+        "tag": "h3",
+        "starts": "Eq.trans —",
+        "section": "Trial2.practice-review-4"
+      }
+    },
+    {
+      "id": "congr-arg",
+      "label": "congrArg：両辺に同じ関数を適用する",
+      "at": {
+        "tag": "h3",
+        "starts": "congrArg —",
+        "section": "Trial2.practice-review-4"
+      }
+    },
+    {
+      "id": "equality-diagonal",
+      "label": "反射性を満たす関係と対角集合",
+      "at": {
+        "tag": "h3",
+        "starts": "なぜ等式の性質を証明できるのか",
+        "section": "Trial2.practice-review-4"
+      }
+    },
+    {
+      "id": "equality-minimality",
+      "label": "最小性から等号の性質を読む",
+      "at": {
+        "tag": "p",
+        "starts": "対角集合自身も反射的だから、",
+        "section": "Trial2.practice-review-4"
+      }
+    },
+    {
+      "id": "equality-induction",
+      "label": "帰納型が等式の証明に与える原理",
+      "at": {
+        "tag": "h3",
+        "starts": "帰納型による定義が与えるもの",
+        "section": "Trial2.practice-review-4"
+      }
+    },
+    {
+      "id": "left-inverse",
+      "label": "左逆から単射性へ：数学の証明",
+      "at": {
+        "section": "Trial2.left-inverse",
         "tag": "h2"
-      },
-      "id": "verification-conclusion",
-      "label": "型検査が証明検査になる"
+      }
     },
     {
+      "id": "equality-tools",
+      "label": "三つの道具を左逆の証明に当てはめる",
       "at": {
-        "section": "CH.type-checking",
+        "section": "Trial2.left-inverse",
+        "tag": "h3",
+        "starts": "先ほどの三つの道具を、この証明に当てはめる"
+      }
+    },
+    {
+      "id": "left-inverse-term",
+      "label": "左逆の条件を使って証明の項を作る",
+      "at": {
+        "section": "Trial2.left-inverse",
+        "tag": "h3",
+        "starts": "道具を適用して、証明の項を作る"
+      }
+    },
+    {
+      "id": "equalities-exercise",
+      "label": "練習：三つの等号の型",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial2.practice-review-10"
+      }
+    },
+    {
+      "id": "end-practice",
+      "label": "章末問題：命題の型",
+      "at": {
+        "section": "Trial2.practice",
+        "tag": "h2"
+      }
+    },
+    {
+      "id": "three-injections",
+      "label": "練習：三つの単射の合成",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習 — 単射と左キャンセル",
+        "section": "Trial2.practice-exercise-bab90c50"
+      }
+    },
+    {
+      "id": "cancellation-map-exercise",
+      "label": "章末問題：左合成の写像をLeanで形式化する",
+      "at": {
+        "tag": "ol",
+        "starts": "（発展）単射 $f:A\\to B$ に対して、写像",
+        "section": "Trial2.practice-exercise-bab90c50"
+      }
+    },
+    {
+      "id": "cancellation-map-solution",
+      "label": "解答：左合成の定義と単射性",
+      "at": {
         "tag": "p",
-        "starts": "この主張には但し書きが3つある。第一は、この検査が宣言済みの公理に相対的であること。"
-      },
-      "id": "axioms-and-sorry",
-      "label": "公理と sorry を監査する"
+        "class": "answer-heading",
+        "answer": true,
+        "question": "（発展）単射 $f:A\\to B$ に対して、写像",
+        "section": "Trial2.practice-exercise-bab90c50"
+      }
     },
     {
+      "id": "cancel-converse",
+      "label": "練習：左キャンセルから単射性へ",
       "at": {
-        "section": "CH.type-checking",
-        "tag": "h3",
-        "starts": "その検査は、形式化したかったものの検査か"
-      },
-      "id": "what-was-checked",
-      "label": "形式化したかったものの検査か"
+        "tag": "ol",
+        "starts": "$f : \\mathbb{N}\\to\\mathbb{N}$ について、任意の $u,v : \\mathbb{N}\\to\\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。",
+        "question": "$f : \\mathbb{N}\\to\\mathbb{N}$ について、任意の $u,v : \\mathbb{N}\\to\\mathbb{N}$ に対する点ごとの左キャンセルを仮定する。この仮定から $f$ の単射性を示せ。$u,v$ に定数関",
+        "section": "Trial2.practice-exercise-bab90c50"
+      }
     },
     {
+      "id": "three-monotone-exercise",
+      "label": "練習：三つの単調写像の合成",
       "at": {
-        "section": "CH.type-checking",
-        "tag": "p",
-        "starts": "第3点について、Lean の理論"
-      },
-      "id": "consistency-assumption",
-      "label": "理論の解釈と ZFC"
+        "tag": "ol",
+        "starts": "三つの単調写像"
+      }
     },
     {
+      "id": "right-to-left",
+      "label": "練習：単射の右逆は左逆",
       "at": {
-        "section": "CH.type-checking",
-        "tag": "h3",
-        "starts": "仮定を取り違えると、型が合わなくなる"
-      },
-      "id": "wrong-assumption",
-      "label": "仮定の取り違えは型の不一致"
-    },
-    {
-      "at": {
-        "section": "CH.type-checking",
-        "tag": "h3",
-        "starts": "省略を補う処理と、完成した項の検査"
-      },
-      "id": "elaboration-and-kernel",
-      "label": "省略の補完と完成した項の検査"
+        "tag": "ol",
+        "starts": "$f : A\\to B$ が単射で、$g : B\\to A$ が $f(g(y))=y$ をすべての $y\\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\\in A$ で成り立つことを示せ",
+        "question": "$f : A\\to B$ が単射で、$g : B\\to A$ が $f(g(y))=y$ をすべての $y\\in B$ で満たすとする。このとき $g(f(x))=x$ がすべての $x\\in A$ で成り立つことを示せ。$f$ の単射性を",
+        "section": "Trial2.practice-exercise-bab90c50"
+      }
     }
   ],
-  "splits": [
-    {
-      "at": {
-        "section": "CH.reading-proofs",
-        "tag": "pre",
-        "starts": "theorem imp_trans (P Q R : Prop) (hPQ : P → Q"
-      },
-      "before": [
-        "#check imp_trans"
-      ]
-    },
-    {
-      "at": {
-        "section": "CH1.forall-examples",
-        "tag": "pre",
-        "starts": "theorem comp_injective {α β γ : Type} {f : α "
-      },
-      "before": [
-        "#check comp_injective"
-      ]
-    }
-  ]
+  "splits": []
 }

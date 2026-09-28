@@ -10,7 +10,7 @@ Lean が証明を検査する仕組みを知るために、まずコードの読
 中心は、書かれたコードを解読することである。項を見るたびに型を予想し、
 `#check` の出力で確かめよう。各節の練習には、予想を言葉にする問題と、
 小さな項を書いて確かめる問題がある。本文にはその場で確認したい問題を置き、
-類題や組み合わせの練習は章末に集めた。型を追う手順をつかむことが目的である。
+短い確認問題は本文の説明に続けて置き、組み合わせの練習や発展問題は章末に集めた。型を追う手順をつかむことが目的である。
 型検査がそのまま証明の検査になることを、次の章で経験する。
 -/
 
@@ -52,7 +52,7 @@ Lean に書くものの基本の単位を**項**（term）と呼ぶ。項とは�
 これが正式な名前だからである。ここで `.` は名前の区切りで、接頭辞 `Bool` と
 名前 `true` をつないでいる。Lean はこの区切りを使って名前を扱う。
 標準ライブラリでは `true` という短い名前も用意されているので、どちらでも書ける
-（名前の詳しい仕組みは[`03_InductiveTypes.lean` 1節](#sec-Intro1.inductive-types)で見る）。
+（名前の詳しい仕組みは[第5章の名前空間](#sec-Intro2.namespaces)で見る）。
 
 すべての項は型を持つ。ここで大事な観察が1つある。
 **型を表す表記それ自体もまた項である**。実際、`Nat` を `#check` の右に書くと:
@@ -197,9 +197,12 @@ CALLOUT_END
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.terms-types-exercise-030faef3}
 
 1. `#check Bool` と `#check Type 2` の表示を予想してから確かめよ。
+
+2. `#check 3 = 5` と `#check 5 = 5` の表示をそれぞれ予想してから確かめよ。
+   命題の真偽が異なっても、同じ型が付くことを説明せよ。
 -/
 
 /-!
@@ -303,10 +306,14 @@ docstring は直後の宣言に結び付けられ、エディタで名前にカ�
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.definitions-exercise-1fb4cf12}
 
 1. `def z : Nat := 5` を自分で宣言し、`#check z`・`#eval z`・`#print z`
    の表示をそれぞれ予想してから確かめよ。
+
+2. 本文の `def x : Nat := 2` が使える状態で、`def oops : Bool := x` は受理されるか。
+   予想してから試し、エラーメッセージを本文の例と見比べよ。
+   別のファイルで試す場合は、先に `def x : Nat := 2` を書くこと。
 -/
 
 /-!
@@ -369,14 +376,7 @@ def double : Nat → Nat := fun n => n + n
 -/
 
 /-!
-### 先取り（詳しくは 05_MathematicalTools）: `+` の仕組み
-
-本体の `+` は **notation（記法）**の仕組みで用意された記号で、ここでは自然数の足し算を表す。
-この節の後半で、読み先の関数とその型を確認する。
-型に応じて演算を選ぶ仕組みは、[`05_MathematicalTools.lean` 4節](#sec-Intro2.classes)で説明する。
--/
-
-/-!
+本体の `+` は、ここでは自然数の足し算を表す記法である。
 次に、**`n : Nat` を前提として、本体 `n + n` の型が `Nat` になるか**を検査する。
 これが通るので、`fun n => n + n` は注釈どおり `Nat → Nat` 型の項になる。
 [2節](#sec-Intro1.definitions)と同じく、この照合を経て `def` が受理される。
@@ -469,10 +469,13 @@ def double : Nat → Nat := fun n => n + n
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.functions-exercise-3cee9819}
 
 1. 関数 $\mathrm{inc} : \mathbb{N} \to \mathbb{N}$ を $\mathrm{inc}(n) = n + 1$ で定める。これを `fun` を用いて Lean で定義せよ。
    `#check inc` の型と `#eval inc 4` の値を予想してから確かめよ。
+
+2. 関数 $f : \mathbb{N} \to \mathbb{N}$ を $f(n) = 2n + 3$ で定める。これを `fun` を用いて Lean で定義せよ
+   （掛け算は `*` と書く）。`#check f` の型と `#eval f 4` の値を予想してから確かめよ。
 -/
 
 /-!
@@ -504,10 +507,16 @@ binder 形式の宣言は、引数を `fun` で受け取る形の略記である
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.functions-exercise-276c5cc8}
 
 1. 先ほどの $\mathrm{inc}(n) = n + 1$ を、今度は binder 形式で `inc'` という名前で定義せよ。
    `#check inc'` の表示と `#eval inc' 4` の値を予想して確かめ、`inc` と比較せよ。
+
+2. 関数 $\mathrm{triple} : \mathbb{N} \to \mathbb{N}$、$\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。
+   `#check triple` の表示を予想してから確かめよ。
+
+3. 同様に $f(n) = 2n + 3$ を、binder 形式で `f'` という名前で定義せよ。
+   `#check f'` の表示と `#eval f' 4` の値を予想して確かめ、`f` と比較せよ。
 -/
 
 /-!
@@ -586,10 +595,14 @@ def plus : Nat → Nat → Nat := fun a => fun b => a + b
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.functions-exercise-ce690981}
 
 1. 関数 $\mathrm{addThree} : \mathbb{N} \to \mathbb{N}$、$\mathrm{addThree}(n) = 3 + n$ を、`plus 3 : Nat → Nat` を使って
    Lean で定義せよ。`#check addThree` と `#eval addThree 4` の表示を予想してから確かめよ。
+
+2. 関数 $g : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$g(a, b) = 2a + 3b$ を、カリー化して Lean で定義せよ。
+   型は `Nat → Nat → Nat` とし、`fun a => fun b => …` を使うこと。
+   `#check g`・`#check g 2` の型と `#eval g 2 4` の値を予想してから確かめよ。
 -/
 
 /-!
@@ -629,6 +642,15 @@ def addMul (a b c : Nat) : Nat := a + b * c
 矢印形式では `addMul : Nat → Nat → Nat → Nat` と読める。
 -/
 
+
+/-!
+### ✏ 練習 {#sec-Trial1.higher-practice-review-2}
+
+1. 先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。
+   `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。
+   `#check g'`・`#check g''` の表示と、`#eval g' 2 4`・`#eval g'' 2 4` の値を
+   予想してから確かめよ。
+-/
 
 /-!
 ### 関数を引数として受け取る
@@ -677,13 +699,15 @@ def applyAt (F : Nat → Nat) (n : Nat) : Nat := F n
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.functions-exercise-9307142c}
 
 1. 写像 $\mathrm{twice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(n)))$ で定める。
    つまり、$F$ を同じ入力に2回使うのではなく、1回目の結果にもう一度 $F$ を適用する。
    これを Lean で `def twice (F : Nat → Nat) : Nat → Nat := …` と定義せよ。
    `#check twice`・`#check twice double` の表示と `#eval twice double 3` の値を
    予想してから確かめよ。
+
+2. `#eval applyTo21 (plus 100)` の値を予想してから実行せよ。
 -/
 
 /-!
@@ -707,12 +731,15 @@ def Map : Type → Type → Type := fun A B => A → B
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.functions-exercise-96a778d9}
 
 1. `#check Map Nat Bool` の表示を予想してから確かめよ。また、数学でいう
    関数 $\mathrm{double} : \mathbb{N} \to \mathbb{N}$、$\mathrm{double}(n) = n + n$ を、`Map Nat Nat` 型の項としても使えるか考えよ。
    `def double2 : Map Nat Nat := double` が受理されるか予想してから試せ。
    受理されたら、`#check double2` の表示も予想してから確かめよ。
+
+2. `#check Map Nat` の表示を予想してから確かめよ
+   （`Map` に1つだけ渡すと、何が返るか。`plus 3` の型を読んだのと同じ手順で考える）。
 -/
 
 /-!
@@ -724,48 +751,18 @@ def Map : Type → Type → Type := fun A B => A → B
 -/
 
 /-!
-CALLOUT_START preview
+自然数の足し算の関数は `Nat.add` である。
 -/
-
-/-!
-### 先取り（詳しくは 05_MathematicalTools）: `Nat.add` と `HAdd.hAdd`
-
-自然数の足し算そのものは `Nat.add` という名前で定義されている。
-自然数を2つ受け取って自然数を返すので、型は `Nat → Nat → Nat` のはずである:
--/
-
 #check Nat.add
-
 /-!
     Nat.add : Nat → Nat → Nat
-
-一方、記法 `a + b` の読み先は `HAdd.hAdd a b` である。
-`HAdd` は型に応じた足し算を指定するための **class（クラス）**、
-`HAdd.hAdd` はそこで指定された足し算を使う関数である。
-これを自然数2つから自然数を返す関数として使ってみよう。
-次の括弧内の `: Nat → Nat → Nat` は、その型を指定する注釈である:
 -/
-
-#check (HAdd.hAdd : Nat → Nat → Nat)
-
+#eval Nat.add 3 4
 /-!
-    HAdd.hAdd : Nat → Nat → Nat
+    7
 
-Lean は指定された型に合う **instance（インスタンス）**を自動的に補う。
-標準環境では、同じ型どうしの足し算を指定する `Add` というクラスを経由して、
-`Nat.add` が使われる。このつながりは標準ライブラリの定義によるものであり、
-上の2つの型が同じだから、という理由ではない。同じ型の関数でも中身は異なり得る。
-
-ここでは「`+` は記法で、型に応じて演算が選ばれ、自然数では `Nat.add` が使われる」
-と押さえておけばよい。ここでは `HAdd.hAdd` の一般的な型には立ち入らない。
-クラスやインスタンスの定義・選択の仕組みは、[`05_MathematicalTools.lean` 4節](#sec-Intro2.classes)で扱う。
-数字も型に応じて解釈される記法であり、その仕組みは `OfNat` というクラスが担う
-（[`05_MathematicalTools.lean` 4節](#sec-Intro2.classes)の補足で見る）。
-今は、ほかの型の指定がなければ `3` などを `Nat` の項として読めばよい。
--/
-
-/-!
-CALLOUT_END
+`3 + 4` は、自然数については `Nat.add 3 4` と同じ計算になる。
+型に応じて演算を選ぶ仕組みは、[第5章](#sec-Intro2.classes)で説明する。
 -/
 
 /-!
@@ -1127,7 +1124,7 @@ def idAt (α : Type) (a : α) : α := a
 #eval idAt Nat 42
 
 /-!
-    42
+42
 
 `idAt Nat : Nat → Nat` に `42 : Nat` を渡している。
 最初の引数で残りの型が決まり、その型に合う次の引数を渡す、という順序で読める。
@@ -1145,9 +1142,13 @@ def idAt (α : Type) (a : α) : α := a
 `idAt Nat` なら、`B α = α → α` に `Nat` を代入して `Nat → Nat` となる。
 入力によらず結果の型が同じ場合が、これまでの普通の関数型 `A → C` である。
 
-### ✏ 練習
+### ✏ 練習 {#sec-Intro1.dependent-functions-exercise-9246117e}
 
 1. `#check idAt (Nat → Nat)` の表示と、`#eval idAt (Nat → Nat) double 21` の値を予想せよ。
+
+2. 集合 A の要素 a に対して、集合 B 上の定数写像を対応させる
+   `constAt (A B : Type) (a : A) : B → A` を書け。
+   `#check constAt Nat Bool 5` と `#eval constAt Nat Bool 5 true` を確かめよ。
 -/
 
 /-!
@@ -1247,80 +1248,39 @@ def natId : Nat → Nat := idImplicit
 型や値を予想し、本文で学んだ読み方を確かめよう。
 -/
 
-/-!
-### ✏ 練習 — 基礎と定義 {#sec-Trial1.basic-practice}
-
-1. `#check 3 = 5` と `#check 5 = 5` の表示をそれぞれ予想してから確かめよ。
-   命題の真偽が異なっても、同じ型が付くことを説明せよ。
-
-2. 本文の `def x : Nat := 2` が使える状態で、`def oops : Bool := x` は受理されるか。
-   予想してから試し、エラーメッセージを本文の例と見比べよ。
-   別のファイルで試す場合は、先に `def x : Nat := 2` を書くこと。
--/
 
 /-!
-### ✏ 練習 — 関数とバインダー形式 {#sec-Trial1.function-practice}
+### ✏ 練習 {#sec-Trial1.function-practice}
 
-1. 関数 $f : \mathbb{N} \to \mathbb{N}$ を $f(n) = 2n + 3$ で定める。これを `fun` を用いて Lean で定義せよ
-   （掛け算は `*` と書く）。`#check f` の型と `#eval f 4` の値を予想してから確かめよ。
+1. `#eval double (double 5)` の値を予想してから実行せよ。
 
-2. 関数 $\mathrm{triple} : \mathbb{N} \to \mathbb{N}$、$\mathrm{triple}(n) = n + n + n$ を binder 形式で定義せよ。
-   `#check triple` の表示を予想してから確かめよ。
-
-3. `#eval double (double 5)` の値を予想してから実行せよ。
-
-4. 同様に $f(n) = 2n + 3$ を、binder 形式で `f'` という名前で定義せよ。
-   `#check f'` の表示と `#eval f' 4` の値を予想して確かめ、`f` と比較せよ。
--/
-
-/-!
-### ✏ 練習 — 多変数関数と高階関数 {#sec-Trial1.higher-practice}
-
-1. 関数 $g : \mathbb{N} \times \mathbb{N} \to \mathbb{N}$、$g(a, b) = 2a + 3b$ を、カリー化して Lean で定義せよ。
-   型は `Nat → Nat → Nat` とし、`fun a => fun b => …` を使うこと。
-   `#check g`・`#check g 2` の型と `#eval g 2 4` の値を予想してから確かめよ。
-
-2. 先ほどの $g(a, b) = 2a + 3b$ を、binder 形式で2通りに書け。
-   `g'` は `(a : Nat) (b : Nat)` と分け、`g''` は `(a b : Nat)` とまとめること。
-   `#check g'`・`#check g''` の表示と、`#eval g' 2 4`・`#eval g'' 2 4` の値を
-   予想してから確かめよ。
-
-3. 写像 $\mathrm{thrice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(F(n))))$ で定める。
+2. 写像 $\mathrm{thrice} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$ を、$F \mapsto (n \mapsto F(F(F(n))))$ で定める。
    これを Lean で定義し、`#check thrice`・`#check thrice double` の表示と
    `#eval thrice double 3` の値を予想してから確かめよ。
 
-4. `#check Map Nat` の表示を予想してから確かめよ
-   （`Map` に1つだけ渡すと、何が返るか。`plus 3` の型を読んだのと同じ手順で考える）。
--/
-
-/-!
-### ✏ 練習 — 型の計算と関数の組み合わせ {#sec-Trial1.combined-practice}
-
-1. `#check` する**前に**型を計算せよ: `(3 + 4) * 2`、`plus (double 3)`、
+3. `#check` する**前に**型を計算せよ: `(3 + 4) * 2`、`plus (double 3)`、
    `applyTo21 (plus 3)`、`fun n : Nat => plus n n`。それから確かめよ。
 
-2. `#eval applyTo21 (plus 100)` の値を予想してから実行せよ。
-
-3. 次の2つの写像を Lean で定義し、`#check` の表示を予想してから確かめよ:
+4. 次の2つの写像を Lean で定義し、`#check` の表示を予想してから確かめよ:
    * $\mathrm{evalAt} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \times \mathbb{N} \to \mathbb{N}$、$\mathrm{evalAt}(F, n) = F(n)$。カリー化して定義すること。
      `#eval evalAt double 5` の値も予想してから実行せよ。
    * $\mathrm{shift} : \mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathrm{Map}(\mathbb{N}, \mathbb{N})$、$F \mapsto (n \mapsto F(n + 1))$。
      関数を受け取って**関数を返す**関数である。
      `#eval shift double 3` の値も予想してから実行せよ。
 
-4. 「型から項を書く」練習: $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$ という写像を、**中身の違うもので2つ**考えよ
+5. 「型から項を書く」練習: $\mathrm{Map}(\mathbb{N}, \mathbb{N}) \to \mathbb{N}$ という写像を、**中身の違うもので2つ**考えよ
    （例えば $F \mapsto F(21)$ と $F \mapsto 0$）。それらを Lean で `useF1`・`useF2` と名付けて定義し、
    型を予想してから `#check` で確かめよ。どちらも `(Nat → Nat) → Nat` 型になるはずである。
    同じ型に項は何通りもある——型は仕様であって、中身までは決めない。
 
-5. （発展）写像 $G : B \to C$ と $F : A \to B$ に合成 $G \circ F : A \to C$ を対応させる写像を考える。
+6. （発展）写像 $G : B \to C$ と $F : A \to B$ に合成 $G \circ F : A \to C$ を対応させる写像を考える。
    型 $A$・$B$・$C$ も引数に取り、これを Lean で
    `compose (A B C : Type) (G : B → C) (F : A → B) : A → C` と定義せよ。
    `#check compose` の表示と、
    `#eval compose Nat Nat Nat double (fun n => n + 1) 3` の値を予想してから
    確かめよ。
 
-6. （発展）`evalAt` と `shift` を一般化し、任意の $A$・$B$ に対する写像 $\mathrm{Map}(A, B) \times A \to B$、$(F, a) \mapsto F(a)$ と、
+7. （発展）`evalAt` と `shift` を一般化し、任意の $A$・$B$ に対する写像 $\mathrm{Map}(A, B) \times A \to B$、$(F, a) \mapsto F(a)$ と、
    写像 $g : A \to A$ に対する変換 $\mathrm{Map}(A, A) \to \mathrm{Map}(A, A)$、$F \mapsto (a \mapsto F(g(a)))$ を考える。
    型や $g$ も引数として受け取るように、Lean で
    `evalAt' (A B : Type) (F : A → B) (a : A) : B` と
@@ -1328,63 +1288,19 @@ def natId : Nat → Nat := idImplicit
    両者の `#check` の表示と、
    `#eval evalAt' Nat Nat double 5` と `#eval shift' Nat (fun x => x + 1) double 3`
    の値を予想してから確かめ、元の版と比較せよ。
--/
 
-/-!
-### 章末の準備: 自然数の n 個組を関数で表す
+8. 自然数の $n$ 個組を、番号から成分を取り出す関数として表そう。
+   番号の型を `Fin n` とし、型の族 `Tuple` と各成分が7である組を返す `constTuple` を次で定義する。
 
-自然数の $n$ 個組は、番号から成分を取り出す関数として表せる。
-番号の型を `Fin n` とすると、その型は `Fin n → Nat` になる。
-有限の型の項を一つ返す例に慣れたら、今度は関数を返す依存関数も読んでみよう。
--/
+       def Tuple : Nat → Type := fun n => Fin n → Nat
+       def constTuple : (n : Nat) → Tuple n :=
+         fun n => fun (_ : Fin n) => 7
 
-def Tuple : Nat → Type := fun n => Fin n → Nat
-
-#check Tuple
-
-/-!
-    Tuple : Nat → Type
--/
-
-#check Tuple 3
-
-/-!
-    Tuple 3 : Type
-
-`Tuple 3` は、定義を展開すると `Fin 3 → Nat` である。
-三つの番号にそれぞれ自然数を割り当てる関数を、自然数の3個組と読む。
-`Tuple` 自身は、自然数を受け取って型を返す**普通の関数**である。
-
-では、各 n について、すべての成分が7である n 個組を作ってみよう。
-**型の族 `Tuple` に対する依存関数**になるのが、次の `constTuple` である。
--/
-
-def constTuple : (n : Nat) → Tuple n :=
-  fun n => fun (_ : Fin n) => 7
-
-#check constTuple
-
-/-!
-    constTuple (n : Nat) : Tuple n
-
-外側の `fun` は個数 `n : Nat` を受け取る。すると作るべき型は `Tuple n`、
-つまり `Fin n → Nat` に決まる。内側の `fun` は `Fin n` 型の番号を受け取り、7を返す。
-番号そのものを計算に使わなくても、受け取れる番号の**型**は n によって変わる。
--/
-
-#check constTuple 3
-
-/-!
-    constTuple 3 : Tuple 3
--/
-
-#check constTuple 4
-
-/-!
-    constTuple 4 : Tuple 4
-
-`Tuple` は型を返し、`constTuple` は**その型の項を返す**。この違いを区別しよう。
-`constTuple 3` は3個組、`constTuple 4` は4個組であり、結果の型が違う。
+   `Tuple 2` を定義で展開すると、どんな型になるか。
+   `constTuple 2` の内側の引数と結果の型を答えよ。
+   `Tuple` と `constTuple` のどちらが型の族で、どちらがその族の項を返す依存関数かも説明せよ。
+9. n と自然数 a を受け取り、すべての成分が a である n 個組を返す
+   `repeatTuple (n : Nat) (a : Nat) : Tuple n` を書け。
 -/
 
 /-!
@@ -1429,17 +1345,4 @@ def zeros : (n : Nat) → Vector Nat n := fun n => Vector.replicate n 0
 
 /-!
 CALLOUT_END
--/
-
-/-!
-### ✏ 練習 — 依存関数 {#sec-Trial1.dependent-practice}
-
-1. 集合 A の要素 a に対して、集合 B 上の定数写像を対応させる
-   `constAt (A B : Type) (a : A) : B → A` を書け。
-   `#check constAt Nat Bool 5` と `#eval constAt Nat Bool 5 true` を確かめよ。
-
-2. `Tuple 2` を定義で展開すると、どんな型になるか。
-   `constTuple 2` の内側の引数と結果の型を答えよ。
-3. n と自然数 a を受け取り、すべての成分が a である n 個組を返す
-   `repeatTuple (n : Nat) (a : Nat) : Tuple n` を書け。
 -/

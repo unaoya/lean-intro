@@ -1,2 +1,5 @@
 Nat.two_mul (n : Nat) : 2 * n = n + n
 Nat.mul_add (n m k : Nat) : n * (m + k) = n * m + n * k
+'Bool.noConfusion' does not depend on any axioms
+'comp_injective' does not depend on any axioms
+Nat.sub_add_cancel {n m : Nat} (h : m ≤ n) : n - m + m = n

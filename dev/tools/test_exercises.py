@@ -43,7 +43,8 @@ class ExerciseTest(unittest.TestCase):
                 numbers.append(int(question.attrs['start']))
             start += renderer.exercise_count(segments)
         self.assertEqual(numbers, list(range(1, start)))
-        self.assertGreater(len(numbers), 140)
+        # 改稿した第1〜5章は71問、第6章は11問。連番と対応を全件確認する。
+        self.assertEqual(len(numbers), 82)
         pdf = renderer.pdf_html({name: name for name in renderer.CHAPTERS}, bodies)
         self.assertEqual(len(re.findall(r'<details open class="sol"', pdf)), len(numbers))
 

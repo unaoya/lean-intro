@@ -43,3 +43,5 @@ Membership.{u, v} (α : outParam (Type u)) (γ : Type v) : Type (max u v)
 Set.subset_refl {X : Type} (s : Set X) : s ⊆ s
 Geometry.origin : Point
 Geometry.origin : Point
+Signal.red : Signal
+true : Bool

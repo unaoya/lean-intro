@@ -7,6 +7,9 @@ import LeanIntro.Original.«05_MathematicalTools»
 
 -- ## 1. タクティク — 証明のもう1つの書き方
 
+def swapAnd {p q : Prop} : p ∧ q → q ∧ p :=
+  fun h => And.intro h.right h.left
+
 theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
   intro h            -- `fun h =>` に対応
   exact ⟨h.right, h.left⟩   -- この項をそのまま置く
@@ -16,18 +19,25 @@ theorem swapAnd' {p q : Prop} : p ∧ q → q ∧ p := by
 #print swapAnd'
 
 /- ✏ 練習
-132. `04_Exists.lean` 3節の `swapOr` をタクティク（`intro`・`cases`・`exact`）で
-   書き直し、`#print` で生成された項を元の `swapOr` と見比べよ。字面は一致しない——
+72. 次の「または」の左右を交換する証明をタクティク（`intro`・`cases`・`exact`）で
+   書き直し、`#print` で生成された項と見比べよ。
+
+       def swapOr {p q : Prop} : p ∨ q → q ∨ p := fun h =>
+         match h with
+         | Or.inl hp => Or.inr hp
+         | Or.inr hq => Or.inl hq
+
+   字面は一致しない——
    `cases` は `match` ではなく `Or.casesOn` を直接置くからである。
    **それでも型は同じ**であり、検査されるのはその型だけである、
    というのが本節の要点である。
-133. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
+73. `theorem idTac {p : Prop} : p → p` を `intro`・`exact` で書き、`#print idTac` の
    表示を予想してから確かめよ（こちらは手書きと同じ字面に戻る）。
 -/
 
 -- ## 2. 集合
 
--- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（[`05_MathematicalTools.lean` 4節](#sec-Intro2.namespaces)）
+-- ここから `end Set` までの宣言には接頭辞 `Set.` が付く（[`05_MathematicalTools.lean` 7節](#sec-Intro2.namespaces)）
 namespace Set
 
 -- 共通の引数の前置き。以後の宣言が `α` を使うと、自動で引数に取り込まれる
@@ -173,10 +183,10 @@ theorem interFin_mem : ∀ (n : Nat) (W : Fin n → Set α) (a : α), a ∈ inte
 end Set
 
 /- ✏ 練習
-134. `example : (2 : Nat) ∈ ({n | n < 5} : Set Nat)` を証明せよ。
+74. `example : (2 : Nat) ∈ ({n | n < 5} : Set Nat)` を証明せよ。
    ヒント: `∈` と `setOf` を展開すればゴールは `2 < 5`、すなわち `3 ≤ 5`——
-   `04_Exists.lean` 6節の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
-135. `#print axioms Set.compl_compl` の結果を予想してから確かめよ
+   `03_InductiveTypes.lean` 5節の構成子 `Nat.le.step`・`Nat.le.refl` で書ける。
+75. `#print axioms Set.compl_compl` の結果を予想してから確かめよ
    （背理法を使った証明だった）。
 -/
 
@@ -191,7 +201,7 @@ structure Function.Bijective {α β : Type} (f : α → β) : Prop where
 #check Function.Bijective
 
 /- ✏ 練習
-136. 恒等写像が全単射であること
+76. 恒等写像が全単射であること
    `example : Function.Bijective (fun n : Nat => n)` を証明せよ
    （`injective` は仮定をそのまま返し、`surjective` は証人 `b` と `rfl`）。
 -/
@@ -286,7 +296,7 @@ def IsClosed (s : Set X) : Prop := IsOpen sᶜ
 #check discrete
 
 /- ✏ 練習
-137. `example : (discrete Nat).IsOpen {n | n = 0}` を証明せよ
+77. `example : (discrete Nat).IsOpen {n | n = 0}` を証明せよ
    （離散位相では、どの部分集合の開性も `True`——証明は `trivial`）。
 -/
 
@@ -312,7 +322,7 @@ theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Co
 #check Continuous.comp
 
 /- ✏ 練習
-138. `#check @Continuous` の表示を予想してから確かめよ
+78. `#check @Continuous` の表示を予想してから確かめよ
    （2つの空間の位相が、どの種類の括弧で並ぶか）。
 -/
 
@@ -390,7 +400,7 @@ example {K : Set X} (hK : IsCompact K) {f : X → Y} (hf : Continuous f) :
     | ⟨J, hJ, hsub⟩ => ⟨J, hJ, Set.image_subset_biUnion hsub⟩
 
 /- ✏ 練習
-139. `#print axioms Set.subset_preimage_iUnion` の結果を予想してから確かめよ
+79. `#print axioms Set.subset_preimage_iUnion` の結果を予想してから確かめよ
    （包含の付け替えだけの証明に、公理は要るだろうか）。
 -/
 
@@ -681,9 +691,9 @@ noncomputable def Homeomorph.ofContinuousBijective [CompactSpace X] [Hausdorff Y
 #print axioms Homeomorph.ofContinuousBijective
 
 /- ✏ 練習
-140. `#print axioms isOpen_empty` の結果を予想してから確かめよ。
+80. `#print axioms isOpen_empty` の結果を予想してから確かめよ。
    `Classical.choice` は入るだろうか（合併の公理と `Set.ext` だけで示した証明だった）。
-141. `discrete Bool` を使って、`TopologicalSpace Bool` の項を1つ `example` で書け。
-142. `IsCompact.isClosed` の型で、「空間がハウスドルフ」という仮定が
+81. `discrete Bool` を使って、`TopologicalSpace Bool` の項を1つ `example` で書け。
+82. `IsCompact.isClosed` の型で、「空間がハウスドルフ」という仮定が
    3種類の括弧のどれで現れるか予想してから、本文の表示の枠で確かめよ。
 -/

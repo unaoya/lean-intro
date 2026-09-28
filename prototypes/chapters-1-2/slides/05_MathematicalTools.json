@@ -115,6 +115,14 @@
       }
     },
     {
+      "id": "practice-map-pointed",
+      "label": "練習：台の型を保ち、点を移す",
+      "at": {
+        "tag": "ol",
+        "starts": "点付き集合 $(A,a)$ と写像"
+      }
+    },
+    {
       "id": "subtype",
       "label": "部分型は値と証明の組",
       "at": {
@@ -168,6 +176,14 @@
       "at": {
         "tag": "h3",
         "starts": "第1章の依存関数を、構成子まで読む"
+      }
+    },
+    {
+      "id": "practice-add-even",
+      "label": "練習：条件付きの値を返す",
+      "at": {
+        "tag": "ol",
+        "starts": "二つの偶数の和を、偶数という条件を持つ値として返す"
       }
     },
     {
@@ -267,6 +283,14 @@
       }
     },
     {
+      "id": "practice-point-syntax",
+      "label": "練習：Point の記法を作る",
+      "at": {
+        "tag": "ol",
+        "starts": "⟪1, true⟫ にならって、Point 用の記法"
+      }
+    },
+    {
       "id": "set",
       "label": "集合を述語として表す",
       "at": {
@@ -315,6 +339,14 @@
       }
     },
     {
+      "id": "practice-subset-trans",
+      "label": "練習：包含の推移律",
+      "at": {
+        "tag": "ol",
+        "starts": "推移律を項で書け"
+      }
+    },
+    {
       "id": "namespace",
       "label": "名前空間で名前をまとめる",
       "at": {
@@ -336,27 +368,6 @@
       "at": {
         "tag": "h2",
         "starts": "8. ✏ 練習"
-      },
-      "column_at": {
-        "tag": "p",
-        "starts": "本体を fun p n => ⟨p, n⟩ と書いてもよい。",
-        "answer": true
-      }
-    },
-    {
-      "id": "practice-map-pointed",
-      "label": "練習：台の型を保ち、点を移す",
-      "at": {
-        "tag": "ol",
-        "starts": "点付き集合 $(A,a)$ と写像"
-      }
-    },
-    {
-      "id": "practice-add-even",
-      "label": "練習：条件付きの値を返す",
-      "at": {
-        "tag": "ol",
-        "starts": "二つの偶数の和を、偶数という条件を持つ値として返す"
       }
     },
     {
@@ -400,27 +411,11 @@
       }
     },
     {
-      "id": "practice-point-syntax",
-      "label": "練習：Point の記法を作る",
-      "at": {
-        "tag": "ol",
-        "starts": "⟪1, true⟫ にならって、Point 用の記法"
-      }
-    },
-    {
       "id": "practice-infix",
       "label": "練習：中置記法を作る",
       "at": {
         "tag": "ol",
         "starts": "infixl:65 \" ⊞ \" => myAdd で、"
-      }
-    },
-    {
-      "id": "practice-subset-trans",
-      "label": "練習：包含の推移律",
-      "at": {
-        "tag": "ol",
-        "starts": "推移律を項で書け"
       }
     },
     {

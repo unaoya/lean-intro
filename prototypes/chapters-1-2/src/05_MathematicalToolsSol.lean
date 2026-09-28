@@ -2,7 +2,7 @@ import «05_MathematicalTools»
 
 /-! `05_MathematicalTools.lean` の試作の練習問題の解答。 -/
 
-/-! SOL Trial5.structures:1 -/
+/-! SOL Trial5.structures-exercise-6e524f21:1 -/
 
 def pairAt (A : Type) (f g : A → Nat) : A → Point :=
   fun a => Point.mk (f a) (g a)
@@ -18,7 +18,7 @@ def pairAt (A : Type) (f g : A → Nat) : A → Point :=
 本体は `⟨f a, g a⟩` と書いてもよい。
 -/
 
-/-! SOL Trial5.practice:1 -/
+/-! SOL Trial5.practice-review-1:1 -/
 
 structure Circle : Type where
   center : Point
@@ -41,7 +41,7 @@ def makeCircle : Point → Nat → Circle := fun p n => Circle.mk p n
 `center : Point` を取り出してから、その `x : Nat` を取り出している。
 -/
 
-/-! SOL Trial5.practice:2 -/
+/-! SOL Trial5.practice-review-2:1 -/
 
 def mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
   PointedType.mk p.carrier (f p.point)
@@ -55,7 +55,7 @@ def mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
 構成子の第二引数に要求される型は、第一引数の `p.carrier` によって決まる。
 -/
 
-/-! SOL Trial5.practice:3 -/
+/-! SOL Trial5.practice-review-3:1 -/
 
 def addEven (n m : EvenNat) : EvenNat :=
   Subtype.mk (n.val + m.val) (isEven_add n.property m.property)
@@ -69,7 +69,7 @@ def addEven (n m : EvenNat) : EvenNat :=
 第4章で証明した `isEven_add` が、ちょうどこの型の項を返す。
 -/
 
-/-! SOL Trial5.practice:4 -/
+/-! SOL Trial5.practice:1 -/
 
 instance : Pointed Bool where
   point := false
@@ -87,7 +87,7 @@ def pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst B
 一般的な定理 `pointPair_fst` も、すべて `Bool` で使えるようになる。
 -/
 
-/-! SOL Trial5.practice:5 -/
+/-! SOL Trial5.practice:2 -/
 
 class Magma (α : Type) : Type where
   op : α → α → α
@@ -107,7 +107,7 @@ instance : Magma Nat where
 変わっただけである。
 -/
 
-/-! SOL Trial5.practice:6 -/
+/-! SOL Trial5.practice:3 -/
 
 def opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a
 
@@ -119,7 +119,7 @@ def opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a
 `Nat` の登録簿には `op := Nat.add` を載せたので、`opSelf Nat 3 = 3 + 3`。
 -/
 
-/-! SOL Trial5.practice:7 -/
+/-! SOL Trial5.practice:4 -/
 
 instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β) where
   op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
@@ -133,7 +133,7 @@ instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β) where
 `Magma Nat` の連鎖で見つかる。`.snd` は `2 + 20`。
 -/
 
-/-! SOL Trial5.practice:8 -/
+/-! SOL Trial5.practice:5 -/
 
 instance : Mul Point where
   mul p q := ⟨p.x * q.x, p.y * q.y⟩
@@ -146,7 +146,7 @@ instance : Mul Point where
 `x` 成分どうしの積 `2 * 4`。登録すれば `*` がそのまま `Point` に使える。
 -/
 
-/-! SOL Trial5.practice:9 -/
+/-! SOL Trial5.practice-review-9:1 -/
 
 syntax "⟬" term ", " term "⟭" : term
 
@@ -161,7 +161,7 @@ macro_rules
 読む方向だけの記法なので、表示では展開先の構成子の形が見える。
 -/
 
-/-! SOL Trial5.practice:10 -/
+/-! SOL Trial5.practice:6 -/
 
 infixl:65 " ⊞ " => myAdd
 
@@ -173,7 +173,7 @@ infixl:65 " ⊞ " => myAdd
 `1 + 1 = 2` にあたる `succ` 2つ。中置記法は `myAdd` の適用に展開されている。
 -/
 
-/-! SOL Trial5.practice:11 -/
+/-! SOL Trial5.practice-review-11:1 -/
 
 def Set.subset_trans {X : Type} {s t u : Set X}
     (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u :=
@@ -184,7 +184,7 @@ def Set.subset_trans {X : Type} {s t u : Set X}
 `a ∈ u` を得る——含意の連鎖と同じ形である。
 -/
 
-/-! SOL Trial5.practice:12 -/
+/-! SOL Trial5.practice:7 -/
 
 def evens : Set Nat := {n | IsEven n}
 
@@ -195,7 +195,7 @@ def four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩
 証人 `2` と `rfl` で作れる。
 -/
 
-/-! SOL Trial5.practice:13 -/
+/-! SOL Trial5.practice:8 -/
 
 def allNat : Set Nat := {_n | True}
 
@@ -207,7 +207,7 @@ def subset_allNat : ∀ s : Set Nat, s ⊆ allNat :=
 使わない引数は `_` 付きの名前にしてある。
 -/
 
-/-! SOL Trial5.practice:14 -/
+/-! SOL Trial5.practice:9 -/
 
 def odds : Set Nat := {n | ¬IsEven n}
 
@@ -219,7 +219,7 @@ def odds : Set Nat := {n | ¬IsEven n}
 集合への所属は命題。中身が `¬…` でも、`∈` の式全体の型は `Prop` である。
 -/
 
-/-! SOL Trial5.practice:15 -/
+/-! SOL Trial5.practice:10 -/
 
 namespace Geometry
 

@@ -1,6 +1,6 @@
 import «03_InductiveTypes»
 
-/-! SOL Trial3.constructors:1 -/
+/-! SOL Trial3.constructors-exercise-42721aca:1 -/
 
 def signalCode : Signal → Nat := fun s =>
   match s with
@@ -11,7 +11,7 @@ def signalCode : Signal → Nat := fun s =>
 各枝で `Nat` の項を返す。黄色の場合の値は `1` である。
 -/
 
-/-! SOL Trial3.dependent-pairs:1 -/
+/-! SOL Trial3.dependent-pairs-exercise-baf1c270:1 -/
 
 def attachLast : Nat → Numbered := fun n =>
   Numbered.mk (n + 1) (lastIndex n)
@@ -20,7 +20,7 @@ def attachLast : Nat → Numbered := fun n =>
 構成子の第一引数に `n + 1` を渡すと、第二引数に必要な型が `Fin (n + 1)` と決まる。
 -/
 
-/-! SOL Trial3.indexed:1 -/
+/-! SOL Trial3.indexed-exercise-884af91c:1 -/
 
 def one_le_three : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)
 
@@ -29,7 +29,7 @@ def two_le_four_again : 2 ≤ 4 := succLeSuccByMatch 1 3 one_le_three
 `1 ≤ 1` から二段進む。両辺に一つ加えると、結果の型は `2 ≤ 4` である。
 -/
 
-/-! SOL Trial3.practice:1 -/
+/-! SOL Trial3.constructors-exercise-42721aca:2 -/
 
 def prev : Signal → Signal := fun s =>
   match s with
@@ -40,7 +40,7 @@ def prev : Signal → Signal := fun s =>
 赤を次の色に送ると青、青を逆向きに送ると赤になる。
 -/
 
-/-! SOL Trial3.practice:2 -/
+/-! SOL Trial3.practice-review-2:1 -/
 
 def swapSum {A B : Type} : MySum A B → MySum B A := fun s =>
   match s with
@@ -50,7 +50,7 @@ def swapSum {A B : Type} : MySum A B → MySum B A := fun s =>
 例えば左の枝では `a : A`。行き先 `MySum B A` では `A` が右側なので、`MySum.inr` を使う。
 -/
 
-/-! SOL Trial3.practice:3 -/
+/-! SOL Trial3.practice-review-3:1 -/
 
 def pairMaps (X A B : Type) (f : X → A) (g : X → B) : X → MyPair A B :=
   fun x => MyPair.mk (f x) (g x)
@@ -58,7 +58,7 @@ def pairMaps (X A B : Type) (f : X → A) (g : X → B) : X → MyPair A B :=
 それぞれ `f x : A`、`g x : B` なので、`MyPair.mk` の二つの引数に渡せる。
 -/
 
-/-! SOL Trial3.practice:4 -/
+/-! SOL Trial3.practice:1 -/
 
 def graphOf (A : Type) (B : A → Type) (f : (a : A) → B a) :
     A → FamilyPair A B := fun a => FamilyPair.mk a (f a)
@@ -67,7 +67,7 @@ def graphOf (A : Type) (B : A → Type) (f : (a : A) → B a) :
 関数適用で得た `f a : B a` が、その型を持っている。
 -/
 
-/-! SOL Trial3.practice:5 -/
+/-! SOL Trial3.practice-review-5:1 -/
 
 def toNat : MyNat → Nat := fun n =>
   match n with
@@ -77,7 +77,7 @@ def toNat : MyNat → Nat := fun n =>
 小さい項 `k` への関数の値を使って、`succ k` への値を作っている。
 -/
 
-/-! SOL Trial3.practice:6 -/
+/-! SOL Trial3.practice:2 -/
 
 def leAddRight : ∀ n k : Nat, n ≤ n + k := fun n k =>
   match k with
@@ -88,7 +88,7 @@ def leAddRight : ∀ n k : Nat, n ≤ n + k := fun n k =>
 そのため、`n ≤ n + j` の証明に `step` を適用すればよい。
 -/
 
-/-! SOL Trial3.practice:7 -/
+/-! SOL Trial3.practice:3 -/
 
 def zeroLeOfEq (n m : Nat) (h : n = m) (hn : 0 ≤ n) : 0 ≤ m :=
   match h with

@@ -1,10 +1,10 @@
 import «01_TypesAndTerms»
 
 /-!
-`01_TypesAndTerms.lean` の練習の解答。本文の順に、型と項を確かめる。
+第1章の解答。本文中の確認問題、章末問題の順に並べる。
 -/
 
-/-! SOL Intro1.terms-types:1 -/
+/-! SOL Intro1.terms-types-exercise-030faef3:1 -/
 
 #check Bool
 
@@ -22,25 +22,7 @@ import «01_TypesAndTerms»
 宇宙の階段は1段のぼる: `Type n : Type (n + 1)`。
 -/
 
-/-! SOL Intro1.terms-types:2 -/
-
-#check 3 < 5
-
-/-!
-    3 < 5 : Prop
--/
-
-#check 5 < 3
-
-/-!
-    5 < 3 : Prop
-
-`3 < 5` は真で `5 < 3` は偽だが、どちらも型は `Prop`。
-`#check` は命題の真偽を調べていない——命題を表す項が型 `Prop` を持つことを
-確認している。
--/
-
-/-! SOL Intro1.definitions:1 -/
+/-! SOL Intro1.definitions-exercise-1fb4cf12:1 -/
 
 def z : Nat := 5
 
@@ -65,11 +47,150 @@ def z : Nat := 5
 `#check` は型、`#eval` は計算した値、`#print` は宣言そのものを表示する。
 -/
 
-/-! SOL Intro1.definitions:2 -/
+/-! SOL Intro1.functions-exercise-3cee9819:1 -/
+
+def inc : Nat → Nat := fun n => n + 1
+
+#check inc
+
+/-!
+    inc : Nat → Nat
+-/
+
+#eval inc 4
+
+/-!
+    5
+-/
+
+/-! SOL Intro1.functions-exercise-276c5cc8:1 -/
+
+def inc' (n : Nat) : Nat := n + 1
+
+#check inc'
+
+/-!
+    inc' (n : Nat) : Nat
+-/
+
+#eval inc' 4
+
+/-!
+    5
+
+表示は binder 形式になったが、型は `inc` と同じ `Nat → Nat`。値も同じである。
+-/
+
+/-! SOL Intro1.functions-exercise-ce690981:1 -/
+
+def addThree : Nat → Nat := plus 3
+
+#check addThree
+
+/-!
+    addThree : Nat → Nat
+-/
+
+#eval addThree 4
+
+/-!
+    7
+-/
+
+/-! SOL Intro1.functions-exercise-9307142c:1 -/
+
+def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
+
+#check twice
+
+/-!
+    twice (F : Nat → Nat) : Nat → Nat
+
+矢印形式では `(Nat → Nat) → (Nat → Nat)`。数学でいう
+Map(ℕ, ℕ) → Map(ℕ, ℕ) に対応している。
+
+`F (F n)` の括弧は、`F n` 全体を一つの引数として渡すために必要である。
+省略すると `(F F) n` と読まれ、最初の適用で型が合わなくなる。
+-/
+
+#check twice double
+
+/-!
+    twice double : Nat → Nat
+-/
+
+#eval twice double 3
+
+/-!
+    12
+-/
+
+/-! SOL Intro1.functions-exercise-96a778d9:1 -/
+
+#check Map Nat Bool
+
+/-!
+    Map Nat Bool : Type
+
+`Map Nat Bool` は計算すると `Nat → Bool` になるが、`#check` が表示するのは
+まず「型である」ということ（`: Type`）。
+-/
+
+def double2 : Map Nat Nat := double
+
+#check double2
+
+/-!
+    double2 : Map Nat Nat
+
+受理される。`Map Nat Nat` は定義を展開すると `Nat → Nat` になり、`double` の型と一致する。
+Lean は、このように定義を展開して一致するものを同じ型として扱う。
+表示には定義で指定した `Map Nat Nat` が残っていても、型の照合では一致すると判断される。
+`double2` 自体も、定義を展開すれば `double` なので、同じ関数として扱われる。
+-/
+
+/-! SOL Intro1.dependent-functions-exercise-9246117e:1 -/
+
+#check idAt (Nat → Nat)
+
+/-!
+    idAt (Nat → Nat) : (Nat → Nat) → Nat → Nat
+
+`A = Nat → Nat` を代入した `A → A`、つまり `(Nat → Nat) → Nat → Nat`。
+右結合の約束で外側の括弧は表示されない。
+-/
+
+#eval idAt (Nat → Nat) double 21
+
+/-!
+    42
+
+`idAt (Nat → Nat) double` は `double` そのもの。
+-/
+
+/-! SOL Intro1.terms-types-exercise-030faef3:2 -/
+
+#check 3 = 5
+
+/-!
+    3 = 5 : Prop
+-/
+
+#check 5 = 5
+
+/-!
+    5 = 5 : Prop
+
+`3 = 5` は偽で `5 = 5` は真だが、どちらも型は `Prop`。
+`#check` は命題の真偽を調べていない——命題を表す項が型 `Prop` を持つことを
+確認している。
+-/
+
+/-! SOL Intro1.definitions-exercise-1fb4cf12:2 -/
 
 /-!
 本文の `def x : Nat := 2` が使えることが前提である。この解答ファイルでは
-`import Intro1` によって読み込まれている。別のファイルで単独で試すなら、先にその定義を書く。
+`import «01_TypesAndTerms»` によって読み込まれている。別のファイルで単独で試すなら、先にその定義を書く。
 
 受理されない。`x` の型は `Nat` で、コロンの右の `Bool` と一致しないから
 型検査が失敗する:
@@ -89,23 +210,7 @@ def z : Nat := 5
 宣言された型と照合する」という手順の破れがそのまま報告されている。
 -/
 
-/-! SOL Intro1.functions:1 -/
-
-def inc : Nat → Nat := fun n => n + 1
-
-#check inc
-
-/-!
-    inc : Nat → Nat
--/
-
-#eval inc 4
-
-/-!
-    5
--/
-
-/-! SOL Intro1.functions:2 -/
+/-! SOL Intro1.functions-exercise-3cee9819:2 -/
 
 def f : Nat → Nat := fun n => 2 * n + 3
 
@@ -123,7 +228,7 @@ def f : Nat → Nat := fun n => 2 * n + 3
 `2 * 4 + 3 = 11`。数学の `2n` も、Lean では掛け算を明示して `2 * n` と書く。
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-276c5cc8:2 -/
 
 def triple (n : Nat) : Nat := n + n + n
 
@@ -135,7 +240,7 @@ def triple (n : Nat) : Nat := n + n + n
 binder 形式のまま表示される。`triple : Nat → Nat` と読み替えられること。
 -/
 
-/-! SOL Intro1.functions:2 -/
+/-! SOL Trial1.function-practice:1 -/
 
 #eval double (double 5)
 
@@ -145,25 +250,7 @@ binder 形式のまま表示される。`triple : Nat → Nat` と読み替え�
 内側から: `double 5 = 10`、`double 10 = 20`。
 -/
 
-/-! SOL Intro1.functions:3 -/
-
-def inc' (n : Nat) : Nat := n + 1
-
-#check inc'
-
-/-!
-    inc' (n : Nat) : Nat
--/
-
-#eval inc' 4
-
-/-!
-    5
-
-表示は binder 形式になったが、型は `inc` と同じ `Nat → Nat`。値も同じである。
--/
-
-/-! SOL Intro1.functions:4 -/
+/-! SOL Intro1.functions-exercise-276c5cc8:3 -/
 
 def f' (n : Nat) : Nat := 2 * n + 3
 
@@ -181,23 +268,7 @@ def f' (n : Nat) : Nat := 2 * n + 3
 `f'` も `Nat → Nat` 型の関数であり、`f` と同じ計算をしている。
 -/
 
-/-! SOL Intro1.functions:1 -/
-
-def addThree : Nat → Nat := plus 3
-
-#check addThree
-
-/-!
-    addThree : Nat → Nat
--/
-
-#eval addThree 4
-
-/-!
-    7
--/
-
-/-! SOL Intro1.functions:2 -/
+/-! SOL Intro1.functions-exercise-ce690981:2 -/
 
 def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
 
@@ -221,7 +292,7 @@ def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
     16
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Trial1.higher-practice-review-2:1 -/
 
 def g' (a : Nat) (b : Nat) : Nat := 2 * a + 3 * b
 
@@ -254,32 +325,7 @@ def g'' (a b : Nat) : Nat := 2 * a + 3 * b
     16
 -/
 
-/-! SOL Intro1.functions:1 -/
-
-def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
-
-#check twice
-
-/-!
-    twice (F : Nat → Nat) : Nat → Nat
-
-矢印形式では `(Nat → Nat) → (Nat → Nat)`。数学でいう
-Map(ℕ, ℕ) → Map(ℕ, ℕ) に対応している。
--/
-
-#check twice double
-
-/-!
-    twice double : Nat → Nat
--/
-
-#eval twice double 3
-
-/-!
-    12
--/
-
-/-! SOL Intro1.functions:2 -/
+/-! SOL Trial1.function-practice:2 -/
 
 def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
@@ -303,29 +349,7 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 `double` を3回適用するので、`3` → `6` → `12` → `24`。
 -/
 
-/-! SOL Intro1.functions:1 -/
-
-#check Map Nat Bool
-
-/-!
-    Map Nat Bool : Type
-
-`Map Nat Bool` は計算すると `Nat → Bool` になるが、`#check` が表示するのは
-まず「型である」ということ（`: Type`）。
--/
-
-def double2 : Map Nat Nat := double
-
-#check double2
-
-/-!
-    double2 : Map Nat Nat
-
-受理される。`Map Nat Nat` を計算すると `Nat → Nat` で、`double` の型と一致する。
-表示には定義で指定した `Map Nat Nat` が残るが、同じ型として扱われている。
--/
-
-/-! SOL Intro1.functions:2 -/
+/-! SOL Intro1.functions-exercise-96a778d9:2 -/
 
 #check Map Nat
 
@@ -336,7 +360,7 @@ def double2 : Map Nat Nat := double
 `plus 3 : Nat → Nat` と同じ形である。
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Trial1.function-practice:3 -/
 
 /-!
 型の計算: `(3 + 4) * 2` は `Nat`。`plus (double 3)` は `plus : Nat → Nat → Nat` に
@@ -370,7 +394,7 @@ def double2 : Map Nat Nat := double
     fun n ↦ plus n n : Nat → Nat
 -/
 
-/-! SOL Intro1.functions:2 -/
+/-! SOL Intro1.functions-exercise-9307142c:2 -/
 
 #eval applyTo21 (plus 100)
 
@@ -380,7 +404,7 @@ def double2 : Map Nat Nat := double
 `applyTo21 F` は `F 21` だから、`plus 100 21 = 121`。
 -/
 
-/-! SOL Intro1.functions:3 -/
+/-! SOL Trial1.function-practice:4 -/
 
 def evalAt (F : Nat → Nat) (n : Nat) : Nat := F n
 
@@ -413,7 +437,7 @@ def shift (F : Nat → Nat) : Nat → Nat := fun n => F (n + 1)
 `n = 3` なら `double 4 = 8`。
 -/
 
-/-! SOL Intro1.functions:4 -/
+/-! SOL Trial1.function-practice:5 -/
 
 def useF1 : (Nat → Nat) → Nat := fun F => F 21
 
@@ -434,7 +458,7 @@ def useF2 : (Nat → Nat) → Nat := fun _ => 0
 決めており、返し方（中身）は何通りもある。
 -/
 
-/-! SOL Intro1.functions:5 -/
+/-! SOL Trial1.function-practice:6 -/
 
 def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (F a)
 
@@ -452,7 +476,7 @@ def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (
 内側から: `F = fun n => n + 1` で `3` が `4` に、`G = double` で `8` になる。
 -/
 
-/-! SOL Intro1.functions:6 -/
+/-! SOL Trial1.function-practice:7 -/
 
 def evalAt' (A B : Type) (F : A → B) (a : A) : B := F a
 
@@ -484,26 +508,7 @@ def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun a => F (g a)
 どちらも元の版と同じ値。型を引数にすると、同じ中身が任意の型で使い回せる。
 -/
 
-/-! SOL Intro1.dependent-functions:1 -/
-
-#check idAt (Nat → Nat)
-
-/-!
-    idAt (Nat → Nat) : (Nat → Nat) → Nat → Nat
-
-`A = Nat → Nat` を代入した `A → A`、つまり `(Nat → Nat) → Nat → Nat`。
-右結合の約束で外側の括弧は表示されない。
--/
-
-#eval idAt (Nat → Nat) double 21
-
-/-!
-    42
-
-`idAt (Nat → Nat) double` は `double` そのもの。
--/
-
-/-! SOL Intro1.dependent-functions:2 -/
+/-! SOL Intro1.dependent-functions-exercise-9246117e:2 -/
 
 def constAt (A B : Type) (a : A) : B → A := fun _ => a
 
@@ -521,14 +526,34 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 `idAt A` が恒等関数を返すのに対し、`constAt A B a` は定数関数を返す。
 -/
 
-/-! SOL Intro1.dependent-functions:3 -/
+/-! SOL Trial1.function-practice:8 -/
+
+def Tuple : Nat → Type := fun n => Fin n → Nat
+
+def constTuple : (n : Nat) → Tuple n :=
+  fun n => fun (_ : Fin n) => 7
+
+#check Tuple
+#check constTuple
+#check constTuple 3
+#check constTuple 4
+/-!
+    Tuple : Nat → Type
+    constTuple (n : Nat) : Tuple n
+    constTuple 3 : Tuple 3
+    constTuple 4 : Tuple 4
+
+外側の `fun` は個数 `n` を受け取る。作るべき型 `Tuple n` は `Fin n → Nat` なので、
+内側の `fun` は `Fin n` の番号を受け取り、自然数7を返す。
+番号そのものを計算に使わなくても、受け取る番号の型は `n` によって変わる。
+-/
 
 /-!
 `Tuple 2` は `Fin 2 → Nat`。内側では番号 `i : Fin 2` を受け取り、自然数7を返す。
 族 `Tuple` の行き先は `Type` だが、その型の項 `constTuple 2` の行き先は `Nat` である。
 -/
 
-/-! SOL Intro1.dependent-functions:4 -/
+/-! SOL Trial1.function-practice:9 -/
 
 def repeatTuple (n : Nat) (a : Nat) : Tuple n := fun _ => a
 
@@ -538,4 +563,8 @@ def repeatTuple (n : Nat) (a : Nat) : Tuple n := fun _ => a
     repeatTuple 2 9 : Tuple 2
 
 番号を一つ受け取り、どの番号にも a を返す。n は返す関数の定義域 `Fin n` を決めている。
+結果の型 `Tuple n` を展開すると `Fin n → Nat` なので、`_` の引数の型はそこから決まり、
+`fun (_ : Fin n) => a` と型を注釈しても同じである。
+
+`Fin n` 型の引数に数字を書くときの読み方は、[`05_MathematicalTools.lean` 3節](#sec-Trial5.subtypes)の補足で説明する。
 -/

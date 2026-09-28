@@ -132,9 +132,9 @@ Point.x (self : Point) : Nat</code></pre>
 <pre class="lean"><code><span class="kw">def</span> Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 
 <span class="kw">#eval</span> (Point.mk 1 2).swap.x</code></pre>
-<pre class="quote"><code>2</code></pre>
+<p>2</p>
 <p><code>p.swap.x</code> は <code>Point.x (Point.swap p)</code> の略記である。二つの成分を交換してから、第一成分を取り出している。この名前の付け方を支える名前空間は、<a href="#sec-Intro2.namespaces">7節</a>で扱う。</p>
-<h3>✏ 練習</h3>
+<h3 id="sec-Trial5.structures-exercise-6e524f21">✏ 練習</h3>
 <ol class="exercise" start="56" data-exercise="56">
 <li>型 <code>A</code> と二つの写像 <code>f g : A → Nat</code> から、各 <code>a</code> を組 <code>(f a, g a)</code> に送る <code>pairAt (A : Type) (f g : A → Nat) : A → Point</code> を定義せよ。 <code>A = Nat</code>、<code>f n = n + 1</code>、<code>g n = 2 * n</code> とし、<code>3</code> を渡した結果の <code>x</code>・<code>y</code> を <code>#eval</code> で確かめよ。これは直積へ向かう写像を、成分の写像から作る操作である。</li>
 </ol>
@@ -167,6 +167,23 @@ Pair.fst {α β : Type} (self : Pair α β) : α</code></pre>
 <pre class="quote"><code>3
 true</code></pre>
 <p>匿名構成子なら、この定義の右辺を <code>⟨3, true⟩</code> と書ける。標準の直積 <code>α × β</code>、すなわち <code>Prod α β</code> も、同じ形の構造体である。 <code>Prod.mk</code> で作り、<code>Prod.fst</code>・<code>Prod.snd</code>（または <code>.fst</code>・<code>.snd</code>）で取り出せる。</p>
+<h3 id="sec-Trial5.practice-review-1">✏ 練習</h3>
+<ol class="exercise" start="57" data-exercise="57">
+<li><code>center : Point</code>、<code>radius : Nat</code> を持つ構造体 <code>Circle</code> を定義せよ。 <code>makeCircle : Point → Nat → Circle</code> を構成子名と <code>⟨…⟩</code> の両方で書き、点 <code>(1,2)</code>、半径 <code>3</code> の円の <code>center.x</code> と <code>radius</code> を <code>#eval</code> で確かめよ。</li>
+</ol>
+<details class="sol" data-exercise="57"><summary>解答 57</summary>
+<pre class="lean"><code><span class="kw">structure</span> Circle : <span class="sort">Type</span> <span class="kw">where</span>
+  center : Point
+  radius : Nat
+
+<span class="kw">def</span> makeCircle : Point → Nat → Circle := <span class="kw">fun</span> p n =&gt; Circle.mk p n</code></pre>
+<p>本体を <code>fun p n =&gt; ⟨p, n⟩</code> と書いてもよい。期待される型 <code>Circle</code> から、構成子 <code>Circle.mk</code> が選ばれる。</p>
+<pre class="lean"><code><span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).center.x
+<span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).radius</code></pre>
+<pre class="quote"><code>1
+3</code></pre>
+<p><code>center : Point</code> を取り出してから、その <code>x : Nat</code> を取り出している。</p>
+</details>
 <h2 id="sec-Trial5.dependent-fields">2. 依存するフィールド</h2>
 <p>第3章の <code>Numbered</code> は、<code>n : Nat</code> と、その <code>n</code> に応じた <code>Fin n</code> の項を持っていた。 <code>structure</code> でも、後のフィールドの型に前のフィールドを使える。今度は、型そのものと、その型の項を一つまとめよう。</p>
 <pre class="lean"><code><span class="kw">structure</span> PointedType : <span class="sort">Type</span> 1 <span class="kw">where</span>
@@ -193,6 +210,18 @@ PointedType.point (self : PointedType) : self.carrier</code></pre>
 #reduce pointedBool.point</code></pre>
 <pre class="quote"><code>0
 true</code></pre>
+<h3 id="sec-Trial5.practice-review-2">✏ 練習</h3>
+<ol class="exercise" start="58" data-exercise="58">
+<li>点付き集合 $(A,a)$ と写像 $f:A\to A$ から $(A,f(a))$ を作る <code>mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType</code> を書け。 <code>#reduce (mapPointed pointedNat Nat.succ).point</code> の結果を予想して確かめよ。</li>
+</ol>
+<details class="sol" data-exercise="58"><summary>解答 58</summary>
+<pre class="lean"><code><span class="kw">def</span> mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
+  PointedType.mk p.carrier (f p.point)
+
+#reduce (mapPointed pointedNat Nat.succ).point</code></pre>
+<pre class="quote"><code>1</code></pre>
+<p><code>p.point : p.carrier</code> を <code>f</code> に渡し、同じ台の型と新しい点を組にして返す。構成子の第二引数に要求される型は、第一引数の <code>p.carrier</code> によって決まる。</p>
+</details>
 <h2 id="sec-Trial5.subtypes">3. 部分型 — 値と証明の組</h2>
 <p>後のフィールドの型が前の値に依存するとき、その型が命題でもよい。例えば「偶数である自然数」を持ち歩きたければ、自然数 <code>n</code> と <code>IsEven n</code> の証明を一緒に持てばよい。こうした値と証明の組を扱うのが <strong>部分型</strong> である。</p>
 <p>標準の <code>Subtype</code> の定義は、宇宙の指定を省けば次の形になっている。</p>
@@ -256,6 +285,18 @@ evenFour.property : IsEven evenFour.val</code></pre>
 <p>第1章の章末問題の <code>repeatTuple (n : Nat) (a : Nat) : Tuple n</code> でも同じことが起きる。 <code>repeatTuple 3 4 5</code> と書くと、最初の3が個数、次の4が各成分の値であり、最後に渡す番号の型は <code>Fin 3</code> である。したがって数字の5は「2番」として読まれ、その成分の値4が返る。</p>
 <p>一方、既に <code>Nat</code> 型と指定した <code>(5 : Nat)</code> を、この番号の引数として渡すと型エラーになる。数字を <code>Fin 3</code> の項として読めることと、<code>Nat</code> 型の項をそのまま渡せることは別である。数値リテラルの読み方を決める仕組みは、<a href="#sec-Intro2.classes">4節</a>の補足で説明する。</p>
 </aside>
+<h3 id="sec-Trial5.practice-review-3">✏ 練習</h3>
+<ol class="exercise" start="59" data-exercise="59">
+<li>二つの偶数の和を、偶数という条件を持つ値として返す <code>addEven (n m : EvenNat) : EvenNat</code> を書け。ヒント：値は <code>n.val + m.val</code>、その根拠は <code>isEven_add n.property m.property</code> である。 <code>#eval (addEven evenFour evenFour).val</code> を確かめよ。</li>
+</ol>
+<details class="sol" data-exercise="59"><summary>解答 59</summary>
+<pre class="lean"><code><span class="kw">def</span> addEven (n m : EvenNat) : EvenNat :=
+  Subtype.mk (n.val + m.val) (isEven_add n.property m.property)
+
+<span class="kw">#eval</span> (addEven evenFour evenFour).val</code></pre>
+<pre class="quote"><code>8</code></pre>
+<p>第一成分に和を置くと、第二成分には <code>IsEven (n.val + m.val)</code> の証明が要求される。第4章で証明した <code>isEven_add</code> が、ちょうどこの型の項を返す。</p>
+</details>
 <h2 id="sec-Intro2.classes">4. class と instance</h2>
 <p>ここまでは構造体の項を明示して渡していた。 <code>class</code> を使うと、型ごとに決めた項を <code>instance</code> として登録し、必要な場所で Lean に探してもらえる。宣言の形は <code>structure</code> と同じである。</p>
 <p><a href="#sec-Trial5.dependent-fields">2節</a>の <code>PointedType</code> は、型とその中の点を一つに束ねた。今度は型 <code>α</code> をパラメータにし、その中の点だけをフィールドにする。</p>
@@ -333,7 +374,7 @@ error(lean.synthInstanceFailed): failed to synthesize instance of type class
 <pre class="lean"><code><span class="kw">#eval</span> (Point.mk 1 2 + Point.mk 3 4).x</code></pre>
 <pre class="quote"><code>4</code></pre>
 <aside class="note note--optional"><h3>補足: <code>+</code> と数値リテラルの登録簿</h3>
-<p>正確に言うと、<code>+</code> の読み先は、左右の型が違ってもよいクラス <code>HAdd</code> の関数 <code>HAdd.hAdd</code> である。「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。</p>
+<p>正確に言うと、<code>+</code> の読み先は、左右の型が違ってもよいクラス <code>HAdd</code> の関数 <code>HAdd.hAdd</code> である。「<code>Add α</code> があれば <code>HAdd α α α</code> にもなる」という<strong>橋渡しのインスタンス</strong>が標準ライブラリに用意されているので、<code>Add</code> を登録するだけで記法まで使えるようになる。登録簿の検索は、このように<strong>連鎖</strong>する。自然数の場合も、この連鎖の先に <code>Nat.add</code> がある。 <code>Nat.add</code> と、<code>Nat → Nat → Nat</code> と注釈した <code>HAdd.hAdd</code> の型が同じだから同じ関数になるのではない。自然数用のインスタンスが <code>Nat.add</code> を指定しているため、同じ計算になる。</p>
 <p>数字のリテラルにも同じ仕組みがある。数字 <code>2</code> は <code>OfNat.ofNat 2</code> の略記で、クラス <code>OfNat</code> の instance が、期待される型ごとに読み方を決めている。 <a href="01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>で <code>2</code> が <code>Nat</code> とも <code>Int</code> とも読まれたのも、 <a href="#sec-Trial5.subtypes">3節</a>の補足で <code>(5 : Fin 3)</code> が 3 で割った余りの <code>2</code> と読まれたのも、<code>Nat</code>・<code>Int</code>・<code>Fin n</code> それぞれの <code>OfNat</code> の instance がそう実装されているからである。「記法はクラスで動く」という、この節の主題の一例である。</p>
 <p>なお、この教材の <code>Pointed</code> は練習用の自作クラスである。標準ライブラリにも同じ形のクラス <code>Inhabited</code>（フィールド名は <code>default</code>）があり、「少なくとも1つ項を持つ型」の既定値として広く使われている。</p></aside>
 <aside class="note note--optional">
@@ -375,6 +416,20 @@ error: failed to synthesize
 <pre class="lean"><code><span class="kw">#check</span> ⟪1, true⟫</code></pre>
 <pre class="quote"><code>{ fst := 1, snd := true } : Pair Nat Bool</code></pre>
 <p>記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。単純な中置・前置の記法には <code>infixl</code> や <code>prefix</code> という略記もある（次節と <code>06_Topology.lean</code> で使用）。</p>
+<h3 id="sec-Trial5.practice-review-9">✏ 練習</h3>
+<ol class="exercise" start="60" data-exercise="60">
+<li><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</li>
+</ol>
+<details class="sol" data-exercise="60"><summary>解答 60</summary>
+<pre class="lean"><code><span class="kw">syntax</span> &quot;⟬&quot; term &quot;, &quot; term &quot;⟭&quot; : term
+
+<span class="kw">macro_rules</span>
+  | `(⟬$x, $y⟭) =&gt; `(Point.mk $x $y)
+
+<span class="kw">#check</span> ⟬1, 2⟭</code></pre>
+<pre class="quote"><code>{ x := 1, y := 2 } : Point</code></pre>
+<p>読む方向だけの記法なので、表示では展開先の構成子の形が見える。</p>
+</details>
 <h2 id="sec-Intro2.sets">6. 集合 — <code>Set</code> を自作する</h2>
 <p>次の章では、集合の上に位相を組み立てる。その土台となる集合をここで作ろう。第2・4章で身につけた証明の書き方を、ここで使ってみる。 <a href="#sec-Trial5.subtypes">3節</a>では、述語を満たす値と証明を組にした。ここでは、値を切り出す条件である述語そのものを、一つの集合として扱う。</p>
 <p><code>X</code> の部分集合を1つ指定することは、「各 <code>a : X</code> が入っているかどうか」を決めること——つまり <strong><code>X</code> 上の述語を1つ与えること</strong>と同じである。そこで:</p>
@@ -423,6 +478,18 @@ error: failed to synthesize
 <pre class="quote"><code>Set.subset_refl {X : Type} (s : Set X) : s ⊆ s</code></pre>
 <p><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code> である。点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、その <code>ha</code> を結論の証明として返している。第2章で学んだ、全称量化と含意を関数として読む方法を使った。名前を <code>Set.〜</code> にしたのはドット記法（<a href="#sec-Trial5.structures">1節</a>で見た関数適用の略記）のためで、この命名の仕組みは次節で説明する。</p>
 <p><code>06_Topology.lean</code> はこの <code>Set</code> を土台に、<code>∩</code>・<code>∪</code>・補集合・像・逆像・集合族……と道具を足していく。</p>
+<h3 id="sec-Trial5.practice-review-11">✏ 練習</h3>
+<ol class="exercise" start="61" data-exercise="61">
+<li>推移律を項で書け（各点で2つの仮定を順に適用する）:</li>
+</ol>
+<pre class="quote"><code>   def Set.subset_trans {X : Type} {s t u : Set X}
+       (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u</code></pre>
+<details class="sol" data-exercise="61"><summary>解答 61</summary>
+<pre class="lean"><code><span class="kw">def</span> Set.subset_trans {X : <span class="sort">Type</span>} {s t u : Set X}
+    (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u :=
+  <span class="kw">fun</span> a ha =&gt; htu a (hst a ha)</code></pre>
+<p>点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、<code>hst</code> で <code>a ∈ t</code>、続けて <code>htu</code> で <code>a ∈ u</code> を得る——含意の連鎖と同じ形である。</p>
+</details>
 <h2 id="sec-Intro2.namespaces">7. namespace — 名前の接頭辞</h2>
 <p><a href="#sec-Trial5.structures">1節</a>のドット記法や、前節の <code>Set.subset_refl</code> という名前を支えている<strong>名前空間</strong>の仕組みを見ておく。 <code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く:</p>
 <pre class="lean"><code><span class="kw">namespace</span> Geometry
@@ -438,51 +505,21 @@ error: failed to synthesize
 <p>外からはフルネームで呼ぶ。</p>
 <p><code>p.x</code> が効くのは、<code>x</code> が<strong>型名と同じ名前空間</strong> <code>Point</code> に置かれているからである。<code>06_Topology.lean</code> では <code>namespace Set</code> の中に集合の関数（<code>Set.ext</code> など）を置いていく——<code>s.ext</code> のようなドット記法が効くのはそのためである。逆に、名前空間の<strong>中</strong>の名前を接頭辞なしで使えるようにする <code>export N (名前)</code> という宣言もある（<code>06_Topology.lean</code> が <code>TopologicalSpace.IsOpen</code> を <code>IsOpen</code> と書くために使っている）。</p>
 <p>これで <code>06_Topology.lean</code> を読む準備が整った。</p>
-<aside class="note note--preview"><h3>先取り（06_Topology の公理監査）: 商型 <code>Quot</code></h3>
-<p>Lean の核には依存関数型と帰納型のほかに商型（<code>Quot</code>）などもある。本編では商型を直接は使わないが、関数の外延性 <code>funext</code> が商型の上に建っているため、<code>06_Topology.lean</code> 末尾の公理の一覧には顔を出す（発展演習 <code>07_Exercises.lean</code> では商型を直接使う）。</p></aside>
+<aside class="note note--optional">
+<h3>補足: true と .true、red と .red</h3>
+<p><code>Bool.true</code> が構成子の完全な名前である。標準環境では <code>true</code> という短い名前も使える。自作した <code>Signal.red</code> については、勝手に <code>red</code> という短い名前が使えるようになるわけではない。 <code>open Signal</code> とすれば、その範囲で <code>red</code> と書ける。</p>
+<p>これとは別に、期待される型から名前を補う <code>.red</code> という記法もある。</p>
+<pre class="lean"><code><span class="kw">#check</span> (.red : Signal)
+<span class="kw">#check</span> (.true : Bool)</code></pre>
+<pre class="quote"><code>Signal.red : Signal
+true : Bool</code></pre>
+<p>型が <code>Signal</code> と分かる位置では <code>.red</code> を <code>Signal.red</code> と読める。 <code>match</code> の枝で <code>.red</code> と書けるのも、場合分けする項の型が分かるためである。名前空間を開いて短い名前を使うことと、期待される型から名前を補ってもらうことを区別しよう。第3・4章では、構成子を明示するために完全な名前で書いてきた。</p>
+</aside>
 <h2 id="sec-Trial5.practice">8. ✏ 練習 — 章末問題</h2>
-<ol class="exercise" start="57" data-exercise="57">
-<li><code>center : Point</code>、<code>radius : Nat</code> を持つ構造体 <code>Circle</code> を定義せよ。 <code>makeCircle : Point → Nat → Circle</code> を構成子名と <code>⟨…⟩</code> の両方で書き、点 <code>(1,2)</code>、半径 <code>3</code> の円の <code>center.x</code> と <code>radius</code> を <code>#eval</code> で確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="57"><summary>解答 57</summary>
-<pre class="lean"><code><span class="kw">structure</span> Circle : <span class="sort">Type</span> <span class="kw">where</span>
-  center : Point
-  radius : Nat
-
-<span class="kw">def</span> makeCircle : Point → Nat → Circle := <span class="kw">fun</span> p n =&gt; Circle.mk p n</code></pre>
-<p>本体を <code>fun p n =&gt; ⟨p, n⟩</code> と書いてもよい。期待される型 <code>Circle</code> から、構成子 <code>Circle.mk</code> が選ばれる。</p>
-<pre class="lean"><code><span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).center.x
-<span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).radius</code></pre>
-<pre class="quote"><code>1
-3</code></pre>
-<p><code>center : Point</code> を取り出してから、その <code>x : Nat</code> を取り出している。</p>
-</details>
-<ol class="exercise" start="58" data-exercise="58">
-<li>点付き集合 $(A,a)$ と写像 $f:A\to A$ から $(A,f(a))$ を作る <code>mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType</code> を書け。 <code>#reduce (mapPointed pointedNat Nat.succ).point</code> の結果を予想して確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="58"><summary>解答 58</summary>
-<pre class="lean"><code><span class="kw">def</span> mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
-  PointedType.mk p.carrier (f p.point)
-
-#reduce (mapPointed pointedNat Nat.succ).point</code></pre>
-<pre class="quote"><code>1</code></pre>
-<p><code>p.point : p.carrier</code> を <code>f</code> に渡し、同じ台の型と新しい点を組にして返す。構成子の第二引数に要求される型は、第一引数の <code>p.carrier</code> によって決まる。</p>
-</details>
-<ol class="exercise" start="59" data-exercise="59">
-<li>二つの偶数の和を、偶数という条件を持つ値として返す <code>addEven (n m : EvenNat) : EvenNat</code> を書け。ヒント：値は <code>n.val + m.val</code>、その根拠は <code>isEven_add n.property m.property</code> である。 <code>#eval (addEven evenFour evenFour).val</code> を確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="59"><summary>解答 59</summary>
-<pre class="lean"><code><span class="kw">def</span> addEven (n m : EvenNat) : EvenNat :=
-  Subtype.mk (n.val + m.val) (isEven_add n.property m.property)
-
-<span class="kw">#eval</span> (addEven evenFour evenFour).val</code></pre>
-<pre class="quote"><code>8</code></pre>
-<p>第一成分に和を置くと、第二成分には <code>IsEven (n.val + m.val)</code> の証明が要求される。第4章で証明した <code>isEven_add</code> が、ちょうどこの型の項を返す。</p>
-</details>
-<ol class="exercise" start="60" data-exercise="60">
+<ol class="exercise" start="62" data-exercise="62">
 <li>本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>#check (inferInstance : Pointed Bool)</code> と <code>def pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</li>
 </ol>
-<details class="sol" data-exercise="60"><summary>解答 60</summary>
+<details class="sol" data-exercise="62"><summary>解答 62</summary>
 <pre class="lean"><code><span class="kw">instance</span> : Pointed Bool <span class="kw">where</span>
   point := false
 
@@ -491,10 +528,10 @@ error: failed to synthesize
 <pre class="lean"><code><span class="kw">def</span> pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code></pre>
 <p>登録した瞬間から、<code>inferInstance</code> の探索も、汎用関数 <code>pointPair</code> も、一般的な定理 <code>pointPair_fst</code> も、すべて <code>Bool</code> で使えるようになる。</p>
 </details>
-<ol class="exercise" start="61" data-exercise="61">
+<ol class="exercise" start="63" data-exercise="63">
 <li><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) : Type where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>#check (inferInstance : Magma Nat)</code> が通ることを確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="61"><summary>解答 61</summary>
+<details class="sol" data-exercise="63"><summary>解答 63</summary>
 <pre class="lean"><code><span class="kw">class</span> Magma (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
   op : α → α → α
 
@@ -505,20 +542,20 @@ error: failed to synthesize
 <pre class="quote"><code>inferInstance : Magma Nat</code></pre>
 <p>手順は <code>Pointed</code> とまったく同じ——クラスを宣言し、<code>instance</code> で登録簿に載せれば、<code>inferInstance</code> が見つける。フィールドが「点」から「二項演算」に変わっただけである。</p>
 </details>
-<ol class="exercise" start="62" data-exercise="62">
+<ol class="exercise" start="64" data-exercise="64">
 <li><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="62"><summary>解答 62</summary>
+<details class="sol" data-exercise="64"><summary>解答 64</summary>
 <pre class="lean"><code><span class="kw">def</span> opSelf (α : <span class="sort">Type</span>) [Magma α] (a : α) : α := Magma.op a a
 
 <span class="kw">#eval</span> opSelf Nat 3</code></pre>
 <pre class="quote"><code>6</code></pre>
 <p><code>Nat</code> の登録簿には <code>op := Nat.add</code> を載せたので、<code>opSelf Nat 3 = 3 + 3</code>。</p>
 </details>
-<ol class="exercise" start="63" data-exercise="63">
+<ol class="exercise" start="65" data-exercise="65">
 <li>本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</li>
 </ol>
-<details class="sol" data-exercise="63"><summary>解答 63</summary>
+<details class="sol" data-exercise="65"><summary>解答 65</summary>
 <pre class="lean"><code><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Magma α] [Magma β] : Magma (Pair α β) <span class="kw">where</span>
   op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
 
@@ -526,10 +563,10 @@ error: failed to synthesize
 <pre class="quote"><code>22</code></pre>
 <p><code>Magma (Pair Nat Nat)</code> は直接は登録していないが、誘導 instance と <code>Magma Nat</code> の連鎖で見つかる。<code>.snd</code> は <code>2 + 20</code>。</p>
 </details>
-<ol class="exercise" start="64" data-exercise="64">
+<ol class="exercise" start="66" data-exercise="66">
 <li><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="64"><summary>解答 64</summary>
+<details class="sol" data-exercise="66"><summary>解答 66</summary>
 <pre class="lean"><code><span class="kw">instance</span> : Mul Point <span class="kw">where</span>
   mul p q := ⟨p.x * q.x, p.y * q.y⟩
 
@@ -537,39 +574,15 @@ error: failed to synthesize
 <pre class="quote"><code>8</code></pre>
 <p><code>x</code> 成分どうしの積 <code>2 * 4</code>。登録すれば <code>*</code> がそのまま <code>Point</code> に使える。</p>
 </details>
-<ol class="exercise" start="65" data-exercise="65">
-<li><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="65"><summary>解答 65</summary>
-<pre class="lean"><code><span class="kw">syntax</span> &quot;⟬&quot; term &quot;, &quot; term &quot;⟭&quot; : term
-
-<span class="kw">macro_rules</span>
-  | `(⟬$x, $y⟭) =&gt; `(Point.mk $x $y)
-
-<span class="kw">#check</span> ⟬1, 2⟭</code></pre>
-<pre class="quote"><code>{ x := 1, y := 2 } : Point</code></pre>
-<p>読む方向だけの記法なので、表示では展開先の構成子の形が見える。</p>
-</details>
-<ol class="exercise" start="66" data-exercise="66">
+<ol class="exercise" start="67" data-exercise="67">
 <li><code>infixl:65 &quot; ⊞ &quot; =&gt; myAdd</code> で、<code>03_InductiveTypes.lean</code> の <code>myAdd</code>（<code>MyNat</code> の足し算）に中置記法を与え、<code>#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code> の表示を予想してから確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="66"><summary>解答 66</summary>
+<details class="sol" data-exercise="67"><summary>解答 67</summary>
 <pre class="lean"><code><span class="kw">infixl</span>:65 &quot; ⊞ &quot; =&gt; myAdd
 
 #reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code></pre>
 <pre class="quote"><code>MyNat.zero.succ.succ</code></pre>
 <p><code>1 + 1 = 2</code> にあたる <code>succ</code> 2つ。中置記法は <code>myAdd</code> の適用に展開されている。</p>
-</details>
-<ol class="exercise" start="67" data-exercise="67">
-<li>推移律を項で書け（各点で2つの仮定を順に適用する）:</li>
-</ol>
-<pre class="quote"><code>   def Set.subset_trans {X : Type} {s t u : Set X}
-       (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u</code></pre>
-<details class="sol" data-exercise="67"><summary>解答 67</summary>
-<pre class="lean"><code><span class="kw">def</span> Set.subset_trans {X : <span class="sort">Type</span>} {s t u : Set X}
-    (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u :=
-  <span class="kw">fun</span> a ha =&gt; htu a (hst a ha)</code></pre>
-<p>点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、<code>hst</code> で <code>a ∈ t</code>、続けて <code>htu</code> で <code>a ∈ u</code> を得る——含意の連鎖と同じ形である。</p>
 </details>
 <ol class="exercise" start="68" data-exercise="68">
 <li><code>def evens : Set Nat := {n | IsEven n}</code> と宣言せよ（<code>IsEven</code> は <a href="04_exists.html#sec-Trial4.existence">第4章1節</a>の述語）。<code>def four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩</code> が通ることを確かめよ。</li>

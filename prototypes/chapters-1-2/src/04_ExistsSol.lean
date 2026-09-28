@@ -1,6 +1,6 @@
 import «04_Exists»
 
-/-! SOL Trial4.existence:1 -/
+/-! SOL Trial4.existence-exercise-75b39735:1 -/
 
 def surjectiveOfRightInverse (A B : Type) (f : A → B) (g : B → A)
     (hfg : ∀ b : B, f (g b) = b) :
@@ -24,7 +24,7 @@ def threeCompSurjective (A B C D : Type)
 内側の適用は `A → C` の全射性、外側の適用は `A → D` の全射性を証明する。
 -/
 
-/-! SOL Trial4.practice:2 -/
+/-! SOL Trial4.practice-review-2:1 -/
 
 def existsFirst (A B C : Type) (f : A → B) (g : A → C) (b : B) (c : C)
     (h : ∃ a : A, f a = b ∧ g a = c) : ∃ a : A, f a = b :=
@@ -36,7 +36,7 @@ def existsFirst (A B C : Type) (f : A → B) (g : A → C) (b : B) (c : C)
 証人 `a` はそのまま使い、二つの根拠のうち左側の `hab : f a = b` を渡す。
 -/
 
-/-! SOL Trial4.practice:3 -/
+/-! SOL Trial4.practice-review-3:1 -/
 
 def preimageTwoPoints (A B : Type) (f : A → B)
     (hf : ∀ x y : A, f x = f y → x = y) (x a b : A)
@@ -48,7 +48,7 @@ def preimageTwoPoints (A B : Type) (f : A → B)
 各枝で単射性を適用し、結論の対応する構成子へ証明を渡す。
 -/
 
-/-! SOL Trial4.practice:4 -/
+/-! SOL Trial4.practice-review-4:1 -/
 
 def neOfImageNe (A B : Type) (f : A → B) (x y : A)
     (hne : f x ≠ f y) : x ≠ y :=
@@ -57,7 +57,7 @@ def neOfImageNe (A B : Type) (f : A → B) (x y : A)
 `h : x = y` から `congrArg f h : f x = f y` が得られ、それを `hne` に渡すと `False` が得られる。
 -/
 
-/-! SOL Trial4.practice:5 -/
+/-! SOL Trial4.practice-review-5:1 -/
 
 def isEven_add_two : ∀ n : Nat, IsEven n → IsEven (n + 2) :=
   fun _ hn => isEven_add hn (Exists.intro 1 rfl)

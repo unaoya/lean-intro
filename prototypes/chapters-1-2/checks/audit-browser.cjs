@@ -46,6 +46,7 @@ const path=require('path');
   if(broken.length) failures.push(chapter+': broken links');
   reading.brokenLinks=broken;
   reports.push({chapter,reading});
+  if(!build.slides[module]) continue;
   await page.goto(root+'/slides/'+chapter+'.html',{waitUntil:'networkidle'});
   await page.evaluate(()=>document.fonts.ready);
   const math=await page.locator('.katex').count();

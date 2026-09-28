@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """受講者用ファイルから、ブラウザ（Lean 4 Web）で開ける1ファイル版を作る。
 
-LeanIntro/Original/*.lean は前の章を import しているので、そのままでは Lean 4 Web で動かない。
-そこで各章について、import をたどって依存するファイルを依存順に並べ、1つのファイルにまとめる。
+第1〜5章は import なしで単独実行できる。前の章を import する第6章以降については、
+依存するファイルを依存順に並べ、1つのファイルにまとめる。
 
   依存する章   コメントと #check・#eval・#print・#reduce を除き、section … end で囲んで先頭に置く
                （open・variable などが後ろに漏れないようにするため）
@@ -10,7 +10,7 @@ LeanIntro/Original/*.lean は前の章を import しているので、そのま�
 
 出力は ../docs/play/<章>.lean（GitHub Pages で公開される）。受講者は次の形のリンクで開く。
 
-  https://live.lean-lang.org/#project=Stable&url=https://unaoya.github.io/lean-intro/play/<章>.lean
+  https://live.lean-lang.org/#project=mathlib-stable&url=https://unaoya.github.io/lean-intro/play/<章>.lean
 
 Lean 4 Web は url= のファイルを読み込むので、リンクの長さは章の大きさによらない。
 
@@ -33,12 +33,15 @@ REPO = ROOT.parent
 LESSONS = REPO / "LeanIntro"
 OUT = REPO / "docs" / "play"
 PAGES = "https://unaoya.github.io/lean-intro/play/"
-EDITOR = "https://live.lean-lang.org/#project=Stable&url="
+EDITOR = "https://live.lean-lang.org/#project=mathlib-stable&url="
 
 IMPORT_RE = re.compile(r"^import\s+LeanIntro\.(Original|Solutions)\.«([^»]+)»\s*$")
 HASH_CMD_RE = re.compile(r"^#(check|eval|print|reduce)\b")
 IN_PREFIX_RE = re.compile(r"^(set_option|open)\b.*\bin\s*$")
 HEADER_MARK = "dev/tools/student.py が自動生成する"
+STANDALONE_CHAPTERS = {
+    "01_TypesAndTerms", "02_Forall", "03_InductiveTypes", "04_Exists", "05_MathematicalTools",
+}
 
 
 def module_path(kind: str, name: str) -> Path:
@@ -153,6 +156,8 @@ def body(path: Path) -> list[str]:
 
 
 def bundle(name: str) -> str:
+    if name in STANDALONE_CHAPTERS and imports(module_path("Original", name)):
+        raise ValueError(f"{name}: 第1〜5章は import なしで単独実行できる必要があります")
     deps = dependency_order("Original", name)
     dep_blocks = []
     for kind, dep in deps:

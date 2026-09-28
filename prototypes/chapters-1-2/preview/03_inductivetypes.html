@@ -92,7 +92,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 
 <span class="kw">#check</span> Signal.red</code></pre>
 <pre class="quote"><code>Signal.red : Signal</code></pre>
-<p>この宣言によって、新しい型 <code>Signal</code> と三つの項 <code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> が一緒に導入された。それぞれを赤・黄・緑と読むのは人間が与える解釈であり、名前だけで色の性質や信号の動きが決まるわけではない。集合の言葉では、三点集合を作ったと思えばよい。三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。後者の証明は否定を扱う第4章で見る。</p>
+<p>この宣言によって、新しい型 <code>Signal</code> と三つの項 <code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> が一緒に導入された。それぞれを赤・黄・緑と読むのは人間が与える解釈であり、名前だけで色の性質や信号の動きが決まるわけではない。集合の言葉では、三点集合を作ったと思えばよい。三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。「これらで全部」を使うための再帰・帰納法の原理が <code>Signal.rec</code> であり、<code>match</code> もこの原理に基づく。「互いに別々」であることの証明には <code>Signal.noConfusion</code> を使える。後者は否定を扱う第4章で見る。</p>
 <h3>match で項を使う</h3>
 <p><code>match 対象 with</code> の後に、構成子ごとに <code>| 構成子 =&gt; 返す項</code> を並べる。 <strong><code>match … with …</code> 全体が一つの項</strong>であり、対象に対応する枝の項が結果になる。</p>
 <pre class="lean"><code><span class="kw">#eval</span> <span class="kw">match</span> Signal.red <span class="kw">with</span>
@@ -112,7 +112,7 @@ details.sol[open] > summary { margin-bottom: .4rem; }
 <span class="kw">#eval</span> Signal.next Signal.red</code></pre>
 <pre class="quote"><code>Signal.green</code></pre>
 <p><code>fun</code> が入力を受け取り、その本体の <code>match</code> が値を選ぶ。有限集合からの写像を、各点の行き先を指定して定義するのと同じ形である。 <code>match</code> で場合分けする対象や結果の型は、有限集合に限らない。後では自然数についても使う。</p>
-<h3>✏ 練習</h3>
+<h3 id="sec-Trial3.constructors-exercise-42721aca">✏ 練習</h3>
 <ol class="exercise" start="40" data-exercise="40">
 <li><code>Signal.red</code>、<code>Signal.yellow</code>、<code>Signal.green</code> をそれぞれ <code>0</code>、<code>1</code>、<code>2</code> に送る <code>signalCode : Signal → Nat</code> を定義せよ。各枝の型を確かめ、<code>signalCode Signal.yellow</code> の値を予想せよ。</li>
 </ol>
@@ -124,45 +124,58 @@ details.sol[open] > summary { margin-bottom: .4rem; }
   | Signal.green =&gt; 2</code></pre>
 <p>各枝で <code>Nat</code> の項を返す。黄色の場合の値は <code>1</code> である。</p>
 </details>
+<ol class="exercise" start="41" data-exercise="41">
+<li><code>Signal.next</code> と逆向きに色を送る <code>prev : Signal → Signal</code> を書け。 <code>prev (Signal.next Signal.red)</code> の値を確かめよ。</li>
+</ol>
+<details class="sol" data-exercise="41"><summary>解答 41</summary>
+<pre class="lean"><code><span class="kw">def</span> prev : Signal → Signal := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | Signal.red =&gt; Signal.yellow
+  | Signal.yellow =&gt; Signal.green
+  | Signal.green =&gt; Signal.red</code></pre>
+<p>赤を次の色に送ると青、青を逆向きに送ると赤になる。</p>
+</details>
 <h3>一点の型と空の型</h3>
-<p>標準の <code>Bool</code> も、構成子 <code>Bool.false</code> と <code>Bool.true</code> を持つ帰納型である。構成子が一つで引数を取らない場合は、一点集合に対応する <code>Unit</code> になる。構成子を一つも持たない場合は、空集合に対応する <code>Empty</code> になる。</p>
-<pre class="quote"><code>inductive Unit : Type where
-  | unit : Unit
-
-inductive Empty : Type</code></pre>
+<p>構成子が一つで引数を取らない型を自作すると、一点集合に対応する。</p>
+<pre class="lean"><code><span class="kw">inductive</span> MyUnit : <span class="sort">Type</span> <span class="kw">where</span>
+  | unit : MyUnit</code></pre>
+<p>構成子を一つも持たない型は、空集合に対応する。</p>
+<pre class="lean"><code><span class="kw">inductive</span> MyEmpty : <span class="sort">Type</span></code></pre>
 <p>空の型にも使い方はある。項を受け取ったとして、場合分けすべき構成子が一つもなければよい。その場合分けを <code>nomatch</code> と書く。</p>
-<pre class="lean"><code><span class="kw">def</span> emptyToNat (e : Empty) : Nat := nomatch e</code></pre>
-<p>これは <code>Empty</code> の項を作ったのではなく、<code>Empty → Nat</code> という関数を作ったのである。</p>
+<pre class="lean"><code><span class="kw">def</span> emptyToNat (e : MyEmpty) : Nat := nomatch e</code></pre>
+<p>これは <code>MyEmpty</code> の項を作ったのではなく、<code>MyEmpty → Nat</code> という関数を作ったのである。</p>
+<aside class="note note--optional"><h3>補足: Prelude にある型</h3>
+<p>標準環境には、同じ形の型 <code>Unit</code> と <code>Empty</code> が既に用意されている。 <code>Unit</code> の構成子は <code>Unit.unit</code> で、<code>Empty</code> には構成子がない。二点の型 <code>Bool</code> も、構成子 <code>Bool.false</code> と <code>Bool.true</code> を持つ帰納型である。これらは標準で読み込まれる Prelude に含まれるので、使う側で定義し直す必要はない。</p></aside>
 <h2 id="sec-Trial3.sums-products">2. 直和と直積</h2>
-<p>構成子も関数なので、引数を受け取れる。次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。構成子の名前 <code>inl</code>・<code>inr</code> は、それぞれ左側・右側から項を入れることを表す。</p>
+<p>構成子も関数なので、引数を受け取れる。次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。構成子の名前を <code>inn</code>・<code>inb</code> とし、自然数から入れる場合と真偽値から入れる場合を区別する。</p>
 <pre class="lean"><code><span class="kw">inductive</span> TaggedSum : <span class="sort">Type</span> <span class="kw">where</span>
-  | inl (n : Nat) : TaggedSum
-  | inr (b : Bool) : TaggedSum
+  | inn (n : Nat) : TaggedSum
+  | inb (b : Bool) : TaggedSum
 
-<span class="kw">#check</span> TaggedSum.inl</code></pre>
-<pre class="quote"><code>TaggedSum.inl (n : Nat) : TaggedSum</code></pre>
-<p>構成子 <code>TaggedSum.inl</code> は <code>Nat → TaggedSum</code> という関数である。集合の言葉では、この型は自然数と真偽値の<strong>直和（非交和）</strong>に対応する。</p>
-<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inr</code></pre>
-<pre class="quote"><code>TaggedSum.inr (b : Bool) : TaggedSum</code></pre>
-<p>同様に、<code>TaggedSum.inr</code> は <code>Bool → TaggedSum</code> という関数である。この構成子そのものは関数であり、それに <code>true : Bool</code> を渡した <code>TaggedSum.inr true</code> は、できあがった <code>TaggedSum</code> 型の項である。 <code>true</code> 自体は <code>Bool</code> 型なので、<code>TaggedSum</code> 型の項が必要な場所では <code>TaggedSum.inr true</code> と書く。この例では、構成子の適用を省略しても自動で補われるわけではない。</p>
+<span class="kw">#check</span> TaggedSum.inn</code></pre>
+<pre class="quote"><code>TaggedSum.inn (n : Nat) : TaggedSum</code></pre>
+<p>構成子 <code>TaggedSum.inn</code> は <code>Nat → TaggedSum</code> という関数である。集合の言葉では、この型は自然数と真偽値の<strong>直和（非交和）</strong>に対応する。</p>
+<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inb</code></pre>
+<pre class="quote"><code>TaggedSum.inb (b : Bool) : TaggedSum</code></pre>
+<p>同様に、<code>TaggedSum.inb</code> は <code>Bool → TaggedSum</code> という関数である。この構成子そのものは関数であり、それに <code>true : Bool</code> を渡した <code>TaggedSum.inb true</code> は、できあがった <code>TaggedSum</code> 型の項である。 <code>true</code> 自体は <code>Bool</code> 型なので、<code>TaggedSum</code> 型の項が必要な場所では <code>TaggedSum.inb true</code> と書く。この例では、構成子の適用を省略しても自動で補われるわけではない。</p>
 <h3>中身を受け取る場合分け</h3>
-<p><code>match</code> の枝で <code>TaggedSum.inl n</code> と書くと、その構成子に渡された自然数に <code>n</code> と名前を付けられる。返す項では、その名前を使ってよい。</p>
+<p><code>match</code> の枝で <code>TaggedSum.inn n</code> と書くと、その構成子に渡された自然数に <code>n</code> と名前を付けられる。返す項では、その名前を使ってよい。</p>
 <pre class="lean"><code><span class="kw">def</span> valueOf : TaggedSum → Nat := <span class="kw">fun</span> x =&gt;
   <span class="kw">match</span> x <span class="kw">with</span>
-  | TaggedSum.inl n =&gt; n
-  | TaggedSum.inr _ =&gt; 0
+  | TaggedSum.inn n =&gt; n
+  | TaggedSum.inb _ =&gt; 0
 
-<span class="kw">#eval</span> valueOf (TaggedSum.inl 7)</code></pre>
+<span class="kw">#eval</span> valueOf (TaggedSum.inn 7)</code></pre>
 <pre class="quote"><code>7</code></pre>
-<p>枝の <code>TaggedSum.inr _</code> にある <code>_</code> は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。ここでは <code>true</code> と <code>false</code> のどちらも同じ枝で扱い、その値を使わずに <code>0</code> を返している。直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。</p>
-<pre class="lean"><code><span class="kw">#eval</span> valueOf (TaggedSum.inr true)</code></pre>
+<p>枝の <code>TaggedSum.inb _</code> にある <code>_</code> は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。ここでは <code>true</code> と <code>false</code> のどちらも同じ枝で扱い、その値を使わずに <code>0</code> を返している。直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。</p>
+<pre class="lean"><code><span class="kw">#eval</span> valueOf (TaggedSum.inb true)</code></pre>
 <pre class="quote"><code>0</code></pre>
-<p>まず <code>TaggedSum.inr true</code> という項を作り、それを <code>valueOf</code> に渡すので、括弧でまとめている。括弧を外した <code>valueOf TaggedSum.inr true</code> は <code>(valueOf TaggedSum.inr) true</code> と読まれ、 <code>valueOf</code> に必要な <code>TaggedSum</code> 型の項の代わりに構成子そのものを渡すことになり、型が合わない。</p>
+<p>まず <code>TaggedSum.inb true</code> という項を作り、それを <code>valueOf</code> に渡すので、括弧でまとめている。括弧を外した <code>valueOf TaggedSum.inb true</code> は <code>(valueOf TaggedSum.inb) true</code> と読まれ、 <code>valueOf</code> に必要な <code>TaggedSum</code> 型の項の代わりに構成子そのものを渡すことになり、型が合わない。</p>
 <h3>構成子が違う場合と、同じ場合</h3>
-<p><code>TaggedSum.inl n</code> と <code>TaggedSum.inr b</code> が等しくないことも、 <code>TaggedSum.inl n = TaggedSum.inl m</code> から <code>n = m</code> が言えることも、Leanで証明できる。後者を表す補題は、帰納型の宣言に伴って生成される。</p>
-<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inl.inj</code></pre>
-<pre class="quote"><code>TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝</code></pre>
-<p>第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。 <code>TaggedSum.inr</code> についても同様である。集合の言葉では、この二つの構成子は、それぞれの集合から直和への標準的な単射に対応する。</p>
+<p><code>TaggedSum.inn n</code> と <code>TaggedSum.inb b</code> が等しくないことも、 <code>TaggedSum.inn n = TaggedSum.inn m</code> から <code>n = m</code> が言えることも、Leanで証明できる。後者を表す補題は、帰納型の宣言に伴って生成される。</p>
+<pre class="lean"><code><span class="kw">#check</span> TaggedSum.inn.inj</code></pre>
+<pre class="quote"><code>TaggedSum.inn.inj {n n✝ : Nat} : TaggedSum.inn n = TaggedSum.inn n✝ → n = n✝</code></pre>
+<p>第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。 <code>TaggedSum.inb</code> についても同様である。集合の言葉では、この二つの構成子は、それぞれの集合から直和への標準的な単射に対応する。</p>
 <h3>中身の型をパラメータにする</h3>
 <p>自然数と真偽値に限定せず、任意の型 <code>A</code> と <code>B</code> の直和を同じように作れる。</p>
 <pre class="lean"><code><span class="kw">inductive</span> MySum (A B : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
@@ -172,6 +185,31 @@ inductive Empty : Type</code></pre>
 <span class="kw">#check</span> MySum.inl</code></pre>
 <pre class="quote"><code>MySum.inl {A B : Type} (a : A) : MySum A B</code></pre>
 <p>型を作る <code>MySum</code> には <code>MySum Nat Bool</code> と二つの型を渡す。構成子の型引数は暗黙引数になっている。例えば <code>(MySum.inl 3 : MySum Nat Bool)</code> では、結果の型注釈から <code>A := Nat</code>、<code>B := Bool</code> が決まる。標準の直和型 <code>A ⊕ B</code> と、その構成子 <code>Sum.inl</code>・<code>Sum.inr</code> も同じ形で使う。</p>
+<aside class="note note--optional">
+<h3>補足: 型をパラメータにした取り出し関数</h3>
+<p><code>valueOf</code> と同じ形で、一般の直和から項を取り出す関数も書ける。左側ならその項を、右側ならあらかじめ受け取った既定値 <code>d</code> を返す。</p>
+<pre class="lean"><code><span class="kw">def</span> getLeft {A B : <span class="sort">Type</span>} (d : A) : MySum A B → A := <span class="kw">fun</span> x =&gt;
+  <span class="kw">match</span> x <span class="kw">with</span>
+  | MySum.inl a =&gt; a
+  | MySum.inr _ =&gt; d
+
+<span class="kw">#check</span> getLeft</code></pre>
+<pre class="quote"><code>getLeft {A B : Type} (d : A) : MySum A B → A</code></pre>
+<p><code>A</code> と <code>B</code> は暗黙引数である。次の適用では、<code>0</code> と <code>true</code> の型からそれぞれ補われる。</p>
+<pre class="lean"><code><span class="kw">#eval</span> getLeft 0 (MySum.inr true)</code></pre>
+<pre class="quote"><code>0</code></pre>
+</aside>
+<h3 id="sec-Trial3.practice-review-2">✏ 練習</h3>
+<ol class="exercise" start="42" data-exercise="42">
+<li><code>swapSum : MySum A B → MySum B A</code> を定義せよ。左側から来た項は右側へ、右側から来た項は左側へ送ること。</li>
+</ol>
+<details class="sol" data-exercise="42"><summary>解答 42</summary>
+<pre class="lean"><code><span class="kw">def</span> swapSum {A B : <span class="sort">Type</span>} : MySum A B → MySum B A := <span class="kw">fun</span> s =&gt;
+  <span class="kw">match</span> s <span class="kw">with</span>
+  | MySum.inl a =&gt; MySum.inr a
+  | MySum.inr b =&gt; MySum.inl b</code></pre>
+<p>例えば左の枝では <code>a : A</code>。行き先 <code>MySum B A</code> では <code>A</code> が右側なので、<code>MySum.inr</code> を使う。</p>
+</details>
 <h3>組も帰納型で作る</h3>
 <p>今度は、<code>A</code> の項と <code>B</code> の項を<strong>両方</strong>持つ組を作りたい。構成子を一つにし、その構成子に二つの引数を渡す。</p>
 <pre class="lean"><code><span class="kw">inductive</span> MyPair (A B : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
@@ -192,6 +230,17 @@ inductive Empty : Type</code></pre>
 <pre class="lean"><code><span class="kw">def</span> swapPair {A B : <span class="sort">Type</span>} : A × B → B × A := <span class="kw">fun</span> p =&gt;
   <span class="kw">match</span> p <span class="kw">with</span>
   | Prod.mk a b =&gt; Prod.mk b a</code></pre>
+<h3 id="sec-Trial3.practice-review-3">✏ 練習</h3>
+<ol class="exercise" start="43" data-exercise="43">
+<li>写像 <code>f : X → A</code> と <code>g : X → B</code> から、<code>x</code> を組 <code>(f x, g x)</code> に送る <code>pairMaps : X → MyPair A B</code> を定義せよ。型 <code>X A B</code> と写像 <code>f g</code> も引数に取ること。</li>
+</ol>
+<details class="sol" data-exercise="43"><summary>解答 43</summary>
+<pre class="lean"><code><span class="kw">def</span> pairMaps (X A B : <span class="sort">Type</span>) (f : X → A) (g : X → B) : X → MyPair A B :=
+  <span class="kw">fun</span> x =&gt; MyPair.mk (f x) (g x)</code></pre>
+<p>それぞれ <code>f x : A</code>、<code>g x : B</code> なので、<code>MyPair.mk</code> の二つの引数に渡せる。</p>
+</details>
+<aside class="note note--optional"><h3>補足: 帰納型を直和と直積で見る</h3>
+<p><code>MySum A B</code> では、構成子をどちらか一つ選ぶ。これは直和に対応する。 <code>MyPair A B</code> では、一つの構成子に <code>A</code> の項と <code>B</code> の項を両方渡す。これは直積に対応する。一般にも、構成子の選択を直和、それぞれの構成子が受け取る材料を直積として読むと、帰納型がどんな項を作るかを見通しやすい。引数の型が前の引数に依存する場合は、次に見る依存する組になる。</p></aside>
 <h2 id="sec-Trial3.dependent-pairs">3. 依存する組</h2>
 <p>集合族 $(B(a))_{a\in A}$ の直和 $\bigsqcup_{a\in A} B(a)$ の要素は、添字 $a$ を一つ選び、さらにその集合の要素 $b\in B(a)$ を一つ選んだ組 $(a,b)$ である。第二成分を選ぶ集合は、第一成分の値によって決まる。</p>
 <p>第1章で使った <code>Fin n</code> を例にしよう。「自然数 <code>n</code> と、<code>n</code> 未満の番号を一つ選んだ組」を次のように定義できる。</p>
@@ -219,7 +268,9 @@ inductive Empty : Type</code></pre>
 <pre class="quote"><code>3</code></pre>
 <p>この関数の行き先は固定した <code>Nat</code> である。枝に入ると <code>n : Nat</code> と <code>i : Fin n</code> が使えるが、ここでは <code>n</code> だけを返している。</p>
 <h3>第二成分の型も入力から決まる</h3>
-<p>番号を取り出す関数の行き先は、入力された組の大きさで変わる。したがって、その型にも入力 <code>p</code> が現れる。</p>
+<p>番号を取り出す関数の行き先は、入力された組の大きさで変わる。したがって、その型にも入力 <code>p</code> が現れる。関数全体の型は、次の依存関数型である。</p>
+<pre class="quote"><code>Numbered.index : (p : Numbered) → Fin (Numbered.size p)</code></pre>
+<p>第一成分を返す <code>Numbered.size : Numbered → Nat</code> とは異なり、結果の型が入力ごとに変わる。</p>
 <pre class="lean"><code><span class="kw">def</span> Numbered.index (p : Numbered) : Fin (Numbered.size p) :=
   <span class="kw">match</span> p <span class="kw">with</span>
   | Numbered.mk _ i =&gt; i
@@ -231,7 +282,7 @@ inductive Empty : Type</code></pre>
 <p>任意の型の族 <code>B : A → Type</code> に対しても、同じ構成子を書ける。</p>
 <pre class="lean"><code><span class="kw">inductive</span> FamilyPair (A : <span class="sort">Type</span>) (B : A → <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
   | mk (a : A) (b : B a) : FamilyPair A B</code></pre>
-<p>標準の型では、これに対応する依存和を <code>Sigma B</code>、または <code>(a : A) × B a</code> と書き、 <code>Sigma.mk a b</code> で項を作る。</p>
+<p>標準の型では、これに対応する依存和を <code>Sigma B</code>、または <code>(a : A) × B a</code> と書き、 <code>Sigma.mk a b</code> で項を作る。特に <code>(n : Nat) × Fin n</code> は、自然数 <code>n</code> を一つ選び、続いて <strong>その <code>n</code> に対応する <code>Fin n</code></strong> の項を選んだ組の型である。第一成分と第二成分の型を独立に決める普通の直積 <code>Nat × B</code> との違いは、この依存にある。</p>
 <pre class="lean"><code><span class="kw">def</span> numberedSigma : (n : Nat) × Fin n := Sigma.mk 3 (2 : Fin 3)
 
 <span class="kw">#check</span> numberedSigma</code></pre>
@@ -246,11 +297,11 @@ inductive Empty : Type</code></pre>
 <tr><td>依存和 <code>(a : A) × B a</code></td><td><code>Sigma.mk a b</code> で、一つの <code>a</code> と <code>b : B a</code> をまとめる</td><td><code>match</code> で <code>a</code> と <code>b</code> に名前を付ける</td></tr>
 </tbody></table>
 <p>第4章では、型の族を命題の族に置き換えて、全称量化と存在量化の証明を読む。</p>
-<h3>✏ 練習</h3>
-<ol class="exercise" start="41" data-exercise="41">
+<h3 id="sec-Trial3.dependent-pairs-exercise-baf1c270">✏ 練習</h3>
+<ol class="exercise" start="44" data-exercise="44">
 <li><code>n : Nat</code> から、大きさが <code>n + 1</code> で番号が最後の <code>n</code> である組を返す <code>attachLast : Nat → Numbered</code> を定義せよ。第1章の <code>lastIndex n : Fin (n + 1)</code> を使ってよい。 <code>Numbered.size (attachLast 3)</code> と <code>Numbered.index (attachLast 3)</code> の値も確かめよ。</li>
 </ol>
-<details class="sol" data-exercise="41"><summary>解答 41</summary>
+<details class="sol" data-exercise="44"><summary>解答 44</summary>
 <pre class="lean"><code><span class="kw">def</span> attachLast : Nat → Numbered := <span class="kw">fun</span> n =&gt;
   Numbered.mk (n + 1) (lastIndex n)</code></pre>
 <p>大きさは <code>4</code>、番号は <code>Fin 4</code> の <code>3</code> である。構成子の第一引数に <code>n + 1</code> を渡すと、第二引数に必要な型が <code>Fin (n + 1)</code> と決まる。</p>
@@ -264,6 +315,8 @@ inductive Empty : Type</code></pre>
 <span class="kw">#check</span> MyNat.succ (MyNat.succ MyNat.zero)</code></pre>
 <pre class="quote"><code>MyNat.zero.succ.succ : MyNat</code></pre>
 <p>表示の <code>MyNat.zero.succ.succ</code> は、<code>MyNat.succ (MyNat.succ MyNat.zero)</code> のことである。この型の項は、<code>zero</code> に <code>succ</code> を有限回重ねて作る。標準の <code>Nat</code> も同じ形で定義されている。</p>
+<aside class="note note--optional"><h3>補足: 集合の方程式としての再帰</h3>
+<p>集合の言葉では、零のための一点と、次の数を作るためのコピーを合わせるので、$X \cong 1 \sqcup X$ という形が現れる。ただし、この方程式だけで自然数が決まるわけではない。帰納型では、<code>zero</code> から <code>succ</code> を有限回使って作ったものですべて、という条件が付く。これが、構成子から生成される最小のもの、という見方である。</p></aside>
 <h3>自分より小さい項を使う</h3>
 <p>加法を、第二引数について場合分けして定義しよう。 <code>succ k</code> の場合は、中に入っていた小さい項 <code>k</code> への加法を使う。</p>
 <pre class="lean"><code><span class="kw">def</span> myAdd : MyNat → MyNat → MyNat := <span class="kw">fun</span> m n =&gt;
@@ -273,6 +326,21 @@ inductive Empty : Type</code></pre>
 <p><code>m + 0 = m</code>、<code>m + (k + 1) = (m + k) + 1</code> を項の作り方として書いている。再帰呼び出しが構造的に小さい項へ進むことをLeanが確かめる。</p>
 <pre class="lean"><code>#reduce myAdd (MyNat.succ MyNat.zero) (MyNat.succ MyNat.zero)</code></pre>
 <pre class="quote"><code>MyNat.zero.succ.succ</code></pre>
+<aside class="note note--optional"><h3>補足: 再帰が止まることの検査</h3>
+<p>同じ入力のまま自分を呼ぶ、次の定義は受理されない。</p>
+<pre class="quote"><code>def loop (n : MyNat) : MyNat := loop n</code></pre>
+<p>再帰呼び出しで引数が変わらず、停止することを確かめられないためである。 <code>myAdd</code> では <code>MyNat.succ k</code> の中の <code>k</code> へ進むので、構造が小さくなることを確認できる。 Lean は、このように再帰が止まる根拠も検査している。</p></aside>
+<h3 id="sec-Trial3.practice-review-5">✏ 練習</h3>
+<ol class="exercise" start="45" data-exercise="45">
+<li><code>MyNat.zero</code> を <code>0</code> に、<code>MyNat.succ k</code> を <code>toNat k + 1</code> に送る <code>toNat : MyNat → Nat</code> を再帰で定義せよ。</li>
+</ol>
+<details class="sol" data-exercise="45"><summary>解答 45</summary>
+<pre class="lean"><code><span class="kw">def</span> toNat : MyNat → Nat := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | MyNat.zero =&gt; 0
+  | MyNat.succ k =&gt; toNat k + 1</code></pre>
+<p>小さい項 <code>k</code> への関数の値を使って、<code>succ k</code> への値を作っている。</p>
+</details>
 <h3>各自然数への証明を再帰で作る</h3>
 <p>同じ再帰を使い、自然数ごとの等式の証明も作れる。標準の <code>Nat</code> で、<code>0 + n = n</code> を証明しよう。</p>
 <p>零の場合は計算で一致する。<code>k + 1</code> の場合は、<code>0 + k = k</code> の両辺に一つ加えればよい。この「<code>k</code> の場合の証明」が、次のコードの再帰呼び出しである。</p>
@@ -281,6 +349,43 @@ inductive Empty : Type</code></pre>
   | Nat.zero =&gt; rfl
   | Nat.succ k =&gt; congrArg Nat.succ (zero_add_by_rec k)</code></pre>
 <p><code>congrArg</code> が返す型は <code>Nat.succ (0 + k) = Nat.succ k</code>。これは <code>0 + Nat.succ k = Nat.succ k</code> と計算で一致する。 <strong>証明を返す依存関数を再帰で作ることが、数学的帰納法による証明になっている。</strong></p>
+<aside class="note note--optional">
+<h3>補足: 定義から計算して一致することと、等式を証明すること</h3>
+<p>自然数の加法は第二引数について再帰する。そのため <code>n + 0</code> は <code>n</code> に計算される。一方、変数 <code>n</code> に対する <code>0 + n</code> は、<code>n</code> がどの構成子でできているか分からず、計算を進められない。</p>
+<pre class="lean"><code><span class="kw">def</span> add_zero_by_rfl (n : Nat) : n + 0 = n := rfl</code></pre>
+<p>次の形では、<code>rfl</code> だけでは証明できない。</p>
+<pre class="quote"><code>def zero_add_bad (n : Nat) : 0 + n = n := rfl</code></pre>
+<p>そこで本文の <code>zero_add_by_rec</code> では、<code>n</code> について場合分けし、帰納法で等式を証明した。定義を展開して計算すると一致することを<strong>定義的に等しい</strong>という。型の照合ではこの等しさを使えるが、証明された等式がすべて定義的な等しさになるわけではない。</p>
+<p>同じ理由で、乗法も <code>0 * n = 0</code> を <code>rfl</code> だけで証明できるわけではない。第二引数の作られ方に沿って、証明を再帰で作れる。</p>
+<pre class="lean"><code><span class="kw">def</span> zero_mul_by_rec : ∀ n : Nat, 0 * n = 0 := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | Nat.zero =&gt; rfl
+  | Nat.succ k =&gt; zero_mul_by_rec k</code></pre>
+<p>次の数の枝では <code>0 * Nat.succ k</code> が <code>0 * k + 0</code>、さらに <code>0 * k</code> に計算されるので、再帰呼び出しで得た証明をそのまま使える。</p>
+</aside>
+<aside class="note note--optional">
+<h3 id="sec-Trial3.two-mul">補足: 2n = n + n を定義から証明する</h3>
+<p>第4章では <code>Nat.two_mul</code> を既知の定理として使う。その内容も、再帰と等式の操作から証明できる。数学的帰納法で考えると、零のときは両辺とも零である。 <code>2 * k = k + k</code> を仮定すれば、$2(k+1)=2k+2=(k+k)+2=(k+1)+(k+1)$ となる。</p>
+<p>最後の並べ替えには、$(n+1)+m=(n+m)+1$ を使った。これも <code>m</code> に関する帰納法で証明しておこう。</p>
+<pre class="lean"><code><span class="kw">def</span> succ_add_from_scratch : ∀ n m : Nat, (n + 1) + m = (n + m) + 1 := <span class="kw">fun</span> n m =&gt;
+  <span class="kw">match</span> m <span class="kw">with</span>
+  | Nat.zero =&gt; rfl
+  | Nat.succ k =&gt; congrArg (<span class="kw">fun</span> x =&gt; x + 1) (succ_add_from_scratch n k)</code></pre>
+<p>零の枝は計算で一致する。次の数の枝は、一つ前の等式の両辺に1を加えた証明である。これを使うと、二倍の等式の帰納段階も書ける。</p>
+<pre class="lean"><code><span class="kw">def</span> two_mul_from_scratch : ∀ n : Nat, 2 * n = n + n := <span class="kw">fun</span> n =&gt;
+  <span class="kw">match</span> n <span class="kw">with</span>
+  | Nat.zero =&gt; rfl
+  | Nat.succ k =&gt;
+    Eq.trans (congrArg (<span class="kw">fun</span> x =&gt; x + 2) (two_mul_from_scratch k))
+      (Eq.symm (congrArg (<span class="kw">fun</span> x =&gt; x + 1) (succ_add_from_scratch k k)))
+
+<span class="kw">#check</span> two_mul_from_scratch</code></pre>
+<pre class="quote"><code>two_mul_from_scratch (n : Nat) : 2 * n = n + n</code></pre>
+<p>帰納法の仮定は、自分自身への再帰呼び出しで得ている。計算だけで一致しない箇所を、<code>congrArg</code> と <code>Eq.trans</code> でつないだ。</p>
+<pre class="lean"><code><span class="kw">#print</span> axioms two_mul_from_scratch</code></pre>
+<pre class="quote"><code>&#x27;two_mul_from_scratch&#x27; does not depend on any axioms</code></pre>
+<p>「既知の定理」も、定義と計算までたどれば、検査済みの証明の項として与えられている。</p>
+</aside>
 <h2 id="sec-Trial3.indexed">5. 等式と自然数の不等式</h2>
 <p>ここまでは、構成子が <code>Signal</code> や <code>MyNat</code> という一つの型の項を返していた。次は、構成子が<strong>型の族のどの型に項を作るか</strong>にも注目する。</p>
 <p><code>Eq a b</code> は、対象 <code>a</code> と <code>b</code> ごとに変わる命題である。 <code>Nat.le n m</code> も、自然数 <code>n</code> と <code>m</code> ごとに変わる命題である。第2章で見た「述語は型の族」という見方で、これらの族を帰納的に定義する。</p>
@@ -314,33 +419,68 @@ inductive Empty : Type</code></pre>
 <p>枝の中で要求される型は <code>f a = f a</code> になる。対称性・推移性・合同性を新しい仮定として加える必要はなく、等式の帰納型の仕組みから証明できた。</p>
 <pre class="lean"><code><span class="kw">#print</span> axioms eqSymmByMatch</code></pre>
 <pre class="quote"><code>&#x27;eqSymmByMatch&#x27; does not depend on any axioms</code></pre>
+<aside class="note note--optional">
+<h3>補足: 等式をもう一つ作る実験</h3>
+<p><code>Eq</code> と同じ形の帰納型を自作し、その証明を <code>match</code> で使ってみよう。ここでは型の範囲を <code>Type</code> に限っている。</p>
+<pre class="lean"><code><span class="kw">inductive</span> MyEq {A : <span class="sort">Type</span>} (a : A) : A → <span class="sort">Prop</span> <span class="kw">where</span>
+  | refl : MyEq a a
+
+<span class="kw">#check</span> MyEq</code></pre>
+<pre class="quote"><code>MyEq {A : Type} (a : A) : A → Prop</code></pre>
+<p>対称性の結論は <code>MyEq b a</code> だが、構成子の枝では <code>b</code> が <code>a</code> にそろうため、<code>MyEq.refl</code> を返せる。 <code>match</code> は、構成子がどの添字の型の項を作るかも使って、枝の中で要求する型を決める。</p>
+<pre class="lean"><code><span class="kw">def</span> MyEq.symm {A : <span class="sort">Type</span>} {a b : A} (h : MyEq a b) : MyEq b a :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | MyEq.refl =&gt; MyEq.refl
+
+<span class="kw">def</span> MyEq.trans {A : <span class="sort">Type</span>} {a b c : A} (h₁ : MyEq a b) (h₂ : MyEq b c) : MyEq a c :=
+  <span class="kw">match</span> h₁ <span class="kw">with</span>
+  | MyEq.refl =&gt; h₂</code></pre>
+<p>推移性の枝では、第二の仮定の型が <code>MyEq a c</code> になるので、そのまま返せる。標準の等式と自作の等式の間にも、互いの証明を受け取る関数を書ける。</p>
+<pre class="lean"><code><span class="kw">def</span> MyEq.toEq {A : <span class="sort">Type</span>} {a b : A} (h : MyEq a b) : a = b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | MyEq.refl =&gt; Eq.refl a
+
+<span class="kw">def</span> MyEq.ofEq {A : <span class="sort">Type</span>} {a b : A} (h : a = b) : MyEq a b :=
+  <span class="kw">match</span> h <span class="kw">with</span>
+  | Eq.refl _ =&gt; MyEq.refl</code></pre>
+<p>いずれも新しい公理を加えず、構成子と場合分けだけで作れた。自作の等式の証明も、標準の等式の証明も、帰納型の同じ原理で扱っている。</p>
+</aside>
 <h3>自然数の不等式 Nat.le</h3>
 <p>自然数の <code>n ≤ m</code> は <code>Nat.le n m</code> の記法である。定義の中心は次の二つの構成子である。</p>
 <pre class="quote"><code>inductive Nat.le (n : Nat) : Nat → Prop where
   | refl : Nat.le n n
   | step {m} : Nat.le n m → Nat.le n (Nat.succ m)</code></pre>
+<p>集合の言葉では、これは次の二条件を満たす<strong>最小の二項関係</strong>と考えられる。</p>
+<ul>
+<li>すべての自然数 <code>n</code> について <code>n ≤ n</code> が成り立つ。</li>
+<li><code>n ≤ m</code> が成り立てば <code>n ≤ m + 1</code> も成り立つ。</li>
+</ul>
+<p>第一の条件が <code>refl</code>、第二の条件が <code>step</code> に対応する。構成子から生成される証明だけを使う、という帰納型の仕組みが、この最小性を表している。</p>
 <p><code>n</code> を固定すると、<code>Nat.le n</code> は右辺の自然数を添字に持つ命題の族になる。 <code>refl</code> は添字 <code>n</code> のところに証明を作り、<code>step</code> は添字 <code>m</code> の証明から添字 <code>m + 1</code> の証明を作る。</p>
 <p><code>Nat.succ m</code> は <code>m + 1</code> に当たる。自然数を <code>zero</code> と <code>succ</code> で作ったのと同じように、不等式の証明を <code>refl</code> と <code>step</code> で作る。</p>
 <h3>2 ≤ 4 の証明を作る</h3>
 <p>まず <code>2 ≤ 2</code> の証明を作り、<code>step</code> を二回使う。</p>
-<pre class="lean"><code><span class="kw">def</span> two_le_two : 2 ≤ 2 := Nat.le.refl
-<span class="kw">def</span> two_le_three : 2 ≤ 3 := Nat.le.step two_le_two
-<span class="kw">def</span> two_le_four : 2 ≤ 4 := Nat.le.step two_le_three</code></pre>
-<p>このように、証明にも組み立て方がある。使える構成子を並べただけでなく、各適用の入力と結果の型が合っていることを確かめよう。</p>
+<pre class="lean"><code><span class="kw">def</span> two_le_four : 2 ≤ 4 := Nat.le.step (Nat.le.step Nat.le.refl)</code></pre>
+<p>内側から、<code>Nat.le.refl : 2 ≤ 2</code>、一回目の <code>step</code> の結果が <code>2 ≤ 3</code>、二回目の結果が <code>2 ≤ 4</code> である。このように、証明にも組み立て方がある。使える構成子を並べただけでなく、各適用の入力と結果の型が合っていることを確かめよう。</p>
 <pre class="lean"><code><span class="kw">#check</span> Nat.le.step two_le_four</code></pre>
 <pre class="quote"><code>Nat.le.step two_le_four : Nat.le 2 (Nat.succ 4)</code></pre>
 <h3>両辺に一つ加えても順序は保たれる</h3>
-<p><code>n ≤ m</code> の証明から <code>n + 1 ≤ m + 1</code> の証明を作る。 <code>refl</code> の場合は同じ数どうしになり、<code>step</code> の場合は一つ前の証明に戻って考えられる。</p>
+<p><code>n ≤ m</code> の証明から <code>n + 1 ≤ m + 1</code> の証明を作る。数学の言葉で、<strong>不等式の証明の作られ方に関する帰納法</strong>を書いてみよう。</p>
+<ul>
+<li>出発点 <code>n ≤ n</code> から作る場合、結論は <code>n + 1 ≤ n + 1</code> なので、反射性から言える。</li>
+<li><code>n ≤ k</code> の証明から一段進んで <code>n ≤ k + 1</code> を作った場合を考える。一つ前の証明に対しては帰納法の仮定から <code>n + 1 ≤ k + 1</code> が得られる。その右辺をもう一つ増やせば、必要な <code>n + 1 ≤ (k + 1) + 1</code> が得られる。</li>
+</ul>
+<p>どの証明もこの二通りで作られるので、これで全場合を扱った。一つ前の証明に帰納法の仮定を使う操作を、次のコードでは再帰呼び出しで書く。</p>
 <pre class="lean"><code><span class="kw">def</span> succLeSuccByMatch (n m : Nat) (h : n ≤ m) : n + 1 ≤ m + 1 :=
   <span class="kw">match</span> h <span class="kw">with</span>
   | Nat.le.refl =&gt; Nat.le.refl
   | Nat.le.step h&#x27; =&gt; Nat.le.step (succLeSuccByMatch n _ h&#x27;)</code></pre>
 <p><code>step</code> の枝では、<code>h&#x27;</code> は <code>n ≤ k</code> の証明、もとの右辺は <code>k + 1</code> である。再帰呼び出しで <code>n + 1 ≤ k + 1</code> を得て、<code>step</code> で右辺をもう一つ増やす。不等式の証明の構造についての帰納法を、そのまま再帰で書いている。</p>
-<h3>✏ 練習</h3>
-<ol class="exercise" start="42" data-exercise="42">
+<h3 id="sec-Trial3.indexed-exercise-884af91c">✏ 練習</h3>
+<ol class="exercise" start="46" data-exercise="46">
 <li><code>1 ≤ 3</code> の証明を <code>Nat.le.refl</code> と <code>Nat.le.step</code> だけで作れ。次に、それを <code>succLeSuccByMatch</code> に渡して得られる証明の型を答えよ。</li>
 </ol>
-<details class="sol" data-exercise="42"><summary>解答 42</summary>
+<details class="sol" data-exercise="46"><summary>解答 46</summary>
 <pre class="lean"><code><span class="kw">def</span> one_le_three : 1 ≤ 3 := Nat.le.step (Nat.le.step Nat.le.refl)
 
 <span class="kw">def</span> two_le_four_again : 2 ≤ 4 := succLeSuccByMatch 1 3 one_le_three</code></pre>
@@ -348,52 +488,13 @@ inductive Empty : Type</code></pre>
 </details>
 <h2 id="sec-Trial3.practice">6. ✏ 練習 — 章末問題</h2>
 <p>構成子を使って項を作ることと、<code>match</code> で使うことを組み合わせよう。本体を書く前に、受け取る項と返す項の型を確認する。</p>
-<ol class="exercise" start="43" data-exercise="43">
-<li><code>Signal.next</code> と逆向きに色を送る <code>prev : Signal → Signal</code> を書け。 <code>prev (Signal.next Signal.red)</code> の値を確かめよ。</li>
-</ol>
-<details class="sol" data-exercise="43"><summary>解答 43</summary>
-<pre class="lean"><code><span class="kw">def</span> prev : Signal → Signal := <span class="kw">fun</span> s =&gt;
-  <span class="kw">match</span> s <span class="kw">with</span>
-  | Signal.red =&gt; Signal.yellow
-  | Signal.yellow =&gt; Signal.green
-  | Signal.green =&gt; Signal.red</code></pre>
-<p>赤を次の色に送ると青、青を逆向きに送ると赤になる。</p>
-</details>
-<ol class="exercise" start="44" data-exercise="44">
-<li><code>swapSum : MySum A B → MySum B A</code> を定義せよ。左側から来た項は右側へ、右側から来た項は左側へ送ること。</li>
-</ol>
-<details class="sol" data-exercise="44"><summary>解答 44</summary>
-<pre class="lean"><code><span class="kw">def</span> swapSum {A B : <span class="sort">Type</span>} : MySum A B → MySum B A := <span class="kw">fun</span> s =&gt;
-  <span class="kw">match</span> s <span class="kw">with</span>
-  | MySum.inl a =&gt; MySum.inr a
-  | MySum.inr b =&gt; MySum.inl b</code></pre>
-<p>例えば左の枝では <code>a : A</code>。行き先 <code>MySum B A</code> では <code>A</code> が右側なので、<code>MySum.inr</code> を使う。</p>
-</details>
-<ol class="exercise" start="45" data-exercise="45">
-<li>写像 <code>f : X → A</code> と <code>g : X → B</code> から、<code>x</code> を組 <code>(f x, g x)</code> に送る <code>pairMaps : X → MyPair A B</code> を定義せよ。型 <code>X A B</code> と写像 <code>f g</code> も引数に取ること。</li>
-</ol>
-<details class="sol" data-exercise="45"><summary>解答 45</summary>
-<pre class="lean"><code><span class="kw">def</span> pairMaps (X A B : <span class="sort">Type</span>) (f : X → A) (g : X → B) : X → MyPair A B :=
-  <span class="kw">fun</span> x =&gt; MyPair.mk (f x) (g x)</code></pre>
-<p>それぞれ <code>f x : A</code>、<code>g x : B</code> なので、<code>MyPair.mk</code> の二つの引数に渡せる。</p>
-</details>
-<ol class="exercise" start="46" data-exercise="46">
+<ol class="exercise" start="47" data-exercise="47">
 <li>族 <code>B : A → Type</code> と依存関数 <code>f : (a : A) → B a</code> がある。各 <code>a</code> に組 <code>(a, f a)</code> を対応させる <code>graphOf</code> を、<code>FamilyPair</code> の構成子で定義せよ。</li>
 </ol>
-<details class="sol" data-exercise="46"><summary>解答 46</summary>
+<details class="sol" data-exercise="47"><summary>解答 47</summary>
 <pre class="lean"><code><span class="kw">def</span> graphOf (A : <span class="sort">Type</span>) (B : A → <span class="sort">Type</span>) (f : (a : A) → B a) :
     A → FamilyPair A B := <span class="kw">fun</span> a =&gt; FamilyPair.mk a (f a)</code></pre>
 <p><code>a</code> を渡した後、構成子の第二引数に必要なのは <code>B a</code> の項である。関数適用で得た <code>f a : B a</code> が、その型を持っている。</p>
-</details>
-<ol class="exercise" start="47" data-exercise="47">
-<li><code>MyNat.zero</code> を <code>0</code> に、<code>MyNat.succ k</code> を <code>toNat k + 1</code> に送る <code>toNat : MyNat → Nat</code> を再帰で定義せよ。</li>
-</ol>
-<details class="sol" data-exercise="47"><summary>解答 47</summary>
-<pre class="lean"><code><span class="kw">def</span> toNat : MyNat → Nat := <span class="kw">fun</span> n =&gt;
-  <span class="kw">match</span> n <span class="kw">with</span>
-  | MyNat.zero =&gt; 0
-  | MyNat.succ k =&gt; toNat k + 1</code></pre>
-<p>小さい項 <code>k</code> への関数の値を使って、<code>succ k</code> への値を作っている。</p>
 </details>
 <ol class="exercise" start="48" data-exercise="48">
 <li><code>leAddRight : ∀ n k : Nat, n ≤ n + k</code> を、<code>k</code> に関する再帰で証明せよ。零の場合は <code>Nat.le.refl</code>、次の数の場合は再帰呼び出しと <code>Nat.le.step</code> を使う。</li>
@@ -413,150 +514,7 @@ inductive Empty : Type</code></pre>
   <span class="kw">match</span> h <span class="kw">with</span>
   | Eq.refl _ =&gt; hn</code></pre>
 <p><code>Eq.refl</code> の枝では結論が <code>0 ≤ n</code> に特殊化され、<code>hn</code> をそのまま返せる。</p>
-</details><aside class="note note--optional" id="original-supplements">
-<h2>元原稿から残した補足</h2>
-<p>以下は元原稿の補足・先取りを、そのまま残したものです。補足内の練習番号も元原稿の番号です。本文で後回しにした記法や定義が登場する場合は、各項の「元の文脈で読む」を参照してください。</p>
-<p><a href="reference/03_inductivetypes.html#original-note-1">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-1">
-<h3>補足: <code>true</code> と <code>.true</code>、<code>red</code> と <code>.red</code></h3>
-<p><code>Bool.true</code> も <code>Signal.red</code> と同じく、帰納型の定義で付けられた構成子の名前である。では、<a href="../../../docs/01_typesandterms.html#sec-Intro1.terms-types"><code>01_TypesAndTerms.lean</code> 1節</a>で <code>Bool.true</code> を単に <code>true</code> と書けたのはなぜか。いま参照した標準ライブラリでは、<code>Bool</code> の定義に続けて次の宣言をしている:</p>
-<pre class="quote"><code>export Bool (false true)</code></pre>
-<p>これは <code>Bool.false</code> と <code>Bool.true</code> を、接頭辞なしの <code>false</code>・<code>true</code> という名前でも使えるようにする宣言である。そのため <code>#check true</code> だけで型を調べられる。 <code>inductive</code> で定義しただけで、すべての構成子の接頭辞を省けるわけではない。</p>
-<p>一方、<code>.red</code> は<strong>期待される型を手がかりに、名前の接頭辞を補う</strong>記法である（<a href="../../../docs/01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>で見た、期待される型を上から伝える仕組みの1例）。いまの <code>Signal</code> の定義だけをした状態では、次の違いがある:</p>
-<table>
-<thead><tr><th>書き方</th><th>結果と理由</th></tr></thead>
-<tbody>
-<tr><td><code>#check Signal.red</code></td><td>通る。構成子の名前を接頭辞まで書いている。</td></tr>
-<tr><td><code>#check red</code></td><td>通らない。接頭辞なしの名前 <code>red</code> は用意されていない。</td></tr>
-<tr><td><code>#check (red : Signal)</code></td><td>通らない。型を書くだけでは、名前 <code>red</code> の接頭辞は補われない。</td></tr>
-<tr><td><code>#check (.red : Signal)</code></td><td>通る。期待される型 <code>Signal</code> から <code>Signal.red</code> と分かる。</td></tr>
-<tr><td><code>#check .red</code></td><td>通らない。接頭辞を補う手がかりとなる型が分からない。</td></tr>
-</tbody></table>
-<p><code>Bool</code> でも <code>#check (.true : Bool)</code> は通るが、<code>#check .true</code> だけでは期待される型が分からず通らない。つまり <code>true</code> と <code>.true</code> は同じ項を指せても、 <strong>短い名前を用意しておく仕組み</strong>と、<strong>期待される型から名前を補う仕組み</strong>という違いがある。</p>
-<p><code>Signal</code> でも <code>export Signal (red)</code> と宣言すれば、その後は <code>red</code> という短い名前を使える。また、<code>open Signal in</code> をコマンドの前に置くと、そのコマンドの中で接頭辞なしの名前を使える:</p>
-<pre class="quote"><code>open Signal in
-#check red</code></pre>
-<p>こうした名前の管理の仕組みは、<a href="../../../docs/05_mathematicaltools.html#sec-Intro2.namespaces"><code>05_MathematicalTools.lean</code> 4節</a>で扱う。このあと本文で使う <code>.red</code>・<code>.yellow</code>・<code>.green</code> は、<code>open</code> や <code>export</code> を必要とせず、期待される型から名前を補う書き方である。</p>
-<p>この違いは、これから見る <code>match</code> の場合分けでも大事になる。接頭辞なしの名前を用意していない状態で <code>| red =&gt; ...</code> と書くと、<code>red</code> は構成子ではなく、どの値でも受け取る<strong>新しい変数の名前</strong>になる。赤の場合を指定するには、 <code>| Signal.red =&gt; ...</code> または <code>| .red =&gt; ...</code> と書く。</p>
-</aside>
-<p><a href="reference/03_inductivetypes.html#original-note-2">元の文脈で読む</a></p>
-<aside class="note note--preview" id="original-note-2"><h3>先取り（04_Exists）: 「全部」と「別々」を支える道具</h3>
-<p>先ほどの2つの事実を証明するための道具は、<code>inductive</code> の宣言に伴って Lean が用意する。 <code>Signal.rec</code> は、3つの場合を扱えば <code>Signal</code> のすべての項について定義・証明できることを表す。また <code>Signal.noConfusion</code> を使えば、異なる構成子で作った項が等しくないことを証明できる。個々の主張の証明がすべて完成形で自動生成される、という意味ではなく、 <strong>証明を組み立てるための道具が用意される</strong>のである。詳しい型や使い方は、<a href="../../../docs/04_exists.html#sec-CH.nat-proofs"><code>04_Exists.lean</code> 6節</a>で見る。</p></aside>
-<p><a href="reference/03_inductivetypes.html#original-note-3">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-3">
-<h3>補足: 型をパラメータにした取り出し関数</h3>
-<p>取り出す側も、パラメータを持たせて一般的に書ける。次の <code>getLeft</code> は「既定値 <code>d</code> を受け取り、左の札なら中身を、右の札なら <code>d</code> を返す」関数で、 <code>fromSum</code> はその <code>Nat</code>・<code>Bool</code>・<code>0</code> への特殊化に当たる。先ほど見た構成子と同様に、<code>{α β : Type}</code> を暗黙引数として宣言しておけば、この関数を使うときにも、ほかの引数の型などから <code>α</code>・<code>β</code> を補ってもらえる:</p>
-<pre class="lean"><code><span class="kw">def</span> getLeft {α β : <span class="sort">Type</span>} (d : α) : MySum α β → α := <span class="kw">fun</span> x =&gt;
-  <span class="kw">match</span> x <span class="kw">with</span>
-  | .inl a =&gt; a
-  | .inr _ =&gt; d
-
-<span class="kw">#check</span> getLeft</code></pre>
-<pre class="quote"><code>getLeft {α β : Type} (d : α) : MySum α β → α</code></pre>
-<p>使ってみる。<code>getLeft 0 (MySum.inr true)</code> という項を読む: <code>d = 0 : Nat</code> から <code>α = Nat</code> が、<code>true : Bool</code> から <code>β = Bool</code> が埋まり、全体の型は <code>Nat</code>。値は「右の札」を渡したのだから、既定値 <code>0</code> が返るはずである:</p>
-<pre class="lean"><code><span class="kw">#eval</span> getLeft 0 (MySum.inr true)</code></pre>
-<pre class="quote"><code>0</code></pre>
-</aside>
-<p><a href="reference/03_inductivetypes.html#original-note-4">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-4"><h3>補足: 集合の方程式としての再帰</h3>
-<p>集合のアナロジーでは、<code>MyNat</code> は方程式</p>
-<p>$$X \cong 1 \sqcup X$$</p>
-<p>を満たす<strong>最小</strong>の集合と読める（右辺の $1$ は <code>zero</code> の分の1点、$X$ は <code>succ</code> の引数の分）。右辺に自分自身が現れるのが再帰の印で、最小性は「<code>zero</code> に <code>succ</code> を有限回重ねたものがすべてで、それ以外にない」ということの言い替えである。</p></aside>
-<p><a href="reference/03_inductivetypes.html#original-note-5">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-5"><h3>補足: 再帰が止まることの検査</h3>
-<p>自分自身を呼ぶ定義は、何でも受理されるわけではない。再帰呼び出しがいつまでも続くと、計算が終わらないからである。Lean は受理する前に、再帰呼び出しの引数が構造的に小さくなっていること（<code>add</code> なら <code>.succ k</code> の中の <code>k</code>）を確かめ、計算が必ず止まることを保証している。確かめられなければエラーになる:</p>
-<pre class="quote"><code>def loop (n : MyNat) : MyNat := loop n
-
-error: fail to show termination for
-  loop
-with errors
-failed to infer structural recursion:
-Not considering parameter n of loop:
-  it is unchanged in the recursive calls</code></pre>
-<p>「引数 <code>n</code> が再帰呼び出しで変わっていない」という報告である。停止することも、型と同じく機械的な検査の対象なのである。</p></aside>
-<p><a href="reference/03_inductivetypes.html#original-note-6">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-6"><h3>補足: 帰納型を直和と直積で見る</h3>
-<p>前節の直和とここの直積をまとめると、ここまでの非再帰的で、構成子の引数の型が互いに依存しない例は、集合の言葉でこう読める:</p>
-<p>$$(\text{構成子1の引数たちの直積}) \sqcup (\text{構成子2の引数たちの直積}) \sqcup \cdots$$</p>
-<p>つまり<strong>構成子の個数が直和の項数を、各構成子の引数が直積の因子を</strong>与える。 <code>Signal</code> は $1 \sqcup 1 \sqcup 1$（3点集合）、<code>MySum α β</code> は $\alpha \sqcup \beta$（直和だけ）、 <code>Point</code> は $\mathrm{Nat} \times \mathrm{Nat}$（直和が1項に退化して直積だけ）、構成子が0個なら空集合（<code>Empty</code>）。「structure は直積」と「帰納型は直和のようなもの」は矛盾しない——直和を<strong>使って</strong>直積を定義しているのではなく、構成子の<strong>個数</strong>と<strong>引数</strong>という直交した2つの軸が、それぞれ直和と直積に対応しているのである。</p>
-<p>なおアナロジーの注意を1つ。集合と違って、型は<strong>外延（要素の一致）では同一視されない</strong>。<code>Point</code> と <code>Pair Nat Nat</code> は「中身」は同じだが別の型である（この話は <a href="../../../docs/03_inductivetypes.html#sec-Intro1.subtypes">2節</a>の <code>Fin</code> の補足でも再登場する）。</p></aside>
-<p><a href="reference/03_inductivetypes.html#original-note-7">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-7">
-<h3>復習: 取り出す値の型も入力で変わる</h3>
-<p>台となる型だけでなく、その中の点を取り出す関数も読んでみよう。 <code>p : PointedType</code> の点は <code>p.carrier</code> 型なので、取り出し関数の結果の型は <strong>入力 <code>p</code> によって変わる</strong>はずである:</p>
-<pre class="lean"><code><span class="kw">#check</span> PointedType.point</code></pre>
-<pre class="quote"><code>PointedType.point (self : PointedType) : self.carrier</code></pre>
-<p>たしかに、結果の型に引数 <code>self</code> が現れた。<code>PointedType → Nat</code> のように固定した行き先では書けない。これは <a href="../../../docs/01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> の4節</a>で学んだ依存関数型である。</p>
-<h3>✏ 練習</h3>
-<ol class="exercise" start="79" data-original-exercise="79">
-<li>点付き集合 (A, a) から点 a を取り出す関数 <code>getPoint (p : PointedType) : p.carrier</code> を書け。 <code>#check getPoint</code> の表示を予想して確かめ、結果の型が引数に依存している箇所を指摘せよ。さらに <code>#reduce getPoint pointedNat</code> と <code>#reduce getPoint pointedBool</code> の値を予想して確かめよ。</li>
-</ol>
-<details class="sol" data-original-exercise="79"><summary>解答 79</summary>
-<pre class="lean"><code><span class="kw">def</span> getPoint (p : PointedType) : p.carrier := p.point
-
-<span class="kw">#check</span> getPoint</code></pre>
-<pre class="quote"><code>getPoint (p : PointedType) : p.carrier</code></pre>
-<p>結果の型 <code>p.carrier</code> に引数 <code>p</code> が現れている。</p>
-<pre class="lean"><code>#reduce getPoint pointedNat</code></pre>
-<pre class="quote"><code>0</code></pre>
-<pre class="lean"><code>#reduce getPoint pointedBool</code></pre>
-<pre class="quote"><code>true</code></pre>
 </details>
-</aside>
-<p><a href="reference/03_inductivetypes.html#original-note-8">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-8">
-<h3>補足: では <code>2 : Fin 3</code> なのか？</h3>
-<p>「<code>Fin 3</code> は 3 未満の番号の型」と聞くと、集合 $\{0, 1, 2\} \subset \mathbb{N}$ を思い浮かべて、「自然数 <code>2</code> はそのまま <code>Fin 3</code> の項でもあるのか」と考えたくなる。そうではない。 <code>Fin 3</code> の項は、上で見たとおり値と証明の組であり、<code>Nat</code> の項とは<strong>別の型の項</strong>である。集合のように、<code>Fin 3</code> が <code>Nat</code> の部分集合として含まれているわけではない。</p>
-<p>まぎらわしいことに、<code>(2 : Fin 3)</code> という書き方自体は通る:</p>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Nat)</code></pre>
-<pre class="quote"><code>2 : Nat</code></pre>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Fin 3)</code></pre>
-<pre class="quote"><code>2 : Fin 3</code></pre>
-<p>これは数字 <code>2</code> が<strong>記法</strong>であり、期待される型に応じて別々の項に読まれるからである（<a href="../../../docs/01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の <code>2 : Int</code> と同じ仕組み）。 <code>(2 : Nat)</code> は自然数の項、<code>(2 : Fin 3)</code> は <code>Fin 3</code> の「2 番」の項で、 <strong>同じ字面の、別の項</strong>なのである。所属を判定しているのではない証拠に、 <code>(5 : Fin 3)</code> すら通り、3 で割った<strong>余り</strong>として読まれる:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 3)</code></pre>
-<pre class="quote"><code>2</code></pre>
-<p><code>2</code> になった。リテラルをどう読むかは、<code>Fin</code> 用に用意された読み方で決まる（その仕組みは <a href="../../../docs/05_mathematicaltools.html#sec-Intro2.classes"><code>05_MathematicalTools.lean</code> 1節</a>の補足で見る）。</p>
-<p><code>.val</code> は「番号を自然数として取り出す」関数（<code>Fin n → Nat</code>）である:</p>
-<pre class="lean"><code><span class="kw">#eval</span> (2 : Fin 3).val</code></pre>
-<pre class="quote"><code>2</code></pre>
-<p>2つの <code>2</code> を等号で結ぼうとすると、面白いことが起きる:</p>
-<pre class="lean"><code><span class="kw">#check</span> (2 : Nat) = (2 : Fin 3)</code></pre>
-<pre class="quote"><code>2 = ↑2 : Prop</code></pre>
-<p>型エラーにはならないが、右辺に <code>↑</code> が付いた。これは<strong>強制</strong>（coercion）の印で、 Lean が <code>Fin 3 → Nat</code> の写像（<code>.val</code>）を自動で挟み、「<code>Nat</code> の世界に持ち上げてから比べる」形に読み替えている。逆向きはそうはいかない。<code>Fin 3</code> を引数に取る関数を用意して、<code>(2 : Nat)</code> を渡してみると:</p>
-<pre class="quote"><code>def useFin (x : Fin 3) : Fin 3 := x
-#check useFin (2 : Nat)
-
-error: Application type mismatch: The argument
-  2
-has type
-  Nat
-but is expected to have type
-  Fin 3
-in the application
-  useFin 2</code></pre>
-<p><code>Nat → Fin 3</code> の向きには「3 未満に収まっているか」の確認が要るので、自動では埋められない。まとめると、<code>Fin 3</code> と <code>Nat</code> の関係は「部分集合と全体」ではなく、<strong>写像 <code>.val</code> で結ばれた別々の型</strong>である。</p>
-</aside>
-<p><a href="reference/03_inductivetypes.html#original-note-9">元の文脈で読む</a></p>
-<aside class="note note--optional" id="original-note-9">
-<h3>✏ 練習</h3>
-<ol class="exercise" start="86" data-original-exercise="86">
-<li>（補足の確認）<code>#eval (5 : Fin 4)</code> の表示を予想してから確かめよ。</li>
-</ol>
-<details class="sol" data-original-exercise="86"><summary>解答 86</summary>
-<pre class="lean"><code><span class="kw">#eval</span> (5 : Fin 4)</code></pre>
-<pre class="quote"><code>1</code></pre>
-<p>補足の <code>(5 : Fin 3)</code> と同じ仕組みで、<code>5</code> を <code>4</code> で割った余りが入る。</p>
-</details>
-<ol class="exercise" start="87" data-original-exercise="87">
-<li>（補足の確認）<code>#eval (first 5).val + (2 : Fin 3).val</code> の値を予想してから確かめよ。</li>
-</ol>
-<details class="sol" data-original-exercise="87"><summary>解答 87</summary>
-<pre class="lean"><code><span class="kw">#eval</span> (first 5).val + (2 : Fin 3).val</code></pre>
-<pre class="quote"><code>2</code></pre>
-<p><code>(first 5).val = 0</code>、<code>(2 : Fin 3).val = 2</code> で、和は <code>Nat</code> の <code>2</code>。</p>
-</details>
-</aside>
-</aside>
 </main>
 <nav><span><a href="02_forall.html">← 02_Forall</a></span><a href="index.html">目次</a><span><a href="04_exists.html">04_Exists →</a></span></nav>
 </body>

@@ -31,7 +31,8 @@ inductive Signal : Type where
 それぞれを赤・黄・緑と読むのは人間が与える解釈であり、名前だけで色の性質や信号の動きが決まるわけではない。
 集合の言葉では、三点集合を作ったと思えばよい。
 三つの構成子で場合を尽くせること、異なる構成子が等しくないことは、帰納型の仕組みに基づく。
-後者の証明は否定を扱う第4章で見る。
+「これらで全部」を使うための再帰・帰納法の原理が `Signal.rec` であり、`match` もこの原理に基づく。
+「互いに別々」であることの証明には `Signal.noConfusion` を使える。後者は否定を扱う第4章で見る。
 -/
 
 /-!
@@ -73,30 +74,44 @@ def Signal.next : Signal → Signal := fun s =>
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Trial3.constructors-exercise-42721aca}
 
 1. `Signal.red`、`Signal.yellow`、`Signal.green` をそれぞれ `0`、`1`、`2` に送る
    `signalCode : Signal → Nat` を定義せよ。各枝の型を確かめ、`signalCode Signal.yellow` の値を予想せよ。
+
+2. `Signal.next` と逆向きに色を送る `prev : Signal → Signal` を書け。
+   `prev (Signal.next Signal.red)` の値を確かめよ。
 -/
 
 /-!
 ### 一点の型と空の型
 
-標準の `Bool` も、構成子 `Bool.false` と `Bool.true` を持つ帰納型である。
-構成子が一つで引数を取らない場合は、一点集合に対応する `Unit` になる。
-構成子を一つも持たない場合は、空集合に対応する `Empty` になる。
+構成子が一つで引数を取らない型を自作すると、一点集合に対応する。
+-/
+inductive MyUnit : Type where
+  | unit : MyUnit
 
-    inductive Unit : Type where
-      | unit : Unit
+/-!
+構成子を一つも持たない型は、空集合に対応する。
+-/
+inductive MyEmpty : Type
 
-    inductive Empty : Type
-
+/-!
 空の型にも使い方はある。項を受け取ったとして、場合分けすべき構成子が一つもなければよい。
 その場合分けを `nomatch` と書く。
 -/
-def emptyToNat (e : Empty) : Nat := nomatch e
+def emptyToNat (e : MyEmpty) : Nat := nomatch e
 /-!
-これは `Empty` の項を作ったのではなく、`Empty → Nat` という関数を作ったのである。
+これは `MyEmpty` の項を作ったのではなく、`MyEmpty → Nat` という関数を作ったのである。
+-/
+
+/-!
+### 補足: Prelude にある型
+
+標準環境には、同じ形の型 `Unit` と `Empty` が既に用意されている。
+`Unit` の構成子は `Unit.unit` で、`Empty` には構成子がない。
+二点の型 `Bool` も、構成子 `Bool.false` と `Bool.true` を持つ帰納型である。
+これらは標準で読み込まれる Prelude に含まれるので、使う側で定義し直す必要はない。
 -/
 
 /-!
@@ -104,74 +119,74 @@ def emptyToNat (e : Empty) : Nat := nomatch e
 
 構成子も関数なので、引数を受け取れる。
 次は「自然数に札を付けたもの」と「真偽値に札を付けたもの」をまとめた型である。
-構成子の名前 `inl`・`inr` は、それぞれ左側・右側から項を入れることを表す。
+構成子の名前を `inn`・`inb` とし、自然数から入れる場合と真偽値から入れる場合を区別する。
 -/
 inductive TaggedSum : Type where
-  | inl (n : Nat) : TaggedSum
-  | inr (b : Bool) : TaggedSum
+  | inn (n : Nat) : TaggedSum
+  | inb (b : Bool) : TaggedSum
 
-#check TaggedSum.inl
+#check TaggedSum.inn
 /-!
-    TaggedSum.inl (n : Nat) : TaggedSum
+    TaggedSum.inn (n : Nat) : TaggedSum
 
-構成子 `TaggedSum.inl` は `Nat → TaggedSum` という関数である。
+構成子 `TaggedSum.inn` は `Nat → TaggedSum` という関数である。
 集合の言葉では、この型は自然数と真偽値の**直和（非交和）**に対応する。
 -/
 
-#check TaggedSum.inr
+#check TaggedSum.inb
 /-!
-    TaggedSum.inr (b : Bool) : TaggedSum
+    TaggedSum.inb (b : Bool) : TaggedSum
 
-同様に、`TaggedSum.inr` は `Bool → TaggedSum` という関数である。
-この構成子そのものは関数であり、それに `true : Bool` を渡した `TaggedSum.inr true` は、
+同様に、`TaggedSum.inb` は `Bool → TaggedSum` という関数である。
+この構成子そのものは関数であり、それに `true : Bool` を渡した `TaggedSum.inb true` は、
 できあがった `TaggedSum` 型の項である。
-`true` 自体は `Bool` 型なので、`TaggedSum` 型の項が必要な場所では `TaggedSum.inr true` と書く。
+`true` 自体は `Bool` 型なので、`TaggedSum` 型の項が必要な場所では `TaggedSum.inb true` と書く。
 この例では、構成子の適用を省略しても自動で補われるわけではない。
 -/
 
 /-!
 ### 中身を受け取る場合分け
 
-`match` の枝で `TaggedSum.inl n` と書くと、その構成子に渡された自然数に `n` と名前を付けられる。
+`match` の枝で `TaggedSum.inn n` と書くと、その構成子に渡された自然数に `n` と名前を付けられる。
 返す項では、その名前を使ってよい。
 -/
 def valueOf : TaggedSum → Nat := fun x =>
   match x with
-  | TaggedSum.inl n => n
-  | TaggedSum.inr _ => 0
+  | TaggedSum.inn n => n
+  | TaggedSum.inb _ => 0
 
-#eval valueOf (TaggedSum.inl 7)
+#eval valueOf (TaggedSum.inn 7)
 /-!
     7
 
-枝の `TaggedSum.inr _` にある `_` は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。
+枝の `TaggedSum.inb _` にある `_` は、その位置にはどの値が来てもよく、その値に名前を付けないことを表す。
 ここでは `true` と `false` のどちらも同じ枝で扱い、その値を使わずに `0` を返している。
 直和からの写像は、左側と右側のそれぞれについて行き先を定めることで作れる。
 -/
 
-#eval valueOf (TaggedSum.inr true)
+#eval valueOf (TaggedSum.inb true)
 /-!
     0
 
-まず `TaggedSum.inr true` という項を作り、それを `valueOf` に渡すので、括弧でまとめている。
-括弧を外した `valueOf TaggedSum.inr true` は `(valueOf TaggedSum.inr) true` と読まれ、
+まず `TaggedSum.inb true` という項を作り、それを `valueOf` に渡すので、括弧でまとめている。
+括弧を外した `valueOf TaggedSum.inb true` は `(valueOf TaggedSum.inb) true` と読まれ、
 `valueOf` に必要な `TaggedSum` 型の項の代わりに構成子そのものを渡すことになり、型が合わない。
 -/
 
 /-!
 ### 構成子が違う場合と、同じ場合
 
-`TaggedSum.inl n` と `TaggedSum.inr b` が等しくないことも、
-`TaggedSum.inl n = TaggedSum.inl m` から `n = m` が言えることも、Leanで証明できる。
+`TaggedSum.inn n` と `TaggedSum.inb b` が等しくないことも、
+`TaggedSum.inn n = TaggedSum.inn m` から `n = m` が言えることも、Leanで証明できる。
 後者を表す補題は、帰納型の宣言に伴って生成される。
 -/
-#check TaggedSum.inl.inj
+#check TaggedSum.inn.inj
 /-!
-    TaggedSum.inl.inj {n n✝ : Nat} : TaggedSum.inl n = TaggedSum.inl n✝ → n = n✝
+    TaggedSum.inn.inj {n n✝ : Nat} : TaggedSum.inn n = TaggedSum.inn n✝ → n = n✝
 
 第2章で見た単射性と同じく、像の等式の証明を受け取り、中身の等式の証明を返す関数である。
 「構成子は単射」と仮定を付け足したのではなく、その証明を帰納型の仕組みから得ている。
-`TaggedSum.inr` についても同様である。集合の言葉では、この二つの構成子は、
+`TaggedSum.inb` についても同様である。集合の言葉では、この二つの構成子は、
 それぞれの集合から直和への標準的な単射に対応する。
 -/
 
@@ -192,6 +207,37 @@ inductive MySum (A B : Type) : Type where
 構成子の型引数は暗黙引数になっている。例えば `(MySum.inl 3 : MySum Nat Bool)` では、
 結果の型注釈から `A := Nat`、`B := Bool` が決まる。
 標準の直和型 `A ⊕ B` と、その構成子 `Sum.inl`・`Sum.inr` も同じ形で使う。
+-/
+
+/-! CALLOUT_START optional -/
+/-!
+### 補足: 型をパラメータにした取り出し関数
+
+`valueOf` と同じ形で、一般の直和から項を取り出す関数も書ける。
+左側ならその項を、右側ならあらかじめ受け取った既定値 `d` を返す。
+-/
+def getLeft {A B : Type} (d : A) : MySum A B → A := fun x =>
+  match x with
+  | MySum.inl a => a
+  | MySum.inr _ => d
+
+#check getLeft
+/-!
+    getLeft {A B : Type} (d : A) : MySum A B → A
+
+`A` と `B` は暗黙引数である。次の適用では、`0` と `true` の型からそれぞれ補われる。
+-/
+#eval getLeft 0 (MySum.inr true)
+/-!
+    0
+-/
+/-! CALLOUT_END -/
+
+/-!
+### ✏ 練習 {#sec-Trial3.practice-review-2}
+
+1. `swapSum : MySum A B → MySum B A` を定義せよ。
+   左側から来た項は右側へ、右側から来た項は左側へ送ること。
 -/
 
 /-!
@@ -231,6 +277,22 @@ def pairFirst {A B : Type} : MyPair A B → A := fun p =>
 def swapPair {A B : Type} : A × B → B × A := fun p =>
   match p with
   | Prod.mk a b => Prod.mk b a
+
+/-!
+### ✏ 練習 {#sec-Trial3.practice-review-3}
+
+1. 写像 `f : X → A` と `g : X → B` から、`x` を組 `(f x, g x)` に送る
+   `pairMaps : X → MyPair A B` を定義せよ。型 `X A B` と写像 `f g` も引数に取ること。
+-/
+
+/-!
+### 補足: 帰納型を直和と直積で見る
+
+`MySum A B` では、構成子をどちらか一つ選ぶ。これは直和に対応する。
+`MyPair A B` では、一つの構成子に `A` の項と `B` の項を両方渡す。これは直積に対応する。
+一般にも、構成子の選択を直和、それぞれの構成子が受け取る材料を直積として読むと、
+帰納型がどんな項を作るかを見通しやすい。引数の型が前の引数に依存する場合は、次に見る依存する組になる。
+-/
 
 /-!
 ## 3. 依存する組 {#sec-Trial3.dependent-pairs}
@@ -291,7 +353,11 @@ def Numbered.size : Numbered → Nat := fun p =>
 ### 第二成分の型も入力から決まる
 
 番号を取り出す関数の行き先は、入力された組の大きさで変わる。
-したがって、その型にも入力 `p` が現れる。
+したがって、その型にも入力 `p` が現れる。関数全体の型は、次の依存関数型である。
+
+    Numbered.index : (p : Numbered) → Fin (Numbered.size p)
+
+第一成分を返す `Numbered.size : Numbered → Nat` とは異なり、結果の型が入力ごとに変わる。
 -/
 def Numbered.index (p : Numbered) : Fin (Numbered.size p) :=
   match p with
@@ -315,6 +381,8 @@ inductive FamilyPair (A : Type) (B : A → Type) : Type where
 /-!
 標準の型では、これに対応する依存和を `Sigma B`、または `(a : A) × B a` と書き、
 `Sigma.mk a b` で項を作る。
+特に `(n : Nat) × Fin n` は、自然数 `n` を一つ選び、続いて **その `n` に対応する `Fin n`** の項を選んだ組の型である。
+第一成分と第二成分の型を独立に決める普通の直積 `Nat × B` との違いは、この依存にある。
 -/
 def numberedSigma : (n : Nat) × Fin n := Sigma.mk 3 (2 : Fin 3)
 
@@ -339,7 +407,7 @@ def numberedSigma : (n : Nat) × Fin n := Sigma.mk 3 (2 : Fin 3)
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Trial3.dependent-pairs-exercise-baf1c270}
 
 1. `n : Nat` から、大きさが `n + 1` で番号が最後の `n` である組を返す
    `attachLast : Nat → Numbered` を定義せよ。第1章の `lastIndex n : Fin (n + 1)` を使ってよい。
@@ -365,6 +433,16 @@ inductive MyNat : Type where
 -/
 
 /-!
+### 補足: 集合の方程式としての再帰
+
+集合の言葉では、零のための一点と、次の数を作るためのコピーを合わせるので、
+$X \cong 1 \sqcup X$ という形が現れる。
+ただし、この方程式だけで自然数が決まるわけではない。
+帰納型では、`zero` から `succ` を有限回使って作ったものですべて、という条件が付く。
+これが、構成子から生成される最小のもの、という見方である。
+-/
+
+/-!
 ### 自分より小さい項を使う
 
 加法を、第二引数について場合分けして定義しよう。
@@ -381,6 +459,25 @@ def myAdd : MyNat → MyNat → MyNat := fun m n =>
 #reduce myAdd (MyNat.succ MyNat.zero) (MyNat.succ MyNat.zero)
 /-!
     MyNat.zero.succ.succ
+-/
+
+/-!
+### 補足: 再帰が止まることの検査
+
+同じ入力のまま自分を呼ぶ、次の定義は受理されない。
+
+    def loop (n : MyNat) : MyNat := loop n
+
+再帰呼び出しで引数が変わらず、停止することを確かめられないためである。
+`myAdd` では `MyNat.succ k` の中の `k` へ進むので、構造が小さくなることを確認できる。
+Lean は、このように再帰が止まる根拠も検査している。
+-/
+
+/-!
+### ✏ 練習 {#sec-Trial3.practice-review-5}
+
+1. `MyNat.zero` を `0` に、`MyNat.succ k` を `toNat k + 1` に送る
+   `toNat : MyNat → Nat` を再帰で定義せよ。
 -/
 
 /-!
@@ -401,6 +498,78 @@ def zero_add_by_rec : ∀ n : Nat, 0 + n = n := fun n =>
 これは `0 + Nat.succ k = Nat.succ k` と計算で一致する。
 **証明を返す依存関数を再帰で作ることが、数学的帰納法による証明になっている。**
 -/
+
+/-! CALLOUT_START optional -/
+/-!
+### 補足: 定義から計算して一致することと、等式を証明すること
+
+自然数の加法は第二引数について再帰する。そのため `n + 0` は `n` に計算される。
+一方、変数 `n` に対する `0 + n` は、`n` がどの構成子でできているか分からず、計算を進められない。
+-/
+def add_zero_by_rfl (n : Nat) : n + 0 = n := rfl
+/-!
+次の形では、`rfl` だけでは証明できない。
+
+    def zero_add_bad (n : Nat) : 0 + n = n := rfl
+
+そこで本文の `zero_add_by_rec` では、`n` について場合分けし、帰納法で等式を証明した。
+定義を展開して計算すると一致することを**定義的に等しい**という。
+型の照合ではこの等しさを使えるが、証明された等式がすべて定義的な等しさになるわけではない。
+
+同じ理由で、乗法も `0 * n = 0` を `rfl` だけで証明できるわけではない。
+第二引数の作られ方に沿って、証明を再帰で作れる。
+-/
+def zero_mul_by_rec : ∀ n : Nat, 0 * n = 0 := fun n =>
+  match n with
+  | Nat.zero => rfl
+  | Nat.succ k => zero_mul_by_rec k
+/-!
+次の数の枝では `0 * Nat.succ k` が `0 * k + 0`、さらに `0 * k` に計算されるので、
+再帰呼び出しで得た証明をそのまま使える。
+-/
+/-! CALLOUT_END -/
+
+/-! CALLOUT_START optional -/
+/-!
+### 補足: 2n = n + n を定義から証明する {#sec-Trial3.two-mul}
+
+第4章では `Nat.two_mul` を既知の定理として使う。その内容も、再帰と等式の操作から証明できる。
+数学的帰納法で考えると、零のときは両辺とも零である。
+`2 * k = k + k` を仮定すれば、$2(k+1)=2k+2=(k+k)+2=(k+1)+(k+1)$ となる。
+
+最後の並べ替えには、$(n+1)+m=(n+m)+1$ を使った。
+これも `m` に関する帰納法で証明しておこう。
+-/
+def succ_add_from_scratch : ∀ n m : Nat, (n + 1) + m = (n + m) + 1 := fun n m =>
+  match m with
+  | Nat.zero => rfl
+  | Nat.succ k => congrArg (fun x => x + 1) (succ_add_from_scratch n k)
+
+/-!
+零の枝は計算で一致する。次の数の枝は、一つ前の等式の両辺に1を加えた証明である。
+これを使うと、二倍の等式の帰納段階も書ける。
+-/
+def two_mul_from_scratch : ∀ n : Nat, 2 * n = n + n := fun n =>
+  match n with
+  | Nat.zero => rfl
+  | Nat.succ k =>
+    Eq.trans (congrArg (fun x => x + 2) (two_mul_from_scratch k))
+      (Eq.symm (congrArg (fun x => x + 1) (succ_add_from_scratch k k)))
+
+#check two_mul_from_scratch
+/-!
+    two_mul_from_scratch (n : Nat) : 2 * n = n + n
+
+帰納法の仮定は、自分自身への再帰呼び出しで得ている。
+計算だけで一致しない箇所を、`congrArg` と `Eq.trans` でつないだ。
+-/
+#print axioms two_mul_from_scratch
+/-!
+    'two_mul_from_scratch' does not depend on any axioms
+
+「既知の定理」も、定義と計算までたどれば、検査済みの証明の項として与えられている。
+-/
+/-! CALLOUT_END -/
 
 /-!
 ## 5. 等式と自然数の不等式 {#sec-Trial3.indexed}
@@ -485,6 +654,48 @@ def congrArgByMatch {A : Sort u} {B : Sort v}
     'eqSymmByMatch' does not depend on any axioms
 -/
 
+/-! CALLOUT_START optional -/
+/-!
+### 補足: 等式をもう一つ作る実験
+
+`Eq` と同じ形の帰納型を自作し、その証明を `match` で使ってみよう。
+ここでは型の範囲を `Type` に限っている。
+-/
+inductive MyEq {A : Type} (a : A) : A → Prop where
+  | refl : MyEq a a
+
+#check MyEq
+/-!
+    MyEq {A : Type} (a : A) : A → Prop
+
+対称性の結論は `MyEq b a` だが、構成子の枝では `b` が `a` にそろうため、`MyEq.refl` を返せる。
+`match` は、構成子がどの添字の型の項を作るかも使って、枝の中で要求する型を決める。
+-/
+def MyEq.symm {A : Type} {a b : A} (h : MyEq a b) : MyEq b a :=
+  match h with
+  | MyEq.refl => MyEq.refl
+
+def MyEq.trans {A : Type} {a b c : A} (h₁ : MyEq a b) (h₂ : MyEq b c) : MyEq a c :=
+  match h₁ with
+  | MyEq.refl => h₂
+
+/-!
+推移性の枝では、第二の仮定の型が `MyEq a c` になるので、そのまま返せる。
+標準の等式と自作の等式の間にも、互いの証明を受け取る関数を書ける。
+-/
+def MyEq.toEq {A : Type} {a b : A} (h : MyEq a b) : a = b :=
+  match h with
+  | MyEq.refl => Eq.refl a
+
+def MyEq.ofEq {A : Type} {a b : A} (h : a = b) : MyEq a b :=
+  match h with
+  | Eq.refl _ => MyEq.refl
+/-!
+いずれも新しい公理を加えず、構成子と場合分けだけで作れた。
+自作の等式の証明も、標準の等式の証明も、帰納型の同じ原理で扱っている。
+-/
+/-! CALLOUT_END -/
+
 /-!
 ### 自然数の不等式 Nat.le
 
@@ -493,6 +704,14 @@ def congrArgByMatch {A : Sort u} {B : Sort v}
     inductive Nat.le (n : Nat) : Nat → Prop where
       | refl : Nat.le n n
       | step {m} : Nat.le n m → Nat.le n (Nat.succ m)
+
+集合の言葉では、これは次の二条件を満たす**最小の二項関係**と考えられる。
+
+* すべての自然数 `n` について `n ≤ n` が成り立つ。
+* `n ≤ m` が成り立てば `n ≤ m + 1` も成り立つ。
+
+第一の条件が `refl`、第二の条件が `step` に対応する。
+構成子から生成される証明だけを使う、という帰納型の仕組みが、この最小性を表している。
 
 `n` を固定すると、`Nat.le n` は右辺の自然数を添字に持つ命題の族になる。
 `refl` は添字 `n` のところに証明を作り、`step` は添字 `m` の証明から添字 `m + 1` の証明を作る。
@@ -506,10 +725,9 @@ def congrArgByMatch {A : Sort u} {B : Sort v}
 
 まず `2 ≤ 2` の証明を作り、`step` を二回使う。
 -/
-def two_le_two : 2 ≤ 2 := Nat.le.refl
-def two_le_three : 2 ≤ 3 := Nat.le.step two_le_two
-def two_le_four : 2 ≤ 4 := Nat.le.step two_le_three
+def two_le_four : 2 ≤ 4 := Nat.le.step (Nat.le.step Nat.le.refl)
 /-!
+内側から、`Nat.le.refl : 2 ≤ 2`、一回目の `step` の結果が `2 ≤ 3`、二回目の結果が `2 ≤ 4` である。
 このように、証明にも組み立て方がある。
 使える構成子を並べただけでなく、各適用の入力と結果の型が合っていることを確かめよう。
 -/
@@ -522,7 +740,15 @@ def two_le_four : 2 ≤ 4 := Nat.le.step two_le_three
 ### 両辺に一つ加えても順序は保たれる
 
 `n ≤ m` の証明から `n + 1 ≤ m + 1` の証明を作る。
-`refl` の場合は同じ数どうしになり、`step` の場合は一つ前の証明に戻って考えられる。
+数学の言葉で、**不等式の証明の作られ方に関する帰納法**を書いてみよう。
+
+* 出発点 `n ≤ n` から作る場合、結論は `n + 1 ≤ n + 1` なので、反射性から言える。
+* `n ≤ k` の証明から一段進んで `n ≤ k + 1` を作った場合を考える。
+  一つ前の証明に対しては帰納法の仮定から `n + 1 ≤ k + 1` が得られる。
+  その右辺をもう一つ増やせば、必要な `n + 1 ≤ (k + 1) + 1` が得られる。
+
+どの証明もこの二通りで作られるので、これで全場合を扱った。
+一つ前の証明に帰納法の仮定を使う操作を、次のコードでは再帰呼び出しで書く。
 -/
 def succLeSuccByMatch (n m : Nat) (h : n ≤ m) : n + 1 ≤ m + 1 :=
   match h with
@@ -535,7 +761,7 @@ def succLeSuccByMatch (n m : Nat) (h : n ≤ m) : n + 1 ≤ m + 1 :=
 -/
 
 /-!
-### ✏ 練習
+### ✏ 練習 {#sec-Trial3.indexed-exercise-884af91c}
 
 1. `1 ≤ 3` の証明を `Nat.le.refl` と `Nat.le.step` だけで作れ。
    次に、それを `succLeSuccByMatch` に渡して得られる証明の型を答えよ。
@@ -547,24 +773,12 @@ def succLeSuccByMatch (n m : Nat) (h : n ≤ m) : n + 1 ≤ m + 1 :=
 構成子を使って項を作ることと、`match` で使うことを組み合わせよう。
 本体を書く前に、受け取る項と返す項の型を確認する。
 
-1. `Signal.next` と逆向きに色を送る `prev : Signal → Signal` を書け。
-   `prev (Signal.next Signal.red)` の値を確かめよ。
-
-2. `swapSum : MySum A B → MySum B A` を定義せよ。
-   左側から来た項は右側へ、右側から来た項は左側へ送ること。
-
-3. 写像 `f : X → A` と `g : X → B` から、`x` を組 `(f x, g x)` に送る
-   `pairMaps : X → MyPair A B` を定義せよ。型 `X A B` と写像 `f g` も引数に取ること。
-
-4. 族 `B : A → Type` と依存関数 `f : (a : A) → B a` がある。
+1. 族 `B : A → Type` と依存関数 `f : (a : A) → B a` がある。
    各 `a` に組 `(a, f a)` を対応させる `graphOf` を、`FamilyPair` の構成子で定義せよ。
 
-5. `MyNat.zero` を `0` に、`MyNat.succ k` を `toNat k + 1` に送る
-   `toNat : MyNat → Nat` を再帰で定義せよ。
-
-6. `leAddRight : ∀ n k : Nat, n ≤ n + k` を、`k` に関する再帰で証明せよ。
+2. `leAddRight : ∀ n k : Nat, n ≤ n + k` を、`k` に関する再帰で証明せよ。
    零の場合は `Nat.le.refl`、次の数の場合は再帰呼び出しと `Nat.le.step` を使う。
 
-7. 自然数 `n m` と、`h : n = m`、`hn : 0 ≤ n` を受け取り、`0 ≤ m` を返す
+3. 自然数 `n m` と、`h : n = m`、`hn : 0 ≤ n` を受け取り、`0 ≤ m` を返す
    `zeroLeOfEq` を定義せよ。`h` を `match` で使い、枝の中で要求される型を説明せよ。
 -/

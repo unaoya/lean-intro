@@ -37,7 +37,7 @@ Lean を網羅的に紹介することは目的ではなく、
 | --- | --- |
 | `01_TypesAndTerms.lean` | 型と項 I — 関数と依存関数型 |
 | `02_Forall.lean` | 型と命題 I — ならばと全称量化 |
-| `03_InductiveTypes.lean` | 型と項 II — 帰納型と構造 |
+| `03_InductiveTypes.lean` | 型と項 II — 帰納型 |
 | `04_Exists.lean` | 型と命題 II — かつ・または・否定・存在量化 |
 | `05_MathematicalTools.lean` | 数学を記述する道具 |
 | `06_Topology.lean` | 位相空間 |
@@ -78,13 +78,18 @@ lakefile が変わり、受講者の手元で新しい章が追加される。�
 ## ブラウザ版
 
 VS Code を準備できない受講者向けに、各章を Lean 4 Web（live.lean-lang.org）で開けるようにしている。
-`tools/bundle.py` が、受講者用ファイル `LeanIntro/Original/<章>.lean` の import をたどり、
+第1〜5章の本文は `import` なしで単独実行できる。練習もその章の定義と標準環境だけで解ける。
+解答ファイルは対応する本文だけを import する。`tools/bundle.py` は、第1〜5章に
+依存する章が追加された場合には生成を止める。
+
+第6章以降は、`tools/bundle.py` が受講者用ファイル `LeanIntro/Original/<章>.lean` の import をたどり、
 依存する章（コメントと `#check` などを除き `section … end` で囲んだもの）を先頭に、その章をそのまま後ろに並べた
 1ファイル版を `docs/play/<章>.lean` に作る。各章の HTML の冒頭に、これを
-`https://live.lean-lang.org/#project=Stable&url=…` で開くリンクが付く（`url=` 読み込みなので、リンクは短い）。
+`https://live.lean-lang.org/#project=mathlib-stable&url=…` で開くリンクが付く（`url=` 読み込みなので、リンクは短い）。
 
-Lean 4 Web の `Stable` は最新の stable 版の Lean で動き、講座の `lean-toolchain` とは版が違うことがある。
-`.github/workflows/browser-bundles.yml` が、講座の版と stable 版の両方でブラウザ版をコンパイルする
+Lean 4 Web の `Stable Release`（`mathlib-stable`）は、講座の `lean-toolchain` とは版が違うことがある。
+第1〜5章はここでも mathlib を import せず、標準環境だけで動く。
+`.github/workflows/browser-bundles.yml` が、講座の版と最新 stable 版の両方でブラウザ版をコンパイルする
 （毎週月曜にも走る）。手元では次で確かめられる。
 
 ```bash

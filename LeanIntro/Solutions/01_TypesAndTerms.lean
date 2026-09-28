@@ -8,12 +8,6 @@ import LeanIntro.Original.«01_TypesAndTerms»
 
 #check Type 2
 
--- ✏ 練習 2 の解答
-
-#check 3 < 5
-
-#check 5 < 3
-
 -- ✏ 練習 3 の解答
 
 def z : Nat := 5
@@ -24,8 +18,6 @@ def z : Nat := 5
 
 #print z
 
--- ✏ 練習 4 の解答
-
 -- ✏ 練習 5 の解答
 
 def inc : Nat → Nat := fun n => n + 1
@@ -34,25 +26,7 @@ def inc : Nat → Nat := fun n => n + 1
 
 #eval inc 4
 
--- ✏ 練習 6 の解答
-
-def f : Nat → Nat := fun n => 2 * n + 3
-
-#check f
-
-#eval f 4
-
 -- ✏ 練習 7 の解答
-
-def triple (n : Nat) : Nat := n + n + n
-
-#check triple
-
--- ✏ 練習 8 の解答
-
-#eval double (double 5)
-
--- ✏ 練習 9 の解答
 
 def inc' (n : Nat) : Nat := n + 1
 
@@ -62,6 +36,64 @@ def inc' (n : Nat) : Nat := n + 1
 
 -- ✏ 練習 10 の解答
 
+def addThree : Nat → Nat := plus 3
+
+#check addThree
+
+#eval addThree 4
+
+-- ✏ 練習 13 の解答
+
+def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
+
+#check twice
+
+#check twice double
+
+#eval twice double 3
+
+-- ✏ 練習 15 の解答
+
+#check Map Nat Bool
+
+def double2 : Map Nat Nat := double
+
+#check double2
+
+-- ✏ 練習 17 の解答
+
+#check idAt (Nat → Nat)
+
+#eval idAt (Nat → Nat) double 21
+
+-- ✏ 練習 2 の解答
+
+#check 3 = 5
+
+#check 5 = 5
+
+-- ✏ 練習 4 の解答
+
+-- ✏ 練習 6 の解答
+
+def f : Nat → Nat := fun n => 2 * n + 3
+
+#check f
+
+#eval f 4
+
+-- ✏ 練習 8 の解答
+
+def triple (n : Nat) : Nat := n + n + n
+
+#check triple
+
+-- ✏ 練習 19 の解答
+
+#eval double (double 5)
+
+-- ✏ 練習 9 の解答
+
 def f' (n : Nat) : Nat := 2 * n + 3
 
 #check f'
@@ -69,14 +101,6 @@ def f' (n : Nat) : Nat := 2 * n + 3
 #eval f' 4
 
 -- ✏ 練習 11 の解答
-
-def addThree : Nat → Nat := plus 3
-
-#check addThree
-
-#eval addThree 4
-
--- ✏ 練習 12 の解答
 
 def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
 
@@ -86,7 +110,7 @@ def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
 
 #eval g 2 4
 
--- ✏ 練習 13 の解答
+-- ✏ 練習 12 の解答
 
 def g' (a : Nat) (b : Nat) : Nat := 2 * a + 3 * b
 
@@ -100,17 +124,7 @@ def g'' (a b : Nat) : Nat := 2 * a + 3 * b
 
 #eval g'' 2 4
 
--- ✏ 練習 14 の解答
-
-def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
-
-#check twice
-
-#check twice double
-
-#eval twice double 3
-
--- ✏ 練習 15 の解答
+-- ✏ 練習 20 の解答
 
 def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
@@ -122,17 +136,9 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
 -- ✏ 練習 16 の解答
 
-#check Map Nat Bool
-
-def double2 : Map Nat Nat := double
-
-#check double2
-
--- ✏ 練習 17 の解答
-
 #check Map Nat
 
--- ✏ 練習 18 の解答
+-- ✏ 練習 21 の解答
 
 #check (3 + 4) * 2
 
@@ -142,11 +148,11 @@ def double2 : Map Nat Nat := double
 
 #check fun n : Nat => plus n n
 
--- ✏ 練習 19 の解答
+-- ✏ 練習 14 の解答
 
 #eval applyTo21 (plus 100)
 
--- ✏ 練習 20 の解答
+-- ✏ 練習 22 の解答
 
 def evalAt (F : Nat → Nat) (n : Nat) : Nat := F n
 
@@ -160,7 +166,7 @@ def shift (F : Nat → Nat) : Nat → Nat := fun n => F (n + 1)
 
 #eval shift double 3
 
--- ✏ 練習 21 の解答
+-- ✏ 練習 23 の解答
 
 def useF1 : (Nat → Nat) → Nat := fun F => F 21
 
@@ -170,7 +176,7 @@ def useF2 : (Nat → Nat) → Nat := fun _ => 0
 
 #check useF2
 
--- ✏ 練習 22 の解答
+-- ✏ 練習 24 の解答
 
 def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (F a)
 
@@ -178,7 +184,7 @@ def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (
 
 #eval compose Nat Nat Nat double (fun n => n + 1) 3
 
--- ✏ 練習 23 の解答
+-- ✏ 練習 25 の解答
 
 def evalAt' (A B : Type) (F : A → B) (a : A) : B := F a
 
@@ -192,13 +198,7 @@ def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun a => F (g a)
 
 #eval shift' Nat (fun x => x + 1) double 3
 
--- ✏ 練習 24 の解答
-
-#check idAt (Nat → Nat)
-
-#eval idAt (Nat → Nat) double 21
-
--- ✏ 練習 25 の解答
+-- ✏ 練習 18 の解答
 
 def constAt (A B : Type) (a : A) : B → A := fun _ => a
 
@@ -207,6 +207,16 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 #eval constAt Nat Bool 5 true
 
 -- ✏ 練習 26 の解答
+
+def Tuple : Nat → Type := fun n => Fin n → Nat
+
+def constTuple : (n : Nat) → Tuple n :=
+  fun n => fun (_ : Fin n) => 7
+
+#check Tuple
+#check constTuple
+#check constTuple 3
+#check constTuple 4
 
 -- ✏ 練習 27 の解答
 

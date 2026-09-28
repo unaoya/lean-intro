@@ -2,472 +2,505 @@
   "version": 2,
   "pages": [
     {
+      "id": "opening",
+      "label": "数学を記述する道具",
       "at": {
-        "section": "05_MathematicalTools.intro",
+        "tag": "h1",
+        "starts": "数学を記述する道具"
+      }
+    },
+    {
+      "id": "structure",
+      "label": "一つの構成子と、成分を取り出す関数",
+      "at": {
+        "tag": "h2",
+        "starts": "1. structure"
+      }
+    },
+    {
+      "id": "structure-declaration",
+      "label": "structure でまとめて宣言する",
+      "at": {
+        "tag": "p",
+        "starts": "この「構成子一つの帰納型」と"
+      }
+    },
+    {
+      "id": "structure-operations",
+      "label": "構成子で作り、フィールドを取り出す",
+      "at": {
+        "tag": "h3",
+        "starts": "構成子で作り、フィールドを取り出す"
+      }
+    },
+    {
+      "id": "dot-application",
+      "label": "ドット記法も関数適用",
+      "at": {
+        "tag": "h3",
+        "starts": "ドット記法で関数を適用する"
+      }
+    },
+    {
+      "id": "anonymous",
+      "label": "期待される型から構成子を決める",
+      "at": {
+        "tag": "h3",
+        "starts": "匿名構成子 —"
+      }
+    },
+    {
+      "id": "field-notation",
+      "label": "フィールド名と構成子の略記",
+      "at": {
+        "tag": "h3",
+        "starts": "フィールド名を付けて書く"
+      }
+    },
+    {
+      "id": "point-swap",
+      "label": "自分で定義した関数のドット記法",
+      "at": {
+        "tag": "h3",
+        "starts": "自分で定義した関数もドットで使える"
+      }
+    },
+    {
+      "id": "practice-pair-at",
+      "label": "練習：成分の写像から組を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "next": "型 A と二つの写像 f g : A → Nat から"
+      }
+    },
+    {
+      "id": "pair-parameter",
+      "label": "型をパラメータにする構造体",
+      "at": {
+        "tag": "h3",
+        "starts": "型をパラメータにする structure"
+      }
+    },
+    {
+      "id": "pair-values",
+      "label": "異なる型の項をまとめる",
+      "at": {
+        "tag": "h3",
+        "starts": "二つの異なる型の項をまとめる"
+      }
+    },
+    {
+      "id": "practice-circle",
+      "label": "練習：円を構造体で表す",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial5.practice-review-1"
+      }
+    },
+    {
+      "id": "practice-circle-values",
+      "label": "円の構成子の略記と、成分の取り出し",
+      "at": {
+        "tag": "p",
+        "starts": "本体を fun p n =>",
+        "answer": true
+      }
+    },
+    {
+      "id": "dependent-fields",
+      "label": "型と、その型の項をまとめる",
+      "at": {
+        "tag": "h2",
+        "starts": "2. 依存するフィールド"
+      }
+    },
+    {
+      "id": "pointed-values",
+      "label": "点付き集合を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "点付き集合を作る"
+      }
+    },
+    {
+      "id": "dependent-projection",
+      "label": "取り出す項の型も入力に依存する",
+      "at": {
+        "tag": "h3",
+        "starts": "取り出す項の型も入力に依存する"
+      }
+    },
+    {
+      "id": "practice-map-pointed",
+      "label": "練習：台の型を保ち、点を移す",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial5.practice-review-2"
+      }
+    },
+    {
+      "id": "subtype",
+      "label": "部分型は値と証明の組",
+      "at": {
+        "tag": "h2",
+        "starts": "3. 部分型"
+      }
+    },
+    {
+      "id": "even-nat",
+      "label": "偶数という条件を付けた型",
+      "at": {
+        "tag": "h3",
+        "starts": "偶数という条件を付けた型"
+      }
+    },
+    {
+      "id": "subtype-use",
+      "label": "値と、その値の保証を使う",
+      "at": {
+        "tag": "h3",
+        "starts": "値と、値についての保証を取り出す"
+      }
+    },
+    {
+      "id": "subtype-exists",
+      "label": "条件付きの値と、存在の証明",
+      "at": {
+        "tag": "h3",
+        "starts": "存在の証明との違い"
+      }
+    },
+    {
+      "id": "fin-structure",
+      "label": "Fin の内部を読む",
+      "at": {
+        "tag": "h3",
+        "starts": "Fin も値に範囲の証明を添えている"
+      }
+    },
+    {
+      "id": "fin-constructor",
+      "label": "範囲の証明を添えて番号を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "不等式の証明を渡して番号を作る"
+      }
+    },
+    {
+      "id": "fin-dependent",
+      "label": "第1章の依存関数とつながる",
+      "at": {
+        "tag": "h3",
+        "starts": "第1章の依存関数を、構成子まで読む"
+      }
+    },
+    {
+      "id": "practice-add-even",
+      "label": "練習：条件付きの値を返す",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial5.practice-review-3"
+      }
+    },
+    {
+      "id": "practice-add-even-answer",
+      "label": "解答：偶数性の証明を組み立てる",
+      "at": {
+        "tag": "p",
+        "starts": "解答",
+        "answer": true,
+        "question": "二つの偶数の和を"
+      }
+    },
+    {
+      "id": "practice-add-even-result",
+      "label": "偶数の和：値と根拠を確かめる",
+      "at": {
         "tag": "pre",
-        "starts": "import «03_InductiveTypes» import «04_Exists»"
-      },
-      "id": "introduction",
-      "label": "06_Topology を読むための残りの道具"
+        "starts": "def addEven",
+        "answer": true,
+        "part": "#eval (addEven"
+      }
     },
     {
+      "id": "class",
+      "label": "構造体から class へ",
       "at": {
-        "section": "Intro2.classes",
-        "tag": "h2"
-      },
-      "id": "class-registration",
-      "label": "class は構造を登録して探す仕組み"
+        "tag": "h2",
+        "starts": "4. class"
+      }
     },
     {
+      "id": "instance",
+      "label": "型ごとに基点を登録する",
       "at": {
-        "section": "Intro2.classes",
         "tag": "p",
-        "starts": "例として、点付き集合を class で書いてみる。 03_InductiveTypes.lean 2節の Po"
-      },
-      "id": "pointed-class",
-      "label": "Pointed：型をパラメータにする"
+        "starts": "登録は instance 宣言で行う:"
+      }
     },
     {
+      "id": "instance-argument",
+      "label": "暗黙引数とインスタンス引数",
       "at": {
-        "section": "Intro2.classes",
         "tag": "p",
-        "starts": "carrier がフィールドからパラメータ α に移り、フィールドは点だけになった。パラメ"
-      },
-      "id": "pointed-instance",
-      "label": "Nat の基点を instance に登録する"
+        "starts": "登録簿から探す操作そのものを項として書いたのが"
+      }
     },
     {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "Pointed α の項は「α のどの項を基点と呼ぶかの指定」で、 instance 宣言"
-      },
-      "id": "instance-declaration",
-      "label": "instance 宣言の意味と名前"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "登録簿から探す操作そのものを項として書いたのが inferInstance である。型を見"
-      },
-      "id": "infer-instance",
-      "label": "inferInstance と3種類の引数"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "pre",
-        "starts": "#check @inferInstance"
-      },
-      "id": "infer-instance-type",
-      "label": "inferInstance の型を左から読む"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "確かめてみる。次の example も名前を付けない宣言で、こちらは登録簿にも載らない。「"
-      },
       "id": "instance-search",
-      "label": "登録した型と未登録の型を調べる"
-    },
-    {
+      "label": "探索が成功する場合・失敗する場合",
       "at": {
-        "section": "Intro2.classes",
         "tag": "p",
-        "starts": "登録してあるので、これは見つかって受理される（example は受理されると Infovi",
-        "part": "登録していない型では失敗する:"
-      },
-      "id": "unregistered-instance",
-      "label": "未登録の型では探索に失敗する"
+        "starts": "確かめてみる。inferInstance に型 Pointed Nat を指定して"
+      }
     },
     {
+      "id": "point-pair",
+      "label": "インスタンス引数を持つ関数",
       "at": {
-        "section": "Intro2.classes",
         "tag": "p",
-        "starts": "インスタンス引数の使いどころ: 「基点が登録されたどんな型でも」働く関数が書ける。 poi"
-      },
-      "id": "generic-point-pair",
-      "label": "登録された基点から組を作る"
+        "starts": "インスタンス引数の使いどころ:"
+      }
     },
     {
+      "id": "point-instance",
+      "label": "自作型にもインスタンスを与える",
       "at": {
-        "section": "Intro2.classes",
         "tag": "h3",
         "starts": "自作型にもインスタンスを与える"
-      },
-      "id": "point-instance",
-      "label": "自作した Point を登録して使う"
+      }
     },
     {
+      "id": "point-pair-proof",
+      "label": "登録した構造を使って証明する",
       "at": {
-        "section": "Intro2.classes",
         "tag": "h3",
         "starts": "インスタンスを受け取る定理"
-      },
-      "id": "instance-theorem",
-      "label": "インスタンスを受け取る定理"
+      }
     },
     {
+      "id": "pair-instance",
+      "label": "積に構造を誘導する",
       "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "使うときは α を指定するだけでよく、Pointed α の証明（項）は登録簿から自動で供"
-      },
-      "id": "use-instance-theorem",
-      "label": "同じ定理を Nat と Point に適用する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
         "tag": "h3",
         "starts": "積に構造を誘導する"
-      },
-      "id": "product-instance",
-      "label": "積に基点を誘導する"
+      }
     },
     {
+      "id": "add-notation",
+      "label": "記法もクラスで動いている",
       "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "Pair Nat Point の基点はどこにも直接は登録していないのに、見つかった。探索が"
-      },
-      "id": "recursive-search",
-      "label": "積のインスタンスを探す連鎖"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
         "tag": "h3",
         "starts": "記法もクラスで動いている"
-      },
-      "id": "addition-class",
-      "label": "足し算の記法を支える Add"
+      }
     },
     {
+      "id": "add-point",
+      "label": "Point に足し算を登録する",
       "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "Point に足し算を登録してみる:"
-      },
-      "id": "point-addition",
-      "label": "Point に足し算を登録して計算する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "pointed-bool-exercise",
-      "label": "練習：Bool を登録する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "answer": true,
-        "question": "本文で Pointed Bool が未登録のため inferInstance が失敗する例を見た。 instance : Pointed Bool w",
-        "class": "answer-heading"
-      },
-      "id": "pointed-bool-answer",
-      "label": "解答：Bool で道具と定理を使う"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "ol",
-        "question": "Pointed と同じ手順でマグマを自作する: class Magma (α : Type) : Type where op : α → α → α ",
-        "starts": "Pointed と同じ手順でマグマを自作する: class Magma (α : Type"
-      },
-      "id": "magma-exercise",
-      "label": "練習：二項演算を持つクラス"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "answer": true,
-        "question": "Pointed と同じ手順でマグマを自作する: class Magma (α : Type) : Type where op : α → α → α ",
-        "class": "answer-heading"
-      },
-      "id": "magma-answer",
-      "label": "解答：Magma を宣言して登録する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "ol",
-        "question": "pointPair にならって、汎用関数 opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a ",
-        "starts": "pointPair にならって、汎用関数 opSelf (α : Type) [Magma"
-      },
-      "id": "opself-exercise",
-      "label": "練習：登録された演算を2回同じ値に適用する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "ol",
-        "question": "本文の「積に構造を誘導する」にならって、成分ごとに演算する instance {α β : Type} [Magma α] [Magma β] : M",
-        "starts": "本文の「積に構造を誘導する」にならって、成分ごとに演算する instance {α β :"
-      },
-      "id": "product-magma-exercise",
-      "label": "練習：積の演算を誘導する"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "answer": true,
-        "question": "本文の「積に構造を誘導する」にならって、成分ごとに演算する instance {α β : Type} [Magma α] [Magma β] : M",
-        "class": "answer-heading"
-      },
-      "id": "product-magma-answer",
-      "label": "解答：成分ごとの演算と探索の連鎖"
-    },
-    {
-      "at": {
-        "section": "Intro2.classes",
-        "tag": "ol",
-        "question": "Add にならって instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩ を登録し",
-        "starts": "Add にならって instance : Mul Point where mul p q "
-      },
-      "id": "point-mul-exercise",
-      "label": "練習：Point の掛け算を登録する"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "h2"
-      },
-      "id": "syntax-and-macros",
-      "label": "構文を追加し、項への展開を指定する"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "p",
-        "starts": "試しに、03_InductiveTypes.lean 2節の Pair のための記法を作ってみる。"
-      },
-      "id": "pair-notation",
-      "label": "組の記法を syntax と macro_rules で作る"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "p",
-        "starts": "すると ⟪1, true⟫ は Pair.mk 1 true に展開されてから型検査される"
-      },
-      "id": "notation-type-check",
-      "label": "展開された項の型を調べる"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "point-notation-exercise",
-      "label": "練習：Point の記法を自作する"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "p",
-        "answer": true,
-        "question": "⟪1, true⟫ にならって、Point 用の記法（例えば ⟬x, y⟭）を syntax と macro_rules で自作し、#check ⟬1",
-        "class": "answer-heading"
-      },
-      "id": "point-notation-answer",
-      "label": "解答：構文と展開先の対応"
-    },
-    {
-      "at": {
-        "section": "Intro2.notation",
-        "tag": "ol",
-        "question": "infixl:65 \" ⊞ \" => add で、03_InductiveTypes.lean の add（MyNat の足し算）に中置記法を与え、#reduce MyN",
-        "starts": "infixl:65 \" ⊞ \" => add で、03_InductiveTypes.lean の add（M"
-      },
-      "id": "infix-exercise",
-      "label": "練習：足し算に中置記法を与える"
-    },
-    {
-      "at": {
-        "section": "Intro2.sets",
-        "tag": "h2"
-      },
-      "id": "sets-as-predicates",
-      "label": "部分集合を述語として作る"
-    },
-    {
-      "at": {
-        "section": "Intro2.sets",
-        "tag": "p",
-        "starts": "述語 p を集合とみなすときの「宣言」も1つ用意する。定義上は恒等関数だが、「述語を集合と"
-      },
-      "id": "setof-notation",
-      "label": "述語を集合と読み替える setOf と内包記法"
-    },
-    {
-      "at": {
-        "section": "Intro2.sets",
-        "tag": "p",
-        "starts": "所属の記号 ∈（\\in と打つ）は、標準ライブラリの記法用クラス Membership に"
-      },
-      "id": "membership-class",
-      "label": "所属の記法を支える Membership"
-    },
-    {
-      "at": {
-        "section": "Intro2.sets",
         "tag": "pre",
-        "starts": "instance {X : Type} : Membership X (Set X) :="
-      },
-      "id": "register-membership",
-      "label": "所属を登録して Prop 型を確かめる"
+        "starts": "instance : Add Point where"
+      }
     },
     {
+      "id": "syntax",
+      "label": "記法を自作する",
       "at": {
-        "section": "Intro2.sets",
+        "tag": "h2",
+        "starts": "5. 記法"
+      }
+    },
+    {
+      "id": "macro-reading",
+      "label": "記法が展開されてから型検査される",
+      "at": {
         "tag": "p",
-        "starts": "第一に、型注釈が2つ要る理由: 数字 1 も内包記法 {n | …} も「期待される型に応"
-      },
+        "starts": "macro_rules の行はこう読む。"
+      }
+    },
+    {
+      "id": "practice-point-syntax",
+      "label": "練習：Point の記法を作る",
+      "at": {
+        "tag": "h3",
+        "starts": "✏ 練習",
+        "section": "Trial5.practice-review-9"
+      }
+    },
+    {
+      "id": "set",
+      "label": "集合を述語として表す",
+      "at": {
+        "tag": "h2",
+        "starts": "6. 集合"
+      }
+    },
+    {
+      "id": "set-builder",
+      "label": "集合の内包記法を作る",
+      "at": {
+        "tag": "p",
+        "starts": "述語 p を集合とみなすときの"
+      }
+    },
+    {
+      "id": "membership",
+      "label": "所属の記号を登録する",
+      "at": {
+        "tag": "p",
+        "starts": "所属の記号 ∈"
+      }
+    },
+    {
       "id": "membership-reading",
-      "label": "型注釈と記法の展開を読む"
-    },
-    {
+      "label": "表示の読み方と所属の証明",
       "at": {
-        "section": "Intro2.sets",
         "tag": "p",
-        "starts": "「a ∈ s である」ことの証明は、定義を展開すればただの s a である。実際に確かめて"
-      },
-      "id": "prove-membership",
-      "label": "所属の証明は述語の証明"
+        "starts": "型が Prop と付いた"
+      }
     },
     {
+      "id": "subset",
+      "label": "包含を全称量化と含意で書く",
       "at": {
-        "section": "Intro2.sets",
         "tag": "p",
-        "starts": "包含 ⊆ も同じやり方で登録する。「s のどの要素も t の要素」—— ∀ と → で書け"
-      },
-      "id": "subset-definition",
-      "label": "包含を全称と含意で定義する"
+        "starts": "包含 ⊆ も同じやり方で登録する。"
+      }
     },
     {
+      "id": "subset-refl",
+      "label": "集合の包含も関数で証明する",
       "at": {
-        "section": "Intro2.sets",
         "tag": "p",
-        "starts": "最初の性質を証明してみよう。反射律は「各点で仮定をそのまま返す」だけである:"
-      },
-      "id": "subset-reflexivity",
-      "label": "各点で仮定を返す包含の反射律"
+        "starts": "最初の性質を証明してみよう。"
+      }
     },
     {
+      "id": "practice-subset-trans",
+      "label": "練習：包含の推移律",
       "at": {
-        "section": "Intro2.sets",
         "tag": "h3",
-        "starts": "✏ 練習"
-      },
-      "id": "subset-transitivity-exercise",
-      "label": "練習：包含の推移律"
+        "starts": "✏ 練習",
+        "section": "Trial5.practice-review-11"
+      }
     },
     {
+      "id": "namespace",
+      "label": "名前空間で名前をまとめる",
       "at": {
-        "section": "Intro2.sets",
-        "tag": "ol",
-        "starts": "def evens : Set Nat := {n | IsEven n}"
-      },
-      "id": "evens-exercise",
-      "label": "練習：述語から偶数の集合を作る"
+        "tag": "h2",
+        "starts": "7. namespace"
+      }
     },
     {
+      "id": "namespace-dot",
+      "label": "名前空間とドット記法",
       "at": {
-        "section": "Intro2.sets",
-        "tag": "ol",
-        "question": "全体集合 def allNat : Set Nat := {_n | True} を定義し、 theorem subset_allNat : ∀ s ",
-        "starts": "全体集合 def allNat : Set Nat := {_n | True} を定義し"
-      },
-      "id": "universal-set-exercise",
-      "label": "練習：全体集合への包含"
-    },
-    {
-      "at": {
-        "section": "Intro2.sets",
-        "tag": "ol",
-        "question": "def odds : Set Nat := {n | ¬IsEven n} を宣言し、 #check (3 : Nat) ∈ odds の表示を予想し",
-        "starts": "def odds : Set Nat := {n | ¬IsEven n} を宣言し、 #"
-      },
-      "id": "odds-exercise",
-      "label": "練習：奇数の集合と Prop"
-    },
-    {
-      "at": {
-        "section": "Intro2.namespaces",
-        "tag": "h2"
-      },
-      "id": "namespace-geometry",
-      "label": "名前空間の内側と外側で同じ項を調べる"
-    },
-    {
-      "at": {
-        "section": "Intro2.namespaces",
-        "tag": "pre",
-        "starts": "end Geometry #check Geometry.origin"
-      },
-      "id": "namespace-outside",
-      "label": "名前空間の外からはフルネームで呼ぶ"
-    },
-    {
-      "at": {
-        "section": "Intro2.namespaces",
         "tag": "p",
-        "starts": "p.x が効くのは、x が型名と同じ名前空間 Point に置かれているからである。06_Topology"
-      },
-      "id": "dot-notation-and-export",
-      "label": "名前空間・ドット記法・export の関係"
+        "starts": "p.x が効くのは、"
+      }
     },
     {
+      "id": "practice-pointed-bool",
+      "label": "練習：Bool に基点を登録する",
       "at": {
-        "section": "Intro2.namespaces",
-        "tag": "h3",
-        "starts": "✏ 練習"
+        "tag": "h2",
+        "starts": "8. ✏ 練習 — 章末問題",
+        "section": "Trial5.practice"
       },
-      "id": "namespace-exercise",
-      "label": "練習：名前空間を開いて宣言を追加する"
-    },
-    {
-      "at": {
-        "section": "Intro2.namespaces",
+      "column_at": {
         "tag": "p",
+        "starts": "解答",
         "answer": true,
-        "question": "namespace Geometry … end Geometry をもう一度開いて unitX : Point := ⟨1, 0⟩ を追加し、外から",
-        "class": "answer-heading"
-      },
-      "id": "namespace-answer",
-      "label": "解答：フルネームで参照する"
+        "question": "本文で Pointed Bool"
+      }
     },
     {
+      "id": "practice-magma",
+      "label": "練習：二項演算を登録する",
       "at": {
-        "section": "Intro2.namespaces",
-        "tag": "p",
-        "answer": true,
-        "question": "namespace Geometry … end Geometry をもう一度開いて unitX : Point := ⟨1, 0⟩ を追加し、外から",
-        "starts": "フルネームなら外から見える。一方、接頭辞なしでは:"
-      },
-      "id": "namespace-error",
-      "label": "接頭辞を付けないと名前が見つからない"
+        "tag": "ol",
+        "starts": "Pointed と同じ手順でマグマを自作する:"
+      }
+    },
+    {
+      "id": "practice-op-self",
+      "label": "練習：登録された演算を使う",
+      "at": {
+        "tag": "ol",
+        "starts": "pointPair にならって、汎用関数"
+      }
+    },
+    {
+      "id": "practice-pair-magma",
+      "label": "練習：積に演算を誘導する",
+      "at": {
+        "tag": "ol",
+        "starts": "本文の「積に構造を誘導する」にならって、"
+      }
+    },
+    {
+      "id": "practice-mul-point",
+      "label": "練習：Point の掛け算",
+      "at": {
+        "tag": "ol",
+        "starts": "Add にならって instance : Mul Point"
+      }
+    },
+    {
+      "id": "practice-infix",
+      "label": "練習：中置記法を作る",
+      "at": {
+        "tag": "ol",
+        "starts": "infixl:65 \" ⊞ \" => Nat.add で、"
+      }
+    },
+    {
+      "id": "practice-even-set",
+      "label": "練習：偶数の集合",
+      "at": {
+        "tag": "ol",
+        "starts": "def evens : Set Nat := {n | IsEven n} と宣言せよ"
+      }
+    },
+    {
+      "id": "practice-univ",
+      "label": "練習：全体集合への包含",
+      "at": {
+        "tag": "ol",
+        "starts": "全体集合 def allNat : Set Nat := {_n | True} を定義し、"
+      }
+    },
+    {
+      "id": "practice-odd-set",
+      "label": "練習：述語で集合を指定する",
+      "at": {
+        "tag": "ol",
+        "starts": "def odds : Set Nat := {n | ¬IsEven n} を宣言し、"
+      }
+    },
+    {
+      "id": "practice-namespace",
+      "label": "練習：名前空間を開き直す",
+      "at": {
+        "tag": "ol",
+        "starts": "namespace Geometry … end Geometry をもう一度開いて"
+      }
     }
   ],
   "splits": [
     {
       "at": {
-        "section": "Intro2.classes",
-        "tag": "p",
-        "starts": "登録してあるので、これは見つかって受理される（example は受理されると Infovi"
+        "tag": "pre",
+        "starts": "def addEven",
+        "answer": true
       },
       "before": [
-        "登録していない型では失敗する:"
+        "#eval (addEven"
       ]
     }
   ]

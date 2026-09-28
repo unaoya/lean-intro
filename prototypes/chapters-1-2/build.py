@@ -26,7 +26,7 @@ sys.path.insert(0, str(REPO / 'dev/tools'))
 import lean2html as book
 import refs
 import slides
-from supplements import preserve_supplements
+from supplements import render_original_references
 from pdf_export import prepare_pdf_documents
 
 CANONICAL_CHAPTERS = list(book.CHAPTERS)
@@ -84,7 +84,7 @@ def index_sections(names, root):
 
 canonical_sections = index_sections(CANONICAL_CHAPTERS, REPO / 'dev/src')
 sections = canonical_sections | index_sections(CHAPTERS, SRC)
-preserved = preserve_supplements(HERE, REPO, book, refs, slides, canonical_sections, CANONICAL_CHAPTERS)
+render_original_references(HERE, REPO, book, refs, slides, canonical_sections, CANONICAL_CHAPTERS)
 
 def trial_href(label, chapter, sections):
     target = sections[label]
@@ -111,7 +111,6 @@ for name in CHAPTERS:
     segments = book.parse(SRC / (name + '.lean'))
     titles[name] = book.chapter_title(segments)
     bodies[name] = book.render_chapter(name, segments, sections, exercise_start=exercise_start)
-    bodies[name] += preserved.get(name, '')
     counts[name] = book.exercise_count(segments)
     exercise_start += counts[name]
 
@@ -132,8 +131,8 @@ for i, name in enumerate(CHAPTERS, 1):
     index += f'<h2>第{i}章 · {html.escape(titles[name])}</h2><p><a href="{name.lower()}.html">通読版</a> · <a href="slides/{name.lower()}.html">スライド版</a> · <a href="../src/{name}.lean">試作原稿</a></p>'
 if args.pdf or all((HERE / 'output/pdf' / name).exists() for name in ['all.pdf', 'slides.pdf']):
     index += '<h2>PDF</h2><p><a href="../output/pdf/all.pdf">通読版PDF</a> · <a href="../output/pdf/slides.pdf">スライド版PDF（表示段階ごと）</a></p>'
-index += '<p>第3・4章の元原稿の補足は、各章末の「元原稿から残した補足」で読めます。補足内の練習番号は元原稿の番号です。</p>'
-index += '<p><a href="../PLAN.md">相談で決めた方針</a> · <a href="../README.md">再生成の手順</a></p>'
+index += '<p>補足は、改稿した本文の関連箇所に配置しています。比較用の元原稿は <code>originals/</code> に保存しています。</p>'
+index += '<p><a href="../README.md">再生成の手順</a></p>'
 (OUT / 'index.html').write_text(book.page('第1〜5章 改稿試作', index))
 
 stats = {}

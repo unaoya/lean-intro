@@ -130,13 +130,13 @@ def Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
 #eval (Point.mk 1 2).swap.x
 
 /-!
-    2
+2
 
 `p.swap.x` は `Point.x (Point.swap p)` の略記である。
 二つの成分を交換してから、第一成分を取り出している。
 この名前の付け方を支える名前空間は、[7節](#sec-Intro2.namespaces)で扱う。
 
-### ✏ 練習
+### ✏ 練習 {#sec-Trial5.structures-exercise-6e524f21}
 
 1. 型 `A` と二つの写像 `f g : A → Nat` から、各 `a` を組 `(f a, g a)` に送る
    `pairAt (A : Type) (f g : A → Nat) : A → Point` を定義せよ。
@@ -180,6 +180,14 @@ def natBoolPair : Pair Nat Bool := Pair.mk 3 true
 匿名構成子なら、この定義の右辺を `⟨3, true⟩` と書ける。
 標準の直積 `α × β`、すなわち `Prod α β` も、同じ形の構造体である。
 `Prod.mk` で作り、`Prod.fst`・`Prod.snd`（または `.fst`・`.snd`）で取り出せる。
+-/
+
+/-!
+### ✏ 練習 {#sec-Trial5.practice-review-1}
+
+1. `center : Point`、`radius : Nat` を持つ構造体 `Circle` を定義せよ。
+   `makeCircle : Point → Nat → Circle` を構成子名と `⟨…⟩` の両方で書き、
+   点 `(1,2)`、半径 `3` の円の `center.x` と `radius` を `#eval` で確かめよ。
 -/
 
 /-! ## 2. 依存するフィールド {#sec-Trial5.dependent-fields}
@@ -237,6 +245,14 @@ def pointedBool : PointedType := ⟨Bool, true⟩
 /-!
     0
     true
+-/
+
+/-!
+### ✏ 練習 {#sec-Trial5.practice-review-2}
+
+1. 点付き集合 $(A,a)$ と写像 $f:A\to A$ から $(A,f(a))$ を作る
+   `mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType` を書け。
+   `#reduce (mapPointed pointedNat Nat.succ).point` の結果を予想して確かめよ。
 -/
 
 /-! ## 3. 部分型 — 値と証明の組 {#sec-Trial5.subtypes}
@@ -385,6 +401,15 @@ def lastFromProof_eq_lastIndex (n : Nat) : lastFromProof n = lastIndex n := rfl
 
 /-! CALLOUT_END -/
 
+
+/-!
+### ✏ 練習 {#sec-Trial5.practice-review-3}
+
+1. 二つの偶数の和を、偶数という条件を持つ値として返す
+   `addEven (n m : EvenNat) : EvenNat` を書け。
+   ヒント：値は `n.val + m.val`、その根拠は `isEven_add n.property m.property` である。
+   `#eval (addEven evenFour evenFour).val` を確かめよ。
+-/
 
 /-! ## 4. class と instance {#sec-Intro2.classes}
 
@@ -587,6 +612,9 @@ instance : Add Point where
 `HAdd.hAdd` である。「`Add α` があれば `HAdd α α α` にもなる」という**橋渡しの
 インスタンス**が標準ライブラリに用意されているので、`Add` を登録するだけで
 記法まで使えるようになる。登録簿の検索は、このように**連鎖**する。
+自然数の場合も、この連鎖の先に `Nat.add` がある。
+`Nat.add` と、`Nat → Nat → Nat` と注釈した `HAdd.hAdd` の型が同じだから同じ関数になるのではない。
+自然数用のインスタンスが `Nat.add` を指定しているため、同じ計算になる。
 
 数字のリテラルにも同じ仕組みがある。数字 `2` は `OfNat.ofNat 2` の略記で、
 クラス `OfNat` の instance が、期待される型ごとに読み方を決めている。
@@ -700,6 +728,12 @@ macro_rules
 -/
 
 
+/-!
+### ✏ 練習 {#sec-Trial5.practice-review-9}
+
+1. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
+   `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
+-/
 
 /-! ## 6. 集合 — `Set` を自作する {#sec-Intro2.sets}
 
@@ -827,6 +861,14 @@ def Set.subset_refl {X : Type} (s : Set X) : s ⊆ s := fun _ ha => ha
 -/
 
 
+/-!
+### ✏ 練習 {#sec-Trial5.practice-review-11}
+
+1. 推移律を項で書け（各点で2つの仮定を順に適用する）:
+
+       def Set.subset_trans {X : Type} {s t u : Set X}
+           (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
+-/
 
 /-! ## 7. namespace — 名前の接頭辞 {#sec-Intro2.namespaces}
 
@@ -866,74 +908,69 @@ end Geometry
 これで `06_Topology.lean` を読む準備が整った。
 -/
 
-/-! ### 先取り（06_Topology の公理監査）: 商型 `Quot`
+/-! CALLOUT_START optional -/
+/-!
+### 補足: true と .true、red と .red
 
-Lean の核には依存関数型と帰納型のほかに商型（`Quot`）などもある。
-本編では商型を直接は使わないが、関数の外延性 `funext` が商型の上に
-建っているため、`06_Topology.lean` 末尾の公理の一覧には顔を出す
-（発展演習 `07_Exercises.lean` では商型を直接使う）。
+`Bool.true` が構成子の完全な名前である。標準環境では `true` という短い名前も使える。
+自作した `Signal.red` については、勝手に `red` という短い名前が使えるようになるわけではない。
+`open Signal` とすれば、その範囲で `red` と書ける。
+
+これとは別に、期待される型から名前を補う `.red` という記法もある。
 -/
+#check (.red : Signal)
+#check (.true : Bool)
+/-!
+    Signal.red : Signal
+    true : Bool
 
-/-! ## 8. ✏ 練習 — 章末問題 {#sec-Trial5.practice}
+型が `Signal` と分かる位置では `.red` を `Signal.red` と読める。
+`match` の枝で `.red` と書けるのも、場合分けする項の型が分かるためである。
+名前空間を開いて短い名前を使うことと、期待される型から名前を補ってもらうことを区別しよう。
+第3・4章では、構成子を明示するために完全な名前で書いてきた。
+-/
+/-! CALLOUT_END -/
 
-1. `center : Point`、`radius : Nat` を持つ構造体 `Circle` を定義せよ。
-   `makeCircle : Point → Nat → Circle` を構成子名と `⟨…⟩` の両方で書き、
-   点 `(1,2)`、半径 `3` の円の `center.x` と `radius` を `#eval` で確かめよ。
+/-!
+## 8. ✏ 練習 — 章末問題 {#sec-Trial5.practice}
 
-2. 点付き集合 $(A,a)$ と写像 $f:A\to A$ から $(A,f(a))$ を作る
-   `mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType` を書け。
-   `#reduce (mapPointed pointedNat Nat.succ).point` の結果を予想して確かめよ。
-
-3. 二つの偶数の和を、偶数という条件を持つ値として返す
-   `addEven (n m : EvenNat) : EvenNat` を書け。
-   ヒント：値は `n.val + m.val`、その根拠は `isEven_add n.property m.property` である。
-   `#eval (addEven evenFour evenFour).val` を確かめよ。
-
-4. 本文で `Pointed Bool` が未登録のため `inferInstance` が失敗する例を見た。
+1. 本文で `Pointed Bool` が未登録のため `inferInstance` が失敗する例を見た。
    `instance : Pointed Bool where point := false` を登録し、
    `#check (inferInstance : Pointed Bool)` と
    `def pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool` が
    通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。
 
-5. `Pointed` と同じ手順でマグマを自作する:
+2. `Pointed` と同じ手順でマグマを自作する:
    `class Magma (α : Type) : Type where op : α → α → α` を宣言し、
    `instance : Magma Nat where op := Nat.add` を登録して、
    `#check (inferInstance : Magma Nat)` が通ることを確かめよ。
 
-6. `pointPair` にならって、汎用関数
+3. `pointPair` にならって、汎用関数
    `opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a` を書き、
    `#eval opSelf Nat 3` の値を予想してから確かめよ。
 
-7. 本文の「積に構造を誘導する」にならって、成分ごとに演算する
+4. 本文の「積に構造を誘導する」にならって、成分ごとに演算する
    `instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)` を登録し、
    `#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd` の値を
    予想してから確かめよ（探索の連鎖まで含めて、`Pointed` と同じに動く）。
 
-8. `Add` にならって `instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩`
+5. `Add` にならって `instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩`
    を登録し、`#eval (Point.mk 2 3 * Point.mk 4 5).x` の値を予想してから確かめよ。
 
-9. `⟪1, true⟫` にならって、`Point` 用の記法（例えば `⟬x, y⟭`）を
-   `syntax` と `macro_rules` で自作し、`#check ⟬1, 2⟭` で確かめよ。
-
-10. `infixl:65 " ⊞ " => myAdd` で、`03_InductiveTypes.lean` の `myAdd`（`MyNat` の足し算）に
+6. `infixl:65 " ⊞ " => myAdd` で、`03_InductiveTypes.lean` の `myAdd`（`MyNat` の足し算）に
    中置記法を与え、`#reduce MyNat.zero.succ ⊞ MyNat.zero.succ` の表示を
    予想してから確かめよ。
 
-11. 推移律を項で書け（各点で2つの仮定を順に適用する）:
+7. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [第4章1節](#sec-Trial4.existence)の述語）。`def four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
 
-       def Set.subset_trans {X : Type} {s t u : Set X}
-           (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u
-
-12. `def evens : Set Nat := {n | IsEven n}` と宣言せよ（`IsEven` は [第4章1節](#sec-Trial4.existence)の述語）。`def four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩` が通ることを確かめよ。
-
-13. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
+8. 全体集合 `def allNat : Set Nat := {_n | True}` を定義し、
    `def subset_allNat : ∀ s : Set Nat, s ⊆ allNat` を書け
    （各点の証明は `True.intro`。束縛子 `_n` の `_` は「使わない」印である）。
 
-14. `def odds : Set Nat := {n | ¬IsEven n}` を宣言し、
+9. `def odds : Set Nat := {n | ¬IsEven n}` を宣言し、
    `#check (3 : Nat) ∈ odds` の表示を予想してから確かめよ。
 
-15. `namespace Geometry … end Geometry` をもう一度開いて `unitX : Point := ⟨1, 0⟩` を
+10. `namespace Geometry … end Geometry` をもう一度開いて `unitX : Point := ⟨1, 0⟩` を
    追加し、外から `#check Geometry.unitX` では見え、`#check unitX` では
    見えないことを確かめよ。
 -/

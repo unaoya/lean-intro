@@ -55,4 +55,8 @@ shift' (A : Type) (g F : A → A) : A → A
 8
 constAt Nat Bool 5 : Bool → Nat
 5
+Tuple : Nat → Type
+constTuple (n : Nat) : Tuple n
+constTuple 3 : Tuple 3
+constTuple 4 : Tuple 4
 repeatTuple 2 9 : Tuple 2

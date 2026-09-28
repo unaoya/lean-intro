@@ -1,8 +1,8 @@
 # ブラウザ版（docs/play/*.lean）の検査。
 #   course: 生成物が最新か、講座の Lean（lean-toolchain）でコンパイルできるか
-#   stable: Lean 4 Web（live.lean-lang.org の Stable）と同じ最新の stable 版でコンパイルできるか
-#           Lean 4 Web の版は予告なく上がるので、毎週月曜にも走らせる。失敗したら、ブラウザ版の
-#           その章は受講者の画面でエラーになる（ローカルの VS Code 版には影響しない）。
+#   stable: 最新の stable 版での互換性を確認する（Lean 4 Web の更新に備える）。
+#           Web の Stable Release は更新時期が異なることがあるため、移行時には
+#           Web の画面に表示された版でも確認する。この互換性検査は毎週月曜にも走る。
 name: browser-bundles
 
 on:

@@ -4,7 +4,7 @@ import «01_TypesAndTerms»
 試作第1章の解答。本文中の確認問題、章末問題の順に並べる。
 -/
 
-/-! SOL Intro1.terms-types:1 -/
+/-! SOL Intro1.terms-types-exercise-030faef3:1 -/
 
 #check Bool
 
@@ -22,7 +22,7 @@ import «01_TypesAndTerms»
 宇宙の階段は1段のぼる: `Type n : Type (n + 1)`。
 -/
 
-/-! SOL Intro1.definitions:1 -/
+/-! SOL Intro1.definitions-exercise-1fb4cf12:1 -/
 
 def z : Nat := 5
 
@@ -47,7 +47,7 @@ def z : Nat := 5
 `#check` は型、`#eval` は計算した値、`#print` は宣言そのものを表示する。
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-3cee9819:1 -/
 
 def inc : Nat → Nat := fun n => n + 1
 
@@ -63,7 +63,7 @@ def inc : Nat → Nat := fun n => n + 1
     5
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-276c5cc8:1 -/
 
 def inc' (n : Nat) : Nat := n + 1
 
@@ -81,7 +81,7 @@ def inc' (n : Nat) : Nat := n + 1
 表示は binder 形式になったが、型は `inc` と同じ `Nat → Nat`。値も同じである。
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-ce690981:1 -/
 
 def addThree : Nat → Nat := plus 3
 
@@ -97,7 +97,7 @@ def addThree : Nat → Nat := plus 3
     7
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-9307142c:1 -/
 
 def twice (F : Nat → Nat) : Nat → Nat := fun n => F (F n)
 
@@ -125,7 +125,7 @@ Map(ℕ, ℕ) → Map(ℕ, ℕ) に対応している。
     12
 -/
 
-/-! SOL Intro1.functions:1 -/
+/-! SOL Intro1.functions-exercise-96a778d9:1 -/
 
 #check Map Nat Bool
 
@@ -149,7 +149,7 @@ Lean は、このように定義を展開して一致するものを同じ型と
 `double2` 自体も、定義を展開すれば `double` なので、同じ関数として扱われる。
 -/
 
-/-! SOL Intro1.dependent-functions:1 -/
+/-! SOL Intro1.dependent-functions-exercise-9246117e:1 -/
 
 #check idAt (Nat → Nat)
 
@@ -168,7 +168,7 @@ Lean は、このように定義を展開して一致するものを同じ型と
 `idAt (Nat → Nat) double` は `double` そのもの。
 -/
 
-/-! SOL Trial1.basic-practice:1 -/
+/-! SOL Intro1.terms-types-exercise-030faef3:2 -/
 
 #check 3 = 5
 
@@ -186,7 +186,7 @@ Lean は、このように定義を展開して一致するものを同じ型と
 確認している。
 -/
 
-/-! SOL Trial1.basic-practice:2 -/
+/-! SOL Intro1.definitions-exercise-1fb4cf12:2 -/
 
 /-!
 本文の `def x : Nat := 2` が使えることが前提である。この解答ファイルでは
@@ -210,7 +210,7 @@ Lean は、このように定義を展開して一致するものを同じ型と
 宣言された型と照合する」という手順の破れがそのまま報告されている。
 -/
 
-/-! SOL Trial1.function-practice:1 -/
+/-! SOL Intro1.functions-exercise-3cee9819:2 -/
 
 def f : Nat → Nat := fun n => 2 * n + 3
 
@@ -228,7 +228,7 @@ def f : Nat → Nat := fun n => 2 * n + 3
 `2 * 4 + 3 = 11`。数学の `2n` も、Lean では掛け算を明示して `2 * n` と書く。
 -/
 
-/-! SOL Trial1.function-practice:2 -/
+/-! SOL Intro1.functions-exercise-276c5cc8:2 -/
 
 def triple (n : Nat) : Nat := n + n + n
 
@@ -240,7 +240,7 @@ def triple (n : Nat) : Nat := n + n + n
 binder 形式のまま表示される。`triple : Nat → Nat` と読み替えられること。
 -/
 
-/-! SOL Trial1.function-practice:3 -/
+/-! SOL Trial1.function-practice:1 -/
 
 #eval double (double 5)
 
@@ -250,7 +250,7 @@ binder 形式のまま表示される。`triple : Nat → Nat` と読み替え�
 内側から: `double 5 = 10`、`double 10 = 20`。
 -/
 
-/-! SOL Trial1.function-practice:4 -/
+/-! SOL Intro1.functions-exercise-276c5cc8:3 -/
 
 def f' (n : Nat) : Nat := 2 * n + 3
 
@@ -268,7 +268,7 @@ def f' (n : Nat) : Nat := 2 * n + 3
 `f'` も `Nat → Nat` 型の関数であり、`f` と同じ計算をしている。
 -/
 
-/-! SOL Trial1.higher-practice:1 -/
+/-! SOL Intro1.functions-exercise-ce690981:2 -/
 
 def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
 
@@ -292,7 +292,7 @@ def g : Nat → Nat → Nat := fun a => fun b => 2 * a + 3 * b
     16
 -/
 
-/-! SOL Trial1.higher-practice:2 -/
+/-! SOL Trial1.higher-practice-review-2:1 -/
 
 def g' (a : Nat) (b : Nat) : Nat := 2 * a + 3 * b
 
@@ -325,7 +325,7 @@ def g'' (a b : Nat) : Nat := 2 * a + 3 * b
     16
 -/
 
-/-! SOL Trial1.higher-practice:3 -/
+/-! SOL Trial1.function-practice:2 -/
 
 def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 
@@ -349,7 +349,7 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 `double` を3回適用するので、`3` → `6` → `12` → `24`。
 -/
 
-/-! SOL Trial1.higher-practice:4 -/
+/-! SOL Intro1.functions-exercise-96a778d9:2 -/
 
 #check Map Nat
 
@@ -360,7 +360,7 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 `plus 3 : Nat → Nat` と同じ形である。
 -/
 
-/-! SOL Trial1.combined-practice:1 -/
+/-! SOL Trial1.function-practice:3 -/
 
 /-!
 型の計算: `(3 + 4) * 2` は `Nat`。`plus (double 3)` は `plus : Nat → Nat → Nat` に
@@ -394,7 +394,7 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
     fun n ↦ plus n n : Nat → Nat
 -/
 
-/-! SOL Trial1.combined-practice:2 -/
+/-! SOL Intro1.functions-exercise-9307142c:2 -/
 
 #eval applyTo21 (plus 100)
 
@@ -404,7 +404,7 @@ def thrice (F : Nat → Nat) : Nat → Nat := fun n => F (F (F n))
 `applyTo21 F` は `F 21` だから、`plus 100 21 = 121`。
 -/
 
-/-! SOL Trial1.combined-practice:3 -/
+/-! SOL Trial1.function-practice:4 -/
 
 def evalAt (F : Nat → Nat) (n : Nat) : Nat := F n
 
@@ -437,7 +437,7 @@ def shift (F : Nat → Nat) : Nat → Nat := fun n => F (n + 1)
 `n = 3` なら `double 4 = 8`。
 -/
 
-/-! SOL Trial1.combined-practice:4 -/
+/-! SOL Trial1.function-practice:5 -/
 
 def useF1 : (Nat → Nat) → Nat := fun F => F 21
 
@@ -458,7 +458,7 @@ def useF2 : (Nat → Nat) → Nat := fun _ => 0
 決めており、返し方（中身）は何通りもある。
 -/
 
-/-! SOL Trial1.combined-practice:5 -/
+/-! SOL Trial1.function-practice:6 -/
 
 def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (F a)
 
@@ -476,7 +476,7 @@ def compose (A B C : Type) (G : B → C) (F : A → B) : A → C := fun a => G (
 内側から: `F = fun n => n + 1` で `3` が `4` に、`G = double` で `8` になる。
 -/
 
-/-! SOL Trial1.combined-practice:6 -/
+/-! SOL Trial1.function-practice:7 -/
 
 def evalAt' (A B : Type) (F : A → B) (a : A) : B := F a
 
@@ -508,7 +508,7 @@ def shift' (A : Type) (g : A → A) (F : A → A) : A → A := fun a => F (g a)
 どちらも元の版と同じ値。型を引数にすると、同じ中身が任意の型で使い回せる。
 -/
 
-/-! SOL Trial1.dependent-practice:1 -/
+/-! SOL Intro1.dependent-functions-exercise-9246117e:2 -/
 
 def constAt (A B : Type) (a : A) : B → A := fun _ => a
 
@@ -526,14 +526,34 @@ def constAt (A B : Type) (a : A) : B → A := fun _ => a
 `idAt A` が恒等関数を返すのに対し、`constAt A B a` は定数関数を返す。
 -/
 
-/-! SOL Trial1.dependent-practice:2 -/
+/-! SOL Trial1.function-practice:8 -/
+
+def Tuple : Nat → Type := fun n => Fin n → Nat
+
+def constTuple : (n : Nat) → Tuple n :=
+  fun n => fun (_ : Fin n) => 7
+
+#check Tuple
+#check constTuple
+#check constTuple 3
+#check constTuple 4
+/-!
+    Tuple : Nat → Type
+    constTuple (n : Nat) : Tuple n
+    constTuple 3 : Tuple 3
+    constTuple 4 : Tuple 4
+
+外側の `fun` は個数 `n` を受け取る。作るべき型 `Tuple n` は `Fin n → Nat` なので、
+内側の `fun` は `Fin n` の番号を受け取り、自然数7を返す。
+番号そのものを計算に使わなくても、受け取る番号の型は `n` によって変わる。
+-/
 
 /-!
 `Tuple 2` は `Fin 2 → Nat`。内側では番号 `i : Fin 2` を受け取り、自然数7を返す。
 族 `Tuple` の行き先は `Type` だが、その型の項 `constTuple 2` の行き先は `Nat` である。
 -/
 
-/-! SOL Trial1.dependent-practice:3 -/
+/-! SOL Trial1.function-practice:9 -/
 
 def repeatTuple (n : Nat) (a : Nat) : Tuple n := fun _ => a
 

@@ -135,7 +135,7 @@ main { width: min(100%, 1180px); margin: 0 auto; padding: 44px 62px 36px; }
 .slide[data-density] li, .print-slide[data-density] .print-content li { line-height: 1.55; margin-bottom: 6px; }
 .slide[data-density] :is(h1, h2, h3), .print-slide[data-density] .print-content :is(h1, h2, h3) { margin-bottom: 12px; }
 .slide[data-density="dense"] p, .print-slide[data-density="dense"] .print-content p { line-height: 1.4; margin-bottom: 6px; }
-.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.18; padding-block: 4px; margin-bottom: 4px; }
+.slide[data-density="dense"] pre, .print-slide[data-density="dense"] .print-content pre { line-height: 1.16; padding-block: 4px; margin-bottom: 4px; }
 .slide[data-density="dense"] li, .print-slide[data-density="dense"] .print-content li { line-height: 1.4; margin-bottom: 4px; }
 .slide[data-density="dense"] table, .print-slide[data-density="dense"] .print-content table { line-height: 1.4; }
 .slide[data-density="dense"] :is(h1, h2, h3), .print-slide[data-density="dense"] .print-content :is(h1, h2, h3) { margin-bottom: 8px; }
@@ -232,43 +232,239 @@ dialog::backdrop { background: rgb(24 35 39 / .35); }
   </header>
   <div class="viewport" id="viewport">
     <main id="slides" aria-label="講義本文">
-      <article class="slide" id="05_mathematicaltools-introduction" data-kind="main" data-label="06_Topology を読むための残りの道具" data-section="05_MathematicalTools.intro" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">import</span> «03_InductiveTypes»
-<span class="kw">import</span> «04_Exists»</span></code></pre>
-<div class="step" data-step="0"><h1>数学を記述する道具</h1></div>
-<p><span class="step" data-step="0">型の入門と証明編を2往復し、<code>04_Exists.lean</code> を読み終えた人のためのファイルで、 <code>06_Topology.lean</code>（位相空間）を読むのに必要な残りの道具を揃える: class と instance、記法の自作、集合 <code>Set</code> の構築、名前空間。</span></p>
-<p><span class="step" data-step="1">二つの証明編を経由したので、ここからは<strong>命題と証明も自由に使う</strong>。読み方は今までどおり——項を見たら型を推測し、表示の枠で答え合わせをする。</span></p></article>
-<article class="slide" id="05_mathematicaltools-class-registration" data-kind="main" data-label="class は構造を登録して探す仕組み" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.classes">1. class と instance</h2></div>
-<p><span class="step" data-step="0"><code>class</code> は structure の変種である。宣言の形は structure と同じで、 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の <code>Pair (α β : Type)</code> のようにパラメータを取ることもできる。structure との違いは、<strong>class の項は <code>instance</code> として登録簿に載せておける</strong>という1点にある。登録しておけば、必要になったところで Lean が登録簿から探して使ってくれる。この登録と探索が、この節の主題である。</span></p></article>
-<article class="slide" id="05_mathematicaltools-pointed-class" data-kind="main" data-label="Pointed：型をパラメータにする" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">例として、点付き集合を class で書いてみる。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の <code>PointedType</code> は、「型 <code>carrier</code> と、その要素 <code>point</code>」を<strong>1つの項に束ねて</strong>持ち歩く structure だった。今度は型をパラメータにして、「型 <code>α</code> の中の点」だけをフィールドにする:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">class</span> Pointed (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+      <article class="slide" id="05_mathematicaltools-opening" data-kind="main" data-label="数学を記述する道具" data-section="05_MathematicalTools.intro" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h1>数学を記述する道具</h1></div>
+<p><span class="step" data-step="0">第3章では、構成子で組を作り、<code>match</code> で成分を取り出した。第4章では、同じ仕組みで証明を作ったり使ったりした。この章では、その上に、数学の対象を短く読みやすく書くための道具を加える。</span></p>
+<p><span class="step" data-step="1">まず、名前の付いた成分をまとめる <code>structure</code> と、構成子の略記 <code>⟨…⟩</code> を扱う。次に、値に証明を添える部分型を、<code>Fin</code> の例と結び付けて読む。そこから <code>class</code> と <code>instance</code>、記法の自作、集合 <code>Set</code>、名前空間へ進み、第6章で位相空間を記述するための準備をする。</span></p></article>
+<article class="slide" id="05_mathematicaltools-structure" data-kind="main" data-label="一つの構成子と、成分を取り出す関数" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial5.structures">1. structure — フィールドを持つ型</h2></div>
+<p><span class="step" data-step="0">第3章の <code>MyPair</code> は、構成子を一つ持つ帰納型だった。その成分を取り出す <code>pairFirst</code> は、<code>match</code> の一つの枝で定義した。自然数を二つまとめる型でも、同じように書ける。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">inductive</span> MyPoint : <span class="sort">Type</span> <span class="kw">where</span>
+  | mk (x y : Nat) : MyPoint
+
+<span class="kw">def</span> MyPoint.x : MyPoint → Nat := <span class="kw">fun</span> p =&gt;
+  <span class="kw">match</span> p <span class="kw">with</span>
+  | MyPoint.mk a _ =&gt; a</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-structure-declaration" data-kind="main" data-label="structure でまとめて宣言する" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">この「構成子一つの帰納型」と「成分を取り出す関数」をまとめて宣言する構文が <code>structure</code> である。名前の付いた成分を <strong>フィールド</strong> と呼ぶ。自然数の組を、二つのフィールド <code>x</code>・<code>y</code> を持つ型として定義しよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">structure</span> Point : <span class="sort">Type</span> <span class="kw">where</span>
+  x : Nat
+  y : Nat</span></code></pre>
+<p><span class="step" data-step="2"><code>Point</code> は新しく定義した型であり、先ほどの <code>MyPoint</code> とは別の型である。持つデータの形は同じだが、こちらでは構成子と取り出し関数が自動で用意される。</span></p></article>
+<article class="slide" id="05_mathematicaltools-structure-operations" data-kind="main" data-label="構成子で作り、フィールドを取り出す" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>構成子で作り、フィールドを取り出す</h3></div>
+<p><span class="step" data-step="0">構成子 <code>Point.mk</code> は二つの自然数を順に受け取る。取り出し関数 <code>Point.x</code> は、できた <code>Point</code> の項から第一成分を返す。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Point.mk
+<span class="kw">#check</span> Point.x</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Point.mk (x y : Nat) : Point
+Point.x (self : Point) : Nat</span></code></pre>
+<p><span class="step" data-step="3">矢印形式なら、それぞれ <code>Nat → Nat → Point</code> と <code>Point → Nat</code> である。 <code>Point.y : Point → Nat</code> も同時に定義される。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> Point.x (Point.mk 1 2)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">1</span></code></pre>
+<p><span class="step" data-step="6">二つの値を渡して作り、そのうち一つを取り出した。構成子と <code>match</code> で行っていた操作を、名前の付いた関数で書けるようになった。</span></p></article>
+<article class="slide" id="05_mathematicaltools-dot-application" data-kind="main" data-label="ドット記法も関数適用" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>ドット記法で関数を適用する</h3></div>
+<p><span class="step" data-step="0"><code>p : Point</code> に対して、<code>Point.x p</code> は <code>p.x</code> とも書ける。 Lean は <code>p</code> の型から <code>Point.x</code> を見つけ、<code>p</code> を引数として渡す。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (Point.mk 1 2).x</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">1</span></code></pre>
+<p><span class="step" data-step="3">したがって <code>.x</code> は値を取り出す別の原理ではなく、関数適用の略記である。番号で成分を指定する代わりに、<code>x</code>・<code>y</code> のような名前を使って読む。</span></p></article>
+<article class="slide" id="05_mathematicaltools-anonymous" data-kind="main" data-label="期待される型から構成子を決める" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>匿名構成子 — 期待される型から構成子を決める</h3></div>
+<p><span class="step" data-step="0">期待される型が <code>Point</code> と分かる位置では、<code>Point.mk 1 2</code> を <code>⟨1, 2⟩</code> と書ける。これを <strong>匿名構成子記法</strong> という。<code>⟨</code>・<code>⟩</code> は <code>\&lt;</code>・<code>\&gt;</code> で入力できる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointFromPair : Point := ⟨1, 2⟩
+<span class="kw">def</span> pointFromDot : Point := .mk 1 2
+
+<span class="kw">#check</span> (⟨1, 2⟩ : Point)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">{ x := 1, y := 2 } : Point</span></code></pre>
+<p><span class="step" data-step="3">どちらの定義の右辺も <code>Point.mk 1 2</code> と読まれる。 <code>⟨…⟩</code> は期待される型から構成子を選び、<code>.mk</code> は期待される型から名前の接頭辞を補う。第1章で見た、周囲から型を伝える仕組みを使っている。</span></p></article>
+<article class="slide" id="05_mathematicaltools-field-notation" data-kind="main" data-label="フィールド名と構成子の略記" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>フィールド名を付けて書く</h3></div>
+<p><span class="step" data-step="0">表示された <code>{ x := 1, y := 2 }</code> は、フィールド名を付けて構造体の項を書く記法である。これを入力に使うこともできる。次の三つは、同じ構成子の適用を表している。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> point_pair_eq_mk : (⟨1, 2⟩ : Point) = Point.mk 1 2 := rfl
+<span class="kw">def</span> point_fields_eq_mk : ({ x := 1, y := 2 } : Point) = Point.mk 1 2 := rfl</span></code></pre>
+<p><span class="step" data-step="2">匿名構成子記法は <code>structure</code> 専用ではない。構成子が一つの型なら、第4章の「かつ」や存在の証明でも使える。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> exists_two : ∃ n : Nat, n = 2 := ⟨2, rfl⟩</span></code></pre>
+<p><span class="step" data-step="4">これは <code>Exists.intro 2 rfl</code> の略記であり、証人とその根拠を渡す仕組みは同じである。略記を見たら、期待される型と、補われる構成子を確かめよう。</span></p></article>
+<article class="slide" id="05_mathematicaltools-point-swap" data-kind="main" data-label="自分で定義した関数のドット記法" data-section="Trial5.structures" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自分で定義した関数もドットで使える</h3></div>
+<p><span class="step" data-step="0"><code>Point</code> の項を受け取る関数を <code>Point.〜</code> という名前で定義すれば、取り出し関数と同じようにドット記法で使える。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Point.swap (p : Point) : Point := ⟨p.y, p.x⟩
+
+<span class="kw">#eval</span> (Point.mk 1 2).swap.x</span></code></pre>
+<p><span class="step" data-step="2">2</span></p>
+<p><span class="step" data-step="3"><code>p.swap.x</code> は <code>Point.x (Point.swap p)</code> の略記である。二つの成分を交換してから、第一成分を取り出している。この名前の付け方を支える名前空間は、<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.namespaces">7節</a>で扱う。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-pair-at" data-kind="main" data-label="練習：成分の写像から組を作る" data-section="Trial5.structures-exercise-6e524f21" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.structures-exercise-6e524f21">✏ 練習</h3></div>
+<ol class="exercise" start="56" data-exercise="56"><li><span class="step" data-step="0">型 <code>A</code> と二つの写像 <code>f g : A → Nat</code> から、各 <code>a</code> を組 <code>(f a, g a)</code> に送る <code>pairAt (A : Type) (f g : A → Nat) : A → Point</code> を定義せよ。 <code>A = Nat</code>、<code>f n = n + 1</code>、<code>g n = 2 * n</code> とし、<code>3</code> を渡した結果の <code>x</code>・<code>y</code> を <code>#eval</code> で確かめよ。これは直積へ向かう写像を、成分の写像から作る操作である。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 56</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pairAt (A : <span class="sort">Type</span>) (f g : A → Nat) : A → Point :=
+  <span class="kw">fun</span> a =&gt; Point.mk (f a) (g a)
+
+<span class="kw">#eval</span> (pairAt Nat (<span class="kw">fun</span> n =&gt; n + 1) (<span class="kw">fun</span> n =&gt; 2 * n) 3).x
+<span class="kw">#eval</span> (pairAt Nat (<span class="kw">fun</span> n =&gt; n + 1) (<span class="kw">fun</span> n =&gt; 2 * n) 3).y</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">4
+6</span></code></pre>
+<p><span class="step" data-step="3">同じ入力 <code>3</code> に <code>f</code> と <code>g</code> を適用し、それぞれの結果を成分としてまとめている。本体は <code>⟨f a, g a⟩</code> と書いてもよい。</span></p></article>
+<article class="slide" id="05_mathematicaltools-pair-parameter" data-kind="main" data-label="型をパラメータにする構造体" data-section="Trial5.structures-exercise-6e524f21" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>型をパラメータにする structure</h3></div>
+<p><span class="step" data-step="0">フィールドの型を固定せず、パラメータで受け取ることもできる。第3章の <code>MyPair A B</code> と同じ形の組を、<code>structure</code> で定義しよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">structure</span> Pair (α β : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+  fst : α
+  snd : β
+
+<span class="kw">#check</span> Pair.mk
+<span class="kw">#check</span> Pair.fst</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Pair.mk {α β : Type} (fst : α) (snd : β) : Pair α β
+Pair.fst {α β : Type} (self : Pair α β) : α</span></code></pre>
+<p><span class="step" data-step="3">構成子の <code>α</code>・<code>β</code> は暗黙引数なので、普通は渡す成分から推測される。自作の <code>Pair</code> と <code>MyPair</code> は別の型だが、同じ形のデータを持つ。</span></p></article>
+<article class="slide" id="05_mathematicaltools-pair-values" data-kind="main" data-label="異なる型の項をまとめる" data-section="Trial5.structures-exercise-6e524f21" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>二つの異なる型の項をまとめる</h3></div>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> natBoolPair : Pair Nat Bool := Pair.mk 3 true
+
+<span class="kw">#eval</span> natBoolPair.fst
+<span class="kw">#eval</span> natBoolPair.snd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">3
+true</span></code></pre>
+<p><span class="step" data-step="2">匿名構成子なら、この定義の右辺を <code>⟨3, true⟩</code> と書ける。標準の直積 <code>α × β</code>、すなわち <code>Prod α β</code> も、同じ形の構造体である。 <code>Prod.mk</code> で作り、<code>Prod.fst</code>・<code>Prod.snd</code>（または <code>.fst</code>・<code>.snd</code>）で取り出せる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-circle" data-kind="main" data-label="練習：円を構造体で表す" data-section="Trial5.practice-review-1" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.practice-review-1">✏ 練習</h3></div>
+<ol class="exercise" start="57" data-exercise="57"><li><span class="step" data-step="0"><code>center : Point</code>、<code>radius : Nat</code> を持つ構造体 <code>Circle</code> を定義せよ。 <code>makeCircle : Point → Nat → Circle</code> を構成子名と <code>⟨…⟩</code> の両方で書き、点 <code>(1,2)</code>、半径 <code>3</code> の円の <code>center.x</code> と <code>radius</code> を <code>#eval</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 57</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">structure</span> Circle : <span class="sort">Type</span> <span class="kw">where</span>
+  center : Point
+  radius : Nat
+
+<span class="kw">def</span> makeCircle : Point → Nat → Circle := <span class="kw">fun</span> p n =&gt; Circle.mk p n</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-practice-circle-values" data-kind="main" data-label="円の構成子の略記と、成分の取り出し" data-section="Trial5.practice-review-1" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">本体を <code>fun p n =&gt; ⟨p, n⟩</code> と書いてもよい。期待される型 <code>Circle</code> から、構成子 <code>Circle.mk</code> が選ばれる。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).center.x
+<span class="kw">#eval</span> (makeCircle (Point.mk 1 2) 3).radius</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">1
+3</span></code></pre>
+<p><span class="step" data-step="3"><code>center : Point</code> を取り出してから、その <code>x : Nat</code> を取り出している。</span></p></article>
+<article class="slide" id="05_mathematicaltools-dependent-fields" data-kind="main" data-label="型と、その型の項をまとめる" data-section="Trial5.dependent-fields" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial5.dependent-fields">2. 依存するフィールド</h2></div>
+<p><span class="step" data-step="0">第3章の <code>Numbered</code> は、<code>n : Nat</code> と、その <code>n</code> に応じた <code>Fin n</code> の項を持っていた。 <code>structure</code> でも、後のフィールドの型に前のフィールドを使える。今度は、型そのものと、その型の項を一つまとめよう。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">structure</span> PointedType : <span class="sort">Type</span> 1 <span class="kw">where</span>
+  carrier : <span class="sort">Type</span>
+  point : carrier
+
+<span class="kw">#check</span> PointedType.mk</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">PointedType.mk (carrier : Type) (point : carrier) : PointedType</span></code></pre>
+<p><span class="step" data-step="3">これは点付き集合 $(A,a)$ に対応する。最初に <code>carrier</code> を決めると、次に渡す <code>point</code> の型が決まる。 <code>Type</code> 自体をフィールドに持つので、全体の型は <code>Type 1</code> に置いている。</span></p></article>
+<article class="slide" id="05_mathematicaltools-pointed-values" data-kind="main" data-label="点付き集合を作る" data-section="Trial5.dependent-fields" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>点付き集合を作る</h3></div>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> pointedNat : PointedType := ⟨Nat, 0⟩
+<span class="kw">def</span> pointedBool : PointedType := ⟨Bool, true⟩
+
+<span class="kw">#check</span> PointedType.mk Nat</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">PointedType.mk Nat : Nat → PointedType</span></code></pre>
+<p><span class="step" data-step="2">第一引数に <code>Nat</code> を渡すと、残りの引数は <code>Nat</code> の項になった。 <code>⟨Nat, 0⟩</code> は <code>PointedType.mk Nat 0</code>、<code>⟨Bool, true⟩</code> は <code>PointedType.mk Bool true</code> の略記である。</span></p></article>
+<article class="slide" id="05_mathematicaltools-dependent-projection" data-kind="main" data-label="取り出す項の型も入力に依存する" data-section="Trial5.dependent-fields" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>取り出す項の型も入力に依存する</h3></div>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> PointedType.carrier
+<span class="kw">#check</span> PointedType.point</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">PointedType.carrier (self : PointedType) : Type
+PointedType.point (self : PointedType) : self.carrier</span></code></pre>
+<p><span class="step" data-step="2"><code>p : PointedType</code> に対して、<code>p.carrier</code> は型であり、<code>p.point</code> はその型の項である。 <code>PointedType.point</code> の結果の型は入力 <code>p</code> によって変わる。第3章の <code>Numbered.index</code> と同じ依存関数が、自動で用意されたのである。</span></p>
+<pre class="lean"><code><span class="step" data-step="3">#reduce pointedNat.point
+#reduce pointedBool.point</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">0
+true</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-practice-map-pointed" data-kind="main" data-label="練習：台の型を保ち、点を移す" data-section="Trial5.practice-review-2" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.practice-review-2">✏ 練習</h3></div>
+<ol class="exercise" start="58" data-exercise="58"><li><span class="step" data-step="0">点付き集合 $(A,a)$ と写像 $f:A\to A$ から $(A,f(a))$ を作る <code>mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType</code> を書け。 <code>#reduce (mapPointed pointedNat Nat.succ).point</code> の結果を予想して確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 58</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> mapPointed (p : PointedType) (f : p.carrier → p.carrier) : PointedType :=
+  PointedType.mk p.carrier (f p.point)
+
+#reduce (mapPointed pointedNat Nat.succ).point</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">1</span></code></pre>
+<p><span class="step" data-step="3"><code>p.point : p.carrier</code> を <code>f</code> に渡し、同じ台の型と新しい点を組にして返す。構成子の第二引数に要求される型は、第一引数の <code>p.carrier</code> によって決まる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-subtype" data-kind="main" data-label="部分型は値と証明の組" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Trial5.subtypes">3. 部分型 — 値と証明の組</h2></div>
+<p><span class="step" data-step="0">後のフィールドの型が前の値に依存するとき、その型が命題でもよい。例えば「偶数である自然数」を持ち歩きたければ、自然数 <code>n</code> と <code>IsEven n</code> の証明を一緒に持てばよい。こうした値と証明の組を扱うのが <strong>部分型</strong> である。</span></p>
+<p><span class="step" data-step="1">標準の <code>Subtype</code> の定義は、宇宙の指定を省けば次の形になっている。</span></p>
+<pre class="quote"><code><span class="step" data-step="2">structure Subtype {α : Type} (p : α → Prop) where
+  val : α
+  property : p val</span></code></pre>
+<p><span class="step" data-step="3">述語 <code>p</code> はパラメータであり、値 <code>val</code> を決めると、必要な証明の型 <code>p val</code> が決まる。 <code>Subtype p</code> は <code>{x // p x}</code> とも書く。</span></p></article>
+<article class="slide" id="05_mathematicaltools-even-nat" data-kind="main" data-label="偶数という条件を付けた型" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>偶数という条件を付けた型</h3></div>
+<p><span class="step" data-step="0">この章でも単独で使えるよう、偶数性の定義を再掲する。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> IsEven (n : Nat) : <span class="sort">Prop</span> := ∃ k : Nat, n = 2 * k
+
+<span class="kw">def</span> EvenNat : <span class="sort">Type</span> := {n : Nat // IsEven n}
+
+<span class="kw">def</span> evenFour : EvenNat := Subtype.mk 4 (Exists.intro 2 rfl)
+
+<span class="kw">#check</span> evenFour.val
+<span class="kw">#check</span> evenFour.property</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">evenFour.val : Nat
+evenFour.property : IsEven evenFour.val</span></code></pre>
+<p><span class="step" data-step="3"><code>evenFour</code> は「自然数 <code>4</code>」と「<code>4</code> は偶数だという証明」の組である。内側の <code>Exists.intro 2 rfl</code> は、第4章で学んだ偶数性の証明を作っている。</span></p></article>
+<article class="slide" id="05_mathematicaltools-subtype-use" data-kind="main" data-label="値と、その値の保証を使う" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>値と、値についての保証を取り出す</h3></div>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> evenFour.val</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">4</span></code></pre>
+<p><span class="step" data-step="2"><code>evenFour.property</code> を使えば、取り出した自然数の偶数性も使える。この具体的な値の和については、証人を <code>4</code> として計算で偶数性を確かめられる。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> evenFourPlusFour : IsEven (evenFour.val + evenFour.val) :=
+  Exists.intro 4 rfl</span></code></pre>
+<p><span class="step" data-step="4"><code>EvenNat</code> と <code>Nat</code> は別の型である。<code>evenFour : EvenNat</code> から自然数を使いたいときは <code>.val</code> で取り出す。数学で部分集合を考えるイメージと、Lean の型の区別を分けて読もう。</span></p></article>
+<article class="slide" id="05_mathematicaltools-subtype-exists" data-kind="main" data-label="条件付きの値と、存在の証明" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>存在の証明との違い</h3></div>
+<p><span class="step" data-step="0"><code>∃ n : Nat, IsEven n</code> の証明も、自然数とその偶数性の証明から作れる。どちらも二つの成分を使うが、全体の型が違う。</span></p>
+<ul><li data-step="1" class="step"><code>EvenNat : Type</code> は、条件を満たす値をデータとして使うための型である。 <code>.val</code> で自然数を取り出し、計算に使える。</li><li data-step="1" class="step"><code>(∃ n : Nat, IsEven n) : Prop</code> は、そのような値が存在するという命題である。第4章のように <code>match</code> で証人を使って別の命題を証明できるが、一般にはその証明を場合分けして自然数を返す関数は定義できない。</li></ul>
+<p><span class="step" data-step="2">条件付きの値を計算に渡したいのか、存在することを証明したいのかに応じて使い分ける。</span></p></article>
+<article class="slide" id="05_mathematicaltools-fin-structure" data-kind="main" data-label="Fin の内部を読む" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>Fin も値に範囲の証明を添えている</h3></div>
+<p><span class="step" data-step="0">第1章から使ってきた <code>Fin n</code> の定義は、次の構造体である。</span></p>
+<pre class="quote"><code><span class="step" data-step="1">structure Fin (n : Nat) where
+  val : Nat
+  isLt : val &lt; n</span></code></pre>
+<p><span class="step" data-step="2"><code>Fin n</code> も「値と、その値についての証明」を持つ。 <code>Subtype</code> の単なる別名ではなく、同じ考え方で個別に定義された型である。 <code>i : Fin n</code> からは、<code>i.val : Nat</code> と <code>i.isLt : i.val &lt; n</code> を取り出せる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-fin-constructor" data-kind="main" data-label="範囲の証明を添えて番号を作る" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>不等式の証明を渡して番号を作る</h3></div>
+<p><span class="step" data-step="0">第3章で見たように、自然数の不等式も証明の型である。ここでは、標準ライブラリの <code>Nat.lt_succ_self</code> が <code>n &lt; n + 1</code> の証明を与える。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Nat.lt_succ_self</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">Nat.lt_succ_self (n : Nat) : n &lt; n.succ</span></code></pre>
+<p><span class="step" data-step="3"><code>n.succ</code> と <code>n + 1</code> は計算上等しいので、この証明を <code>Fin.mk</code> に渡せる。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> lastFromProof : (n : Nat) → Fin (n + 1) :=
+  <span class="kw">fun</span> n =&gt; Fin.mk n (Nat.lt_succ_self n)
+
+<span class="kw">#check</span> lastFromProof 2
+<span class="kw">#eval</span> (lastFromProof 2).val</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="5">lastFromProof 2 : Fin (2 + 1)
+2</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-fin-dependent" data-kind="main" data-label="第1章の依存関数とつながる" data-section="Trial5.subtypes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>第1章の依存関数を、構成子まで読む</h3></div>
+<p><span class="step" data-step="0"><code>lastFromProof</code> の本体は <code>⟨n, Nat.lt_succ_self n⟩</code> と略記することもできる。自然数 <code>n</code> を受け取り、値 <code>n</code> と範囲の証明から <code>Fin (n + 1)</code> の項を作っている。第1章でも使った標準の <code>Fin.last</code> と同じ「最後の番号」を、今度は中身まで書いた。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> lastFromProof_val (n : Nat) : (lastFromProof n).val = n := rfl
+<span class="kw">def</span> lastFromProof_eq_last (n : Nat) : lastFromProof n = Fin.last n := rfl</span></code></pre>
+<p><span class="step" data-step="2">入力に応じて結果の型が変わるので、これは依存関数である。その結果として返す <code>Fin (n + 1)</code> の項の内部には、値とその値の保証が入っている。型の族に沿って項を与える話と、依存する組の話が、ここでつながった。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-add-even" data-kind="main" data-label="練習：条件付きの値を返す" data-section="Trial5.practice-review-3" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.practice-review-3">✏ 練習</h3></div>
+<ol class="exercise" start="59" data-exercise="59"><li><span class="step" data-step="0">二つの偶数の和を、偶数という条件を持つ値として返す <code>addEven (n m : EvenNat) : EvenNat</code> を書け。ヒント：値は <code>n.val + m.val</code> とする。<code>n.property</code> と <code>m.property</code> を <code>match</code> で分解し、得られた証人の和を新しい証人にする。第4章の偶数の和と同じ等式の計算を組み立てよ。 <code>#eval (addEven evenFour evenFour).val</code> を確かめよ。</span></li></ol></article>
+<article class="slide" id="05_mathematicaltools-practice-add-even-answer" data-kind="main" data-label="解答：偶数性の証明を組み立てる" data-section="Trial5.practice-review-3" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 59</span></p>
+<pre class="lean"><code><span class="step" data-step="0"><span class="kw">def</span> addEven (n m : EvenNat) : EvenNat :=
+  Subtype.mk (n.val + m.val)
+    (<span class="kw">match</span> n.property <span class="kw">with</span>
+    | Exists.intro k hk =&gt;
+      <span class="kw">match</span> m.property <span class="kw">with</span>
+      | Exists.intro l hl =&gt;
+        Exists.intro (k + l)
+          (Eq.trans
+            (Eq.trans (congrArg (<span class="kw">fun</span> x =&gt; x + m.val) hk)
+              (congrArg (<span class="kw">fun</span> x =&gt; 2 * k + x) hl))
+            (Eq.symm (Nat.mul_add 2 k l))))
+
+</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-practice-add-even-result" data-kind="main" data-label="偶数の和：値と根拠を確かめる" data-section="Trial5.practice-review-3" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#eval</span> (addEven evenFour evenFour).val</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="1">8</span></code></pre>
+<p><span class="step" data-step="2">第一成分に和を置くと、第二成分には <code>IsEven (n.val + m.val)</code> の証明が要求される。二つの偶数性の証明を分解し、証人の和と等式の証明を組み立てて、この型の項を与えた。</span></p></article>
+<article class="slide" id="05_mathematicaltools-class" data-kind="main" data-label="構造体から class へ" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.classes">4. class と instance</h2></div>
+<p><span class="step" data-step="0">ここまでは構造体の項を明示して渡していた。 <code>class</code> を使うと、型ごとに決めた項を <code>instance</code> として登録し、必要な場所で Lean に探してもらえる。宣言の形は <code>structure</code> と同じである。</span></p>
+<p><span class="step" data-step="1"><a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.dependent-fields">2節</a>の <code>PointedType</code> は、型とその中の点を一つに束ねた。今度は型 <code>α</code> をパラメータにし、その中の点だけをフィールドにする。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">class</span> Pointed (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
   point : α
 
 <span class="kw">#check</span> Pointed</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">Pointed (α : Type) : Type</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-pointed-instance" data-kind="main" data-label="Nat の基点を instance に登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>carrier</code> がフィールドからパラメータ <code>α</code> に移り、フィールドは点だけになった。パラメータにする書き方そのものは structure でもできるので、ここは class の特徴ではない。 class にした意味は、次の <code>instance</code> 宣言にある。<code>Pointed Nat</code> の項を1つ登録簿に載せておけば、「<code>Nat</code> の点」が必要な場所で、項を引数として手渡さなくても Lean が見つけてくれる。</span></p>
-<p><span class="step" data-step="1">登録は <code>instance</code> 宣言で行う:</span></p>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">instance</span> : Pointed Nat <span class="kw">where</span>
-  point := 0</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-instance-declaration" data-kind="main" data-label="instance 宣言の意味と名前" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>Pointed α</code> の項は「<code>α</code> のどの項を<strong>基点</strong>と呼ぶかの指定」で、 <code>instance</code> 宣言によって <code>Nat</code> の基点として <code>0</code> を登録した。</span></p>
-<p><span class="step" data-step="1"><code>instance</code> は<strong>名前を付けない宣言</strong>である（中身は <code>def</code> と同じで、宣言と同時に登録簿へ載る）。使う側は登録簿から探すだけで名前で呼ばないから、名前を書く必要がない。実際には Lean が <code>instPointedNat</code> のような名前を自動で付けており、<code>instance myPoint : Pointed Nat where …</code> と自分で名前を付けることもできる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-infer-instance" data-kind="main" data-label="inferInstance と3種類の引数" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">登録簿から探す操作そのものを項として書いたのが <code>inferInstance</code> である。型を見ると、インスタンス引数 <code>[i : α]</code> を受け取ってそのまま返すだけの関数で、「探す」仕事は括弧 <code>[ ]</code> の仕組みがやっていることが分かる。</span></p>
-<p><span class="step" data-step="1">これで括弧が3種類そろった。<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> 4節</a>の <code>( )</code>（明示）・<code>{ }</code>（暗黙）に加えて、<code>[inst : C α]</code> が<strong>インスタンス引数</strong>である——他の引数との単一化だけでは決まらず、エラボレータが <code>instance</code> として登録された項の中から探索して埋める。</span></p></article>
-<article class="slide" id="05_mathematicaltools-infer-instance-type" data-kind="main" data-label="inferInstance の型を左から読む" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">#check</span> @inferInstance</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">@inferInstance : {α : Sort u_1} → [i : α] → α</span></code></pre>
-<p><span class="step" data-step="2">頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は、<a target="_blank" rel="noopener" href="../02_forall.html#sec-CH.propositions"><code>02_Forall.lean</code> 0節</a>で見た、<code>Prop</code> や <code>Type</code>、<code>Type 1</code> などをまとめて扱う宇宙の表記である。つまりこの関数は、命題も通常の型も対象にできる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-instance-search" data-kind="main" data-label="登録した型と未登録の型を調べる" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">確かめてみる。次の <code>example</code> も名前を付けない宣言で、こちらは登録簿にも載らない。「この型の項が確かに作れる」ことをその場で確かめるためだけに使う。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : Pointed Nat := inferInstance</span></code></pre>
-<p><span class="step" data-step="2">登録してあるので、これは見つかって受理される（<code>example</code> は受理されると Infoview には何も表示しない）。</span></p></article>
-<article class="slide" id="05_mathematicaltools-unregistered-instance" data-kind="main" data-label="未登録の型では探索に失敗する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">登録していない型では失敗する:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">example : Pointed Bool := inferInstance
+<pre class="quote"><code><span class="step" data-step="3">Pointed (α : Type) : Type</span></code></pre>
+<p><span class="step" data-step="4"><code>carrier</code> がパラメータ <code>α</code> に移り、フィールドは点だけになった。パラメータを取ること自体は <code>structure</code> でもできる。 <code>class</code> にした意味は、この項を登録して、必要な場所へ自動で渡してもらえることにある。</span></p></article>
+<article class="slide" id="05_mathematicaltools-instance" data-kind="main" data-label="型ごとに基点を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">登録は <code>instance</code> 宣言で行う:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Pointed Nat <span class="kw">where</span>
+  point := 0</span></code></pre>
+<p><span class="step" data-step="2"><code>Pointed α</code> の項は「<code>α</code> のどの項を<strong>基点</strong>と呼ぶかの指定」で、 <code>instance</code> 宣言によって <code>Nat</code> の基点として <code>0</code> を登録した。</span></p>
+<p><span class="step" data-step="3"><code>instance</code> は、項を定義すると同時に登録簿へ載せる宣言である。使う側は登録簿から探してもらえるので、宣言の名前を省略できる。実際には Lean が <code>instPointedNat</code> のような名前を自動で付けており、<code>instance myPoint : Pointed Nat where …</code> と自分で名前を付けることもできる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-instance-argument" data-kind="main" data-label="暗黙引数とインスタンス引数" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">登録簿から探す操作そのものを項として書いたのが <code>inferInstance</code> である。型を見ると、インスタンス引数 <code>[i : α]</code> を受け取ってそのまま返すだけの関数で、「探す」仕事は括弧 <code>[ ]</code> の仕組みがやっていることが分かる。</span></p>
+<p><span class="step" data-step="1">これで括弧が3種類そろった。<a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.dependent-functions"><code>01_TypesAndTerms.lean</code> 4節</a>の <code>( )</code>（明示）・<code>{ }</code>（暗黙）に加えて、<code>[inst : C α]</code> が<strong>インスタンス引数</strong>である——他の引数との単一化だけでは決まらず、エラボレータが <code>instance</code> として登録された項の中から探索して埋める。</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> @inferInstance</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">@inferInstance : {α : Sort u_1} → [i : α] → α</span></code></pre>
+<p><span class="step" data-step="4">頭の <code>@</code> は「暗黙引数も省略せずに表示・指定する」という印で、<code>@inferInstance</code> は <code>inferInstance</code> の省略なし版である。 <code>Sort u</code> は、第3章で <code>Eq</code> の型を読むときに見た、<code>Prop</code> や <code>Type</code>、<code>Type 1</code> などをまとめて扱う宇宙の表記である。つまりこの関数は、命題も通常の型も対象にできる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-instance-search" data-kind="main" data-label="探索が成功する場合・失敗する場合" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">確かめてみる。<code>inferInstance</code> に型 <code>Pointed Nat</code> を指定して、<code>#check</code> で調べる。これは登録済みのインスタンスを探す項であり、新しいインスタンスの登録は行わない。</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> (inferInstance : Pointed Nat)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">inferInstance : Pointed Nat</span></code></pre>
+<p><span class="step" data-step="3"><code>Nat</code> には基点が登録してあるので、対応する項が見つかり、型が確認できる。登録していない型では失敗する:</span></p>
+<pre class="quote"><code><span class="step" data-step="4">#check (inferInstance : Pointed Bool)
 
 error(lean.synthInstanceFailed): failed to synthesize instance of type class
-  Pointed Bool
-
-Hint: Type class instance resolution failures can be inspected with the
-`set_option trace.Meta.synthInstance true` command.</span></code></pre>
-<p><span class="step" data-step="2">（<code>error(…)</code> の丸括弧はエラーの分類名。<code>Hint:</code> は調査のヒントで、以後の引用ではどちらも省略することがある。）</span></p></article>
-<article class="slide" id="05_mathematicaltools-generic-point-pair" data-kind="main" data-label="登録された基点から組を作る" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">インスタンス引数の使いどころ: 「基点が登録されたどんな型でも」働く関数が書ける。 <code>pointPair Nat</code> と書くだけで、<code>Pointed Nat</code> の項は登録簿から自動で渡される。</span></p>
+  Pointed Bool</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-point-pair" data-kind="main" data-label="インスタンス引数を持つ関数" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">インスタンス引数の使いどころ: 「基点が登録されたどんな型でも」働く関数が書ける。 <code>pointPair Nat</code> と書くだけで、<code>Pointed Nat</code> の項は登録簿から自動で渡される。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointPair (α : <span class="sort">Type</span>) [Pointed α] : Pair α α := ⟨Pointed.point, Pointed.point⟩
 
 <span class="kw">#check</span> pointPair</span></code></pre>
@@ -276,8 +472,8 @@ Hint: Type class instance resolution failures can be inspected with the
 <p><span class="step" data-step="3"><code>(pointPair Nat).fst</code> の値は、登録簿に載せた <code>point</code>——つまり <code>0</code>——のはずである:</span></p>
 <pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> (pointPair Nat).fst</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="5">0</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-point-instance" data-kind="main" data-label="自作した Point を登録して使う" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自作型にもインスタンスを与える</h3></div>
-<p><span class="step" data-step="0">クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。 <a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>で作った <code>Point</code> に基点（原点）を登録してみる。</span></p>
+<article class="slide" id="05_mathematicaltools-point-instance" data-kind="main" data-label="自作型にもインスタンスを与える" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>自作型にもインスタンスを与える</h3></div>
+<p><span class="step" data-step="0">クラスの効き目は、<strong>あとから自分の型を仲間に入れられる</strong>ことにある。 <a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.structures">1節</a>で作った <code>Point</code> に基点（原点）を登録してみる。</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Pointed Point <span class="kw">where</span>
   point := ⟨0, 0⟩
 
@@ -286,114 +482,63 @@ Hint: Type class instance resolution failures can be inspected with the
 <p><span class="step" data-step="3">登録した瞬間から、<code>Pointed</code> を使う汎用の道具がすべて <code>Point</code> でも使えるようになった。</span></p>
 <pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> (pointPair Point).fst.x</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="5">0</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-instance-theorem" data-kind="main" data-label="インスタンスを受け取る定理" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>インスタンスを受け取る定理</h3></div>
-<p><span class="step" data-step="0">インスタンス引数は <code>def</code> だけでなく <code>theorem</code> にも書ける。「基点が登録されたどんな型でも成り立つ」一般的な定理が作れる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> pointPair_fst (α : <span class="sort">Type</span>) [Pointed α] : (pointPair α).fst = Pointed.point := rfl
+<article class="slide" id="05_mathematicaltools-point-pair-proof" data-kind="main" data-label="登録した構造を使って証明する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>インスタンスを受け取る定理</h3></div>
+<p><span class="step" data-step="0">インスタンス引数は、証明を定義する <code>def</code> にも書ける。「基点が登録されたどんな型でも成り立つ」一般的な定理を証明してみよう:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> pointPair_fst (α : <span class="sort">Type</span>) [Pointed α] :
+    (pointPair α).fst = Pointed.point := rfl
 
 <span class="kw">#check</span> pointPair_fst</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">pointPair_fst (α : Type) [Pointed α] : (pointPair α).fst = Pointed.point</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-use-instance-theorem" data-kind="main" data-label="同じ定理を Nat と Point に適用する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">使うときは <code>α</code> を指定するだけでよく、<code>Pointed α</code> の証明（項）は登録簿から自動で供給される。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="cm">-- 登録済みの型なら、どれにでも同じ定理が適用できる</span>
-<span class="kw">example</span> : (pointPair Nat).fst = Pointed.point := pointPair_fst Nat
-<span class="kw">example</span> : (pointPair Point).fst = Pointed.point := pointPair_fst Point</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-product-instance" data-kind="main" data-label="積に基点を誘導する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>積に構造を誘導する</h3></div>
+<pre class="quote"><code><span class="step" data-step="2">pointPair_fst (α : Type) [Pointed α] : (pointPair α).fst = Pointed.point</span></code></pre>
+<p><span class="step" data-step="3">使うときは <code>α</code> を指定するだけでよく、基点の指定である <code>Pointed α</code> の項は登録簿から自動で供給される。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> pointPair_nat_fst : (pointPair Nat).fst = Pointed.point := pointPair_fst Nat
+<span class="kw">def</span> pointPair_point_fst : (pointPair Point).fst = Pointed.point := pointPair_fst Point</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-pair-instance" data-kind="main" data-label="積に構造を誘導する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>積に構造を誘導する</h3></div>
 <p><span class="step" data-step="0">登録簿のもう1つの効き目は、<strong>インスタンスからインスタンスを作れる</strong>ことである。基点付きの型が2つあれば、その積にも「基点の組」という自然な基点が決まる。この「積への構造の誘導」も、前提にインスタンス引数を取る instance として登録できる:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Pointed α] [Pointed β] : Pointed (Pair α β) <span class="kw">where</span>
   point := ⟨Pointed.point, Pointed.point⟩
 
 <span class="kw">#eval</span> (Pointed.point : Pair Nat Point).snd.x</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">0</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-recursive-search" data-kind="main" data-label="積のインスタンスを探す連鎖" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>Pair Nat Point</code> の基点はどこにも直接は登録していないのに、見つかった。探索が<strong>連鎖</strong>するからである: <code>Pointed (Pair Nat Point)</code> を探す → 上の誘導 instance が形に合う → その前提 <code>Pointed Nat</code>・<code>Pointed Point</code> をさらに登録簿から探す——と、機械が自動でつないでいく。<code>07_Exercises.lean</code> の発展演習で「積空間 <code>X × Y</code> に位相が自動で載る」のも、これと同じ仕組みである。</span></p></article>
-<article class="slide" id="05_mathematicaltools-addition-class" data-kind="main" data-label="足し算の記法を支える Add" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>記法もクラスで動いている</h3></div>
+<pre class="quote"><code><span class="step" data-step="2">0</span></code></pre>
+<p><span class="step" data-step="3"><code>Pair Nat Point</code> の基点はどこにも直接は登録していないのに、見つかった。探索が<strong>連鎖</strong>するからである: <code>Pointed (Pair Nat Point)</code> を探す → 上の誘導 instance が形に合う → その前提 <code>Pointed Nat</code>・<code>Pointed Point</code> をさらに登録簿から探す——と、機械が自動でつないでいく。<code>07_Exercises.lean</code> の発展演習で「積空間 <code>X × Y</code> に位相が自動で載る」のも、これと同じ仕組みである。</span></p></article>
+<article class="slide" id="05_mathematicaltools-add-notation" data-kind="main" data-label="記法もクラスで動いている" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>記法もクラスで動いている</h3></div>
 <p><span class="step" data-step="0"><a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の先取りで、<code>+</code> は <code>HAdd.hAdd</code> を使う記法であり、型に応じて演算が選ばれると述べた。同じ型どうしの足し算を指定するために、標準ライブラリにはクラス <code>Add</code> が用意されている:</span></p>
 <pre class="quote"><code><span class="step" data-step="1">class Add (α : Type u) where
-  add : α → α → α</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-point-addition" data-kind="main" data-label="Point に足し算を登録して計算する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>Point</code> に足し算を登録してみる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Add Point <span class="kw">where</span>
+  add : α → α → α</span></code></pre>
+<p><span class="step" data-step="2"><code>Point</code> に足し算を登録してみる:</span></p></article>
+<article class="slide" id="05_mathematicaltools-add-point" data-kind="main" data-label="Point に足し算を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> : Add Point <span class="kw">where</span>
   add p q := ⟨p.x + q.x, p.y + q.y⟩
 
 <span class="kw">#check</span> Point.mk 1 2 + Point.mk 3 4</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">{ x := 1, y := 2 } + { x := 3, y := 4 } : Point</span></code></pre>
-<p><span class="step" data-step="3">表示の <code>{ x := 1, y := 2 }</code> は <code>Point.mk 1 2</code> の<strong>別表示</strong>である（フィールド名付きの structure リテラル。書くときにも使える）。登録した瞬間から、記法 <code>+</code> が <code>Point</code> でも通るようになった。 <code>x</code> 成分は <code>1 + 3</code> で <code>4</code> のはずである:</span></p>
-<pre class="lean"><code><span class="step" data-step="4"><span class="kw">#eval</span> (Point.mk 1 2 + Point.mk 3 4).x</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="5">4</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-pointed-bool-exercise" data-kind="main" data-label="練習：Bool を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<p><span class="step" data-step="0">本文で <code>Pointed</code> に対して行った操作を、<strong>二項演算付きの型</strong>（マグマと呼ばれる）で一通り繰り返す。</span></p>
-<ol class="exercise" start="120" data-exercise="120"><li><span class="step" data-step="1">本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>example : Pointed Bool := inferInstance</code> と <code>example : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-pointed-bool-answer" data-kind="main" data-label="解答：Bool で道具と定理を使う" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 120</span></p>
-<pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> : Pointed Bool <span class="kw">where</span>
-  point := false
-
-<span class="kw">example</span> : Pointed Bool := inferInstance
-
-<span class="kw">example</span> : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</span></code></pre>
-<p><span class="step" data-step="1">登録した瞬間から、<code>inferInstance</code> の探索も、汎用関数 <code>pointPair</code> も、一般的な定理 <code>pointPair_fst</code> も、すべて <code>Bool</code> で使えるようになる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-magma-exercise" data-kind="main" data-label="練習：二項演算を持つクラス" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="121" data-exercise="121"><li><span class="step" data-step="0"><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) : Type where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>example : Magma Nat := inferInstance</code> が通ることを確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-magma-answer" data-kind="main" data-label="解答：Magma を宣言して登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 121</span></p>
-<pre class="lean"><code><span class="step" data-step="0"><span class="kw">class</span> Magma (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
-  op : α → α → α
-
-<span class="kw">instance</span> : Magma Nat <span class="kw">where</span>
-  op := Nat.add
-
-<span class="kw">example</span> : Magma Nat := inferInstance</span></code></pre>
-<p><span class="step" data-step="1">手順は <code>Pointed</code> とまったく同じ——クラスを宣言し、<code>instance</code> で登録簿に載せれば、<code>inferInstance</code> が見つける。フィールドが「点」から「二項演算」に変わっただけである。</span></p></article>
-<article class="slide" id="05_mathematicaltools-opself-exercise" data-kind="main" data-label="練習：登録された演算を2回同じ値に適用する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="122" data-exercise="122"><li><span class="step" data-step="0"><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 122</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> opSelf (α : <span class="sort">Type</span>) [Magma α] (a : α) : α := Magma.op a a
-
-<span class="kw">#eval</span> opSelf Nat 3</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">6</span></code></pre>
-<p><span class="step" data-step="3"><code>Nat</code> の登録簿には <code>op := Nat.add</code> を載せたので、<code>opSelf Nat 3 = 3 + 3</code>。</span></p></article>
-<article class="slide" id="05_mathematicaltools-product-magma-exercise" data-kind="main" data-label="練習：積の演算を誘導する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="123" data-exercise="123"><li><span class="step" data-step="0">本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-product-magma-answer" data-kind="main" data-label="解答：成分ごとの演算と探索の連鎖" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 123</span></p>
-<pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Magma α] [Magma β] : Magma (Pair α β) <span class="kw">where</span>
-  op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
-
-<span class="kw">#eval</span> (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">22</span></code></pre>
-<p><span class="step" data-step="2"><code>Magma (Pair Nat Nat)</code> は直接は登録していないが、誘導 instance と <code>Magma Nat</code> の連鎖で見つかる。<code>.snd</code> は <code>2 + 20</code>。</span></p></article>
-<article class="slide" id="05_mathematicaltools-point-mul-exercise" data-kind="main" data-label="練習：Point の掛け算を登録する" data-section="Intro2.classes" data-layout="compact" data-editorial="true"><ol class="exercise" start="124" data-exercise="124"><li><span class="step" data-step="0"><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 124</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Mul Point <span class="kw">where</span>
-  mul p q := ⟨p.x * q.x, p.y * q.y⟩
-
-<span class="kw">#eval</span> (Point.mk 2 3 * Point.mk 4 5).x</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">8</span></code></pre>
-<p><span class="step" data-step="3"><code>x</code> 成分どうしの積 <code>2 * 4</code>。登録すれば <code>*</code> がそのまま <code>Point</code> に使える。</span></p></article>
-<article class="slide" id="05_mathematicaltools-syntax-and-macros" data-kind="main" data-label="構文を追加し、項への展開を指定する" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.notation">2. 記法の自作 — syntax と macro_rules</h2></div>
+<pre class="quote"><code><span class="step" data-step="1">{ x := 1, y := 2 } + { x := 3, y := 4 } : Point</span></code></pre>
+<p><span class="step" data-step="2">表示の <code>{ x := 1, y := 2 }</code> は <code>Point.mk 1 2</code> の<strong>別表示</strong>である（フィールド名付きの structure リテラル。書くときにも使える）。登録した瞬間から、記法 <code>+</code> が <code>Point</code> でも通るようになった。 <code>x</code> 成分は <code>1 + 3</code> で <code>4</code> のはずである:</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">#eval</span> (Point.mk 1 2 + Point.mk 3 4).x</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="4">4</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-syntax" data-kind="main" data-label="記法を自作する" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.notation">5. 記法の自作 — syntax と macro_rules</h2></div>
 <p><span class="step" data-step="0"><code>06_Topology.lean</code> は <code>⋃₀ S</code> や <code>{a | p a}</code> といった数学記法を自作している。仕組みは:</span></p>
-<ul><li data-step="1" class="step"><code>syntax</code> — 「この書き方を受け付けよ」と構文を追加する</li><li data-step="1" class="step"><code>macro_rules</code> — 「その書き方はこの項の略記である」と展開を与える</li></ul></article>
-<article class="slide" id="05_mathematicaltools-pair-notation" data-kind="main" data-label="組の記法を syntax と macro_rules で作る" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">試しに、<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>の <code>Pair</code> のための記法を作ってみる。</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">syntax</span> &quot;⟪&quot; term &quot;, &quot; term &quot;⟫&quot; : term
+<ul><li data-step="1" class="step"><code>syntax</code> — 「この書き方を受け付けよ」と構文を追加する</li><li data-step="1" class="step"><code>macro_rules</code> — 「その書き方はこの項の略記である」と展開を与える</li></ul>
+<p><span class="step" data-step="2">試しに、<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.structures">1節</a>の <code>Pair</code> のための記法を作ってみる。</span></p>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">syntax</span> &quot;⟪&quot; term &quot;, &quot; term &quot;⟫&quot; : term
 
 <span class="kw">macro_rules</span>
-  | `(⟪$x, $y⟫) =&gt; `(Pair.mk $x $y)</span></code></pre>
-<p><span class="step" data-step="2"><code>macro_rules</code> の行はこう読む。<code>`(…)</code> は<strong>構文の断片</strong>を作る引用符、 <code>$x</code>・<code>$y</code> は受け取った断片をそこへ埋め込む印である。つまりこの行は「<code>⟪x, y⟫</code> と書かれたら、<code>Pair.mk x y</code> と書かれたことにせよ」と読める。</span></p></article>
-<article class="slide" id="05_mathematicaltools-notation-type-check" data-kind="main" data-label="展開された項の型を調べる" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">すると <code>⟪1, true⟫</code> は <code>Pair.mk 1 true</code> に展開されてから型検査されるので、型は <code>Pair Nat Bool</code> のはずである:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> ⟪1, true⟫</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">{ fst := 1, snd := true } : Pair Nat Bool</span></code></pre>
-<p><span class="step" data-step="3">記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。単純な中置・前置の記法には <code>infixl</code> や <code>prefix</code> という略記もある（次節と <code>06_Topology.lean</code> で使用）。</span></p></article>
-<article class="slide" id="05_mathematicaltools-point-notation-exercise" data-kind="main" data-label="練習：Point の記法を自作する" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="125" data-exercise="125"><li><span class="step" data-step="0"><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-point-notation-answer" data-kind="main" data-label="解答：構文と展開先の対応" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 125</span></p>
-<pre class="lean"><code><span class="step" data-step="0"><span class="kw">syntax</span> &quot;⟬&quot; term &quot;, &quot; term &quot;⟭&quot; : term
+  | `(⟪$x, $y⟫) =&gt; `(Pair.mk $x $y)</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-macro-reading" data-kind="main" data-label="記法が展開されてから型検査される" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>macro_rules</code> の行はこう読む。<code>`(…)</code> は<strong>構文の断片</strong>を作る引用符、 <code>$x</code>・<code>$y</code> は受け取った断片をそこへ埋め込む印である。つまりこの行は「<code>⟪x, y⟫</code> と書かれたら、<code>Pair.mk x y</code> と書かれたことにせよ」と読める。</span></p>
+<p><span class="step" data-step="1">すると <code>⟪1, true⟫</code> は <code>Pair.mk 1 true</code> に展開されてから型検査されるので、型は <code>Pair Nat Bool</code> のはずである:</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">#check</span> ⟪1, true⟫</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="3">{ fst := 1, snd := true } : Pair Nat Bool</span></code></pre>
+<p><span class="step" data-step="4">記法は項に展開されてから型検査されるので、検査の対象はあくまで項のままである。単純な中置・前置の記法には <code>infixl</code> や <code>prefix</code> という略記もある（次節と <code>06_Topology.lean</code> で使用）。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-point-syntax" data-kind="main" data-label="練習：Point の記法を作る" data-section="Trial5.practice-review-9" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.practice-review-9">✏ 練習</h3></div>
+<ol class="exercise" start="60" data-exercise="60"><li><span class="step" data-step="0"><code>⟪1, true⟫</code> にならって、<code>Point</code> 用の記法（例えば <code>⟬x, y⟭</code>）を <code>syntax</code> と <code>macro_rules</code> で自作し、<code>#check ⟬1, 2⟭</code> で確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 60</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">syntax</span> &quot;⟬&quot; term &quot;, &quot; term &quot;⟭&quot; : term
 
 <span class="kw">macro_rules</span>
   | `(⟬$x, $y⟭) =&gt; `(Point.mk $x $y)
 
 <span class="kw">#check</span> ⟬1, 2⟭</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">{ x := 1, y := 2 } : Point</span></code></pre>
-<p><span class="step" data-step="2">読む方向だけの記法なので、表示では展開先の構成子の形が見える。</span></p></article>
-<article class="slide" id="05_mathematicaltools-infix-exercise" data-kind="main" data-label="練習：足し算に中置記法を与える" data-section="Intro2.notation" data-layout="compact" data-editorial="true"><ol class="exercise" start="126" data-exercise="126"><li><span class="step" data-step="0"><code>infixl:65 &quot; ⊞ &quot; =&gt; add</code> で、<code>03_InductiveTypes.lean</code> の <code>add</code>（<code>MyNat</code> の足し算）に中置記法を与え、<code>#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 126</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">infixl</span>:65 &quot; ⊞ &quot; =&gt; add
-
-#reduce MyNat.zero.succ ⊞ MyNat.zero.succ</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">MyNat.zero.succ.succ</span></code></pre>
-<p><span class="step" data-step="3"><code>1 + 1 = 2</code> にあたる <code>succ</code> 2つ。中置記法は <code>add</code> の適用に展開されている。</span></p></article>
-<article class="slide" id="05_mathematicaltools-sets-as-predicates" data-kind="main" data-label="部分集合を述語として作る" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.sets">3. 集合 — <code>Set</code> を自作する</h2></div>
-<p><span class="step" data-step="0">次の章では、集合の上に位相を組み立てる。その土台となる集合をここで作ろう。第2・4章で身につけた証明の書き方を、ここで使ってみる。</span></p>
+<pre class="quote"><code><span class="step" data-step="2">{ x := 1, y := 2 } : Point</span></code></pre>
+<p><span class="step" data-step="3">読む方向だけの記法なので、表示では展開先の構成子の形が見える。</span></p></article>
+<article class="slide" id="05_mathematicaltools-set" data-kind="main" data-label="集合を述語として表す" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.sets">6. 集合 — <code>Set</code> を自作する</h2></div>
+<p><span class="step" data-step="0">次の章では、集合の上に位相を組み立てる。その土台となる集合をここで作ろう。第2・4章で身につけた証明の書き方を、ここで使ってみる。 <a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.subtypes">3節</a>では、述語を満たす値と証明を組にした。ここでは、値を切り出す条件である述語そのものを、一つの集合として扱う。</span></p>
 <p><span class="step" data-step="1"><code>X</code> の部分集合を1つ指定することは、「各 <code>a : X</code> が入っているかどうか」を決めること——つまり <strong><code>X</code> 上の述語を1つ与えること</strong>と同じである。そこで:</span></p>
 <p><span class="step" data-step="2"><code>X</code> の部分集合の型。実体は述語 <code>X → Prop</code> そのもので、新しいデータは何もない。</span></p>
 <pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> Set (X : <span class="sort">Type</span>) : <span class="sort">Type</span> := X → <span class="sort">Prop</span>
@@ -401,103 +546,152 @@ Hint: Type class instance resolution failures can be inspected with the
 <span class="kw">#check</span> Set</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="4">Set (X : Type) : Type</span></code></pre>
 <p><span class="step" data-step="5"><a target="_blank" rel="noopener" href="../01_typesandterms.html#sec-Intro1.functions"><code>01_TypesAndTerms.lean</code> 3節</a>の <code>Map</code> と同じく、「型を受け取って型を返す関数」である。</span></p></article>
-<article class="slide" id="05_mathematicaltools-setof-notation" data-kind="main" data-label="述語を集合と読み替える setOf と内包記法" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">述語 <code>p</code> を集合とみなすときの「宣言」も1つ用意する。定義上は恒等関数だが、「述語を集合と読み替えました」という意思表示をこの名前が担う:</span></p>
+<article class="slide" id="05_mathematicaltools-set-builder" data-kind="main" data-label="集合の内包記法を作る" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">述語 <code>p</code> を集合とみなすときの「宣言」も1つ用意する。定義上は恒等関数だが、「述語を集合と読み替えました」という意思表示をこの名前が担う:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> setOf {X : <span class="sort">Type</span>} (p : X → <span class="sort">Prop</span>) : Set X := p
 
 <span class="kw">#check</span> setOf</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">setOf {X : Type} (p : X → Prop) : Set X</span></code></pre>
-<p><span class="step" data-step="3">数学の内包記法 <code>{a | p a}</code> も、<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.notation">2節</a>の道具でそのまま自作できる:</span></p>
+<p><span class="step" data-step="3">数学の内包記法 <code>{a | p a}</code> も、<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.notation">5節</a>の道具でそのまま自作できる:</span></p>
 <pre class="lean"><code><span class="step" data-step="4"><span class="kw">syntax</span> &quot;{&quot; ident &quot; | &quot; term &quot;}&quot; : term
 
 <span class="kw">macro_rules</span>
   | `({ $x:ident | $p }) =&gt; `(setOf <span class="kw">fun</span> $x =&gt; $p)</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-membership-class" data-kind="main" data-label="所属の記法を支える Membership" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">所属の記号 <code>∈</code>（<code>\in</code> と打つ）は、標準ライブラリの記法用クラス <code>Membership</code> に instance 登録すると使えるようになる——<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.classes">1節</a>で見た「記法はクラスで動く」の実戦である。中身は「集合（＝述語）<code>s</code> に点 <code>a</code> を適用する」だけ。まずクラスそのものを見ておく:</span></p>
+<article class="slide" id="05_mathematicaltools-membership" data-kind="main" data-label="所属の記号を登録する" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">所属の記号 <code>∈</code>（<code>\in</code> と打つ）は、標準ライブラリの記法用クラス <code>Membership</code> に instance 登録すると使えるようになる——<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Intro2.classes">4節</a>で見た「記法はクラスで動く」の実戦である。中身は「集合（＝述語）<code>s</code> に点 <code>a</code> を適用する」だけ。まずクラスそのものを見ておく:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">#check</span> Membership</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">Membership.{u, v} (α : outParam (Type u)) (γ : Type v) : Type (max u v)</span></code></pre>
-<p><span class="step" data-step="3"><code>Membership α γ</code> は「入れ物 <code>γ</code> に要素 <code>α</code> が属する」という記法 <code>∈</code> のためのクラスである。次の登録は <code>γ := Set X</code>・<code>α := X</code> の場合に当たる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-register-membership" data-kind="main" data-label="所属を登録して Prop 型を確かめる" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">instance</span> {X : <span class="sort">Type</span>} : Membership X (Set X) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
+<p><span class="step" data-step="3"><code>Membership α γ</code> は「入れ物 <code>γ</code> に要素 <code>α</code> が属する」という記法 <code>∈</code> のためのクラスである。次の登録は <code>γ := Set X</code>・<code>α := X</code> の場合に当たる。</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">instance</span> {X : <span class="sort">Type</span>} : Membership X (Set X) := ⟨<span class="kw">fun</span> s a =&gt; s a⟩
 
 <span class="kw">#check</span> (1 : Nat) ∈ ({n | n = 1} : Set Nat)</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">1 ∈ setOf fun n ↦ n = 1 : Prop</span></code></pre>
-<p><span class="step" data-step="2">型が <code>Prop</code> と付いた＝登録に成功している。読むときの注意を2つ。</span></p></article>
-<article class="slide" id="05_mathematicaltools-membership-reading" data-kind="main" data-label="型注釈と記法の展開を読む" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">第一に、<strong>型注釈が2つ要る</strong>理由: 数字 <code>1</code> も内包記法 <code>{n | …}</code> も「期待される型に応じて読みが決まる」記法なので、どの型の話かを先に教えないと読みが決まらないからである。</span></p>
-<p><span class="step" data-step="1">第二に、表示が <code>{n | n = 1}</code> に戻らず <code>setOf fun n ↦ n = 1</code> になる理由:自作した記法は<strong>構文解析（読む方向）専用</strong>で、表示（書く方向）の規則までは作っていないからである。以後の表示の枠でも、展開先がそのまま見える。</span></p></article>
-<article class="slide" id="05_mathematicaltools-prove-membership" data-kind="main" data-label="所属の証明は述語の証明" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">「<code>a ∈ s</code> である」ことの証明は、定義を展開すればただの <code>s a</code> である。実際に確かめてみる:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">example</span> : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl</span></code></pre>
-<p><span class="step" data-step="2"><code>∈</code> と <code>setOf</code> を定義に沿って展開すると、この命題は <code>1 = 1</code> そのものになる。だから <code>rfl</code> で閉じる——型検査が<strong>定義を展開して</strong>照合してくれるのである。</span></p></article>
-<article class="slide" id="05_mathematicaltools-subset-definition" data-kind="main" data-label="包含を全称と含意で定義する" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">包含 <code>⊆</code> も同じやり方で登録する。「<code>s</code> のどの要素も <code>t</code> の要素」—— <code>∀</code> と <code>→</code> で書けるようになった言明である:</span></p>
+<pre class="quote"><code><span class="step" data-step="5">1 ∈ setOf fun n ↦ n = 1 : Prop</span></code></pre></article>
+<article class="slide" id="05_mathematicaltools-membership-reading" data-kind="main" data-label="表示の読み方と所属の証明" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">型が <code>Prop</code> と付いた＝登録に成功している。読むときの注意を2つ。</span></p>
+<p><span class="step" data-step="1">第一に、ここでは <code>1 : Nat</code> と <code>… : Set Nat</code> の二つの型注釈で、どの型の話かを明示している。数字や内包記法を読むときにも、周囲から伝わる型が手がかりになる。</span></p>
+<p><span class="step" data-step="2">第二に、表示が <code>{n | n = 1}</code> に戻らず <code>setOf fun n ↦ n = 1</code> になる理由:自作した記法は<strong>構文解析（読む方向）専用</strong>で、表示（書く方向）の規則までは作っていないからである。以後の表示の枠でも、展開先がそのまま見える。</span></p>
+<p><span class="step" data-step="3">「<code>a ∈ s</code> である」ことの証明は、定義を展開すればただの <code>s a</code> である。実際に確かめてみる:</span></p>
+<pre class="lean"><code><span class="step" data-step="4"><span class="kw">def</span> one_mem_singleton : (1 : Nat) ∈ ({n | n = 1} : Set Nat) := rfl</span></code></pre>
+<p><span class="step" data-step="5"><code>∈</code> と <code>setOf</code> を定義に沿って展開すると、この命題は <code>1 = 1</code> そのものになる。だから <code>rfl</code> で閉じる——型検査が<strong>定義を展開して</strong>照合してくれるのである。</span></p></article>
+<article class="slide" id="05_mathematicaltools-subset" data-kind="main" data-label="包含を全称量化と含意で書く" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">包含 <code>⊆</code> も同じやり方で登録する。「<code>s</code> のどの要素も <code>t</code> の要素」—— <code>∀</code> と <code>→</code> で書けるようになった言明である:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> {X : <span class="sort">Type</span>} : HasSubset (Set X) := ⟨<span class="kw">fun</span> s t =&gt; ∀ a, a ∈ s → a ∈ t⟩
 
 <span class="kw">#check</span> ({n | n = 1} : Set Nat) ⊆ {n | n = 2}</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">(setOf fun n ↦ n = 1) ⊆ setOf fun n ↦ n = 2 : Prop</span></code></pre>
 <p><span class="step" data-step="3">型は <code>Prop</code>——包含は命題である。<code>s ⊆ t</code> の証明とは、定義から「各点で、<code>s a</code> の証明から <code>t a</code> の証明を作る関数」に他ならない。</span></p></article>
-<article class="slide" id="05_mathematicaltools-subset-reflexivity" data-kind="main" data-label="各点で仮定を返す包含の反射律" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">最初の性質を証明してみよう。反射律は「各点で仮定をそのまま返す」だけである:</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">theorem</span> Set.subset_refl {X : <span class="sort">Type</span>} (s : Set X) : s ⊆ s := <span class="kw">fun</span> _ ha =&gt; ha
+<article class="slide" id="05_mathematicaltools-subset-refl" data-kind="main" data-label="集合の包含も関数で証明する" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">最初の性質を証明してみよう。反射律は「各点で仮定をそのまま返す」だけである:</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> Set.subset_refl {X : <span class="sort">Type</span>} (s : Set X) : s ⊆ s := <span class="kw">fun</span> _ ha =&gt; ha
 
 <span class="kw">#check</span> Set.subset_refl</span></code></pre>
 <pre class="quote"><code><span class="step" data-step="2">Set.subset_refl {X : Type} (s : Set X) : s ⊆ s</span></code></pre>
-<p><span class="step" data-step="3"><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code>——各点で「<code>p → p</code>」を示すだけ（<a target="_blank" rel="noopener" href="../02_forall.html#sec-CH.implication"><code>02_Forall.lean</code> 0節</a>の世界そのもの）である。名前を <code>Set.〜</code> にしたのはドット記法（<a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>で見た関数適用の略記）のためで、この命名の仕組みは次節で説明する。</span></p>
+<p><span class="step" data-step="3"><code>s ⊆ s</code> を展開すれば <code>∀ a, a ∈ s → a ∈ s</code> である。点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、その <code>ha</code> を結論の証明として返している。第2章で学んだ、全称量化と含意を関数として読む方法を使った。名前を <code>Set.〜</code> にしたのはドット記法（<a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.structures">1節</a>で見た関数適用の略記）のためで、この命名の仕組みは次節で説明する。</span></p>
 <p><span class="step" data-step="4"><code>06_Topology.lean</code> はこの <code>Set</code> を土台に、<code>∩</code>・<code>∪</code>・補集合・像・逆像・集合族……と道具を足していく。</span></p></article>
-<article class="slide" id="05_mathematicaltools-subset-transitivity-exercise" data-kind="main" data-label="練習：包含の推移律" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="127" data-exercise="127"><li><span class="step" data-step="0">推移律を項で書け（各点で2つの仮定を順に適用する）:</span></li></ol>
-<pre class="quote"><code><span class="step" data-step="1">   theorem Set.subset_trans {X : Type} {s t u : Set X}
+<article class="slide" id="05_mathematicaltools-practice-subset-trans" data-kind="main" data-label="練習：包含の推移律" data-section="Trial5.practice-review-11" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3 id="sec-Trial5.practice-review-11">✏ 練習</h3></div>
+<ol class="exercise" start="61" data-exercise="61"><li><span class="step" data-step="0">推移律を項で書け（各点で2つの仮定を順に適用する）:</span></li></ol>
+<pre class="quote"><code><span class="step" data-step="1">   def Set.subset_trans {X : Type} {s t u : Set X}
        (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u</span></code></pre>
-<p class="answer-heading"><span class="step" data-step="2">解答 127</span></p>
-<pre class="lean"><code><span class="step" data-step="2"><span class="kw">theorem</span> Set.subset_trans {X : <span class="sort">Type</span>} {s t u : Set X}
+<p class="answer-heading"><span class="step" data-step="2">解答 61</span></p>
+<pre class="lean"><code><span class="step" data-step="2"><span class="kw">def</span> Set.subset_trans {X : <span class="sort">Type</span>} {s t u : Set X}
     (hst : s ⊆ t) (htu : t ⊆ u) : s ⊆ u :=
   <span class="kw">fun</span> a ha =&gt; htu a (hst a ha)</span></code></pre>
 <p><span class="step" data-step="3">点 <code>a</code> と <code>ha : a ∈ s</code> を受け取り、<code>hst</code> で <code>a ∈ t</code>、続けて <code>htu</code> で <code>a ∈ u</code> を得る——含意の連鎖と同じ形である。</span></p></article>
-<article class="slide" id="05_mathematicaltools-evens-exercise" data-kind="main" data-label="練習：述語から偶数の集合を作る" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="128" data-exercise="128"><li><span class="step" data-step="0"><code>def evens : Set Nat := {n | IsEven n}</code> と宣言せよ（<code>IsEven</code> は <a target="_blank" rel="noopener" href="../04_exists.html#sec-CH2.existence"><code>04_Exists.lean</code> 1節</a>の述語）。<code>example : (4 : Nat) ∈ evens := ⟨2, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 128</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> evens : Set Nat := {n | IsEven n}
-
-<span class="kw">example</span> : (4 : Nat) ∈ evens := ⟨2, rfl⟩</span></code></pre>
-<p><span class="step" data-step="2"><code>4 ∈ evens</code> は定義を展開すると <code>IsEven 4</code> すなわち <code>∃ k, 4 = 2 * k</code>。証人 <code>2</code> と <code>rfl</code> で作れる。</span></p></article>
-<article class="slide" id="05_mathematicaltools-universal-set-exercise" data-kind="main" data-label="練習：全体集合への包含" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="129" data-exercise="129"><li><span class="step" data-step="0">全体集合 <code>def allNat : Set Nat := {_n | True}</code> を定義し、 <code>theorem subset_allNat : ∀ s : Set Nat, s ⊆ allNat</code> を書け（各点の証明は <code>True.intro</code>。束縛子 <code>_n</code> の <code>_</code> は「使わない」印である）。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 129</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> allNat : Set Nat := {_n | True}
-
-<span class="kw">theorem</span> subset_allNat : ∀ s : Set Nat, s ⊆ allNat :=
-  <span class="kw">fun</span> _s _a _ha =&gt; True.intro</span></code></pre>
-<p><span class="step" data-step="2">どの点でも示すべきは <code>True</code> なので、構成子 <code>True.intro</code> を返すだけ。使わない引数は <code>_</code> 付きの名前にしてある。</span></p></article>
-<article class="slide" id="05_mathematicaltools-odds-exercise" data-kind="main" data-label="練習：奇数の集合と Prop" data-section="Intro2.sets" data-layout="compact" data-editorial="true"><ol class="exercise" start="130" data-exercise="130"><li><span class="step" data-step="0"><code>def odds : Set Nat := {n | ¬IsEven n}</code> を宣言し、 <code>#check (3 : Nat) ∈ odds</code> の表示を予想してから確かめよ。</span></li></ol>
-<p class="answer-heading"><span class="step" data-step="1">解答 130</span></p>
-<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> odds : Set Nat := {n | ¬IsEven n}
-
-<span class="kw">#check</span> (3 : Nat) ∈ odds</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">3 ∈ odds : Prop</span></code></pre>
-<p><span class="step" data-step="3">集合への所属は命題。中身が <code>¬…</code> でも、<code>∈</code> の式全体の型は <code>Prop</code> である。</span></p></article>
-<article class="slide" id="05_mathematicaltools-namespace-geometry" data-kind="main" data-label="名前空間の内側と外側で同じ項を調べる" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.namespaces">4. namespace — 名前の接頭辞</h2></div>
-<p><span class="step" data-step="0"><a target="_blank" rel="noopener" href="../03_inductivetypes.html#sec-Intro1.structures"><code>03_InductiveTypes.lean</code> 2節</a>のドット記法や、前節の <code>Set.subset_refl</code> という名前を支えている<strong>名前空間</strong>の仕組みを見ておく。 <code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く:</span></p>
+<article class="slide" id="05_mathematicaltools-namespace" data-kind="main" data-label="名前空間で名前をまとめる" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h2 id="sec-Intro2.namespaces">7. namespace — 名前の接頭辞</h2></div>
+<p><span class="step" data-step="0"><a target="_blank" rel="noopener" href="../05_mathematicaltools.html#sec-Trial5.structures">1節</a>のドット記法や、前節の <code>Set.subset_refl</code> という名前を支えている<strong>名前空間</strong>の仕組みを見ておく。 <code>namespace N … end N</code> で囲うと、中の宣言の本名に <code>N.</code> が付く:</span></p>
 <pre class="lean"><code><span class="step" data-step="1"><span class="kw">namespace</span> Geometry
 
 <span class="kw">def</span> origin : Point := ⟨0, 0⟩
 
 <span class="kw">#check</span> origin</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="2">Geometry.origin : Point</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-namespace-outside" data-kind="main" data-label="名前空間の外からはフルネームで呼ぶ" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><pre class="lean"><code><span class="step" data-step="0"><span class="kw">end</span> Geometry
+<pre class="quote"><code><span class="step" data-step="2">Geometry.origin : Point</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">end</span> Geometry
 
 <span class="kw">#check</span> Geometry.origin</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">Geometry.origin : Point</span></code></pre>
-<p><span class="step" data-step="2">外からはフルネームで呼ぶ</span></p></article>
-<article class="slide" id="05_mathematicaltools-dot-notation-and-export" data-kind="main" data-label="名前空間・ドット記法・export の関係" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>p.x</code> が効くのは、<code>x</code> が<strong>型名と同じ名前空間</strong> <code>Point</code> に置かれているからである。<code>06_Topology.lean</code> では <code>namespace Set</code> の中に集合の関数（<code>Set.ext</code> など）を置いていく——<code>s.ext</code> のようなドット記法が効くのはそのためである。逆に、名前空間の<strong>中</strong>の名前を接頭辞なしで使えるようにする <code>export N (名前)</code> という宣言もある（<code>06_Topology.lean</code> が <code>TopologicalSpace.IsOpen</code> を <code>IsOpen</code> と書くために使っている）。</span></p>
+<pre class="quote"><code><span class="step" data-step="4">Geometry.origin : Point</span></code></pre>
+<p><span class="step" data-step="5">外からはフルネームで呼ぶ。</span></p></article>
+<article class="slide" id="05_mathematicaltools-namespace-dot" data-kind="main" data-label="名前空間とドット記法" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0"><code>p.x</code> が効くのは、<code>x</code> が<strong>型名と同じ名前空間</strong> <code>Point</code> に置かれているからである。<code>06_Topology.lean</code> では <code>namespace Set</code> の中に集合の関数（<code>Set.ext</code> など）を置いていく——<code>s.ext</code> のようなドット記法が効くのはそのためである。逆に、名前空間の<strong>中</strong>の名前を接頭辞なしで使えるようにする <code>export N (名前)</code> という宣言もある（<code>06_Topology.lean</code> が <code>TopologicalSpace.IsOpen</code> を <code>IsOpen</code> と書くために使っている）。</span></p>
 <p><span class="step" data-step="1">これで <code>06_Topology.lean</code> を読む準備が整った。</span></p></article>
-<article class="slide" id="05_mathematicaltools-namespace-exercise" data-kind="main" data-label="練習：名前空間を開いて宣言を追加する" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><div class="step" data-step="0"><h3>✏ 練習</h3></div>
-<ol class="exercise" start="131" data-exercise="131"><li><span class="step" data-step="0"><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</span></li></ol></article>
-<article class="slide" id="05_mathematicaltools-namespace-answer" data-kind="main" data-label="解答：フルネームで参照する" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p class="answer-heading"><span class="step" data-step="0">解答 131</span></p>
-<pre class="lean"><code><span class="step" data-step="0"><span class="kw">namespace</span> Geometry
+<article class="slide" id="05_mathematicaltools-practice-pointed-bool" data-kind="main" data-label="練習：Bool に基点を登録する" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><div class="slide-columns"><div class="slide-column">
+<div class="step" data-step="0"><h2 id="sec-Trial5.practice">8. ✏ 練習 — 章末問題</h2></div>
+<ol class="exercise" start="62" data-exercise="62"><li><span class="step" data-step="0">本文で <code>Pointed Bool</code> が未登録のため <code>inferInstance</code> が失敗する例を見た。 <code>instance : Pointed Bool where point := false</code> を登録し、 <code>#check (inferInstance : Pointed Bool)</code> と <code>def pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</code> が通るようになることを確かめよ（登録した瞬間から、一般的な定理も適用できる）。</span></li></ol>
+</div><div class="slide-column">
+<p class="answer-heading"><span class="step" data-step="1">解答 62</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Pointed Bool <span class="kw">where</span>
+  point := false
+
+<span class="kw">#check</span> (inferInstance : Pointed Bool)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">inferInstance : Pointed Bool</span></code></pre>
+<pre class="lean"><code><span class="step" data-step="3"><span class="kw">def</span> pointPair_bool_fst : (pointPair Bool).fst = Pointed.point := pointPair_fst Bool</span></code></pre>
+<p><span class="step" data-step="4">登録した瞬間から、<code>inferInstance</code> の探索も、汎用関数 <code>pointPair</code> も、一般的な定理 <code>pointPair_fst</code> も、すべて <code>Bool</code> で使えるようになる。</span></p>
+</div></div></article>
+<article class="slide" id="05_mathematicaltools-practice-magma" data-kind="main" data-label="練習：二項演算を登録する" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="63" data-exercise="63"><li><span class="step" data-step="0"><code>Pointed</code> と同じ手順でマグマを自作する: <code>class Magma (α : Type) : Type where op : α → α → α</code> を宣言し、 <code>instance : Magma Nat where op := Nat.add</code> を登録して、 <code>#check (inferInstance : Magma Nat)</code> が通ることを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 63</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">class</span> Magma (α : <span class="sort">Type</span>) : <span class="sort">Type</span> <span class="kw">where</span>
+  op : α → α → α
+
+<span class="kw">instance</span> : Magma Nat <span class="kw">where</span>
+  op := Nat.add
+
+<span class="kw">#check</span> (inferInstance : Magma Nat)</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">inferInstance : Magma Nat</span></code></pre>
+<p><span class="step" data-step="3">手順は <code>Pointed</code> とまったく同じ——クラスを宣言し、<code>instance</code> で登録簿に載せれば、<code>inferInstance</code> が見つける。フィールドが「点」から「二項演算」に変わっただけである。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-op-self" data-kind="main" data-label="練習：登録された演算を使う" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="64" data-exercise="64"><li><span class="step" data-step="0"><code>pointPair</code> にならって、汎用関数 <code>opSelf (α : Type) [Magma α] (a : α) : α := Magma.op a a</code> を書き、 <code>#eval opSelf Nat 3</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 64</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> opSelf (α : <span class="sort">Type</span>) [Magma α] (a : α) : α := Magma.op a a
+
+<span class="kw">#eval</span> opSelf Nat 3</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">6</span></code></pre>
+<p><span class="step" data-step="3"><code>Nat</code> の登録簿には <code>op := Nat.add</code> を載せたので、<code>opSelf Nat 3 = 3 + 3</code>。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-pair-magma" data-kind="main" data-label="練習：積に演算を誘導する" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="65" data-exercise="65"><li><span class="step" data-step="0">本文の「積に構造を誘導する」にならって、成分ごとに演算する <code>instance {α β : Type} [Magma α] [Magma β] : Magma (Pair α β)</code> を登録し、 <code>#eval (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</code> の値を予想してから確かめよ（探索の連鎖まで含めて、<code>Pointed</code> と同じに動く）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 65</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> {α β : <span class="sort">Type</span>} [Magma α] [Magma β] : Magma (Pair α β) <span class="kw">where</span>
+  op p q := ⟨Magma.op p.fst q.fst, Magma.op p.snd q.snd⟩
+
+<span class="kw">#eval</span> (Magma.op (⟨1, 2⟩ : Pair Nat Nat) ⟨10, 20⟩).snd</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">22</span></code></pre>
+<p><span class="step" data-step="3"><code>Magma (Pair Nat Nat)</code> は直接は登録していないが、誘導 instance と <code>Magma Nat</code> の連鎖で見つかる。<code>.snd</code> は <code>2 + 20</code>。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-mul-point" data-kind="main" data-label="練習：Point の掛け算" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="66" data-exercise="66"><li><span class="step" data-step="0"><code>Add</code> にならって <code>instance : Mul Point where mul p q := ⟨p.x * q.x, p.y * q.y⟩</code> を登録し、<code>#eval (Point.mk 2 3 * Point.mk 4 5).x</code> の値を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 66</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">instance</span> : Mul Point <span class="kw">where</span>
+  mul p q := ⟨p.x * q.x, p.y * q.y⟩
+
+<span class="kw">#eval</span> (Point.mk 2 3 * Point.mk 4 5).x</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">8</span></code></pre>
+<p><span class="step" data-step="3"><code>x</code> 成分どうしの積 <code>2 * 4</code>。登録すれば <code>*</code> がそのまま <code>Point</code> に使える。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-infix" data-kind="main" data-label="練習：中置記法を作る" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="67" data-exercise="67"><li><span class="step" data-step="0"><code>infixl:65 &quot; ⊞ &quot; =&gt; Nat.add</code> で、自然数の足し算に中置記法を与え、<code>#reduce 1 ⊞ 1</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 67</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">infixl</span>:65 &quot; ⊞ &quot; =&gt; Nat.add
+
+#reduce 1 ⊞ 1</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">2</span></code></pre>
+<p><span class="step" data-step="3">中置記法は <code>Nat.add</code> の適用に展開され、<code>1 + 1</code> が計算されている。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-even-set" data-kind="main" data-label="練習：偶数の集合" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="68" data-exercise="68"><li><span class="step" data-step="0"><code>def evens : Set Nat := {n | IsEven n}</code> と宣言せよ（<code>IsEven</code> は <a target="_blank" rel="noopener" href="../04_exists.html#sec-Trial4.existence"><code>04_Exists.lean</code> 1節</a>の述語）。<code>def four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩</code> が通ることを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 68</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> evens : Set Nat := {n | IsEven n}
+
+<span class="kw">def</span> four_mem_evens : (4 : Nat) ∈ evens := ⟨2, rfl⟩</span></code></pre>
+<p><span class="step" data-step="2"><code>4 ∈ evens</code> は定義を展開すると <code>IsEven 4</code> すなわち <code>∃ k, 4 = 2 * k</code>。証人 <code>2</code> と <code>rfl</code> で作れる。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-univ" data-kind="main" data-label="練習：全体集合への包含" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="69" data-exercise="69"><li><span class="step" data-step="0">全体集合 <code>def allNat : Set Nat := {_n | True}</code> を定義し、 <code>def subset_allNat : ∀ s : Set Nat, s ⊆ allNat</code> を書け（各点の証明は <code>True.intro</code>。束縛子 <code>_n</code> の <code>_</code> は「使わない」印である）。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 69</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> allNat : Set Nat := {_n | True}
+
+<span class="kw">def</span> subset_allNat : ∀ s : Set Nat, s ⊆ allNat :=
+  <span class="kw">fun</span> _s _a _ha =&gt; True.intro</span></code></pre>
+<p><span class="step" data-step="2">どの点でも示すべきは <code>True</code> なので、構成子 <code>True.intro</code> を返すだけ。使わない引数は <code>_</code> 付きの名前にしてある。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-odd-set" data-kind="main" data-label="練習：述語で集合を指定する" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="70" data-exercise="70"><li><span class="step" data-step="0"><code>def odds : Set Nat := {n | ¬IsEven n}</code> を宣言し、 <code>#check (3 : Nat) ∈ odds</code> の表示を予想してから確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 70</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">def</span> odds : Set Nat := {n | ¬IsEven n}
+
+<span class="kw">#check</span> (3 : Nat) ∈ odds</span></code></pre>
+<pre class="quote"><code><span class="step" data-step="2">3 ∈ odds : Prop</span></code></pre>
+<p><span class="step" data-step="3">集合への所属は命題。中身が <code>¬…</code> でも、<code>∈</code> の式全体の型は <code>Prop</code> である。</span></p></article>
+<article class="slide" id="05_mathematicaltools-practice-namespace" data-kind="main" data-label="練習：名前空間を開き直す" data-section="Trial5.practice" data-layout="compact" data-editorial="true"><ol class="exercise" start="71" data-exercise="71"><li><span class="step" data-step="0"><code>namespace Geometry … end Geometry</code> をもう一度開いて <code>unitX : Point := ⟨1, 0⟩</code> を追加し、外から <code>#check Geometry.unitX</code> では見え、<code>#check unitX</code> では見えないことを確かめよ。</span></li></ol>
+<p class="answer-heading"><span class="step" data-step="1">解答 71</span></p>
+<pre class="lean"><code><span class="step" data-step="1"><span class="kw">namespace</span> Geometry
 
 <span class="kw">def</span> unitX : Point := ⟨1, 0⟩
 
 <span class="kw">end</span> Geometry
 
 <span class="kw">#check</span> Geometry.unitX</span></code></pre>
-<pre class="quote"><code><span class="step" data-step="1">Geometry.unitX : Point</span></code></pre></article>
-<article class="slide" id="05_mathematicaltools-namespace-error" data-kind="main" data-label="接頭辞を付けないと名前が見つからない" data-section="Intro2.namespaces" data-layout="compact" data-editorial="true"><p><span class="step" data-step="0">フルネームなら外から見える。一方、接頭辞なしでは:</span></p>
-<pre class="quote"><code><span class="step" data-step="1">#check unitX
-
-error: Unknown identifier `unitX`</span></code></pre>
-<p><span class="step" data-step="2"><code>namespace</code> の中の名前には、外からは接頭辞が要る。</span></p></article>
+<pre class="quote"><code><span class="step" data-step="2">Geometry.unitX : Point</span></code></pre>
+<p><span class="step" data-step="3">フルネームなら外から見える。接頭辞なしの <code>#check unitX</code> は <code>Unknown identifier</code> というエラーになる。</span></p></article>
     </main>
   </div>
   <footer class="navigation">

@@ -63,7 +63,7 @@
       "label": "構成子を適用して項を作る",
       "at": {
         "tag": "pre",
-        "starts": "#check TaggedSum.inr"
+        "starts": "#check TaggedSum.inb"
       }
     },
     {
@@ -79,7 +79,7 @@
       "label": "構成子の適用を括弧でまとめる",
       "at": {
         "tag": "pre",
-        "starts": "#eval valueOf (TaggedSum.inr true)"
+        "starts": "#eval valueOf (TaggedSum.inb true)"
       }
     },
     {
@@ -99,6 +99,14 @@
       }
     },
     {
+      "id": "practice-swap-sum",
+      "label": "練習：直和を入れ替える",
+      "at": {
+        "tag": "ol",
+        "starts": "swapSum : MySum A B → MySum B A を定義せよ。"
+      }
+    },
+    {
       "id": "product",
       "label": "一つの構成子に二つの引数を渡す",
       "at": {
@@ -112,6 +120,14 @@
       "at": {
         "tag": "h3",
         "starts": "組を使うときも match"
+      }
+    },
+    {
+      "id": "practice-product",
+      "label": "練習：二つの関数の値を組にする",
+      "at": {
+        "tag": "ol",
+        "starts": "写像 f : X → A と g : X → B から、x を組 (f x, g x) に送る"
       }
     },
     {
@@ -185,6 +201,14 @@
       "at": {
         "tag": "h3",
         "starts": "自分より小さい項を使う"
+      }
+    },
+    {
+      "id": "practice-conversion",
+      "label": "練習：再帰で自然数へ送る",
+      "at": {
+        "tag": "ol",
+        "starts": "MyNat.zero を 0 に、MyNat.succ k を toNat k + 1 に送る"
       }
     },
     {
@@ -277,35 +301,11 @@
       }
     },
     {
-      "id": "practice-swap-sum",
-      "label": "練習：直和を入れ替える",
-      "at": {
-        "tag": "ol",
-        "starts": "swapSum : MySum A B → MySum B A を定義せよ。"
-      }
-    },
-    {
-      "id": "practice-product",
-      "label": "練習：二つの関数の値を組にする",
-      "at": {
-        "tag": "ol",
-        "starts": "写像 f : X → A と g : X → B から、x を組 (f x, g x) に送る"
-      }
-    },
-    {
       "id": "practice-dependent",
       "label": "練習：依存関数から依存和への写像",
       "at": {
         "tag": "ol",
         "starts": "族 B : A → Type と依存関数 f : (a : A) → B a がある。"
-      }
-    },
-    {
-      "id": "practice-conversion",
-      "label": "練習：再帰で自然数へ送る",
-      "at": {
-        "tag": "ol",
-        "starts": "MyNat.zero を 0 に、MyNat.succ k を toNat k + 1 に送る"
       }
     },
     {

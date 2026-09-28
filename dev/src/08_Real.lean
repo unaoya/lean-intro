@@ -51,7 +51,7 @@ Part E で初めて完備性（上限の存在）を使う。山場は Part G �
 * **完備性**: 空でなく上に有界な集合には、最小の上界（上限）がある
 
 `Add R`・`Mul R` などを `extends` しているのは、`a + b`・`a * b`・`a⁻¹`・`a ≤ b` といった
-記法を使うためである（記法が class で動く仕組みは [`05_MathematicalTools.lean` 1節](#sec-Intro2.classes)）。
+記法を使うためである（記法が class で動く仕組みは [`05_MathematicalTools.lean` 4節](#sec-Intro2.classes)）。
 引き算 `a - b` と割り算 `a / b` は公理に含めず、`a + -b`・`a * b⁻¹` として定義する。
 数 `2` は `1 + 1` と定義する。
 -/
