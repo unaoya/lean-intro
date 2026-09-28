@@ -853,9 +853,13 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
 
     # 受講者用の Lean ファイル（解説を省いた版）は、正本の src/ からだけ作る
     with_student = SRC == ROOT / "src"
+    public_pdf = OUT / "all.pdf"
+    has_pdf = with_pdf or public_pdf.is_file()
     links = []
     if with_slides:
         links.append('<a href="slides/index.html">講義用スライド</a>')
+    if has_pdf:
+        links.append('<a href="all.pdf" download>通読版PDF（全章）をダウンロード</a>')
     (OUT / "index.html").write_text(
         page(SITE_TITLE, (f'<p>{"・".join(links)}</p>' if links else '') +
              toc_html(titles, lambda n: f"{n.lower()}.html")), encoding="utf-8")
@@ -870,12 +874,17 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
         import slides
         slide_document, _ = slides.build(titles, bodies, slide_chapters, OUT, head=KATEX_HEAD,
                                         include_notes=include_slide_notes,
-                                        index_body=lecture_index_html(titles, slide_chapters))
+                                        index_body=lecture_index_html(titles, slide_chapters),
+                                        reading_pdf_url="../all.pdf" if has_pdf else None)
         for name in SLIDE_EXCLUDED_CHAPTERS:
             (OUT / "slides" / f"{name.lower()}.html").unlink(missing_ok=True)
     redirects = write_legacy_redirects(OUT, slide_chapters if with_slides else []) if with_student else []
     if with_pdf:
         build_pdf(titles, bodies)
+        # 公開用コピーも、PDF の生成に成功したときだけ原子的に更新する。
+        staged = public_pdf.with_suffix(".pdf.tmp")
+        staged.write_bytes(PDF_OUT.read_bytes())
+        staged.replace(public_pdf)
         if with_slides:
             write_pdf(slide_document, PDF_OUT.with_name("slides.pdf"))
     if with_slides and if_needed:
@@ -889,6 +898,8 @@ def main(with_pdf: bool = True, with_slides: bool = True, if_needed: bool = Fals
                         *(OUT / "play").glob("*.lean")]
         if with_pdf:
             outputs += [PDF_OUT, PDF_OUT.with_name("slides.pdf")]
+        if has_pdf:
+            outputs.append(public_pdf)
         cache.parent.mkdir(exist_ok=True)
         cache.write_text(json.dumps({"signature": source_signature, "outputs": {
             str(path.relative_to(REPO)): file_digest(path) for path in outputs}}, indent=2) + "\n")

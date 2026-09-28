@@ -84,3 +84,18 @@ VS Code の左下にある同期のボタン（または「ソース管理」の
 
 本文（解説入りの Lean ファイル）・生成スクリプト・スライドの設定などは [`dev/`](dev/README.md) にあります。
 `docs/`・`LeanIntro/`・`Start.lean`・`lakefile.lean` は `dev/` から自動生成するので、直接は編集しません。
+
+編集する場所と生成物は、次のように分かれています。
+
+| 場所 | 役割 |
+| --- | --- |
+| `dev/src/` | 本文と解答の正本。教材の内容を直す場所 |
+| `dev/slides/` | スライドのページ区切り・段階表示の設定 |
+| `dev/tools/` | HTML・PDF・配布用Leanを作る処理と、その検査 |
+| `docs/` | 公開する通読版HTML・PDF、スライドHTML、Lean 4 Web用ファイル |
+| `LeanIntro/Original/`・`Solutions/` | 配布するLeanファイルと解答 |
+| `dev/pdf/` | 現行の通読版・スライド版PDF（Git管理外） |
+| `LeanIntro/MyWork/`・`Sandbox.lean` | 手元の書き込み・試し書き（Git管理外） |
+
+`dev/` で `lake build` を実行すると、正本を検査して生成物を更新します。
+`docs/` に残る旧章名の小さなHTMLは、以前のURLから現行の章へ案内する転送ページです。

@@ -10,7 +10,7 @@
 | 公開ページ（通読版・講義スライド） | リポジトリ直下の `docs/` | `tools/lean2html.py` |
 | 受講者用プロジェクト（`LeanIntro/Original`・`Solutions`、`Start.lean`、`lakefile.lean`） | リポジトリ直下 | `tools/student.py`（lean2html から呼ばれる） |
 | ブラウザ版（Lean 4 Web 用の1ファイル版） | リポジトリ直下の `docs/play/` | `tools/bundle.py`（lean2html から呼ばれる） |
-| PDF | `dev/pdf/`（Git 管理外） | `tools/lean2html.py` |
+| PDF | `dev/pdf/`（Git 管理外）、通読版の公開用コピーは `docs/all.pdf` | `tools/lean2html.py` |
 
 公開ページ: **https://unaoya.github.io/lean-intro/** （`dev/src/*.lean` から自動生成）
 
@@ -128,10 +128,13 @@ python3 tools/lean2html.py --no-pdf # PDF を省いて両形式の HTML を生�
 
 | 形式 | HTML | 対象章をまとめた PDF |
 | --- | --- | --- |
-| 通読版 | `../docs/index.html` と各章 | `pdf/all.pdf` |
+| 通読版 | `../docs/index.html` と各章 | `pdf/all.pdf`、公開用 `../docs/all.pdf` |
 | 講義スライド版 | `../docs/slides/index.html` と各章 | `pdf/slides.pdf` |
 
 本文・補足・解答の原本は `src/*.lean` だけ。両形式は同じ解析・参照解決・コード着色を共有する。
+通読版PDFは通常のトップページとスライドのトップページからダウンロードできる。
+`lake build` で公開用の `docs/all.pdf` も更新するので、HTMLと一緒にGitへ含める。
+`--no-pdf` では既存の公開用PDFを保持する。PDFがまだなければダウンロードリンクは表示しない。
 スライド版は 01_TypesAndTerms・02_Forall・03_InductiveTypes・04_Exists・05_MathematicalTools の5章を対象とする。
 冒頭の目的・目標・構成も通読版と共有し、`docs/slides/index.html` とスライドPDFの冒頭に含める。
 その区切りは `slides/Index.json` で設定する。「講義の各章」のリンクから各章のスライドへ進める。

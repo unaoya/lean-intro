@@ -572,7 +572,7 @@ def slide_articles(pages, *, print_steps=False, chapter=""):
     return "\n".join(output)
 
 
-def html_page(chapter, title, pages, chapters):
+def html_page(chapter, title, pages, chapters, reading_pdf_url=None):
     template = (ASSETS / "template.html").read_text()
     options = "".join(f'<option value="{name.lower()}.html"' + (" selected" if name == chapter else "") +
                       f'>{html.escape(chapter_label(name))}</option>' for name in chapters)
@@ -590,7 +590,10 @@ def html_page(chapter, title, pages, chapters):
         return f'target="_blank" rel="noopener" href="{textbook_href(href)}"'
     content = re.sub(r'href="([^"]+)"', link, content)
     label = chapter_label(chapter)
+    pdf_link = (f'<a href="{html.escape(reading_pdf_url, quote=True)}" download>通読版PDF（全章）</a>'
+                if chapter == 'Index' and reading_pdf_url else '')
     return (template.replace("@@TITLE@@", html.escape(title)).replace("@@CHAPTER@@", html.escape(label))
+            .replace("@@PDF_LINK@@", pdf_link)
             .replace("@@NOTES_HIDDEN@@", "" if any(p.kind != "main" for p in pages) else " hidden")
             .replace("@@CHAPTER_OPTIONS@@", options).replace("@@STYLE@@", (ASSETS / "style.css").read_text()).replace("@@HEAD@@", EXTRA_HEAD)
             .replace("@@SLIDES@@", content).replace("@@SCRIPT@@", (ASSETS / "layout.js").read_text() + "\n" +
@@ -605,7 +608,7 @@ def print_html(all_pages, titles):
            '<script>' + (ASSETS / "layout.js").read_text() + '</script></body></html>'
 
 
-def build(titles, bodies, chapters, out, head="", include_notes=False, index_body=None):
+def build(titles, bodies, chapters, out, head="", include_notes=False, index_body=None, reading_pdf_url=None):
     global EXTRA_HEAD
     EXTRA_HEAD = head
     folder = out / "slides"
@@ -635,6 +638,7 @@ def build(titles, bodies, chapters, out, head="", include_notes=False, index_bod
                 blocks = [block for block in blocks if block.kind == "main"]
             pages = paginate(blocks, chapter)
         all_pages[chapter] = pages
-        (folder / f"{chapter.lower()}.html").write_text(html_page(chapter, titles[chapter], pages, chapters))
+        (folder / f"{chapter.lower()}.html").write_text(
+            html_page(chapter, titles[chapter], pages, chapters, reading_pdf_url=reading_pdf_url))
         print(f"  slides/{chapter.lower()}.html: {len(pages)} 画面 / {sum(len(p.steps) for p in pages)} 表示段階")
     return print_html(all_pages, titles), all_pages

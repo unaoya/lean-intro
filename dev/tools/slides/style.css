@@ -37,6 +37,7 @@ button[aria-pressed="true"] { background: var(--accent); color: white; border-co
 #chapter-select { border: 0; color: var(--muted); background: transparent; font: inherit; max-width: 110px; padding: 8px; }
 .chapter { color: var(--muted); font-size: 13px; }
 .tools { display: flex; align-items: center; gap: 13px; }
+.tools a { color: var(--accent); white-space: nowrap; text-underline-offset: 4px; }
 .tools button { border-color: transparent; padding-inline: 8px; }
 .optional-control { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; cursor: pointer; }
 .optional-control[hidden] { display: none; }
